@@ -10,6 +10,7 @@
 class UInputMappingContext;
 class UInputAction;
 struct FInputActionValue;
+class ITargetInterface;
 
 /**
  * 
@@ -20,11 +21,12 @@ class AURA_API AMainPlayerController : public APlayerController
 	GENERATED_BODY()
 public:
 	AMainPlayerController();
+	virtual void PlayerTick(float DeltaTime) override;
 
 protected:
 	virtual void BeginPlay() override;
 	virtual void SetupInputComponent() override;
-
+	
 private:
 	UPROPERTY(EditAnywhere, Category="Input")
 	TObjectPtr<UInputMappingContext> MainContext;
@@ -33,5 +35,8 @@ private:
 	TObjectPtr<UInputAction> MoveAction;
 
 	void Move(const FInputActionValue& InputActionValue);
-	
+
+	void CursorTrace();
+	ITargetInterface* LastActor;
+	ITargetInterface* ThisActor;
 };
