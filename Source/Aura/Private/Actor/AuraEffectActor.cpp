@@ -20,11 +20,11 @@ void AAuraEffectActor::BeginPlay()
 	
 }
 
-void AAuraEffectActor::ApplyEffectToTarget(AActor* Target,
+void AAuraEffectActor::ApplyEffectToTarget(AActor* TargetActor,
 	TSubclassOf<UGameplayEffect> GameplayEffectClass)
 {
 	UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary
-		::GetAbilitySystemComponent(Target);
+		::GetAbilitySystemComponent(TargetActor);
 
 	if (TargetASC == nullptr) return;
 
