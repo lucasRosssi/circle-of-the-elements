@@ -3,8 +3,11 @@
 
 #include "AbilitySystem/Abilities/ProjectileSpell.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
+#include "AbilitySystemComponent.h"
 #include "Actor/AuraProjectile.h"
 #include "Interaction/CombatInterface.h"
+#include "Aura/Public/AuraGameplayTags.h"
 
 void UProjectileSpell::ActivateAbility(
 	const FGameplayAbilitySpecHandle Handle,
@@ -14,18 +17,25 @@ void UProjectileSpell::ActivateAbility(
 )
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
+	
+}
 
-	const bool bIsServer = HasAuthority(&ActivationInfo);
+void UProjectileSpell::SpawnProjectile(const FVector& ProjectileTargetLocation)
+{
+	const bool bIsServer = GetAvatarActorFromActorInfo()->HasAuthority();
 	if (!bIsServer) return;
 
-	ICombatInterface* CombatInterface = Cast<ICombatInterface>(GetAvatarActorFromActorInfo());
+	AActor* AvatarActor = GetAvatarActorFromActorInfo();
+	ICombatInterface* CombatInterface = Cast<ICombatInterface>(AvatarActor);
 	if (CombatInterface)
 	{
 		const FVector SocketLocation = CombatInterface->GetProjectileSocketLocation();
+		FRotator Rotation = (ProjectileTargetLocation - SocketLocation).Rotation();
+		Rotation.Pitch = 0.f;
 
 		FTransform SpawnTransform;
 		SpawnTransform.SetLocation(SocketLocation);
-		//TODO: Set the Projectile Rotation
+		SpawnTransform.SetRotation(Rotation.Quaternion());
 		
 		AActor* OwningActor = GetOwningActorFromActorInfo();
 		
@@ -33,14 +43,31 @@ void UProjectileSpell::ActivateAbility(
 			ProjectileClass,
 			SpawnTransform,
 			OwningActor,
-			Cast<APawn>(OwningActor),
+			Cast<APawn>(AvatarActor),
 			ESpawnActorCollisionHandlingMethod::AlwaysSpawn
 		);
 
-		//TODO: Give the Projectile a Gameplay Effect Spec for causing Damage.
+		const UAbilitySystemComponent* SourceASC = GetAbilitySystemComponentFromActorInfo();
+		
+		const FGameplayEffectSpecHandle SpecHandle = SourceASC->MakeOutgoingSpec(
+			DamageEffectClass,
+			GetAbilityLevel(),
+			SourceASC->MakeEffectContext()
+		);
 
+		
+		const float ScaledDamage = Damage.GetValueAtLevel(GetAbilityLevel());
+		
+		const FAuraGameplayTags GameplayTags = FAuraGameplayTags::Get();
+		UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(
+			SpecHandle,
+			GameplayTags.Damage,
+			ScaledDamage
+		);
+
+		
+		Projectile->DamageEffectSpecHandle = SpecHandle;
+		
 		Projectile->FinishSpawning(SpawnTransform);
 	}
-
-	
 }

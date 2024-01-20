@@ -8,6 +8,7 @@
 #include "Interaction/CombatInterface.h"
 #include "AuraCharacterBase.generated.h"
 
+struct FGameplayTag;
 class UGameplayAbility;
 class UGameplayEffect;
 class UAbilitySystemComponent;
@@ -23,9 +24,27 @@ public:
 	AAuraCharacterBase();
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	UAttributeSet* GetAttributeSet() const { return AttributeSet; }
+	
+	void HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
+
+	virtual UAnimMontage* GetHitReactMontage_Implementation() override;
+
+	virtual void Die() override;
+
+	UFUNCTION(NetMulticast, Reliable)
+	virtual void MulticastHandleDeath();
+	
+	UPROPERTY(BlueprintReadOnly, Category="Combat")
+	bool bHitReacting = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Combat")
+	float LifeSpanDuration = 10.f;
 
 protected:
 	virtual void BeginPlay() override;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Montages|Combat")
+	TObjectPtr<UAnimMontage> HitReactMontage;
 
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	TObjectPtr<USkeletalMeshComponent> Weapon;
@@ -53,9 +72,24 @@ protected:
 	TSubclassOf<UGameplayEffect> DefaultVitalAttributes;
 
 	void ApplyEffectToSelf(TSubclassOf<UGameplayEffect> GameplayEffectClass, float Level) const;
-	void InitializeDefaultAttributes() const;
+	virtual void InitializeDefaultAttributes() const;
 
 	void AddCharacterAbilities();
+
+	/* Dissolve Effects */
+	void DissolveCharacter();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void StartDissolveTimeline(UMaterialInstanceDynamic* DynamicMaterialInstance);
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void StartWeaponDissolveTimeline(UMaterialInstanceDynamic* DynamicMaterialInstance);
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TObjectPtr<UMaterialInstance> DissolveMaterialInstance;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TObjectPtr<UMaterialInstance> WeaponDissolveMaterialInstance;
 
 private:
 	UPROPERTY(EditAnywhere, Category = "Abilities")
