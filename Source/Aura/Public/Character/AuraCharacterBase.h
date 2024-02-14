@@ -25,7 +25,7 @@ public:
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	UAttributeSet* GetAttributeSet() const { return AttributeSet; }
 	
-	void HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
+	virtual void HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
 
 	virtual UAnimMontage* GetHitReactMontage_Implementation() override;
 
@@ -94,4 +94,6 @@ protected:
 private:
 	UPROPERTY(EditAnywhere, Category = "Abilities")
 	TArray<TSubclassOf<UGameplayAbility>> StartupAbilities;
+
+	float DefaultWalkSpeed;
 };

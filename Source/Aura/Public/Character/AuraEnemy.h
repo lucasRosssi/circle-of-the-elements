@@ -22,6 +22,7 @@ class AURA_API AAuraEnemy : public AAuraCharacterBase, public ITargetInterface
 public:
 	AAuraEnemy();
 	virtual void PossessedBy(AController* NewController) override;
+	virtual void HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount) override;
 	
 	/** Target Interface */
 	virtual void HighlightActor() override;

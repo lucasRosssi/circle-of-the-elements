@@ -4,17 +4,17 @@
 
 #include "CoreMinimal.h"
 #include "BehaviorTree/BTService.h"
-#include "BT_ServiceFindNearestTarget.generated.h"
+#include "BTService_FindNearestTarget.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class AURA_API UBT_ServiceFindNearestTarget : public UBTService
+class AURA_API UBTService_FindNearestTarget : public UBTService
 {
 	GENERATED_BODY()
 
-	UBT_ServiceFindNearestTarget(const FObjectInitializer& ObjectInitializer);
+	UBTService_FindNearestTarget(const FObjectInitializer& ObjectInitializer);
 
 protected:
 	virtual void TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;

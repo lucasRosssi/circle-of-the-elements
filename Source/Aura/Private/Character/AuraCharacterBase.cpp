@@ -23,6 +23,7 @@ AAuraCharacterBase::AAuraCharacterBase()
 	GetMesh()->SetCollisionResponseToChannel(ECC_Projectile, ECR_Overlap);
 	GetMesh()->SetGenerateOverlapEvents(true);
 
+	DefaultWalkSpeed = GetCharacterMovement()->MaxWalkSpeed;
 }
 
 UAbilitySystemComponent* AAuraCharacterBase::GetAbilitySystemComponent() const
@@ -68,7 +69,6 @@ void AAuraCharacterBase::HitReactTagChanged(const FGameplayTag CallbackTag, int3
 {
 	bHitReacting = NewCount > 0;
 
-	const float DefaultWalkSpeed = GetCharacterMovement()->MaxWalkSpeed;
 	GetCharacterMovement()->MaxWalkSpeed = bHitReacting ? 0.f : DefaultWalkSpeed;
 }
 

@@ -1,18 +1,23 @@
 // Copyright Lucas Rossi
 
 
-#include "AI/BT_ServiceFindNearestTarget.h"
+#include "AI/Services/BTService_FindNearestTarget.h"
+
 #include "AIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Kismet/GameplayStatics.h"
 
-UBT_ServiceFindNearestTarget::UBT_ServiceFindNearestTarget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
+UBTService_FindNearestTarget::UBTService_FindNearestTarget(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer)
 {
 	NodeName = "Find Nearest Target";
 }
 
-void UBT_ServiceFindNearestTarget::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory,
-                                            float DeltaSeconds)
+void UBTService_FindNearestTarget::TickNode(
+	UBehaviorTreeComponent& OwnerComp,
+	uint8* NodeMemory,
+	float DeltaSeconds
+)
 {
 	Super::TickNode(OwnerComp, NodeMemory, DeltaSeconds);
 
