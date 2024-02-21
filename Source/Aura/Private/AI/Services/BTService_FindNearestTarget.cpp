@@ -37,13 +37,6 @@ void UBTService_FindNearestTarget::TickNode(
 	AActor* ClosestActor = nullptr;
 	for (const auto Actor : ActorsWithTag)
 	{
-		GEngine->AddOnScreenDebugMessage(
-			-1,
-			2.f,
-			FColor::Orange,
-			*Actor->GetName()
-		);
-
 		if (IsValid(Actor) && IsValid(OwningPawn))
 		{
 			const float Distance = OwningPawn->GetDistanceTo(Actor);
