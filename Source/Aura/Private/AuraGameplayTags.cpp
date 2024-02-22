@@ -257,4 +257,9 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FName("Abilities.HitReact"),
 		FString("Hit reaction ability")
 		);
+
+	GameplayTags.Abilities_Attack_Melee = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Attack.Melee"),
+		FString("Melee attack ability")
+		);
 }

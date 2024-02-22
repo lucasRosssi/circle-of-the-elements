@@ -37,7 +37,11 @@ public:
 	);
 
 	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|CharacterClassDefaults")
-	static void GiveStartupAbilities(const UObject* WorldContextObject, UAbilitySystemComponent* ASC);
+	static void GiveStartupAbilities(
+		const UObject* WorldContextObject,
+		UAbilitySystemComponent* ASC,
+		ECharacterClass CharacterClass
+	);
 
 	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|GameplayEffects")
 	static bool IsParried(const FGameplayEffectContextHandle& EffectContextHandle);

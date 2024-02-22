@@ -5,6 +5,7 @@
 
 #include "AuraAbilityTypes.h"
 #include "Game/AuraGameModeBase.h"
+#include "Interaction/CombatInterface.h"
 #include "Kismet/GameplayStatics.h"
 #include "Player/AuraPlayerState.h"
 #include "UI/HUD/AuraHUD.h"
@@ -63,13 +64,13 @@ void UAuraAbilitySystemLibrary::InitializeDefaultAttributes(
 	const AActor* AvatarActor = ASC->GetAvatarActor();
 
 	UCharacterClassInfo* CharacterClassInfo =  AuraGameMode->CharacterClassInfo;
-	const auto [PrimaryAttributes] = CharacterClassInfo
+	const auto ClassInfo = CharacterClassInfo
 	 ->GetClassDefaultInfo(CharacterClass);
 	
 	FGameplayEffectContextHandle PrimaryContextHandle = ASC->MakeEffectContext();
 	PrimaryContextHandle.AddSourceObject(AvatarActor);
 	const FGameplayEffectSpecHandle PrimarySpecHandle = ASC->MakeOutgoingSpec(
-		PrimaryAttributes, 
+		ClassInfo.PrimaryAttributes, 
 		Level, 
 		PrimaryContextHandle
 	);
@@ -94,19 +95,33 @@ void UAuraAbilitySystemLibrary::InitializeDefaultAttributes(
 	ASC->ApplyGameplayEffectSpecToSelf(*VitalSpecHandle.Data.Get());
 }
 
-void UAuraAbilitySystemLibrary::GiveStartupAbilities(const UObject* WorldContextObject,
-	UAbilitySystemComponent* ASC)
+void UAuraAbilitySystemLibrary::GiveStartupAbilities(
+		const UObject* WorldContextObject,
+		UAbilitySystemComponent* ASC,
+		ECharacterClass CharacterClass
+	)
 {
 	const AAuraGameModeBase* AuraGameMode = Cast<AAuraGameModeBase>(
 		UGameplayStatics::GetGameMode(WorldContextObject)
 	);
-	if (!AuraGameMode) return;
+	// if (!AuraGameMode) return;
 
 	UCharacterClassInfo* CharacterClassInfo =  AuraGameMode->CharacterClassInfo;
 	for (const auto AbilityClass : CharacterClassInfo->CommonAbilities)
 	{
 		FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(AbilityClass, 1);
 		ASC->GiveAbility(AbilitySpec);
+	}
+	
+	const FCharacterClassDefaultInfo& DefaultInfo = CharacterClassInfo->GetClassDefaultInfo(CharacterClass);
+	for (auto AbilityClass : DefaultInfo.StartingAbilities)
+	{
+		ICombatInterface* CombatInterface = Cast<ICombatInterface>(ASC->GetAvatarActor());
+		if (CombatInterface)
+		{
+			FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(AbilityClass, CombatInterface->GetCharacterLevel());
+			ASC->GiveAbility(AbilitySpec);
+		}
 	}
 }
 
