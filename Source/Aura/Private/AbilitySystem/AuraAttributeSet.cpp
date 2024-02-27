@@ -149,7 +149,6 @@ void UAuraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 			}
 			else
 			{
-				GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Magenta, FString("HitReacting!"));
 				FGameplayTagContainer TagContainer;
 				TagContainer.AddTag(FAuraGameplayTags::Get().Abilities_HitReact);
 				Props.TargetASC->TryActivateAbilitiesByTag(TagContainer);
@@ -173,11 +172,16 @@ void UAuraAttributeSet::ShowFloatingText(
 {
 	if (Props.SourceCharacter != Props.TargetCharacter)
 	{
-		AMainPlayerController* PC = Cast<AMainPlayerController>(Props.SourceController);
+		AMainPlayerController* SourcePC = Cast<AMainPlayerController>(Props.SourceController);
 
-		if (PC)
+		if (SourcePC)
 		{
-			PC->ShowDamageNumber(Damage, Props.TargetCharacter, bParried, bCriticalHit);
+			SourcePC->ShowDamageNumber(Damage, Props.TargetCharacter, bParried, bCriticalHit, false);
+		} else if (AMainPlayerController* TargetPC =
+			Cast<AMainPlayerController>(Props.TargetController)
+			)
+		{
+			TargetPC->ShowDamageNumber(Damage, Props.TargetCharacter, bParried, bCriticalHit, true);
 		}
 	}
 }

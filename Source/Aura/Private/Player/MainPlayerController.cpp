@@ -27,7 +27,8 @@ void AMainPlayerController::ShowDamageNumber_Implementation(
 		float DamageAmount,
 		ACharacter* TargetCharacter,
 		bool bParried,
-		bool bCriticalHit
+		bool bCriticalHit,
+		bool bIsPlayer
 	)
 {
 	if (IsValid(TargetCharacter) && DamageTextComponentClass && IsLocalController())
@@ -42,7 +43,7 @@ void AMainPlayerController::ShowDamageNumber_Implementation(
 			FAttachmentTransformRules::KeepRelativeTransform
 		);
 		DamageText->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
-		DamageText->SetDamageText(DamageAmount, bParried, bCriticalHit);
+		DamageText->SetDamageText(DamageAmount, bParried, bCriticalHit, bIsPlayer);
 	}
 }
 

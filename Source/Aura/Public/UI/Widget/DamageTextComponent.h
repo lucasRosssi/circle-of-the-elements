@@ -19,6 +19,7 @@ public:
 	void SetDamageText(
 		float Damage,
 		bool bParried,
-		bool bCriticalHit
+		bool bCriticalHit,
+		bool bIsPlayer
 	);
 };

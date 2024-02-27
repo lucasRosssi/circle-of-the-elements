@@ -55,6 +55,11 @@ AActor* AAuraCharacterBase::GetCombatTarget_Implementation() const
 	return CombatTarget;
 }
 
+USkeletalMeshComponent* AAuraCharacterBase::GetWeapon_Implementation()
+{
+	return Weapon.Get();
+}
+
 void AAuraCharacterBase::MulticastHandleDeath_Implementation()
 {
 	bDead = true;

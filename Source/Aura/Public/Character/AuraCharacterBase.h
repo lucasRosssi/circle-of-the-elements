@@ -37,6 +37,7 @@ public:
 	/** Combat Interface */
 	virtual void SetCombatTarget_Implementation(AActor* InCombatTarget) override;
 	virtual AActor* GetCombatTarget_Implementation() const override;
+	virtual USkeletalMeshComponent* GetWeapon_Implementation() override;
 	virtual FVector GetWeaponSocketLocation_Implementation() override;
 	virtual bool IsDead_Implementation() const override;
 	virtual AActor* GetAvatar_Implementation() override;

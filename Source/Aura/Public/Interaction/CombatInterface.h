@@ -25,6 +25,9 @@ public:
 	virtual int32 GetCharacterLevel();
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	USkeletalMeshComponent* GetWeapon();
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	FVector GetWeaponSocketLocation();
 
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)

@@ -32,7 +32,8 @@ public:
 		float DamageAmount,
 		ACharacter* TargetCharacter,
 		bool bParried,
-		bool bCriticalHit
+		bool bCriticalHit,
+		bool bIsPlayer = false
 	);
 
 protected:
