@@ -8,8 +8,3 @@ int32 ICombatInterface::GetCharacterLevel()
 {
 	return 0;
 }
-
-FVector ICombatInterface::GetProjectileSocketLocation()
-{
-	return FVector();
-}

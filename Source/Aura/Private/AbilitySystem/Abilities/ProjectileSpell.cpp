@@ -29,7 +29,7 @@ void UProjectileSpell::SpawnProjectile(const FVector& ProjectileTargetLocation)
 	ICombatInterface* CombatInterface = Cast<ICombatInterface>(AvatarActor);
 	if (CombatInterface)
 	{
-		const FVector SocketLocation = CombatInterface->GetProjectileSocketLocation();
+		const FVector SocketLocation = CombatInterface->GetWeaponSocketLocation_Implementation();
 		FRotator Rotation = (ProjectileTargetLocation - SocketLocation).Rotation();
 		Rotation.Pitch = 0.f;
 

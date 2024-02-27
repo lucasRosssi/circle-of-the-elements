@@ -47,7 +47,7 @@ void AAuraProjectile::BeginPlay()
 			UNiagaraFunctionLibrary::SpawnSystemAtLocation(
 				this,
 				MuzzleEffect,
-				CombatInterface->GetProjectileSocketLocation(),
+				CombatInterface->GetWeaponSocketLocation_Implementation(),
 				GetActorRotation()
 			);
 		}
@@ -57,7 +57,7 @@ void AAuraProjectile::BeginPlay()
 			UGameplayStatics::PlaySoundAtLocation(
 				this,
 				MuzzleSound,
-				CombatInterface->GetProjectileSocketLocation(),
+				CombatInterface->GetWeaponSocketLocation_Implementation(),
 				GetActorRotation()
 			);
 		}
