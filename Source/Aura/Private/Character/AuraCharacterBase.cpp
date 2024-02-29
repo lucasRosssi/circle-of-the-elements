@@ -89,9 +89,14 @@ void AAuraCharacterBase::HitReactTagChanged(const FGameplayTag CallbackTag, int3
 	GetCharacterMovement()->MaxWalkSpeed = bHitReacting ? 0.f : DefaultWalkSpeed;
 }
 
-FVector AAuraCharacterBase::GetWeaponSocketLocation_Implementation()
+FVector AAuraCharacterBase::GetAbilitySocketLocation_Implementation(const FName SocketName, bool 
+bSocketInWeapon)
 {
-	return Weapon->GetSocketLocation(WeaponSocketName);
+	if (bSocketInWeapon && IsValid(Weapon))
+	{
+		return Weapon->GetSocketLocation(SocketName);
+	}
+	return GetMesh()->GetSocketLocation(SocketName);
 }
 
 bool AAuraCharacterBase::IsDead_Implementation() const

@@ -10,7 +10,6 @@
 #include "Kismet/GameplayStatics.h"
 #include "NiagaraFunctionLibrary.h"
 #include "Aura/Aura.h"
-#include "Interaction/CombatInterface.h"
 
 AAuraProjectile::AAuraProjectile()
 {
@@ -37,32 +36,26 @@ void AAuraProjectile::BeginPlay()
 	Super::BeginPlay();
 	SetLifeSpan(LifeSpan);
 	Sphere->OnComponentBeginOverlap.AddDynamic(this, &AAuraProjectile::OnSphereOverlap);
-
-	auto CombatInterface = Cast<ICombatInterface>(GetInstigator());
-
-	if (CombatInterface)
+	
+	if (MuzzleEffect)
 	{
-		if (MuzzleEffect)
-		{
-			UNiagaraFunctionLibrary::SpawnSystemAtLocation(
-				this,
-				MuzzleEffect,
-				CombatInterface->GetWeaponSocketLocation_Implementation(),
-				GetActorRotation()
-			);
-		}
-			
-		if (MuzzleSound)
-		{
-			UGameplayStatics::PlaySoundAtLocation(
-				this,
-				MuzzleSound,
-				CombatInterface->GetWeaponSocketLocation_Implementation(),
-				GetActorRotation()
-			);
-		}
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation(
+			this,
+			MuzzleEffect,
+			GetActorLocation(),
+			GetActorRotation()
+		);
 	}
-
+		
+	if (MuzzleSound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(
+			this,
+			MuzzleSound,
+			GetActorLocation(),
+			GetActorRotation()
+		);
+	}
 }
 
 void AAuraProjectile::Destroyed()

@@ -24,7 +24,10 @@ protected:
 	) override;
 
 	UFUNCTION(BlueprintCallable, Category = "Projectile")
-	void SpawnProjectile(const FVector& ProjectileTargetLocation);
+	void SpawnProjectile(
+		const FVector& ProjectileTargetLocation,
+		const FName SocketName,
+		bool bSocketInWeapon = true);
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TSubclassOf<AAuraProjectile> ProjectileClass;

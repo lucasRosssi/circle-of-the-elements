@@ -28,7 +28,7 @@ public:
 	USkeletalMeshComponent* GetWeapon();
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	FVector GetWeaponSocketLocation();
+	FVector GetAbilitySocketLocation(const FName SocketName, bool bSocketInWeapon = true);
 
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
 	void UpdateFacingTarget(const FVector& TargetLocation);
@@ -49,4 +49,7 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	AActor* GetAvatar();
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	TArray<UAnimMontage*> GetAttackMontages();
 };

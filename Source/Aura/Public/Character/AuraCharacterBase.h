@@ -38,7 +38,7 @@ public:
 	virtual void SetCombatTarget_Implementation(AActor* InCombatTarget) override;
 	virtual AActor* GetCombatTarget_Implementation() const override;
 	virtual USkeletalMeshComponent* GetWeapon_Implementation() override;
-	virtual FVector GetWeaponSocketLocation_Implementation() override;
+	virtual FVector GetAbilitySocketLocation_Implementation(const FName SocketName, bool bSocketInWeapon = true) override;;
 	virtual bool IsDead_Implementation() const override;
 	virtual AActor* GetAvatar_Implementation() override;
 	/** end Combat Interface */
@@ -52,6 +52,9 @@ public:
 	UPROPERTY(BlueprintReadWrite, Category="Combat")
 	TObjectPtr<AActor> CombatTarget;
 
+	UPROPERTY(EditDefaultsOnly, Category="Combat")
+	TArray<TSubclassOf<UGameplayAbility>> CharacterAbilities;
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -63,8 +66,7 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
 	FName WeaponSocketName;
-
-
+	
 	UPROPERTY()
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
 

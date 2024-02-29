@@ -262,4 +262,14 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FName("Abilities.Attack.Melee"),
 		FString("Melee attack ability")
 		);
+
+	GameplayTags.Abilities_Attack_GoblinSpear = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Attack.GoblinSpear"),
+		FString("Goblin Spear attack ability")
+		);
+
+	GameplayTags.Abilities_Attack_Ghoul = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Attack.Ghoul"),
+		FString("Ghoul attack ability")
+		);
 }
