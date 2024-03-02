@@ -4,6 +4,7 @@
 #include "AI/Services/BTService_FindNearestTarget.h"
 
 #include "AIController.h"
+#include "AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -37,7 +38,8 @@ void UBTService_FindNearestTarget::TickNode(
 	AActor* ClosestActor = nullptr;
 	for (const auto Actor : ActorsWithTag)
 	{
-		if (IsValid(Actor) && IsValid(OwningPawn))
+		const bool bIsTargetEnemy = UAuraAbilitySystemLibrary::AreActorsEnemies(Actor, OwningPawn);
+		if (bIsTargetEnemy)
 		{
 			const float Distance = OwningPawn->GetDistanceTo(Actor);
 			if (Distance < ClosestDistance)

@@ -63,4 +63,10 @@ public:
 		float Radius,
 		const FVector& SphereOrigin
 	);
+
+	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|GameplayMechanics")
+	static bool AreActorsFriends(const AActor* FirstActor, const AActor* SecondActor);
+
+	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|GameplayMechanics")
+	static bool AreActorsEnemies(const AActor* FirstActor, const AActor* SecondActor);
 };

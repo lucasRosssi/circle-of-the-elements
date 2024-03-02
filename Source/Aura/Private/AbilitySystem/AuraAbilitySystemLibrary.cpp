@@ -6,6 +6,7 @@
 #include "AuraAbilityTypes.h"
 #include "Character/AuraCharacterBase.h"
 #include "Game/AuraGameModeBase.h"
+#include "Game/TeamComponent.h"
 #include "Interaction/CombatInterface.h"
 #include "Kismet/GameplayStatics.h"
 #include "Player/AuraPlayerState.h"
@@ -221,4 +222,44 @@ void UAuraAbilitySystemLibrary::GetAliveCharactersWithinRadius(
 			}
 		}
 	}
+}
+
+bool UAuraAbilitySystemLibrary::AreActorsFriends(const AActor* FirstActor, const AActor* 
+SecondActor)
+{
+	if (!IsValid(FirstActor) || !IsValid(SecondActor)) return false;
+	
+	const UTeamComponent* FirstTeamComponent = Cast<UTeamComponent>(
+		FirstActor->GetComponentByClass(UTeamComponent::StaticClass())
+	);
+	const UTeamComponent* SecondTeamComponent = Cast<UTeamComponent>(
+		SecondActor->GetComponentByClass(UTeamComponent::StaticClass())
+	);
+
+	if (!FirstTeamComponent || !SecondTeamComponent)
+	{
+		return true;
+	}
+
+	return FirstTeamComponent->TeamID == SecondTeamComponent->TeamID;
+}
+
+bool UAuraAbilitySystemLibrary::AreActorsEnemies(const AActor* FirstActor, const AActor* 
+SecondActor)
+{
+	if (!IsValid(FirstActor) || !IsValid(SecondActor)) return false;
+	
+	const UTeamComponent* FirstTeamComponent = Cast<UTeamComponent>(
+		FirstActor->GetComponentByClass(UTeamComponent::StaticClass())
+	);
+	const UTeamComponent* SecondTeamComponent = Cast<UTeamComponent>(
+		SecondActor->GetComponentByClass(UTeamComponent::StaticClass())
+	);
+
+	if (!FirstTeamComponent || !SecondTeamComponent)
+	{
+		return false;
+	}
+
+	return FirstTeamComponent->TeamID != SecondTeamComponent->TeamID;
 }

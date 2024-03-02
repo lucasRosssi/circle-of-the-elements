@@ -7,6 +7,7 @@
 #include "Aura/Aura.h"
 #include "Components/CapsuleComponent.h"
 #include "AuraGameplayTags.h"
+#include "Game/TeamComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 AAuraCharacterBase::AAuraCharacterBase()
@@ -16,6 +17,8 @@ AAuraCharacterBase::AAuraCharacterBase()
 	Weapon = CreateDefaultSubobject<USkeletalMeshComponent>("Weapon");
 	Weapon->SetupAttachment(GetMesh(), FName("WeaponHandSocket"));
 	Weapon->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	TeamComponent = CreateDefaultSubobject<UTeamComponent>("TeamComponent");
 
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
 	GetCapsuleComponent()->SetGenerateOverlapEvents(false);
