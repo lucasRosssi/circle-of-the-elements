@@ -172,12 +172,12 @@ void AMainPlayerController::CursorTrace()
 
 void AMainPlayerController::AbilityInputTagPressed(FGameplayTag InputTag)
 {
-	// GEngine->AddOnScreenDebugMessage(
-	// 	1,
-	// 	3.f,
-	// 	FColor::Red,
-	// 	*InputTag.ToString()
-	// );
+	GEngine->AddOnScreenDebugMessage(
+		1,
+		3.f,
+		FColor::Red,
+		*InputTag.ToString()
+	);
 }
 
 void AMainPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)

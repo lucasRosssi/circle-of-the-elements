@@ -249,6 +249,11 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FString("Hit reaction effect")
 		);
 
+	GameplayTags.Effects_Invulnerable = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Effects.Invulnerable"),
+		FString("Invulnerability effect")
+		);
+
 	/*
 	 * Abilities Tags
 	 */
@@ -256,6 +261,11 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	GameplayTags.Abilities_HitReact = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Abilities.HitReact"),
 		FString("Hit reaction ability")
+		);
+
+	GameplayTags.Abilities_Dodge = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Dodge"),
+		FString("Dodge ability")
 		);
 
 	GameplayTags.Abilities_Attack_Melee = UGameplayTagsManager::Get().AddNativeGameplayTag(

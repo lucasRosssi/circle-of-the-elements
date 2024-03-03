@@ -120,7 +120,7 @@ void UExecCalc_Damage::Execute_Implementation(
 {
 	const UAbilitySystemComponent* SourceASC = ExecutionParams.GetSourceAbilitySystemComponent();
 	const UAbilitySystemComponent* TargetASC = ExecutionParams.GetTargetAbilitySystemComponent();
-
+	
 	const AActor* SourceAvatar = SourceASC ? SourceASC->GetAvatarActor() : nullptr;
 	const AActor* TargetAvatar = SourceASC ? TargetASC->GetAvatarActor() : nullptr;
 
@@ -135,6 +135,19 @@ void UExecCalc_Damage::Execute_Implementation(
 
 	// Get Damage Set by Caller Magnitude
 	float Damage = 0.f;
+
+	int32 Invulnerable  = TargetASC->GetTagCount(FAuraGameplayTags::Get().Effects_Invulnerable);
+	if (Invulnerable > 0)
+	{
+		const FGameplayModifierEvaluatedData EvaluatedData(
+		UAuraAttributeSet::GetIncomingDamageAttribute(),
+		EGameplayModOp::Additive,
+		Damage
+	);
+		OutExecutionOutput.AddOutputModifier(EvaluatedData);
+		return;
+	}
+	
 	for (const auto& Pair : FAuraGameplayTags::Get().DamageTypesToResistances)
 	{
 		const FGameplayTag DamageTypeTag = Pair.Key;

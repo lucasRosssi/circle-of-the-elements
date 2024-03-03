@@ -28,7 +28,7 @@ public:
 	
 	virtual void HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
 
-	virtual UAnimMontage* GetHitReactMontage_Implementation() override;
+	
 
 	virtual void Die() override;
 
@@ -36,6 +36,8 @@ public:
 	virtual void MulticastHandleDeath();
 
 	/** Combat Interface */
+	virtual UAnimMontage* GetHitReactMontage_Implementation() override;
+	virtual UAnimMontage* GetDodgeMontage_Implementation() override;
 	virtual void SetCombatTarget_Implementation(AActor* InCombatTarget) override;
 	virtual AActor* GetCombatTarget_Implementation() const override;
 	virtual USkeletalMeshComponent* GetWeapon_Implementation() override;
@@ -61,6 +63,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Montages|Combat")
 	TObjectPtr<UAnimMontage> HitReactMontage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Montages|Combat")
+	TObjectPtr<UAnimMontage> DodgeMontage;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
 	TObjectPtr<USkeletalMeshComponent> Weapon;

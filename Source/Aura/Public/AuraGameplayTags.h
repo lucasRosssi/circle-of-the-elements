@@ -60,10 +60,14 @@ public:
 	FGameplayTag InputTag_2;
 	FGameplayTag InputTag_3;
 	FGameplayTag InputTag_4;
+	FGameplayTag InputTag_SpaceBar;
 	
 	FGameplayTag Effects_HitReact;
+	FGameplayTag Effects_Invulnerable;
 
 	FGameplayTag Abilities_HitReact;
+	FGameplayTag Abilities_Dodge;
+	
 	FGameplayTag Abilities_Attack_Melee;
 	FGameplayTag Abilities_Attack_GoblinSpear;
 	FGameplayTag Abilities_Attack_Ghoul;

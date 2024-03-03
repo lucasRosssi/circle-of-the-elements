@@ -39,6 +39,11 @@ UAnimMontage* AAuraCharacterBase::GetHitReactMontage_Implementation()
 	return HitReactMontage;
 }
 
+UAnimMontage* AAuraCharacterBase::GetDodgeMontage_Implementation()
+{
+	return DodgeMontage;
+}
+
 void AAuraCharacterBase::Die()
 {
 	Weapon->DetachFromComponent(FDetachmentTransformRules(
