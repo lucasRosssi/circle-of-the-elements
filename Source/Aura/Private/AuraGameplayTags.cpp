@@ -148,6 +148,11 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FString("Input Tag for 4 key")
 		);
 
+	GameplayTags.InputTag_SpaceBar = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("InputTag.SpaceBar"),
+		FString("Input Tag for Space Bar key")
+		);
+
 	/*
 	 * Damage Tags
 	 */
@@ -262,24 +267,14 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FName("Abilities.HitReact"),
 		FString("Hit reaction ability")
 		);
-
+	
 	GameplayTags.Abilities_Dodge = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Abilities.Dodge"),
 		FString("Dodge ability")
 		);
-
-	GameplayTags.Abilities_Attack_Melee = UGameplayTagsManager::Get().AddNativeGameplayTag(
-		FName("Abilities.Attack.Melee"),
-		FString("Melee attack ability")
-		);
-
-	GameplayTags.Abilities_Attack_GoblinSpear = UGameplayTagsManager::Get().AddNativeGameplayTag(
-		FName("Abilities.Attack.GoblinSpear"),
-		FString("Goblin Spear attack ability")
-		);
-
-	GameplayTags.Abilities_Attack_Ghoul = UGameplayTagsManager::Get().AddNativeGameplayTag(
-		FName("Abilities.Attack.Ghoul"),
-		FString("Ghoul attack ability")
+	
+	GameplayTags.Abilities_Attack_Primary = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Attack.Primary"),
+		FString("Primary attack ability")
 		);
 }

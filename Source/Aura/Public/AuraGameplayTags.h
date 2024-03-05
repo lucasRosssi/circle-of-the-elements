@@ -68,9 +68,7 @@ public:
 	FGameplayTag Abilities_HitReact;
 	FGameplayTag Abilities_Dodge;
 	
-	FGameplayTag Abilities_Attack_Melee;
-	FGameplayTag Abilities_Attack_GoblinSpear;
-	FGameplayTag Abilities_Attack_Ghoul;
+	FGameplayTag Abilities_Attack_Primary;
 
 private:
 	static FAuraGameplayTags GameplayTags;
