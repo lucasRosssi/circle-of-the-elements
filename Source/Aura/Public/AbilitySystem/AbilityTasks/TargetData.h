@@ -4,10 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "Abilities/Tasks/AbilityTask.h"
-#include "TargetDataUnderMouse.generated.h"
+#include "TargetData.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(
-	FMouseTargetDataSignature,
+	FTargetDataSignature,
 	const FGameplayAbilityTargetDataHandle&,
 	DataHandle
 );
@@ -16,7 +16,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(
  * 
  */
 UCLASS()
-class AURA_API UTargetDataUnderMouse : public UAbilityTask
+class AURA_API UTargetData : public UAbilityTask
 {
 	GENERATED_BODY()
 
@@ -25,20 +25,20 @@ public:
 		BlueprintCallable,
 		Category = "Ability|Tasks",
 		meta = (
-			DisplayName = "TargetDataUnderMouse",
+			DisplayName = "Get Ability Target Data",
 			HidePin = "OwningAbility",
 			DefaultToSelf = "OwningAbility",
 			BlueprintInternalUseOnly = "true"
 		)
 	)
-	static UTargetDataUnderMouse* CreateTargetDataUnderMouse(UGameplayAbility* OwningAbility);
+	static UTargetData* CreateTargetData(UGameplayAbility* OwningAbility);
 
 	UPROPERTY(BlueprintAssignable)
-	FMouseTargetDataSignature ValidData;
+	FTargetDataSignature ValidData;
 
 private:
 	virtual void Activate() override;
-	void SendMouseCursorData();
+	void SendMouseOrGamepadData();
 
 	void OnTargetDataReplicatedCallback(
 		const FGameplayAbilityTargetDataHandle& DataHandle,

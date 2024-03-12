@@ -10,6 +10,7 @@
 #include "Interaction/CombatInterface.h"
 #include "Kismet/GameplayStatics.h"
 #include "Player/AuraPlayerState.h"
+#include "Player/MainPlayerController.h"
 #include "UI/HUD/AuraHUD.h"
 #include "UI/WidgetController/AuraWidgetController.h"
 
@@ -262,4 +263,16 @@ SecondActor)
 	}
 
 	return FirstTeamComponent->TeamID != SecondTeamComponent->TeamID;
+}
+
+bool UAuraAbilitySystemLibrary::IsPlayerUsingGamepad(const AActor* AvatarActor)
+{
+	AController* Controller = AvatarActor->GetInstigatorController();
+
+	if (AMainPlayerController* PlayerController = Cast<AMainPlayerController>(Controller))
+	{
+		return PlayerController->GetUsingGamepad();
+	}
+
+	return false;
 }

@@ -1,25 +1,27 @@
 // Copyright Lucas Rossi
 
 
-#include "AbilitySystem/AbilityTasks/TargetDataUnderMouse.h"
+#include "AbilitySystem/AbilityTasks/TargetData.h"
 
 #include "AbilitySystemComponent.h"
+#include "AbilitySystem/Abilities/AuraGameplayAbility.h"
+#include "Player/MainPlayerController.h"
 
-UTargetDataUnderMouse* UTargetDataUnderMouse::
-	CreateTargetDataUnderMouse(UGameplayAbility* OwningAbility)
+UTargetData* UTargetData::
+	CreateTargetData(UGameplayAbility* OwningAbility)
 {
-	UTargetDataUnderMouse* MyObj = NewAbilityTask<UTargetDataUnderMouse>(OwningAbility);
+	UTargetData* MyObj = NewAbilityTask<UTargetData>(OwningAbility);
 	
 	return MyObj;
 }
 
-void UTargetDataUnderMouse::Activate()
+void UTargetData::Activate()
 {
 	const bool bIsLocallyControlled = Ability->GetCurrentActorInfo()->IsLocallyControlled();
 
 	if (bIsLocallyControlled)
 	{
-		SendMouseCursorData();
+		SendMouseOrGamepadData();
 	}
 	else
 	{
@@ -29,7 +31,7 @@ void UTargetDataUnderMouse::Activate()
 		AbilitySystemComponent.Get()->AbilityTargetDataSetDelegate(
 			SpecHandle,
 			ActivationPredictionKey
-		).AddUObject(this, &UTargetDataUnderMouse::OnTargetDataReplicatedCallback);
+		).AddUObject(this, &UTargetData::OnTargetDataReplicatedCallback);
 
 		const bool bCalledDelegate = AbilitySystemComponent.Get()
 			->CallReplicatedTargetDataDelegatesIfSet(SpecHandle, ActivationPredictionKey);
@@ -41,22 +43,33 @@ void UTargetDataUnderMouse::Activate()
 	}
 }
 
-void UTargetDataUnderMouse::SendMouseCursorData()
+void UTargetData::SendMouseOrGamepadData()
 {
 	FScopedPredictionWindow ScopedPrediction(AbilitySystemComponent.Get());
 	
 	APlayerController* PC = Ability->GetCurrentActorInfo()->PlayerController.Get();
-	FHitResult CursorHit;
-	PC->GetHitResultUnderCursor(
-		ECC_Visibility,
-		false,
-		CursorHit
-	);
+	AMainPlayerController* MainPC = CastChecked<AMainPlayerController>(PC);
+	UAuraGameplayAbility* AuraAbility = CastChecked<UAuraGameplayAbility>(Ability);
+	
+	FHitResult HitResult;
+	if (MainPC->GetUsingGamepad() || AuraAbility->bUsesInputDirection)
+	{
+		FVector AvatarLocation = Ability->GetAvatarActorFromActorInfo()->GetActorLocation();
+		HitResult.Location = AvatarLocation + MainPC->GetInputDirection() * 10000;
+	}
+	else
+	{
+		PC->GetHitResultUnderCursor(
+			ECC_Visibility,
+			false,
+			HitResult
+		);
+	}
 
 	FGameplayAbilityTargetDataHandle DataHandle;
 	FGameplayAbilityTargetData_SingleTargetHit* Data = new FGameplayAbilityTargetData_SingleTargetHit();
 
-	Data->HitResult = CursorHit;
+	Data->HitResult = HitResult;
 	DataHandle.Add(Data);
 	
 	AbilitySystemComponent->ServerSetReplicatedTargetData(
@@ -73,7 +86,7 @@ void UTargetDataUnderMouse::SendMouseCursorData()
 	}
 }
 
-void UTargetDataUnderMouse::OnTargetDataReplicatedCallback(
+void UTargetData::OnTargetDataReplicatedCallback(
 	const FGameplayAbilityTargetDataHandle& DataHandle, FGameplayTag ActivationTag)
 {
 	AbilitySystemComponent->ConsumeClientReplicatedTargetData(
