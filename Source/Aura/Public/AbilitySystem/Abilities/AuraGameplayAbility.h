@@ -6,6 +6,7 @@
 #include "Abilities/GameplayAbility.h"
 #include "AuraGameplayAbility.generated.h"
 
+class AMainPlayerController;
 /**
  * 
  */
@@ -17,4 +18,7 @@ class AURA_API UAuraGameplayAbility : public UGameplayAbility
 public:
 	UPROPERTY(EditDefaultsOnly, Category="Input")
 	FGameplayTag StartupInputTag;
+
+	UFUNCTION(BlueprintPure, Category="GameplayMechanics")
+	bool IsUsingGamepad();
 };

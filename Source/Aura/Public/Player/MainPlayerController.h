@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
 #include "GameplayTagContainer.h"
+#include "InputActionValue.h"
 
 #include "MainPlayerController.generated.h"
 
@@ -36,9 +37,18 @@ public:
 		bool bIsPlayer = false
 	);
 
+	bool GetUsingGamepad() { return bUsingGamepad; }
+	FVector GetInputDirection() { return InputDirection; }
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void SetupInputComponent() override;
+
+	UPROPERTY(BlueprintReadWrite, Category="Input")
+	bool bUsingGamepad;
+
+	UPROPERTY(BlueprintReadOnly, Category="Input")
+	FVector InputDirection = FVector::Zero();
 	
 private:
 	UPROPERTY(EditAnywhere, Category="Input")
@@ -47,8 +57,12 @@ private:
 	UPROPERTY(EditAnywhere, Category="Input")
 	TObjectPtr<UInputAction> MoveAction;
 
+	UPROPERTY(EditAnywhere, Category="Input")
+	TObjectPtr<UInputAction> CheckInputSourceAction;
+	
 	void Move(const FInputActionValue& InputActionValue);
-
+	void MoveComplete(const FInputActionValue& InputActionValue);
+	
 	void CursorTrace();
 	ITargetInterface* LastActor;
 	ITargetInterface* ThisActor;

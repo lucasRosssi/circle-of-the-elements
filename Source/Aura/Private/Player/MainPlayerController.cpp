@@ -79,7 +79,14 @@ void AMainPlayerController::SetupInputComponent()
 		MoveAction,
 		ETriggerEvent::Triggered,
 		this,
-		&AMainPlayerController::Move);
+		&AMainPlayerController::Move
+	);
+	AuraInputComponent->BindAction(
+		MoveAction,
+		ETriggerEvent::Completed,
+		this,
+		&AMainPlayerController::MoveComplete
+	);
 
 	AuraInputComponent->BindAbilityActions(
 		InputConfig,
@@ -98,12 +105,20 @@ void AMainPlayerController::Move(const FInputActionValue& InputActionValue)
 
 	const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 	const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+	InputDirection = ForwardDirection * InputAxisVector.Y + RightDirection * InputAxisVector.X;
+	InputDirection.Normalize();
 
 	if (APawn* ControlledPawn = GetPawn<APawn>())
 	{
 		ControlledPawn->AddMovementInput(ForwardDirection, InputAxisVector.Y);
 		ControlledPawn->AddMovementInput(RightDirection, InputAxisVector.X);
 	}
+
+}
+
+void AMainPlayerController::MoveComplete(const FInputActionValue& InputActionValue)
+{
+	InputDirection = FVector::Zero();
 }
 
 void AMainPlayerController::CursorTrace()
@@ -172,12 +187,7 @@ void AMainPlayerController::CursorTrace()
 
 void AMainPlayerController::AbilityInputTagPressed(FGameplayTag InputTag)
 {
-	GEngine->AddOnScreenDebugMessage(
-		1,
-		3.f,
-		FColor::Red,
-		*InputTag.ToString()
-	);
+	
 }
 
 void AMainPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
