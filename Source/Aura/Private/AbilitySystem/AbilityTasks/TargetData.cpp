@@ -47,19 +47,19 @@ void UTargetData::SendMouseOrGamepadData()
 {
 	FScopedPredictionWindow ScopedPrediction(AbilitySystemComponent.Get());
 	
-	APlayerController* PC = Ability->GetCurrentActorInfo()->PlayerController.Get();
-	AMainPlayerController* MainPC = CastChecked<AMainPlayerController>(PC);
+	AMainPlayerController* MainPC =
+		CastChecked<AMainPlayerController>(Ability->GetCurrentActorInfo()->PlayerController.Get());
 	UAuraGameplayAbility* AuraAbility = CastChecked<UAuraGameplayAbility>(Ability);
 	
 	FHitResult HitResult;
-	if (MainPC->GetUsingGamepad() || AuraAbility->bUsesInputDirection)
+	if (MainPC->GetUsingGamepad() || AuraAbility->bUsesMovementInputDirection)
 	{
 		FVector AvatarLocation = Ability->GetAvatarActorFromActorInfo()->GetActorLocation();
 		HitResult.Location = AvatarLocation + MainPC->GetInputDirection() * 10000;
 	}
 	else
 	{
-		PC->GetHitResultUnderCursor(
+		MainPC->GetHitResultUnderCursor(
 			ECC_Visibility,
 			false,
 			HitResult

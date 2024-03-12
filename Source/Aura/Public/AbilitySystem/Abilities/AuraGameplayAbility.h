@@ -23,5 +23,5 @@ public:
 	 * True if the ability should target accordingly to the player movement input direction 
 	 */
 	UPROPERTY(EditDefaultsOnly, Category="Input")
-	bool bUsesInputDirection;
+	bool bUsesMovementInputDirection;
 };
