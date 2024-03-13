@@ -9,6 +9,7 @@
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "NiagaraFunctionLibrary.h"
+#include "AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "Aura/Aura.h"
 
 AAuraProjectile::AAuraProjectile()
@@ -88,8 +89,14 @@ void AAuraProjectile::OnSphereOverlap(
 )
 {
 	const TSharedPtr<FGameplayEffectSpec> SpecHandleData = DamageEffectSpecHandle.Data;
+	if (!SpecHandleData.IsValid()) return;
+	
+	const AActor* EffectCauser = SpecHandleData.Get()->GetContext().GetEffectCauser();
 	// OtherActor is the instigator
-	if (!SpecHandleData.IsValid() || SpecHandleData.Get()->GetContext().GetEffectCauser() == OtherActor)
+	if (
+		EffectCauser == OtherActor || 
+		UAuraAbilitySystemLibrary::AreActorsFriends(EffectCauser, OtherActor)
+	)
 	{
 		return;
 	}
