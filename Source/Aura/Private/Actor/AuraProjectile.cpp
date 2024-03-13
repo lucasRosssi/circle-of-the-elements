@@ -92,9 +92,11 @@ void AAuraProjectile::OnSphereOverlap(
 	if (!SpecHandleData.IsValid()) return;
 	
 	const AActor* EffectCauser = SpecHandleData.Get()->GetContext().GetEffectCauser();
-	// OtherActor is the instigator
+	
 	if (
-		EffectCauser == OtherActor || 
+		// OtherActor is the instigator
+		EffectCauser == OtherActor ||
+		// OtherActor is friend
 		UAuraAbilitySystemLibrary::AreActorsFriends(EffectCauser, OtherActor)
 	)
 	{
