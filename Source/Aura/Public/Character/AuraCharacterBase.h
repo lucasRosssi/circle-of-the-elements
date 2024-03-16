@@ -8,6 +8,8 @@
 #include "Interaction/CombatInterface.h"
 #include "AuraCharacterBase.generated.h"
 
+class USoundCue;
+class UNiagaraSystem;
 class UTeamComponent;
 struct FGameplayTag;
 class UGameplayAbility;
@@ -28,8 +30,6 @@ public:
 	
 	virtual void HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
 
-	
-
 	virtual void Die() override;
 
 	UFUNCTION(NetMulticast, Reliable)
@@ -44,6 +44,8 @@ public:
 	virtual FVector GetAbilitySocketLocation_Implementation(const FName SocketName, bool bSocketInWeapon = true) override;;
 	virtual bool IsDead_Implementation() const override;
 	virtual AActor* GetAvatar_Implementation() override;
+	virtual UNiagaraSystem* GetBloodEffect_Implementation() override;
+	virtual USoundCue* GetHitSound_Implementation() override;
 	/** end Combat Interface */
 	
 	UPROPERTY(BlueprintReadOnly, Category="Combat")
@@ -114,6 +116,12 @@ protected:
 	TObjectPtr<UMaterialInstance> WeaponDissolveMaterialInstance;
 
 	bool bDead = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
+	TObjectPtr<UNiagaraSystem> BloodEffect;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
+	TObjectPtr<USoundCue> HitSound;
 
 private:
 	UPROPERTY(EditAnywhere, Category = "Abilities")

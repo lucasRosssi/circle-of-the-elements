@@ -117,6 +117,16 @@ AActor* AAuraCharacterBase::GetAvatar_Implementation()
 	return this;
 }
 
+UNiagaraSystem* AAuraCharacterBase::GetBloodEffect_Implementation()
+{
+	return BloodEffect;
+}
+
+USoundCue* AAuraCharacterBase::GetHitSound_Implementation()
+{
+	return HitSound;
+}
+
 void AAuraCharacterBase::InitAbilityActorInfo()
 {
 }

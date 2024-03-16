@@ -6,6 +6,8 @@
 #include "UObject/Interface.h"
 #include "CombatInterface.generated.h"
 
+class USoundCue;
+class UNiagaraSystem;
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI, BlueprintType)
 class UCombatInterface : public UInterface
@@ -55,4 +57,10 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	UAnimMontage* GetDodgeMontage();
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	UNiagaraSystem* GetBloodEffect();
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	USoundCue* GetHitSound();
 };
