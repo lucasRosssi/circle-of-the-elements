@@ -44,7 +44,7 @@ public:
 	virtual bool IsDead_Implementation() const override;
 	virtual AActor* GetAvatar_Implementation() override;
 	virtual UNiagaraSystem* GetBloodEffect_Implementation() override;
-	virtual USoundCue* GetHitSound_Implementation() override;
+	virtual USoundBase* GetHitSound_Implementation() override;
 	/** end Combat Interface */
 	
 	UPROPERTY(BlueprintReadOnly, Category="Combat")

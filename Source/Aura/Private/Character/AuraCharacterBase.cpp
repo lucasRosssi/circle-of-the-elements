@@ -122,7 +122,7 @@ UNiagaraSystem* AAuraCharacterBase::GetBloodEffect_Implementation()
 	return BloodEffect;
 }
 
-USoundCue* AAuraCharacterBase::GetHitSound_Implementation()
+USoundBase* AAuraCharacterBase::GetHitSound_Implementation()
 {
 	return HitSound;
 }
