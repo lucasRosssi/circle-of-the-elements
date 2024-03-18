@@ -8,7 +8,6 @@
 #include "Interaction/CombatInterface.h"
 #include "AuraCharacterBase.generated.h"
 
-class USoundCue;
 class UNiagaraSystem;
 class UTeamComponent;
 struct FGameplayTag;
@@ -121,7 +120,7 @@ protected:
 	TObjectPtr<UNiagaraSystem> BloodEffect;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
-	TObjectPtr<USoundCue> HitSound;
+	TObjectPtr<USoundBase> HitSound;
 
 private:
 	UPROPERTY(EditAnywhere, Category = "Abilities")
