@@ -9,6 +9,7 @@
 #include "AuraGameplayTags.h"
 #include "Game/TeamComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 AAuraCharacterBase::AAuraCharacterBase()
 {
@@ -70,6 +71,13 @@ USkeletalMeshComponent* AAuraCharacterBase::GetWeapon_Implementation()
 
 void AAuraCharacterBase::MulticastHandleDeath_Implementation()
 {
+	UGameplayStatics::PlaySoundAtLocation(
+		this,
+		DeathSound,
+		GetActorLocation(),
+		GetActorRotation()
+	);
+	
 	bDead = true;
 	
 	Weapon->SetSimulatePhysics(true);
