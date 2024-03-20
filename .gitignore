@@ -5,6 +5,7 @@ Saved
 Build
 Content/*
 !Content/Blueprints
+!**/Animations/
 
 .vscode
 .vs
