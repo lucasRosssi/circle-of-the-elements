@@ -51,15 +51,33 @@ private:
 	
 	UPROPERTY(EditAnywhere, Category="Impact")
 	TObjectPtr<UNiagaraSystem> ImpactEffect;
+
+	UPROPERTY(EditAnywhere, Category="Impact")
+	FVector ImpactEffectScale = FVector(1.0f);
 	
 	UPROPERTY(EditAnywhere, Category="Impact")
 	TObjectPtr<USoundBase> ImpactSound;
+
+	UPROPERTY(EditAnywhere, Category="Impact")
+	float ImpactSoundVolume = 1.0f;
+
+	UPROPERTY(EditAnywhere, Category="Impact")
+	float ImpactSoundPitch = 1.0f;
 	
 	UPROPERTY(EditAnywhere, Category="Muzzle")
 	TObjectPtr<UNiagaraSystem> MuzzleEffect;
+
+	UPROPERTY(EditAnywhere, Category="Muzzle")
+	FVector MuzzleEffectScale = FVector(1.0f);
 	
 	UPROPERTY(EditAnywhere, Category="Muzzle")
 	TObjectPtr<USoundBase> MuzzleSound;
+
+	UPROPERTY(EditAnywhere, Category="Muzzle")
+	float MuzzleSoundVolume = 1.0f;
+
+	UPROPERTY(EditAnywhere, Category="Muzzle")
+	float MuzzleSoundPitch = 1.0f;
 	
 public:
 	TObjectPtr<UNiagaraSystem> GetMuzzleEffect() { return MuzzleEffect; }

@@ -44,7 +44,8 @@ void AAuraProjectile::BeginPlay()
 			this,
 			MuzzleEffect,
 			GetActorLocation(),
-			GetActorRotation()
+			GetActorRotation(),
+			MuzzleEffectScale
 		);
 	}
 		
@@ -54,7 +55,9 @@ void AAuraProjectile::BeginPlay()
 			this,
 			MuzzleSound,
 			GetActorLocation(),
-			GetActorRotation()
+			GetActorRotation(),
+			MuzzleSoundVolume,
+			MuzzleSoundPitch
 		);
 	}
 }
@@ -67,12 +70,16 @@ void AAuraProjectile::Destroyed()
 			this,
 			ImpactSound,
 			GetActorLocation(),
-			FRotator::ZeroRotator
+			FRotator::ZeroRotator,
+			ImpactSoundVolume,
+			ImpactSoundPitch
 		);
 		UNiagaraFunctionLibrary::SpawnSystemAtLocation(
 			this,
 			ImpactEffect,
-			GetActorLocation()
+			GetActorLocation(),
+			GetActorRotation(),
+			ImpactEffectScale
 		);
 	}
 	

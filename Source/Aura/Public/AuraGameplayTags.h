@@ -69,6 +69,7 @@ public:
 	FGameplayTag Abilities_Dodge;
 	
 	FGameplayTag Abilities_Attack_Primary;
+	FGameplayTag Abilities_Attack_Secondary;
 
 private:
 	static FAuraGameplayTags GameplayTags;

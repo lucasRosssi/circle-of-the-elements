@@ -277,4 +277,9 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FName("Abilities.Attack.Primary"),
 		FString("Primary attack ability")
 		);
+
+	GameplayTags.Abilities_Attack_Secondary = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Attack.Secondary"),
+		FString("Secondary attack ability")
+		);
 }
