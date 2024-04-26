@@ -45,7 +45,7 @@ void AAuraProjectile::BeginPlay()
 			MuzzleEffect,
 			GetActorLocation(),
 			GetActorRotation(),
-			MuzzleEffectScale
+			FVector(MuzzleEffectScale)
 		);
 	}
 		
@@ -79,7 +79,7 @@ void AAuraProjectile::Destroyed()
 			ImpactEffect,
 			GetActorLocation(),
 			GetActorRotation(),
-			ImpactEffectScale
+			FVector(ImpactEffectScale)
 		);
 	}
 	
