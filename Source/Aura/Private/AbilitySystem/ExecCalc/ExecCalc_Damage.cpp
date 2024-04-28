@@ -21,6 +21,7 @@ struct AuraDamageStatics
 	DECLARE_ATTRIBUTE_CAPTUREDEF(FireResistance);
 	DECLARE_ATTRIBUTE_CAPTUREDEF(IceResistance);
 	DECLARE_ATTRIBUTE_CAPTUREDEF(LightningResistance);
+	DECLARE_ATTRIBUTE_CAPTUREDEF(NecroticResistance);
 
 	TMap<FGameplayTag, FGameplayEffectAttributeCaptureDefinition> TagsToCaptureDefs;
 	
@@ -80,6 +81,12 @@ struct AuraDamageStatics
 			Target,
 			false
 		);
+		DEFINE_ATTRIBUTE_CAPTUREDEF(
+			UAuraAttributeSet,
+			NecroticResistance,
+			Target,
+			false
+		);
 
 		const FAuraGameplayTags& Tags = FAuraGameplayTags::Get();
 		TagsToCaptureDefs.Add(Tags.Attributes_Secondary_Armor, ArmorDef);
@@ -91,6 +98,7 @@ struct AuraDamageStatics
 		TagsToCaptureDefs.Add(Tags.Attributes_Resistance_Fire, FireResistanceDef);
 		TagsToCaptureDefs.Add(Tags.Attributes_Resistance_Ice, IceResistanceDef);
 		TagsToCaptureDefs.Add(Tags.Attributes_Resistance_Lightning, LightningResistanceDef);
+		TagsToCaptureDefs.Add(Tags.Attributes_Resistance_Necrotic, NecroticResistanceDef);
 		
 	}
 };
@@ -112,6 +120,7 @@ UExecCalc_Damage::UExecCalc_Damage()
 	RelevantAttributesToCapture.Add(DamageStatics().FireResistanceDef);
 	RelevantAttributesToCapture.Add(DamageStatics().IceResistanceDef);
 	RelevantAttributesToCapture.Add(DamageStatics().LightningResistanceDef);
+	RelevantAttributesToCapture.Add(DamageStatics().NecroticResistanceDef);
 }
 
 void UExecCalc_Damage::Execute_Implementation(

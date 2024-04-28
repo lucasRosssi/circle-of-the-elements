@@ -173,6 +173,11 @@ public:
 	FGameplayAttributeData LightningResistance;
 	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, LightningResistance);
 
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_NecroticResistance, Category = 
+	"Resistance tributes")
+	FGameplayAttributeData NecroticResistance;
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, NecroticResistance);
+
 	/*
 	 * Special attributes
 	 */
@@ -279,6 +284,9 @@ public:
 
 	UFUNCTION()
 	void OnRep_LightningResistance(const FGameplayAttributeData& OldLightningResistance) const;
+
+	UFUNCTION()
+	void OnRep_NecroticResistance(const FGameplayAttributeData& OldNecroticResistance) const;
 
 	/*
 	 * Special
