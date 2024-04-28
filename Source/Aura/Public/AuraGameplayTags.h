@@ -42,6 +42,7 @@ public:
 	FGameplayTag Attributes_Resistance_Fire;
 	FGameplayTag Attributes_Resistance_Ice;
 	FGameplayTag Attributes_Resistance_Lightning;
+	FGameplayTag Attributes_Resistance_Necrotic;
 
 	FGameplayTag Attributes_Special_ParryChance;
 
@@ -51,6 +52,7 @@ public:
 	FGameplayTag Damage_Fire;
 	FGameplayTag Damage_Ice;
 	FGameplayTag Damage_Lightning;
+	FGameplayTag Damage_Necrotic;
 
 	TMap<FGameplayTag, FGameplayTag> DamageTypesToResistances;
 	
@@ -70,6 +72,8 @@ public:
 	
 	FGameplayTag Abilities_Attack_Primary;
 	FGameplayTag Abilities_Attack_Secondary;
+
+	FGameplayTag Abilities_Summon;
 
 private:
 	static FAuraGameplayTags GameplayTags;

@@ -93,6 +93,11 @@ void AAuraCharacterBase::MulticastHandleDeath_Implementation()
 	DissolveCharacter();
 }
 
+void AAuraCharacterBase::OnSummoned()
+{
+	bIsMinion = true;
+}
+
 void AAuraCharacterBase::BeginPlay()
 {
 	Super::BeginPlay();

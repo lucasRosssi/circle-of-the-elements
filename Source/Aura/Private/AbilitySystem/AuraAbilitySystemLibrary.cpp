@@ -3,7 +3,9 @@
 
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
 #include "AuraAbilityTypes.h"
+#include "AuraGameplayTags.h"
 #include "Character/AuraCharacterBase.h"
 #include "Game/AuraGameModeBase.h"
 #include "Game/TeamComponent.h"
@@ -275,4 +277,14 @@ bool UAuraAbilitySystemLibrary::IsPlayerUsingGamepad(const AActor* AvatarActor)
 	}
 
 	return false;
+}
+
+bool UAuraAbilitySystemLibrary::IsTargetInvulnerable(AActor* TargetActor)
+{
+	const UAbilitySystemComponent* ASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent
+	(TargetActor);
+
+	if (!ASC) return false;
+
+	return ASC->HasMatchingGameplayTag(FAuraGameplayTags::Get().Effects_Invulnerable);
 }

@@ -72,4 +72,7 @@ public:
 
 	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|GameplayMechanics")
 	static bool IsPlayerUsingGamepad(const AActor* AvatarActor);
+
+	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|GameplayMechanics")
+	static bool IsTargetInvulnerable(AActor* TargetActor);
 };

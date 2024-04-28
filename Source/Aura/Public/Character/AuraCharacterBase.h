@@ -59,6 +59,12 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category="Combat")
 	TArray<TSubclassOf<UGameplayAbility>> CharacterAbilities;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat")
+	bool bIsMinion = false;
+
+	UFUNCTION()
+	void OnSummoned();
+
 protected:
 	virtual void BeginPlay() override;
 

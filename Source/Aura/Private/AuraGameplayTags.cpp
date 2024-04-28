@@ -186,6 +186,11 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FName("Damage.Lightning"),
 		FString("Lightning damage type")
 		);
+
+	GameplayTags.Damage_Necrotic = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Damage.Necrotic"),
+		FString("Necrotic damage type")
+		);
 	
 	/*
 	 * Resistances Tags
@@ -216,6 +221,11 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FString("Resistance to Lightning damage")
 		);
 
+	GameplayTags.Attributes_Resistance_Necrotic = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Attributes.Resistance.Necrotic"),
+		FString("Resistance to Necrotic damage")
+		);
+
 	/*
 	 * Map of Damage Types to Resistances
 	 */
@@ -243,6 +253,11 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	GameplayTags.DamageTypesToResistances.Add(
 		GameplayTags.Damage_Lightning, 
 		GameplayTags.Attributes_Resistance_Lightning
+	);
+
+	GameplayTags.DamageTypesToResistances.Add(
+		GameplayTags.Damage_Necrotic, 
+		GameplayTags.Attributes_Resistance_Necrotic
 	);
 	
 	/*
@@ -281,5 +296,10 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	GameplayTags.Abilities_Attack_Secondary = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Abilities.Attack.Secondary"),
 		FString("Secondary attack ability")
+		);
+
+	GameplayTags.Abilities_Summon = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Summon"),
+		FString("Summon ability")
 		);
 }

@@ -109,6 +109,11 @@ void AAuraProjectile::OnSphereOverlap(
 	{
 		return;
 	}
+
+	if (UAuraAbilitySystemLibrary::IsTargetInvulnerable(OtherActor))
+	{
+		return;
+	}
 	
 	UGameplayStatics::PlaySoundAtLocation(
 		this,
@@ -119,7 +124,9 @@ void AAuraProjectile::OnSphereOverlap(
 	UNiagaraFunctionLibrary::SpawnSystemAtLocation(
 		this,
 		ImpactEffect,
-		GetActorLocation()
+		GetActorLocation(),
+		GetActorRotation(),
+		FVector(ImpactEffectScale)
 	);
 
 	if (HasAuthority())

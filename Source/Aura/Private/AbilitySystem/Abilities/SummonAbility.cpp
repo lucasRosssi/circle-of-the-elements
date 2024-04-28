@@ -5,6 +5,7 @@
 
 #include "Character/AuraCharacterBase.h"
 #include "Components/CapsuleComponent.h"
+#include "Kismet/KismetMathLibrary.h"
 
 TArray<FVector> USummonAbility::GetSpawnLocations()
 {
@@ -16,7 +17,7 @@ TArray<FVector> USummonAbility::GetSpawnLocations()
 	const FVector LeftOfSpread = Forward.RotateAngleAxis(-SpawnSpread / 2, FVector::UpVector);
 
 	TArray<FVector> SpawnLocations;
-	for (int32 i = 0; i < MinionsPerSummon; i++)
+	for (int32 i = ActiveMinions; i < MinionsPerSummon; i++)
 	{
 		const FVector Direction = LeftOfSpread.RotateAngleAxis(DeltaSpread * i, FVector::UpVector);
 		
@@ -49,19 +50,24 @@ TSubclassOf<AAuraCharacterBase> USummonAbility::GetRandomMinionClass()
 	return MinionClasses[Selection];
 }
 
-AAuraCharacterBase* USummonAbility::SpawnMinion(
-	TSubclassOf<AAuraCharacterBase> MinionClass,
-	FVector Location,
-	FRotator Rotation
-)
+AAuraCharacterBase* USummonAbility::SpawnMinion(FVector Location)
 {
+	if (ActiveMinions >= MaxMinions)
+	{
+		return nullptr;
+	}
+
+	AActor* AvatarActor = GetAvatarActorFromActorInfo();
+	const TSubclassOf<AAuraCharacterBase> MinionClass = GetRandomMinionClass();
+	const AAuraCharacterBase* MinionDefaultObject =
+		MinionClass->GetDefaultObject<AAuraCharacterBase>();
+	
 	FActorSpawnParameters SpawnParameters;
-	SpawnParameters.Instigator = Cast<APawn>(GetAvatarActorFromActorInfo());
-	SpawnParameters.Owner = GetAvatarActorFromActorInfo();
+	SpawnParameters.Instigator = Cast<APawn>(AvatarActor);
+	SpawnParameters.Owner = AvatarActor;
 	SpawnParameters.SpawnCollisionHandlingOverride =
 		ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
 	
-	const AAuraCharacterBase* MinionDefaultObject = MinionClass->GetDefaultObject<AAuraCharacterBase>();
 	AAuraCharacterBase* Minion = GetWorld()->SpawnActor<AAuraCharacterBase>(
 		MinionClass,
 		Location + FVector(
@@ -69,14 +75,22 @@ AAuraCharacterBase* USummonAbility::SpawnMinion(
 			0.f,
 			MinionDefaultObject->GetCapsuleComponent()->GetScaledCapsuleHalfHeight()
 			),
-		Rotation,
+		UKismetMathLibrary::FindLookAtRotation(AvatarActor->GetActorLocation(), Location),
 		SpawnParameters
 	);
 
 	if (Minion)
 	{
 		Minion->SpawnDefaultController();
+		Minion->OnSummoned();
 	}
+
+	ActiveMinions++;
 	
 	return Minion;
+}
+
+bool USummonAbility::HasMaxMinionsActive()
+{
+	return ActiveMinions >= MaxMinions;
 }
