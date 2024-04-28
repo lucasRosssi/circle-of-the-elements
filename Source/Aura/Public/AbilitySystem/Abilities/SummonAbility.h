@@ -6,6 +6,7 @@
 #include "AbilitySystem/Abilities/AuraGameplayAbility.h"
 #include "SummonAbility.generated.h"
 
+class AAuraCharacterBase;
 /**
  * 
  */
@@ -14,8 +15,18 @@ class AURA_API USummonAbility : public UAuraGameplayAbility
 {
 	GENERATED_BODY()
 public:
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "Summoning")
 	TArray<FVector> GetSpawnLocations();
+
+	UFUNCTION(BlueprintPure, Category = "Summoning")
+	TSubclassOf<AAuraCharacterBase> GetRandomMinionClass();
+
+	UFUNCTION(BlueprintCallable, Category = "Summoning")
+	AAuraCharacterBase* SpawnMinion(
+		TSubclassOf<AAuraCharacterBase> MinionClass,
+		FVector Location,
+		FRotator Rotation = FRotator::ZeroRotator
+	);
 
 	/* Number of minions to spawn per summon ability activation */
 	UPROPERTY(EditDefaultsOnly, Category = "Summoning")
@@ -27,7 +38,7 @@ public:
 
 	/* Types of minions that can be summoned */
 	UPROPERTY(EditDefaultsOnly, Category = "Summoning")
-	TArray<TSubclassOf<APawn>> MinionClasses;
+	TArray<TSubclassOf<AAuraCharacterBase>> MinionClasses;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Summoning")
 	float MinSpawnDistance = 50.f;
@@ -37,4 +48,5 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Summoning")
 	float SpawnSpread = 90.f;
+	
 };
