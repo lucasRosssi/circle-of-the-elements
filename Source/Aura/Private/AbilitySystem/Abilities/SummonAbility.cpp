@@ -17,7 +17,7 @@ TArray<FVector> USummonAbility::GetSpawnLocations()
 	const FVector LeftOfSpread = Forward.RotateAngleAxis(-SpawnSpread / 2, FVector::UpVector);
 
 	TArray<FVector> SpawnLocations;
-	for (int32 i = ActiveMinions; i < MinionsPerSummon; i++)
+	for (int32 i = 0; i < FMath::Min(MinionsPerSummon, MaxMinions - ActiveMinions); i++)
 	{
 		const FVector Direction = LeftOfSpread.RotateAngleAxis(DeltaSpread * i, FVector::UpVector);
 		
@@ -52,7 +52,7 @@ TSubclassOf<AAuraCharacterBase> USummonAbility::GetRandomMinionClass()
 
 AAuraCharacterBase* USummonAbility::SpawnMinion(FVector Location)
 {
-	if (ActiveMinions >= MaxMinions)
+	if (HasMaxMinionsActive())
 	{
 		return nullptr;
 	}
@@ -81,11 +81,9 @@ AAuraCharacterBase* USummonAbility::SpawnMinion(FVector Location)
 
 	if (Minion)
 	{
-		Minion->SpawnDefaultController();
-		Minion->OnSummoned();
+		Minion->OnSummon();
+		ActiveMinions++;
 	}
-
-	ActiveMinions++;
 	
 	return Minion;
 }

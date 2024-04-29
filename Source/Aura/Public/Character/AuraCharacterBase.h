@@ -8,6 +8,7 @@
 #include "Interaction/CombatInterface.h"
 #include "AuraCharacterBase.generated.h"
 
+class USummonAbility;
 class UNiagaraSystem;
 class UTeamComponent;
 struct FGameplayTag;
@@ -59,14 +60,16 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category="Combat")
 	TArray<TSubclassOf<UGameplayAbility>> CharacterAbilities;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Combat")
 	bool bIsMinion = false;
 
-	UFUNCTION()
-	void OnSummoned();
+	void OnSummon();
 
 protected:
 	virtual void BeginPlay() override;
+	
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnSummoned();
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Montages|Combat")
 	TObjectPtr<UAnimMontage> HitReactMontage;

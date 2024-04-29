@@ -7,6 +7,7 @@
 #include "Aura/Aura.h"
 #include "Components/CapsuleComponent.h"
 #include "AuraGameplayTags.h"
+#include "AbilitySystem/Abilities/SummonAbility.h"
 #include "Game/TeamComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -93,9 +94,13 @@ void AAuraCharacterBase::MulticastHandleDeath_Implementation()
 	DissolveCharacter();
 }
 
-void AAuraCharacterBase::OnSummoned()
+void AAuraCharacterBase::OnSummon()
 {
 	bIsMinion = true;
+	LifeSpanDuration = 2.f;
+	SpawnDefaultController();
+	
+	OnSummoned();
 }
 
 void AAuraCharacterBase::BeginPlay()

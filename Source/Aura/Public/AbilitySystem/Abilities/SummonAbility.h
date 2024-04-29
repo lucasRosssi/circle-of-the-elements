@@ -33,7 +33,7 @@ public:
 	int32 MaxMinions = 5;
 
 	/* Count of currently active minions */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Summoning")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Summoning")
 	int32 ActiveMinions = 0;
 
 	/* Types of minions that can be summoned */
