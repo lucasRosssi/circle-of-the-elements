@@ -9,6 +9,9 @@
 
 #include "MainPlayerController.generated.h"
 
+class UCapsuleComponent;
+class UCameraComponent;
+class USpringArmComponent;
 class UDamageTextComponent;
 class UInputMappingContext;
 class UInputAction;
@@ -16,6 +19,24 @@ struct FInputActionValue;
 class ITargetInterface;
 class UAuraInputConfig;
 class UAuraAbilitySystemComponent;
+
+USTRUCT(BlueprintType)
+struct FCameraOccludedActor
+{
+	GENERATED_BODY()
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	const AActor* Actor;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UStaticMeshComponent* StaticMesh;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TArray<UMaterialInterface*> Materials;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	bool bIsOccluded;
+};
 
 /**
  * 
@@ -40,15 +61,44 @@ public:
 	bool GetUsingGamepad() { return bUsingGamepad; }
 	FVector GetInputDirection() { return InputDirection; }
 
+	UFUNCTION(BlueprintCallable)
+	void SyncOccludedActors();
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void SetupInputComponent() override;
 
 	UPROPERTY(BlueprintReadWrite, Category="Input")
-	bool bUsingGamepad;
+	bool bUsingGamepad = false;
 
 	UPROPERTY(BlueprintReadOnly, Category="Input")
 	FVector InputDirection = FVector::Zero();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Camera Occlusion|Occlusion", meta=
+	(ClampMin="0", ClampMax="600.0"))
+	float DistanceFromTraceEndToCharacter = 200.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Camera Occlusion|Occlusion", meta=
+	(ClampMin="0.1", ClampMax="10.0"))
+	float CapsulePercentageForTrace = 1.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Camera Occlusion|Materials")
+	TObjectPtr<UMaterialInterface> FadeMaterial;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Camera Occlusion")
+	bool bIsOcclusionEnabled = true;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Camera Occlusion|Occlusion")
+	bool bDebugLineTraces = false;
+
+	UPROPERTY(BlueprintReadWrite, Category="Camera Occlusion|Components")
+	USpringArmComponent* ActiveSpringArm;
+ 
+	UPROPERTY(BlueprintReadWrite, Category="Camera Occlusion|Components")
+	UCameraComponent* ActiveCamera;
+ 
+	UPROPERTY(BlueprintReadWrite, Category="Camera Occlusion|Components")
+	UCapsuleComponent* ActiveCapsuleComponent;
 	
 private:
 	UPROPERTY(EditAnywhere, Category="Input")
@@ -64,8 +114,8 @@ private:
 	void MoveComplete(const FInputActionValue& InputActionValue);
 	
 	void CursorTrace();
-	ITargetInterface* LastActor;
-	ITargetInterface* ThisActor;
+	ITargetInterface* LastActor = nullptr;
+	ITargetInterface* ThisActor = nullptr;
 
 	void AbilityInputTagPressed(FGameplayTag InputTag);
 	void AbilityInputTagReleased(FGameplayTag InputTag);
@@ -81,4 +131,17 @@ private:
 
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UDamageTextComponent> DamageTextComponentClass;
+
+	TMap<const AActor*, FCameraOccludedActor> OccludedActors;
+	
+	bool HideOccludedActor(const AActor* Actor);
+	bool OnHideOccludedActor(const FCameraOccludedActor& OccludedActor) const;
+	void ShowOccludedActor(FCameraOccludedActor& OccludedActor);
+	bool OnShowOccludedActor(const FCameraOccludedActor& OccludedActor) const;
+	void ForceShowOccludedActors();
+
+	FORCEINLINE bool ShouldCheckCameraOcclusion() const
+	{
+		return bIsOcclusionEnabled && FadeMaterial && ActiveCamera && ActiveCapsuleComponent;
+	}
 };

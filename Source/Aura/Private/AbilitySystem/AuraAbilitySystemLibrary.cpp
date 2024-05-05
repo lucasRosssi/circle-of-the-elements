@@ -241,7 +241,7 @@ SecondActor)
 
 	if (!FirstTeamComponent || !SecondTeamComponent)
 	{
-		return true;
+		return false;
 	}
 
 	return FirstTeamComponent->TeamID == SecondTeamComponent->TeamID;

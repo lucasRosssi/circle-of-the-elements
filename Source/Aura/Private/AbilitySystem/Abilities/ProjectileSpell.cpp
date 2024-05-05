@@ -36,7 +36,7 @@ void UProjectileSpell::SpawnProjectile(
 		SocketName,
 		bSocketInWeapon
 	);
-	FRotator Rotation = (ProjectileTargetLocation - SocketLocation).Rotation();
+	FRotator Rotation = AvatarActor->GetActorRotation();
 	Rotation.Pitch = 0.f;
 
 	FTransform SpawnTransform;
