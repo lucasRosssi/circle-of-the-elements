@@ -45,6 +45,7 @@ public:
 	FGameplayTag Attributes_Resistance_Necrotic;
 
 	FGameplayTag Attributes_Special_ParryChance;
+	FGameplayTag Attributes_Special_CooldownReduction;
 
 	FGameplayTag Damage;
 	FGameplayTag Damage_Physical;
@@ -68,12 +69,16 @@ public:
 	FGameplayTag Effects_Invulnerable;
 
 	FGameplayTag Abilities_HitReact;
-	FGameplayTag Abilities_Dodge;
+	FGameplayTag Abilities_Action_Dodge;
+	FGameplayTag Cooldown_Action_Dodge;
 	
 	FGameplayTag Abilities_Attack_Primary;
 	FGameplayTag Abilities_Attack_Secondary;
+	FGameplayTag Abilities_Attack_Fireball;
+	FGameplayTag Cooldown_Attack_Fireball;
 
 	FGameplayTag Abilities_Summon;
+
 
 private:
 	static FAuraGameplayTags GameplayTags;

@@ -169,12 +169,12 @@ public:
 	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, IceResistance);
 
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_LightningResistance, Category = 
-	"Resistance tributes")
+	"Resistance Attributes")
 	FGameplayAttributeData LightningResistance;
 	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, LightningResistance);
 
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_NecroticResistance, Category = 
-	"Resistance tributes")
+	"Resistance Attributes")
 	FGameplayAttributeData NecroticResistance;
 	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, NecroticResistance);
 
@@ -185,6 +185,10 @@ public:
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_ParryChance, Category = "Special Attributes")
 	FGameplayAttributeData ParryChance;
 	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, ParryChance);
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_CooldownReduction, Category = "Special Attributes")
+	FGameplayAttributeData CooldownReduction;
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, CooldownReduction);
 
 	/*
 	 * Meta attributes
@@ -294,6 +298,9 @@ public:
 
 	UFUNCTION()
 	void OnRep_ParryChance(const FGameplayAttributeData& OldParryChance) const;
+
+	UFUNCTION()
+	void OnRep_CooldownReduction(const FGameplayAttributeData& OldCooldownReduction) const;
 
 private:
 	void SetEffectProperties(const FGameplayEffectModCallbackData& Data, FEffectProperties& Props) 

@@ -114,6 +114,11 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FString("Chance to parry an attack and negate damage")
 		);
 
+	GameplayTags.Attributes_Special_CooldownReduction = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Attributes.Special.CooldownReduction"),
+		FString("Percentage of cooldown time reduced")
+		);
+
 	/*
 	 * INPUT TAGS
 	 */
@@ -278,14 +283,21 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	 * Abilities Tags
 	 */
 
+	// Attacks
+
 	GameplayTags.Abilities_HitReact = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Abilities.HitReact"),
 		FString("Hit reaction ability")
 		);
 	
-	GameplayTags.Abilities_Dodge = UGameplayTagsManager::Get().AddNativeGameplayTag(
-		FName("Abilities.Dodge"),
+	GameplayTags.Abilities_Action_Dodge = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Action.Dodge"),
 		FString("Dodge ability")
+		);
+
+	GameplayTags.Cooldown_Action_Dodge = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Cooldown.Action.Dodge"),
+		FString("Dodge ability cooldown")
 		);
 	
 	GameplayTags.Abilities_Attack_Primary = UGameplayTagsManager::Get().AddNativeGameplayTag(
@@ -297,6 +309,18 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FName("Abilities.Attack.Secondary"),
 		FString("Secondary attack ability")
 		);
+
+	GameplayTags.Abilities_Attack_Fireball = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Attack.Fireball"),
+		FString("Fireball ability")
+		);
+
+	GameplayTags.Cooldown_Attack_Fireball = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Cooldown.Attack.Fireball"),
+		FString("Fireball ability cooldown")
+		);
+
+	// Summoning
 
 	GameplayTags.Abilities_Summon = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Abilities.Summon"),

@@ -10,7 +10,6 @@
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "GameFramework/Character.h"
 #include "Interaction/CombatInterface.h"
-#include "Kismet/GameplayStatics.h"
 #include "Player/MainPlayerController.h"
 
 UAuraAttributeSet::UAuraAttributeSet()
@@ -59,6 +58,7 @@ void UAuraAttributeSet::GetLifetimeReplicatedProps(
 	
 	// Special
 	DOREPLIFETIME_CONDITION_NOTIFY(UAuraAttributeSet, ParryChance, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UAuraAttributeSet, CooldownReduction, COND_None, REPNOTIFY_Always);
 }
 
 void UAuraAttributeSet::PreAttributeBaseChange(const FGameplayAttribute& Attribute, float& 
@@ -330,4 +330,10 @@ void UAuraAttributeSet::OnRep_NecroticResistance(
 void UAuraAttributeSet::OnRep_ParryChance(const FGameplayAttributeData& OldParryChance) const
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuraAttributeSet, ParryChance, OldParryChance);
+}
+
+void UAuraAttributeSet::OnRep_CooldownReduction(
+	const FGameplayAttributeData& OldCooldownReduction) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuraAttributeSet, CooldownReduction, OldCooldownReduction);
 }

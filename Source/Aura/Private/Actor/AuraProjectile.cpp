@@ -5,11 +5,14 @@
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
+#include "NiagaraComponent.h"
+
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "NiagaraFunctionLibrary.h"
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
+#include "Actor/ProjectileEffect.h"
 #include "Aura/Aura.h"
 
 AAuraProjectile::AAuraProjectile()
@@ -37,16 +40,31 @@ void AAuraProjectile::BeginPlay()
 	Super::BeginPlay();
 	SetLifeSpan(LifeSpan);
 	Sphere->OnComponentBeginOverlap.AddDynamic(this, &AAuraProjectile::OnSphereOverlap);
+
+	if (ProjectileNiagaraEffect)
+	{
+		ProjectileNiagaraEffectActor = GetWorld()->SpawnActor<AProjectileEffect>(
+			ProjectileNiagaraEffect,
+			GetActorLocation(),
+			GetActorRotation()
+		);
+
+		const FAttachmentTransformRules Rules = FAttachmentTransformRules(
+			EAttachmentRule::SnapToTarget,
+			false
+		);
+		ProjectileNiagaraEffectActor->AttachToActor(this, Rules);
+	}
 	
 	if (MuzzleEffect)
 	{
-		UNiagaraFunctionLibrary::SpawnSystemAtLocation(
+		UNiagaraComponent* MuzzleNiagara = UNiagaraFunctionLibrary::SpawnSystemAtLocation(
 			this,
 			MuzzleEffect,
 			GetActorLocation(),
-			GetActorRotation(),
-			FVector(MuzzleEffectScale)
+			GetActorRotation()
 		);
+		MuzzleNiagara->SetNiagaraVariableFloat(FString("Scale"), MuzzleEffectScale);
 	}
 		
 	if (MuzzleSound)
@@ -74,13 +92,19 @@ void AAuraProjectile::Destroyed()
 			ImpactSoundVolume,
 			ImpactSoundPitch
 		);
-		UNiagaraFunctionLibrary::SpawnSystemAtLocation(
+		UNiagaraComponent* ImpactNiagara = UNiagaraFunctionLibrary::SpawnSystemAtLocation(
 			this,
 			ImpactEffect,
 			GetActorLocation(),
-			GetActorRotation(),
-			FVector(ImpactEffectScale)
+			GetActorRotation()
 		);
+		ImpactNiagara->SetNiagaraVariableFloat(FString("Scale"), ImpactEffectScale);
+
+		if (ProjectileNiagaraEffectActor)
+		{
+			ProjectileNiagaraEffectActor->DeactivateNiagara();
+			ProjectileNiagaraEffectActor = nullptr;
+		}
 	}
 	
 	Super::Destroyed();
@@ -121,13 +145,20 @@ void AAuraProjectile::OnSphereOverlap(
 		GetActorLocation(),
 		FRotator::ZeroRotator
 	);
-	UNiagaraFunctionLibrary::SpawnSystemAtLocation(
+	UNiagaraComponent* ImpactNiagara = UNiagaraFunctionLibrary::SpawnSystemAtLocation(
 		this,
 		ImpactEffect,
 		GetActorLocation(),
-		GetActorRotation(),
-		FVector(ImpactEffectScale)
+		GetActorRotation()
 	);
+	ImpactNiagara->SetNiagaraVariableFloat(FString("Scale"), ImpactEffectScale);
+	ImpactEffect->GetExposedParameters();
+
+	if (ProjectileNiagaraEffectActor)
+	{
+		ProjectileNiagaraEffectActor->DeactivateNiagara();
+		ProjectileNiagaraEffectActor = nullptr;
+	}
 
 	if (HasAuthority())
 	{

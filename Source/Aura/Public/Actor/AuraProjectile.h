@@ -8,6 +8,7 @@
 
 #include "AuraProjectile.generated.h"
 
+class AProjectileEffect;
 class USphereComponent;
 class UProjectileMovementComponent;
 class UNiagaraSystem;
@@ -48,10 +49,15 @@ private:
 	
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<USphereComponent> Sphere;
+
+	UPROPERTY(EditAnywhere, Category="Trail")
+	TSubclassOf<AProjectileEffect> ProjectileNiagaraEffect;
+
+	AProjectileEffect* ProjectileNiagaraEffectActor;
 	
 	UPROPERTY(EditAnywhere, Category="Impact")
 	TObjectPtr<UNiagaraSystem> ImpactEffect;
-
+	
 	UPROPERTY(EditAnywhere, Category="Impact")
 	float ImpactEffectScale = 1.0f;
 	
