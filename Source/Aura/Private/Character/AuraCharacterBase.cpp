@@ -96,7 +96,7 @@ void AAuraCharacterBase::MulticastHandleDeath_Implementation()
 
 void AAuraCharacterBase::OnSummon()
 {
-	bIsMinion = true;
+	CharacterType = ECharacterType::ECT_Minion;
 	LifeSpanDuration = 2.f;
 	SpawnDefaultController();
 	
@@ -145,6 +145,16 @@ USoundBase* AAuraCharacterBase::GetHitSound_Implementation()
 	return HitSound;
 }
 
+ECharacterType AAuraCharacterBase::GetCharacterType_Implementation()
+{
+	return CharacterType;
+}
+
+ECharacterClass AAuraCharacterBase::GetCharacterClass_Implementation()
+{
+	return CharacterClass;
+}
+
 void AAuraCharacterBase::InitAbilityActorInfo()
 {
 }
@@ -191,7 +201,8 @@ void AAuraCharacterBase::AddCharacterAbilities()
 	UAuraAbilitySystemComponent* AuraASC =
 		CastChecked<UAuraAbilitySystemComponent>(AbilitySystemComponent);
 
-	AuraASC->AddCharacterAbilities(StartupAbilities);
+	AuraASC->AddCharacterAbilities(BaseAbilities);
+	AuraASC->AddCharacterAbilities(CharacterAbilities);
 }
 
 void AAuraCharacterBase::DissolveCharacter()

@@ -47,6 +47,8 @@ public:
 	FGameplayTag Attributes_Special_ParryChance;
 	FGameplayTag Attributes_Special_CooldownReduction;
 
+	FGameplayTag Attributes_Meta_IncomingXP;
+
 	FGameplayTag Damage;
 	FGameplayTag Damage_Physical;
 	FGameplayTag Damage_Energy;

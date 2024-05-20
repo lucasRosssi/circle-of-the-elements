@@ -13,6 +13,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(
 	const FAuraAttributeInfo&,
 	Info
 	);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnXPPercentChanged, float, NewValue);
 
 /**
  * 
@@ -29,9 +30,14 @@ public:
 	UPROPERTY(BlueprintAssignable, Category="GAS|Attributes")
 	FAttributeInfoSignature AttributeInfoDelegate;
 
+	UPROPERTY(BlueprintAssignable, Category="GAS|Level")
+	FOnXPPercentChanged OnXPPercentChangedDelegate;
+
 protected:
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<UAttributeInfo> AttributeInfo;
+	
+	void OnXPChanged(int32 NewXP) const;
 
 private:
 	void BroadcastAttributeInfo(const FGameplayTag& Tag) const;

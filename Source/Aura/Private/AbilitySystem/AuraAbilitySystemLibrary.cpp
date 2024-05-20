@@ -54,6 +54,16 @@ UAttributeMenuWidgetController* UAuraAbilitySystemLibrary::GetAttributeMenuWidge
 	return nullptr;
 }
 
+UCharacterInfo* UAuraAbilitySystemLibrary::GetCharacterClassInfo(
+	const UObject* WorldContextObject)
+{
+	const AAuraGameModeBase* AuraGameMode = CastChecked<AAuraGameModeBase>(
+		UGameplayStatics::GetGameMode(WorldContextObject)
+	);
+
+	return AuraGameMode->CharacterClassInfo;
+}
+
 void UAuraAbilitySystemLibrary::InitializeDefaultAttributes(
 		const UObject* WorldContextObject,
 		ECharacterClass CharacterClass,
@@ -61,14 +71,10 @@ void UAuraAbilitySystemLibrary::InitializeDefaultAttributes(
 		UAbilitySystemComponent* ASC
 	)
 {
-	const AAuraGameModeBase* AuraGameMode = Cast<AAuraGameModeBase>(
-		UGameplayStatics::GetGameMode(WorldContextObject)
-	);
-	if (!AuraGameMode) return;
+	UCharacterInfo* CharacterClassInfo = GetCharacterClassInfo(WorldContextObject);
 
 	const AActor* AvatarActor = ASC->GetAvatarActor();
 
-	UCharacterClassInfo* CharacterClassInfo =  AuraGameMode->CharacterClassInfo;
 	const auto ClassInfo = CharacterClassInfo
 	 ->GetClassDefaultInfo(CharacterClass);
 	
@@ -106,12 +112,7 @@ void UAuraAbilitySystemLibrary::GiveStartupAbilities(
 		ECharacterClass CharacterClass
 	)
 {
-	const AAuraGameModeBase* AuraGameMode = Cast<AAuraGameModeBase>(
-		UGameplayStatics::GetGameMode(WorldContextObject)
-	);
-	// if (!AuraGameMode) return;
-
-	UCharacterClassInfo* CharacterClassInfo =  AuraGameMode->CharacterClassInfo;
+	UCharacterInfo* CharacterClassInfo = GetCharacterClassInfo(WorldContextObject);
 	for (const auto AbilityClass : CharacterClassInfo->CommonAbilities)
 	{
 		FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(AbilityClass, 1);
@@ -129,12 +130,14 @@ void UAuraAbilitySystemLibrary::GiveStartupAbilities(
 	}
 	
 	const FCharacterClassDefaultInfo& DefaultInfo = CharacterClassInfo->GetClassDefaultInfo(CharacterClass);
-	for (auto AbilityClass : DefaultInfo.StartingAbilities)
+	for (auto AbilityClass : DefaultInfo.ClassAbilities)
 	{
-		ICombatInterface* CombatInterface = Cast<ICombatInterface>(ASC->GetAvatarActor());
-		if (CombatInterface)
+		if (ASC->GetAvatarActor()->Implements<UCombatInterface>())
 		{
-			FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(AbilityClass, CombatInterface->GetCharacterLevel());
+			FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(
+				AbilityClass,
+				ICombatInterface::Execute_GetCharacterLevel(ASC->GetAvatarActor())
+			);
 			ASC->GiveAbility(AbilitySpec);
 		}
 	}
@@ -287,4 +290,23 @@ bool UAuraAbilitySystemLibrary::IsTargetInvulnerable(AActor* TargetActor)
 	if (!ASC) return false;
 
 	return ASC->HasMatchingGameplayTag(FAuraGameplayTags::Get().Effects_Invulnerable);
+}
+
+int32 UAuraAbilitySystemLibrary::GetXPRewardForTypeAndLevel(
+	const UObject* WorldContextObject,
+	ECharacterType CharacterType,
+	int32 Level
+)
+{
+	const UCharacterInfo* CharacterClassInfo = GetCharacterClassInfo(WorldContextObject);
+	if (!CharacterClassInfo) return 0;
+
+	const FScalableFloat* XPCurve = CharacterClassInfo->XPReward.Find(CharacterType);
+	checkf(
+		XPCurve,
+		TEXT("XP Curve not found for this CharacterType, fill in its XP Curve in the DA_CharacterClassInfo Blueprint"),
+	);
+	const float XPReward = XPCurve->GetValueAtLevel(Level);
+
+	return static_cast<int32>(XPReward);
 }

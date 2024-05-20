@@ -4,7 +4,7 @@
 #include "AbilitySystem/AbilityTasks/TargetData.h"
 
 #include "AbilitySystemComponent.h"
-#include "AbilitySystem/Abilities/AuraGameplayAbility.h"
+#include "AbilitySystem/Abilities/ActiveAbility.h"
 #include "Player/MainPlayerController.h"
 
 UTargetData* UTargetData::
@@ -49,7 +49,7 @@ void UTargetData::SendMouseOrGamepadData()
 	
 	AMainPlayerController* MainPC =
 		CastChecked<AMainPlayerController>(Ability->GetCurrentActorInfo()->PlayerController.Get());
-	UAuraGameplayAbility* AuraAbility = CastChecked<UAuraGameplayAbility>(Ability);
+	UActiveAbility* AuraAbility = CastChecked<UActiveAbility>(Ability);
 	
 	FHitResult HitResult;
 	if (MainPC->GetUsingGamepad() || AuraAbility->bUsesMovementInputDirection)

@@ -3,7 +3,7 @@
 
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
 
-#include "AbilitySystem/Abilities/AuraGameplayAbility.h"
+#include "AbilitySystem/Abilities/ActiveAbility.h"
 #include "Aura/AuraLogChannels.h"
 
 void UAuraAbilitySystemComponent::AbilityActorInfoSet()
@@ -15,17 +15,17 @@ void UAuraAbilitySystemComponent::AbilityActorInfoSet()
 }
 
 void UAuraAbilitySystemComponent::AddCharacterAbilities(
-	const TArray<TSubclassOf<UGameplayAbility>>& StartupAbilities
+	const TArray<TSubclassOf<UGameplayAbility>>& InAbilities
 )
 {
-	for (const auto AbilityClass : StartupAbilities)
+	for (const auto AbilityClass : InAbilities)
 	{
 		FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(AbilityClass, 1);
-		if (const auto* AuraAbility = Cast<UAuraGameplayAbility>(AbilitySpec.Ability))
+		if (const auto* ActiveAbility = Cast<UActiveAbility>(AbilitySpec.Ability))
 		{
-			AbilitySpec.DynamicAbilityTags.AddTag(AuraAbility->StartupInputTag);
-			GiveAbility(AbilitySpec);
+			AbilitySpec.DynamicAbilityTags.AddTag(ActiveAbility->StartupInputTag);
 		}
+		GiveAbility(AbilitySpec);
 	}
 
 	bStartupAbilitiesGiven = true;
@@ -106,7 +106,6 @@ FGameplayTag UAuraAbilitySystemComponent::GetInputTagFromSpec(
 
 void UAuraAbilitySystemComponent::OnRep_ActivateAbilities()
 {
-	// TODO: make it work on the client (not working even after overriding this function)
 	Super::OnRep_ActivateAbilities();
 
 	if (!bStartupAbilitiesGiven)

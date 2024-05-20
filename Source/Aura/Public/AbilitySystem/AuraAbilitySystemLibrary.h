@@ -3,7 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Data/CharacterClassInfo.h"
+#include "Enums/CharacterType.h"
+#include "Data/CharacterInfo.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "AuraAbilitySystemLibrary.generated.h"
 
@@ -27,6 +28,8 @@ public:
 	static UAttributeMenuWidgetController* GetAttributeMenuWidgetController(
 		const UObject* WorldContextObject
 		);
+
+	static UCharacterInfo* GetCharacterClassInfo(const UObject* WorldContextObject);
 
 	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|CharacterClassDefaults")
 	static void InitializeDefaultAttributes(
@@ -75,4 +78,10 @@ public:
 
 	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|GameplayMechanics")
 	static bool IsTargetInvulnerable(AActor* TargetActor);
+	
+	static int32 GetXPRewardForTypeAndLevel(
+		const UObject* WorldContextObject,
+		ECharacterType CharacterType,
+		int32 Level
+	);
 };

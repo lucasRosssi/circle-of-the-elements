@@ -64,7 +64,10 @@ void AAuraProjectile::BeginPlay()
 			GetActorLocation(),
 			GetActorRotation()
 		);
-		MuzzleNiagara->SetNiagaraVariableFloat(FString("Scale"), MuzzleEffectScale);
+		if (MuzzleNiagara)
+		{
+			MuzzleNiagara->SetNiagaraVariableFloat(FString("Scale"), MuzzleEffectScale);
+		}
 	}
 		
 	if (MuzzleSound)
@@ -98,7 +101,10 @@ void AAuraProjectile::Destroyed()
 			GetActorLocation(),
 			GetActorRotation()
 		);
-		ImpactNiagara->SetNiagaraVariableFloat(FString("Scale"), ImpactEffectScale);
+		if (ImpactNiagara)
+		{
+			ImpactNiagara->SetNiagaraVariableFloat(FString("Scale"), ImpactEffectScale);
+		}
 
 		if (ProjectileNiagaraEffectActor)
 		{
@@ -151,7 +157,10 @@ void AAuraProjectile::OnSphereOverlap(
 		GetActorLocation(),
 		GetActorRotation()
 	);
-	ImpactNiagara->SetNiagaraVariableFloat(FString("Scale"), ImpactEffectScale);
+	if (ImpactNiagara)
+	{
+		ImpactNiagara->SetNiagaraVariableFloat(FString("Scale"), ImpactEffectScale);
+	}
 	ImpactEffect->GetExposedParameters();
 
 	if (ProjectileNiagaraEffectActor)

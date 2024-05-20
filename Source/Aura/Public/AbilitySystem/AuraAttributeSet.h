@@ -198,6 +198,10 @@ public:
 	FGameplayAttributeData IncomingDamage;
 	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, IncomingDamage);
 
+	UPROPERTY(BlueprintReadOnly, Category = "Meta Attributes")
+	FGameplayAttributeData IncomingXP;
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, IncomingXP);
+	
 	/*
 	 * Vital
 	 */
@@ -308,4 +312,6 @@ private:
 
 	void ShowFloatingText(const FEffectProperties& Props, float Damage, bool bParried, bool bCriticalHit) 
 	const;
+
+	void SendXPEvent(const FEffectProperties& Props);
 };
