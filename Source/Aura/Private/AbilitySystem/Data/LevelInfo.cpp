@@ -17,10 +17,21 @@ int32 ULevelInfo::FindLevelByXP(int32 XP) const
 int32 ULevelInfo::GetLevelUpAttributePoints(int32 OldLevel, int32 NewLevel)
 {
 	int32 AttributePoints = 0;
-	for (int32 i = NewLevel; i <= OldLevel; i--)
+	for (int32 i = NewLevel; i > OldLevel; i--)
 	{
 		AttributePoints += LevelInformation[i - 1].AttributePoints;
 	}
 
 	return AttributePoints;
+}
+
+int32 ULevelInfo::GetLevelUpSkillPoints(int32 OldLevel, int32 NewLevel)
+{
+	int32 SkillPoints = 0;
+	for (int32 i = NewLevel; i > OldLevel; i--)
+	{
+		SkillPoints += LevelInformation[i - 1].SkillPoints;
+	}
+
+	return SkillPoints;
 }

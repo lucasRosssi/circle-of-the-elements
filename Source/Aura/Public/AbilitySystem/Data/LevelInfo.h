@@ -47,4 +47,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category="LevelInformation")
 	int32 GetLevelUpAttributePoints(int32 OldLevel, int32 NewLevel);
+
+	UFUNCTION(BlueprintCallable, Category="LevelInformation")
+	int32 GetLevelUpSkillPoints(int32 OldLevel, int32 NewLevel);
 };

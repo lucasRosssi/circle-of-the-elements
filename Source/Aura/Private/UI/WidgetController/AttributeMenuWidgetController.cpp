@@ -3,6 +3,7 @@
 
 #include "UI/WidgetController/AttributeMenuWidgetController.h"
 
+#include "AbilitySystem/AuraAbilitySystemComponent.h"
 #include "AbilitySystem/AuraAttributeSet.h"
 #include "AbilitySystem/Data/AttributeInfo.h"
 #include "AbilitySystem/Data/LevelInfo.h"
@@ -12,7 +13,14 @@ void UAttributeMenuWidgetController::BindCallbacksToDependencies()
 {
 	AAuraPlayerState* AuraPlayerState = CastChecked<AAuraPlayerState>(PlayerState);
 
-	AuraPlayerState->OnXPChangedDelegate.AddUObject(this, &UAttributeMenuWidgetController::OnXPChanged);
+	AuraPlayerState->OnXPChangedDelegate.AddUObject(
+		this,
+		&UAttributeMenuWidgetController::OnXPChanged
+	);
+	AuraPlayerState->OnAttributePointsChangedDelegate.AddUObject(
+		this,
+		&UAttributeMenuWidgetController::OnAttributePointsChanged
+	);
 	
 	check(AttributeInfo);
 
@@ -34,11 +42,18 @@ void UAttributeMenuWidgetController::BroadcastInitialValues()
 	check(AttributeInfo);
 
 	OnXPChanged(AuraPlayerState->GetXP());
+	OnAttributePointsChanged((AuraPlayerState->GetAttributePoints()));
 
 	for (auto& Tag : AttributeInfo.Get()->AttributeInformation)
 	{
 		BroadcastAttributeInfo(Tag.AttributeTag);
 	}
+}
+
+void UAttributeMenuWidgetController::UpgradeAttribute(const FGameplayTag& AttributeTag)
+{
+	UAuraAbilitySystemComponent* AuraASC = CastChecked<UAuraAbilitySystemComponent>(AbilitySystemComponent);
+	AuraASC->UpgradeAttribute(AttributeTag);
 }
 
 void UAttributeMenuWidgetController::OnXPChanged(int32 NewXP) const
@@ -61,6 +76,11 @@ void UAttributeMenuWidgetController::OnXPChanged(int32 NewXP) const
 
 		OnXPPercentChangedDelegate.Broadcast(XPBarPercent);
 	}
+}
+
+void UAttributeMenuWidgetController::OnAttributePointsChanged(int32 NewAttributePoints)
+{
+	OnAttributePointsChangedDelegate.Broadcast(NewAttributePoints);
 }
 
 void UAttributeMenuWidgetController::BroadcastAttributeInfo(const FGameplayTag& Tag) const

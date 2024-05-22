@@ -62,8 +62,17 @@ void UAuraAttributeSet::GetLifetimeReplicatedProps(
 	DOREPLIFETIME_CONDITION_NOTIFY(UAuraAttributeSet, CooldownReduction, COND_None, REPNOTIFY_Always);
 }
 
+void UAuraAttributeSet::PreAttributeChange(
+	const FGameplayAttribute& Attribute,
+	float& NewValue
+)
+{
+	Super::PreAttributeChange(Attribute, NewValue);
+	
+}
+
 void UAuraAttributeSet::PreAttributeBaseChange(const FGameplayAttribute& Attribute, float& 
-NewValue) const
+                                               NewValue) const
 {
 	Super::PreAttributeBaseChange(Attribute, NewValue);
 
@@ -76,10 +85,46 @@ NewValue) const
 	{
 		NewValue = FMath::Clamp(NewValue, 0.f, GetMaxMana());
 	}
+	
+}
+
+void UAuraAttributeSet::PostAttributeChange(
+	const FGameplayAttribute& Attribute,
+	float OldValue,
+	float NewValue
+)
+{
+	Super::PostAttributeChange(Attribute, OldValue, NewValue);
+
+	if (Attribute == GetMaxHealthAttribute())
+	{
+		const float Amount = NewValue - OldValue;
+		if (Amount > 0)
+		{
+			SetHealth(GetHealth() + Amount);
+		}
+		if (Amount < 0)
+		{
+			SetHealth(FMath::Min(GetHealth(), GetMaxHealth()));
+		}
+	}
+
+	if (Attribute == GetMaxManaAttribute())
+	{
+		const float Amount = NewValue - OldValue;
+		if (Amount > 0)
+		{
+			SetMana(GetMana() + Amount);
+		}
+		if (Amount < 0)
+		{
+			SetMana(FMath::Min(GetMana(), GetMaxMana()));
+		}
+	}
 }
 
 void UAuraAttributeSet::SetEffectProperties(const FGameplayEffectModCallbackData& Data,
-	FEffectProperties& Props) const
+                                            FEffectProperties& Props) const
 {
 	// Source = causer of the effect, Target = target of the effect (owner of this AS)
 	

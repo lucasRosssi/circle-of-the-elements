@@ -63,30 +63,50 @@ void AAuraCharacter::OnRep_PlayerState()
 
 int32 AAuraCharacter::GetCharacterLevel_Implementation()
 {
-	const AAuraPlayerState* AuraPlayerState = GetPlayerState<AAuraPlayerState>();
-	check(AuraPlayerState);
-
-	return AuraPlayerState->GetCharacterLevel();
+	return GetAuraPlayerState()->GetCharacterLevel();
 }
 
 void AAuraCharacter::AddToXP_Implementation(int32 InXP)
 {
-	AAuraPlayerState* AuraPlayerState = GetPlayerState<AAuraPlayerState>();
-	check(AuraPlayerState);
-	AuraPlayerState->AddXP(InXP);
+	GetAuraPlayerState()->AddXP(InXP);
 }
 
 int32 AAuraCharacter::GetXP_Implementation() const
 {
-	const AAuraPlayerState* AuraPlayerState = GetPlayerState<AAuraPlayerState>();
-	check(AuraPlayerState);
-	
-	return AuraPlayerState->GetXP();;
+	return GetAuraPlayerState()->GetXP();;
 }
 
 void AAuraCharacter::LevelUp_Implementation()
 {
 	MulticastLevelUpParticles();
+}
+
+int32 AAuraCharacter::GetAttributePoints_Implementation() const
+{
+	return GetAuraPlayerState()->GetAttributePoints();
+}
+
+int32 AAuraCharacter::GetSkillPoints_Implementation() const
+{
+	return GetAuraPlayerState()->GetSkillPoints();
+}
+
+void AAuraCharacter::SpendAttributePoints_Implementation(int32 Amount)
+{
+	GetAuraPlayerState()->AddAttributePoints(-Amount);
+}
+
+void AAuraCharacter::SpendSkillPoints_Implementation(int32 Amount)
+{
+	GetAuraPlayerState()->AddSkillPoints(-Amount);
+}
+
+AAuraPlayerState* AAuraCharacter::GetAuraPlayerState() const
+{
+	AAuraPlayerState* AuraPlayerState = GetPlayerState<AAuraPlayerState>();
+	check(AuraPlayerState);
+
+	return AuraPlayerState;
 }
 
 void AAuraCharacter::MulticastLevelUpParticles_Implementation() const

@@ -33,11 +33,19 @@ public:
 	UPROPERTY(BlueprintAssignable, Category="GAS|Level")
 	FOnXPPercentChanged OnXPPercentChangedDelegate;
 
+	UPROPERTY(BlueprintAssignable, Category="GAS|Attributes")
+	FOnPlayerStatChangedSignature OnAttributePointsChangedDelegate;
+
+	UFUNCTION(BlueprintCallable)
+	void UpgradeAttribute(const FGameplayTag& AttributeTag);
+
 protected:
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<UAttributeInfo> AttributeInfo;
 	
 	void OnXPChanged(int32 NewXP) const;
+
+	void OnAttributePointsChanged(int32 NewAttributePoints);
 
 private:
 	void BroadcastAttributeInfo(const FGameplayTag& Tag) const;

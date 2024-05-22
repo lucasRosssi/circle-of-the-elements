@@ -30,4 +30,16 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent)
 	void LevelUp();
+
+	UFUNCTION(BlueprintNativeEvent)
+	int32 GetAttributePoints() const;
+
+	UFUNCTION(BlueprintNativeEvent)
+	int32 GetSkillPoints() const;
+
+	UFUNCTION(BlueprintNativeEvent)
+	void SpendAttributePoints(int32 Amount);
+
+	UFUNCTION(BlueprintNativeEvent)
+	void SpendSkillPoints(int32 Amount);
 };

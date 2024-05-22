@@ -7,6 +7,7 @@
 #include "Interaction/PlayerInterface.h"
 #include "AuraCharacter.generated.h"
 
+class AAuraPlayerState;
 class UWidgetComponent;
 class USpringArmComponent;
 class UCameraComponent;
@@ -31,7 +32,14 @@ public:
 	virtual void AddToXP_Implementation(int32 InXP) override;
 	virtual int32 GetXP_Implementation() const override;
 	virtual void LevelUp_Implementation() override;
+	virtual int32 GetAttributePoints_Implementation() const override;
+	virtual int32 GetSkillPoints_Implementation() const override;
+	virtual void SpendAttributePoints_Implementation(int32 Amount) override;
+	virtual void SpendSkillPoints_Implementation(int32 Amount) override;
 	/** end Player Interface */
+
+	UFUNCTION(BlueprintCallable)
+	AAuraPlayerState* GetAuraPlayerState() const;
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Level")
