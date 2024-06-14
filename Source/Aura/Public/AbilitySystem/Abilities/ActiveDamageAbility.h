@@ -16,9 +16,15 @@ class AURA_API UActiveDamageAbility : public UActiveAbility
 public:
 	UFUNCTION(BlueprintCallable)
 	void CauseDamage(AActor* TargetActor);
+
+	UFUNCTION(BlueprintPure, meta=(HidePin="Target", DefaultToSelf="Target"))
+	float GetDamageAtLevel(int32 Level, FGameplayTag DamageTypeTag);
+
+	UFUNCTION(BlueprintPure, meta=(HidePin="Target", DefaultToSelf="Target"))
+	int32 GetRoundedDamageAtLevel(int32 Level, FGameplayTag DamageTypeTag);
 	
 protected:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Damage")
 	TSubclassOf<UGameplayEffect> DamageEffectClass;
 
 	UPROPERTY(EditDefaultsOnly, Category="Damage")

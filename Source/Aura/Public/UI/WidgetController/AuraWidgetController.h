@@ -6,6 +6,11 @@
 #include "AbilitySystemComponent.h"
 #include "AuraWidgetController.generated.h"
 
+class UAbilityInfo;
+class UAuraAbilitySystemComponent;
+class UAuraAttributeSet;
+class AAuraPlayerState;
+class AMainPlayerController;
 class UAttributeSet;
 class UAbilitySystemComponent;
 
@@ -37,9 +42,19 @@ struct FWidgetControllerParams
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TObjectPtr<UAttributeSet> AttributeSet = nullptr;
+
+	bool IsValid() const
+	{
+		return
+			PlayerController &&
+			PlayerState &&
+			AbilitySystemComponent &&
+			AttributeSet;
+	}
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPlayerStatChangedSignature, int32, NewValue);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAbilityInfoSignature, const FAuraAbilityInfo&, Info);
 
 /**
  * 
@@ -56,6 +71,11 @@ public:
 	virtual void BroadcastInitialValues();
 	
 	virtual void BindCallbacksToDependencies();
+
+	UPROPERTY(BlueprintAssignable, Category = "GAS|Messages")
+	FAbilityInfoSignature AbilityInfoDelegate;
+
+	void BroadcastAbilityInfo();
 protected:
 	
 	UPROPERTY(BlueprintReadOnly, Category = "Widget Controller")
@@ -69,4 +89,24 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, Category = "Widget Controller")
 	TObjectPtr<UAttributeSet> AttributeSet;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Widget Controller")
+	TObjectPtr<AMainPlayerController> MainPlayerController;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Widget Controller")
+	TObjectPtr<AAuraPlayerState> AuraPlayerState;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Widget Controller")
+	TObjectPtr<UAuraAbilitySystemComponent> AuraAbilitySystemComponent;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Widget Controller")
+	TObjectPtr<UAuraAttributeSet> AuraAttributeSet;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Data")
+	TObjectPtr<UAbilityInfo> AbilityInfo;
+
+	AMainPlayerController* GetMainPlayerController();
+	AAuraPlayerState* GetAuraPlayerState();
+	UAuraAbilitySystemComponent* GetAuraAbilitySystemComponent();
+	UAuraAttributeSet* GetAuraAttributeSet();
 };

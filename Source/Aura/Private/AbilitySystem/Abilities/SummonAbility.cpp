@@ -56,8 +56,12 @@ AAuraCharacterBase* USummonAbility::SpawnMinion(FVector Location)
 	{
 		return nullptr;
 	}
-
+	
 	AActor* AvatarActor = GetAvatarActorFromActorInfo();
+	const UTeamComponent* TeamComponent = AvatarActor->GetComponentByClass<UTeamComponent>();
+
+	if (!TeamComponent) return nullptr;
+
 	const TSubclassOf<AAuraCharacterBase> MinionClass = GetRandomMinionClass();
 	const AAuraCharacterBase* MinionDefaultObject =
 		MinionClass->GetDefaultObject<AAuraCharacterBase>();
@@ -81,8 +85,8 @@ AAuraCharacterBase* USummonAbility::SpawnMinion(FVector Location)
 
 	if (Minion)
 	{
-		Minion->OnSummon();
-		ActiveMinions++;
+			Minion->InitSummon(TeamComponent->TeamID);
+			ActiveMinions++;
 	}
 	
 	return Minion;

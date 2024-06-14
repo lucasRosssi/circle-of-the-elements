@@ -3,14 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Abilities/GameplayAbility.h"
+#include "BaseAbility.h"
 #include "PassiveAbility.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class AURA_API UPassiveAbility : public UGameplayAbility
+class AURA_API UPassiveAbility : public UBaseAbility
 {
 	GENERATED_BODY()
 public:

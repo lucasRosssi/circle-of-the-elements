@@ -25,9 +25,7 @@ bool UTeamComponent::IsEnemy(AActor* TargetActor)
 {
 	if (TeamID == 255) return false;
 	
-	const UActorComponent* TargetActorComponent = TargetActor->GetComponentByClass(StaticClass());
-
-	if (const UTeamComponent* TargetTeamComponent = Cast<UTeamComponent>(TargetActorComponent))
+	if (const UTeamComponent* TargetTeamComponent = TargetActor->GetComponentByClass<UTeamComponent>())
 	{
 		return TargetTeamComponent->TeamID != TeamID;
 	}
@@ -38,10 +36,8 @@ bool UTeamComponent::IsEnemy(AActor* TargetActor)
 bool UTeamComponent::IsFriend(AActor* TargetActor)
 {
 	if (TeamID == 255) return true;
-	
-	const UActorComponent* TargetActorComponent = TargetActor->GetComponentByClass(StaticClass());
 
-	if (const UTeamComponent* TargetTeamComponent = Cast<UTeamComponent>(TargetActorComponent))
+	if (const UTeamComponent* TargetTeamComponent = TargetActor->GetComponentByClass<UTeamComponent>())
 	{
 		return TargetTeamComponent->TeamID == TeamID;
 	}

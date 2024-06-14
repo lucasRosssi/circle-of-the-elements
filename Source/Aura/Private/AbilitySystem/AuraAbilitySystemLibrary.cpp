@@ -6,6 +6,10 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AuraAbilityTypes.h"
 #include "AuraGameplayTags.h"
+#include "AuraNamedArguments.h"
+#include "AbilitySystem/Abilities/ActiveDamageAbility.h"
+#include "AbilitySystem/Abilities/BaseAbility.h"
+#include "AbilitySystem/Data/AbilityInfo.h"
 #include "Character/AuraCharacterBase.h"
 #include "Game/AuraGameModeBase.h"
 #include "Game/TeamComponent.h"
@@ -14,44 +18,56 @@
 #include "Player/AuraPlayerState.h"
 #include "Player/MainPlayerController.h"
 #include "UI/HUD/AuraHUD.h"
-#include "UI/WidgetController/AuraWidgetController.h"
 
-UOverlayWidgetController* UAuraAbilitySystemLibrary::GetOverlayWidgetController(
+FWidgetControllerParams UAuraAbilitySystemLibrary::MakeWidgetControllerParams(
 	const UObject* WorldContextObject)
 {
 	if (APlayerController* PC = WorldContextObject->GetWorld()->GetFirstPlayerController())
 	{
-		if (AAuraHUD* AuraHUD = Cast<AAuraHUD>(PC->GetHUD()))
-		{
-			AAuraPlayerState* PS = PC->GetPlayerState<AAuraPlayerState>();
-			UAbilitySystemComponent* ASC = PS->GetAbilitySystemComponent();
-			UAttributeSet* AS = PS->GetAttributeSet();
-			const FWidgetControllerParams WidgetControllerParams(PC, PS, ASC, AS);
-
-			return AuraHUD->GetOverlayWidgetController(WidgetControllerParams);
-		}
+		AAuraPlayerState* PS = PC->GetPlayerState<AAuraPlayerState>();
+		UAbilitySystemComponent* ASC = PS->GetAbilitySystemComponent();
+		UAttributeSet* AS = PS->GetAttributeSet();
+		
+		return FWidgetControllerParams(PC, PS, ASC, AS);
 	}
 
-	return nullptr;
+	return FWidgetControllerParams();
+}
+
+UOverlayWidgetController* UAuraAbilitySystemLibrary::GetOverlayWidgetController(
+	const UObject* WorldContextObject)
+{
+	const FWidgetControllerParams WidgetControllerParams = MakeWidgetControllerParams(WorldContextObject);
+	if (!WidgetControllerParams.IsValid()) return nullptr;
+	
+	AAuraHUD* AuraHUD = WidgetControllerParams.PlayerController->GetHUD<AAuraHUD>();
+	if (!AuraHUD) return nullptr;
+
+	return AuraHUD->GetOverlayWidgetController(WidgetControllerParams);
 }
 
 UAttributeMenuWidgetController* UAuraAbilitySystemLibrary::GetAttributeMenuWidgetController(
 	const UObject* WorldContextObject)
 {
-	if (APlayerController* PC = WorldContextObject->GetWorld()->GetFirstPlayerController())
-	{
-		if (AAuraHUD* AuraHUD = Cast<AAuraHUD>(PC->GetHUD()))
-		{
-			AAuraPlayerState* PS = PC->GetPlayerState<AAuraPlayerState>();
-			UAbilitySystemComponent* ASC = PS->GetAbilitySystemComponent();
-			UAttributeSet* AS = PS->GetAttributeSet();
-			const FWidgetControllerParams WidgetControllerParams(PC, PS, ASC, AS);
+	const FWidgetControllerParams WidgetControllerParams = MakeWidgetControllerParams(WorldContextObject);
+	if (!WidgetControllerParams.IsValid()) return nullptr;
+	
+	AAuraHUD* AuraHUD = WidgetControllerParams.PlayerController->GetHUD<AAuraHUD>();
+	if (!AuraHUD) return nullptr;
 
-			return AuraHUD->GetAttributeMenuWidgetController(WidgetControllerParams);
-		}
-	}
+	return AuraHUD->GetAttributeMenuWidgetController(WidgetControllerParams);
+}
 
-	return nullptr;
+USkillMenuWidgetController* UAuraAbilitySystemLibrary::GetSkillMenuWidgetController(
+	const UObject* WorldContextObject)
+{
+	const FWidgetControllerParams WidgetControllerParams = MakeWidgetControllerParams(WorldContextObject);
+	if (!WidgetControllerParams.IsValid()) return nullptr;
+	
+	AAuraHUD* AuraHUD = WidgetControllerParams.PlayerController->GetHUD<AAuraHUD>();
+	if (!AuraHUD) return nullptr;
+
+	return AuraHUD->GetSkillMenuWidgetController(WidgetControllerParams);
 }
 
 UCharacterInfo* UAuraAbilitySystemLibrary::GetCharacterClassInfo(
@@ -62,6 +78,15 @@ UCharacterInfo* UAuraAbilitySystemLibrary::GetCharacterClassInfo(
 	);
 
 	return AuraGameMode->CharacterClassInfo;
+}
+
+UAbilityInfo* UAuraAbilitySystemLibrary::GetAbilitiesInfo(const UObject* WorldContextObject)
+{
+	const AAuraGameModeBase* AuraGameMode = CastChecked<AAuraGameModeBase>(
+		UGameplayStatics::GetGameMode(WorldContextObject)
+	);
+
+	return AuraGameMode->AbilityInfo;
 }
 
 void UAuraAbilitySystemLibrary::InitializeDefaultAttributes(
@@ -217,9 +242,8 @@ void UAuraAbilitySystemLibrary::GetAliveCharactersWithinRadius(
 		for (auto& Overlap : Overlaps)
 		{
 			AActor* OverlappedActor = Overlap.GetActor();
-			const bool bImplementsCombatInterface = OverlappedActor->Implements<UCombatInterface>();
 
-			if (!bImplementsCombatInterface) return;
+			if (!OverlappedActor->Implements<UCombatInterface>()) return;
 			
 			const bool bIsAlive = !ICombatInterface::Execute_IsDead(OverlappedActor);
 			if (bIsAlive)
@@ -231,16 +255,12 @@ void UAuraAbilitySystemLibrary::GetAliveCharactersWithinRadius(
 }
 
 bool UAuraAbilitySystemLibrary::AreActorsFriends(const AActor* FirstActor, const AActor* 
-SecondActor)
+                                                 SecondActor)
 {
 	if (!IsValid(FirstActor) || !IsValid(SecondActor)) return false;
 	
-	const UTeamComponent* FirstTeamComponent = Cast<UTeamComponent>(
-		FirstActor->GetComponentByClass(UTeamComponent::StaticClass())
-	);
-	const UTeamComponent* SecondTeamComponent = Cast<UTeamComponent>(
-		SecondActor->GetComponentByClass(UTeamComponent::StaticClass())
-	);
+	const UTeamComponent* FirstTeamComponent = FirstActor->GetComponentByClass<UTeamComponent>();
+	const UTeamComponent* SecondTeamComponent = SecondActor->GetComponentByClass<UTeamComponent>();
 
 	if (!FirstTeamComponent || !SecondTeamComponent)
 	{
@@ -255,12 +275,8 @@ SecondActor)
 {
 	if (!IsValid(FirstActor) || !IsValid(SecondActor)) return false;
 	
-	const UTeamComponent* FirstTeamComponent = Cast<UTeamComponent>(
-		FirstActor->GetComponentByClass(UTeamComponent::StaticClass())
-	);
-	const UTeamComponent* SecondTeamComponent = Cast<UTeamComponent>(
-		SecondActor->GetComponentByClass(UTeamComponent::StaticClass())
-	);
+	const UTeamComponent* FirstTeamComponent = FirstActor->GetComponentByClass<UTeamComponent>();
+	const UTeamComponent* SecondTeamComponent = SecondActor->GetComponentByClass<UTeamComponent>();
 
 	if (!FirstTeamComponent || !SecondTeamComponent)
 	{
@@ -290,6 +306,149 @@ bool UAuraAbilitySystemLibrary::IsTargetInvulnerable(AActor* TargetActor)
 	if (!ASC) return false;
 
 	return ASC->HasMatchingGameplayTag(FAuraGameplayTags::Get().Effects_Invulnerable);
+}
+
+FString UAuraAbilitySystemLibrary::GetAbilityDescription(
+	const UObject* WorldContextObject,
+	const FGameplayTag& AbilityTag,
+	int32 Level
+	)
+{
+	FAuraAbilityInfo Info = GetAbilitiesInfo(WorldContextObject)->FindAbilityInfoByTag(AbilityTag);
+	UBaseAbility* Ability = Info.Ability.GetDefaultObject();
+	FormatAbilityDescriptionAtLevel(Ability, Level, Info.Description);
+	
+	return FString::Printf(
+		TEXT(
+			"<Title>%s </>\n"
+			"<Title18>Level </><Level>%d</>\n"
+			"\n"
+			"%s\n"
+			"\n"
+			"<Info>Mana - </><Mana>%d</>\n"
+			"<Info>Cooldown - </>%ds"
+			),
+		*Info.Name.ToString(),
+		Level,
+		*Info.Description.ToString(),
+		Ability->GetRoundedManaCost(Level),
+		Ability->GetRoundedCooldown()
+	);
+}
+
+FString UAuraAbilitySystemLibrary::GetAbilityNextLevelDescription(
+	const UObject* WorldContextObject,
+	const FGameplayTag& AbilityTag,
+	int32 Level
+	)
+{
+	FAuraAbilityInfo Info = GetAbilitiesInfo(WorldContextObject)->FindAbilityInfoByTag(AbilityTag);
+	UBaseAbility* Ability = Info.Ability.GetDefaultObject();
+	FormatAbilityDescriptionAtLevel(Ability, Level, Info.NextLevelDescription);
+
+	const int32 ManaCost = Ability->GetRoundedManaCost(Level);
+	const int32 NextManaCost = Ability->GetRoundedManaCost(Level + 1);
+	FString ManaCostText;
+	if (NextManaCost - ManaCost == 0)
+	{
+		ManaCostText = FString::Printf(
+			TEXT("<Info>Mana - </><Mana>%d</>"),
+			ManaCost
+		);
+		
+	}
+	else
+	{
+		ManaCostText = FString::Printf(
+			TEXT("<Info>Mana - </><Old>%d</> > <Mana>%d</>"),
+			ManaCost,
+			NextManaCost
+		);
+	}
+
+	return FString::Printf(
+		TEXT(
+			"<Title>%s </>\n"
+			"<Title18>Level </><Old>%d</> > <Level>%d</>\n"
+			"\n"
+			"%s\n"
+			"\n"
+			"%s\n"
+			"<Info>Cooldown - </>%ds"
+			),
+		*Info.Name.ToString(),
+		Level,
+		Level + 1,
+		*Info.NextLevelDescription.ToString(),
+		*ManaCostText,
+		Ability->GetRoundedCooldown()
+	);
+}
+
+void UAuraAbilitySystemLibrary::FormatAbilityDescriptionAtLevel(
+	UBaseAbility* Ability,
+	int32 Level,
+	FText& OutDescription
+	)
+{
+	const FAuraGameplayTags Tags = FAuraGameplayTags::Get();
+	const FAuraNamedArguments Args = FAuraNamedArguments::Get();
+	
+	if (UActiveDamageAbility* DamageAbility = Cast<UActiveDamageAbility>(Ability))
+	{
+		OutDescription = FText::FormatNamed(
+			OutDescription,
+			Args.FDmg_0,
+			DamageAbility->GetRoundedDamageAtLevel(Level, Tags.Damage_Fire),
+			Args.FDmg_1,
+			DamageAbility->GetRoundedDamageAtLevel(Level + 1, Tags.Damage_Fire)
+			);
+	}
+}
+
+FString UAuraAbilitySystemLibrary::GetAbilityLockedDescription(
+	int32 Level,
+	const FGameplayTagContainer& AbilitiesRequirement
+	)
+{
+	FString RequirementText = FString::Printf(
+		TEXT("<Default>Skill locked until level </><Level>%d</>"),
+		Level
+	);
+	if (AbilitiesRequirement.IsEmpty())
+	{
+		return RequirementText;
+	}
+	
+	if (AbilitiesRequirement.Num() == 1)
+	{
+		RequirementText.Appendf(
+			TEXT("<Default>. Required skill: </><Skill>%s</>"),
+			*AbilitiesRequirement.First().GetTagName().ToString()
+		);
+	}
+
+	RequirementText.Append(
+		TEXT("<Default>. Required skills: </>")
+	);
+
+	int32 Index = 0;
+	for (const auto& AbilityTag : AbilitiesRequirement)
+	{
+		RequirementText.Appendf(
+			TEXT("<Skill>%s</>"),
+			*AbilityTag.GetTagName().ToString()
+		);
+
+		if (AbilitiesRequirement.IsValidIndex(Index + 1))
+		{
+			RequirementText.Append(TEXT(", "));
+		}
+
+		Index++;
+	}
+	
+	return RequirementText;
 }
 
 int32 UAuraAbilitySystemLibrary::GetXPRewardForTypeAndLevel(

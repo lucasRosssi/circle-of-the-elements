@@ -25,3 +25,21 @@ void UActiveDamageAbility::CauseDamage(AActor* TargetActor)
 		UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(TargetActor)
 	);
 }
+
+float UActiveDamageAbility::GetDamageAtLevel(
+	int32 Level,
+	FGameplayTag DamageTypeTag
+)
+{
+	if (const FScalableFloat* Damage = DamageTypes.Find(DamageTypeTag))
+	{
+		return Damage->GetValueAtLevel(Level);
+	}
+	
+	return 0.f;
+}
+
+int32 UActiveDamageAbility::GetRoundedDamageAtLevel(int32 Level, FGameplayTag DamageTypeTag)
+{
+	return FMath::RoundToInt32(GetDamageAtLevel(Level, DamageTypeTag));
+}

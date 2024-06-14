@@ -8,6 +8,7 @@
 #include "Components/CapsuleComponent.h"
 #include "AuraGameplayTags.h"
 #include "AbilitySystem/Abilities/SummonAbility.h"
+#include "Animation/CharacterAnimInstance.h"
 #include "Game/TeamComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -28,7 +29,8 @@ AAuraCharacterBase::AAuraCharacterBase()
 	GetMesh()->SetCollisionResponseToChannel(ECC_Projectile, ECR_Overlap);
 	GetMesh()->SetGenerateOverlapEvents(true);
 
-	DefaultWalkSpeed = GetCharacterMovement()->MaxWalkSpeed;
+	CurrentWalkSpeed = DefaultWalkSpeed;
+	GetCharacterMovement()->MaxWalkSpeed = CurrentWalkSpeed;
 }
 
 UAbilitySystemComponent* AAuraCharacterBase::GetAbilitySystemComponent() const
@@ -94,9 +96,10 @@ void AAuraCharacterBase::MulticastHandleDeath_Implementation()
 	DissolveCharacter();
 }
 
-void AAuraCharacterBase::OnSummon()
+void AAuraCharacterBase::InitSummon(int32 TeamID)
 {
 	CharacterType = ECharacterType::ECT_Minion;
+	SetTeamID(TeamID);
 	LifeSpanDuration = 2.f;
 	SpawnDefaultController();
 	
@@ -112,7 +115,7 @@ void AAuraCharacterBase::HitReactTagChanged(const FGameplayTag CallbackTag, int3
 {
 	bHitReacting = NewCount > 0;
 
-	GetCharacterMovement()->MaxWalkSpeed = bHitReacting ? 0.f : DefaultWalkSpeed;
+	GetCharacterMovement()->MaxWalkSpeed = bHitReacting ? 0.f : CurrentWalkSpeed;
 }
 
 FVector AAuraCharacterBase::GetAbilitySocketLocation_Implementation(const FName SocketName, bool 
@@ -223,5 +226,26 @@ void AAuraCharacterBase::DissolveCharacter()
 		Weapon->SetMaterial(0, DynamicMatInst);
 
 		StartWeaponDissolveTimeline(DynamicMatInst);
+	}
+}
+
+void AAuraCharacterBase::ChangeMovementSpeed(float InMovementSpeed)
+{
+	GetCharacterMovement()->MaxWalkSpeed = DefaultWalkSpeed * InMovementSpeed / 100;
+	
+	UCharacterAnimInstance* AnimInstance = Cast<UCharacterAnimInstance>(GetMesh()->GetAnimInstance());
+	if (AnimInstance)
+	{
+		const float AdditionalMoveSpeed = InMovementSpeed - 100;
+		AnimInstance->SetMovementPlayRate((100 + AdditionalMoveSpeed / 2) / 100); // Divides the additional by 2 as the full difference makes the animation weird
+	}
+}
+
+void AAuraCharacterBase::ChangeActionSpeed(float InActionSpeed)
+{
+	UCharacterAnimInstance* AnimInstance = Cast<UCharacterAnimInstance>(GetMesh()->GetAnimInstance());
+	if (AnimInstance)
+	{
+		AnimInstance->SetActionPlayRate(InActionSpeed / 100);
 	}
 }

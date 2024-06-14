@@ -23,15 +23,24 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 	TObjectPtr<UObject> WidgetController;
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, BlueprintPure, meta = (HidePin = "Target", DefaultToSelf = "Target"))
 	AAuraCharacter* GetOwningAuraCharacter();
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, BlueprintPure, meta = (HidePin = "Target", DefaultToSelf = "Target"))
 	AMainPlayerController* GetOwningMainPlayerController();
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, BlueprintPure, meta = (HidePin = "Target", DefaultToSelf = "Target"))
 	AAuraPlayerState* GetOwningAuraPlayerState();
+
 protected:
 	UFUNCTION(BlueprintImplementableEvent)
 	void WidgetControllerSet();
+
+private:
+	UPROPERTY()
+	AAuraCharacter* AuraCharacter = nullptr;
+	UPROPERTY()
+	AMainPlayerController* MainPlayerController = nullptr;
+	UPROPERTY()
+	AAuraPlayerState* AuraPlayerState = nullptr;
 };

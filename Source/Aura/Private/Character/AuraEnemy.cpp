@@ -89,6 +89,16 @@ void AAuraEnemy::Die()
 	Super::Die();
 }
 
+void AAuraEnemy::SetMovementSpeed_Implementation(float InMovementSpeed)
+{
+	ChangeMovementSpeed(InMovementSpeed);
+}
+
+void AAuraEnemy::SetActionSpeed_Implementation(float InActionSpeed)
+{
+	ChangeActionSpeed(InActionSpeed);
+}
+
 void AAuraEnemy::BeginPlay()
 {
 	Super::BeginPlay();

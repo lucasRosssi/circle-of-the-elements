@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Abilities/GameplayAbility.h"
+#include "BaseAbility.h"
 #include "ActiveAbility.generated.h"
 
 class AMainPlayerController;
@@ -11,7 +11,7 @@ class AMainPlayerController;
  * 
  */
 UCLASS()
-class AURA_API UActiveAbility : public UGameplayAbility
+class AURA_API UActiveAbility : public UBaseAbility
 {
 	GENERATED_BODY()
 
@@ -23,5 +23,5 @@ public:
 	 * True if the ability should target accordingly to the player movement input direction 
 	 */
 	UPROPERTY(EditDefaultsOnly, Category="Input")
-	bool bUsesMovementInputDirection;
+	bool bUsesMovementInputDirection = false;
 };

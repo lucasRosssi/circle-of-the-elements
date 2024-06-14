@@ -9,6 +9,7 @@
 #include "GameplayEffectExtension.h"
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "GameFramework/Character.h"
+#include "Interaction/AttributeSetInterface.h"
 #include "Interaction/CombatInterface.h"
 #include "Interaction/PlayerInterface.h"
 #include "Player/MainPlayerController.h"
@@ -120,6 +121,16 @@ void UAuraAttributeSet::PostAttributeChange(
 		{
 			SetMana(FMath::Min(GetMana(), GetMaxMana()));
 		}
+	}
+
+	if (Attribute == GetMovementSpeedAttribute())
+	{
+		IAttributeSetInterface::Execute_SetMovementSpeed(GetOwningActor(), NewValue);
+	}
+
+	if (Attribute == GetActionSpeedAttribute())
+	{
+		IAttributeSetInterface::Execute_SetActionSpeed(GetOwningActor(), NewValue);
 	}
 }
 

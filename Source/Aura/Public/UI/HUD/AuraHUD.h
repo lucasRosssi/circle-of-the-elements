@@ -7,6 +7,7 @@
 #include "UI/WidgetController/AuraWidgetController.h"
 #include "AuraHUD.generated.h"
 
+class USkillMenuWidgetController;
 class UAttributeSet;
 class UAbilitySystemComponent;
 struct FWidgetControllerParams;
@@ -24,7 +25,10 @@ public:
 	UOverlayWidgetController* GetOverlayWidgetController(const FWidgetControllerParams& WCParams);
 	UAttributeMenuWidgetController* GetAttributeMenuWidgetController(
 		const FWidgetControllerParams& WCParams
-		);
+	);
+	USkillMenuWidgetController* GetSkillMenuWidgetController(
+		const FWidgetControllerParams& WCParams
+	);
 
 	void InitOverlay(
 		APlayerController* PC,
@@ -50,4 +54,10 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UAttributeMenuWidgetController> AttributeMenuWidgetControllerClass;
+
+	UPROPERTY()
+	TObjectPtr<USkillMenuWidgetController> SkillMenuWidgetController;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<USkillMenuWidgetController> SkillMenuWidgetControllerClass;
 };

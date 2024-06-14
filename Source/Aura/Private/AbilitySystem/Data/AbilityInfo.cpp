@@ -5,16 +5,19 @@
 
 #include "Aura/AuraLogChannels.h"
 
-FAuraAbilityInfo UAbilityInfo::FindAbilityInfoForTag(
+FAuraAbilityInfo UAbilityInfo::FindAbilityInfoByTag(
 	const FGameplayTag& AbilityTag,
 	bool bLogNotFound
 ) const
 {
-	for (const auto Info : AbilityInformation)
+	for (const auto Info : CharacterAbilities)
 	{
-		if (Info.AbilityTag == AbilityTag)
+		for (auto AbilityInfo : Info.Value.AbilityInformation)
 		{
-			return Info;
+			if (AbilityInfo.AbilityTag == AbilityTag)
+			{
+				return AbilityInfo;
+			}
 		}
 	}
 
@@ -29,4 +32,27 @@ FAuraAbilityInfo UAbilityInfo::FindAbilityInfoForTag(
 	}
 
 	return FAuraAbilityInfo();
+}
+
+TArray<FAuraAbilityInfo> UAbilityInfo::FindAbilitiesFromCharacter(
+	ECharacterName CharacterName,
+	bool bLogNotFound
+) const
+{
+	if (CharacterAbilities.Contains(CharacterName))
+	{
+		return CharacterAbilities.Find(CharacterName)->AbilityInformation;
+	}
+
+	if (bLogNotFound)
+	{
+		UE_LOG(
+			LogAura,
+			Error,
+			TEXT("Can't find Abilities Info for Character [%hhd] on AbilityInfo [%s]"), 
+			CharacterName, *GetNameSafe(this)
+		);
+	}
+
+	return TArray<FAuraAbilityInfo>();
 }

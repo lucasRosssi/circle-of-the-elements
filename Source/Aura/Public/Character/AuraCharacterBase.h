@@ -6,6 +6,8 @@
 #include "AbilitySystemInterface.h"
 #include "Enums/CharacterType.h"
 #include "AbilitySystem/Data/CharacterInfo.h"
+#include "Enums/CharacterName.h"
+#include "Game/TeamComponent.h"
 #include "GameFramework/Character.h"
 #include "Interaction/CombatInterface.h"
 #include "AuraCharacterBase.generated.h"
@@ -30,6 +32,7 @@ public:
 	AAuraCharacterBase();
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	UAttributeSet* GetAttributeSet() const { return AttributeSet; }
+	ECharacterName GetCharacterName() const { return CharacterName; }
 	
 	virtual void HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
 
@@ -65,7 +68,13 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category="Abilities")
 	TArray<TSubclassOf<UGameplayAbility>> CharacterAbilities;
 
-	void OnSummon();
+	void InitSummon(int32 TeamID);
+
+	void ChangeMovementSpeed(float InMovementSpeed);
+	void ChangeActionSpeed(float InActionSpeed);
+
+	int32 GetTeamID() { return TeamComponent->TeamID; }
+	void SetTeamID(int32 InID) { TeamComponent->TeamID = InID; }
 
 protected:
 	virtual void BeginPlay() override;
@@ -87,6 +96,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat")
 	TObjectPtr<UTeamComponent> TeamComponent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Defaults")
+	ECharacterName CharacterName = ECharacterName::ECN_Undefined;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Defaults")
 	ECharacterType CharacterType = ECharacterType::ECT_Regular;
@@ -143,11 +155,17 @@ protected:
 	TObjectPtr<USoundBase> DeathSound;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Character Defaults", meta=( DisplayThumbnail="true", AllowedClasses="/Script/Engine.Texture,/Script/Engine.MaterialInterface,/Script/Engine.SlateTextureAtlasInterface", DisallowedClasses = "/Script/MediaAssets.MediaTexture"))
-	TObjectPtr<UObject> Picture;
+	TObjectPtr<UObject> Portrait;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Character Defaults")
+	FColor MainColor;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category= "Speed")
+	float DefaultWalkSpeed = 600.f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Speed")
+	float CurrentWalkSpeed = DefaultWalkSpeed;
 
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "Abilities")
 	TArray<TSubclassOf<UGameplayAbility>> BaseAbilities;
-
-	float DefaultWalkSpeed;
 };

@@ -38,6 +38,8 @@ struct FCameraOccludedActor
 	bool bIsOccluded;
 };
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnControllerDeviceChanged, bool, bIsGamepad);
+
 /**
  * 
  */
@@ -57,12 +59,17 @@ public:
 		bool bCriticalHit,
 		bool bIsPlayer = false
 	);
-
+	
 	bool GetUsingGamepad() { return bUsingGamepad; }
+	UFUNCTION(BlueprintCallable)
+	void ChangeUsingGamepad(bool bIsGamepad);
 	FVector GetInputDirection() { return InputDirection; }
 
 	UFUNCTION(BlueprintCallable)
 	void SyncOccludedActors();
+
+	UPROPERTY(BlueprintAssignable, Category="ControllerDevice")
+	FOnControllerDeviceChanged ControllerDeviceChangedDelegate;
 
 protected:
 	virtual void BeginPlay() override;
@@ -99,6 +106,9 @@ protected:
  
 	UPROPERTY(BlueprintReadWrite, Category="Camera Occlusion|Components")
 	UCapsuleComponent* ActiveCapsuleComponent;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Input")
+	TObjectPtr<UAuraInputConfig> InputConfig;
 	
 private:
 	UPROPERTY(EditAnywhere, Category="Input")
@@ -120,9 +130,6 @@ private:
 	void AbilityInputTagPressed(FGameplayTag InputTag);
 	void AbilityInputTagReleased(FGameplayTag InputTag);
 	void AbilityInputTagHeld(FGameplayTag InputTag);
-
-	UPROPERTY(EditDefaultsOnly, Category="Input")
-	TObjectPtr<UAuraInputConfig> InputConfig;
 
 	UPROPERTY()
 	TObjectPtr<UAuraAbilitySystemComponent> AuraAbilitySystemComponent;

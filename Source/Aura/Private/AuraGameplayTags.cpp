@@ -132,39 +132,59 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	 * INPUT TAGS
 	 */
 
-	GameplayTags.InputTag_LMB = UGameplayTagsManager::Get().AddNativeGameplayTag(
-		FName("InputTag.LMB"),
-		FString("Input Tag for Left Mouse Button")
+	GameplayTags.InputTag_Primary = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("InputTag.Primary"),
+		FString("Input Tag for Primary action")
 		);
 
-	GameplayTags.InputTag_RMB = UGameplayTagsManager::Get().AddNativeGameplayTag(
-		FName("InputTag.RMB"),
-		FString("Input Tag for Right Mouse Button")
+	GameplayTags.InputTag_Secondary = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("InputTag.Secondary"),
+		FString("Input Tag for Secondary action")
 		);
 
 	GameplayTags.InputTag_1 = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("InputTag.1"),
-		FString("Input Tag for 1 key")
+		FString("Input Tag for Skill 1")
 		);
 
 	GameplayTags.InputTag_2 = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("InputTag.2"),
-		FString("Input Tag for 2 key")
+		FString("Input Tag for Skill 2")
 		);
 
 	GameplayTags.InputTag_3 = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("InputTag.3"),
-		FString("Input Tag for 3 key")
+		FString("Input Tag for Skill 3")
 		);
 
 	GameplayTags.InputTag_4 = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("InputTag.4"),
-		FString("Input Tag for 4 key")
+		FString("Input Tag for Skill 4")
 		);
 
-	GameplayTags.InputTag_SpaceBar = UGameplayTagsManager::Get().AddNativeGameplayTag(
-		FName("InputTag.SpaceBar"),
-		FString("Input Tag for Space Bar key")
+	GameplayTags.InputTag_Dodge = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("InputTag.Dodge"),
+		FString("Input Tag for dodging")
+		);
+
+	GameplayTags.InputTag_Confirm = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("InputTag.Confirm"),
+		FString("Input Tag for confirming actions or UI selections")
+		);
+
+	GameplayTags.InputTag_Cancel = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("InputTag.Cancel"),
+		FString("Input Tag for canceling actions or going back from UI menus")
+		);
+
+	GameplayTags.InputTag_AttributesMenu = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("InputTag.AttributesMenu"),
+		FString("Input Tag for toggling the attributes menu")
+		);
+
+	GameplayTags.InputTag_SkillsMenu = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("InputTag.SkillsMenu"),
+		FString("Input Tag for toggling the skills menu")
 		);
 
 	/*
@@ -292,6 +312,60 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	 * Abilities Tags
 	 */
 
+	GameplayTags.Abilities_NONE = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.NONE"),
+		FString("No ability.")
+		);
+
+	// Type
+
+	GameplayTags.Abilities_Type_Active = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Type.Active"),
+		FString("Active type ability. Must receive an input to activate.")
+		);
+
+	GameplayTags.Abilities_Type_Passive = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Type.Passive"),
+		FString("Passive type ability. Active at all times if equipped.")
+		);
+
+	GameplayTags.Abilities_Type_Triggered = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Type.Triggered"),
+		FString("Triggered type ability. Activates when receiving a non input trigger (result of an effect).")
+		);
+
+	GameplayTags.Abilities_Type_None = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Type.None"),
+		FString("No type ability.")
+		);
+
+	// Status
+
+	GameplayTags.Abilities_Status_Locked = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Status.Locked"),
+		FString("Ability is locked and can't be learned.")
+		);
+
+	GameplayTags.Abilities_Status_Eligible = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Status.Eligible"),
+		FString("Ability is locked, but can be learned.")
+		);
+
+	GameplayTags.Abilities_Status_Unlocked = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Status.Unlocked"),
+		FString("Ability is unlocked, but is not equipped and can't be used.")
+		);
+
+	GameplayTags.Abilities_Status_Equipped = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Status.Equipped"),
+		FString("Ability is equipped and can be used.")
+		);
+
+	GameplayTags.Abilities_Status_Native = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Status.Native"),
+		FString("Ability is native and can always be used. This status is not supposed to change.")
+		);
+	
 	// Attacks
 
 	GameplayTags.Abilities_HitReact = UGameplayTagsManager::Get().AddNativeGameplayTag(
@@ -327,6 +401,16 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	GameplayTags.Cooldown_Attack_Fireball = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Cooldown.Attack.Fireball"),
 		FString("Fireball ability cooldown")
+		);
+
+	GameplayTags.Abilities_Attack_ChainLightning = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Attack.ChainLightning"),
+		FString("ChainLightning ability")
+		);
+
+	GameplayTags.Cooldown_Attack_ChainLightning = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Cooldown.Attack.ChainLightning"),
+		FString("ChainLightning ability cooldown")
 		);
 
 	// Summoning

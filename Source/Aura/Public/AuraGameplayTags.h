@@ -16,7 +16,7 @@ struct FAuraGameplayTags
 public:
   static const FAuraGameplayTags& Get() { return GameplayTags; }
   static void InitializeNativeGameplayTags();
-
+	
 	FGameplayTag Attributes_Primary_Strength;
 	FGameplayTag Attributes_Primary_Intelligence;
 	FGameplayTag Attributes_Primary_Toughness;
@@ -59,16 +59,36 @@ public:
 
 	TMap<FGameplayTag, FGameplayTag> DamageTypesToResistances;
 	
-	FGameplayTag InputTag_LMB;
-	FGameplayTag InputTag_RMB;
+	FGameplayTag InputTag_Primary;
+	FGameplayTag InputTag_Secondary;
 	FGameplayTag InputTag_1;
 	FGameplayTag InputTag_2;
 	FGameplayTag InputTag_3;
 	FGameplayTag InputTag_4;
-	FGameplayTag InputTag_SpaceBar;
+	FGameplayTag InputTag_Dodge;
+
+	FGameplayTag InputTag_Confirm;
+	FGameplayTag InputTag_Cancel;
+	
+	FGameplayTag InputTag_AttributesMenu;
+	FGameplayTag InputTag_SkillsMenu;
 	
 	FGameplayTag Effects_HitReact;
 	FGameplayTag Effects_Invulnerable;
+
+	FGameplayTag Abilities_NONE;
+
+	FGameplayTag Abilities_Type_Active;
+	FGameplayTag Abilities_Type_Passive;
+	FGameplayTag Abilities_Type_Triggered;
+	FGameplayTag Abilities_Type_None;
+	
+	FGameplayTag Abilities_Status_Locked;
+	FGameplayTag Abilities_Status_Eligible;
+	FGameplayTag Abilities_Status_Unlocked;
+	FGameplayTag Abilities_Status_Equipped;
+	FGameplayTag Abilities_Status_Native;
+
 
 	FGameplayTag Abilities_HitReact;
 	FGameplayTag Abilities_Action_Dodge;
@@ -78,9 +98,10 @@ public:
 	FGameplayTag Abilities_Attack_Secondary;
 	FGameplayTag Abilities_Attack_Fireball;
 	FGameplayTag Cooldown_Attack_Fireball;
+	FGameplayTag Abilities_Attack_ChainLightning;
+	FGameplayTag Cooldown_Attack_ChainLightning;
 
 	FGameplayTag Abilities_Summon;
-
 
 private:
 	static FAuraGameplayTags GameplayTags;

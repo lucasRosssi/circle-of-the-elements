@@ -86,6 +86,12 @@ void AMainPlayerController::ShowDamageNumber_Implementation(
 	}
 }
 
+void AMainPlayerController::ChangeUsingGamepad(bool bIsGamepad)
+{
+	bUsingGamepad = bIsGamepad;
+	ControllerDeviceChangedDelegate.Broadcast(bIsGamepad);
+}
+
 void AMainPlayerController::SyncOccludedActors()
 {
 	if (!ShouldCheckCameraOcclusion()) return;

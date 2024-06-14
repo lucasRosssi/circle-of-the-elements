@@ -11,13 +11,11 @@
 
 void UAttributeMenuWidgetController::BindCallbacksToDependencies()
 {
-	AAuraPlayerState* AuraPlayerState = CastChecked<AAuraPlayerState>(PlayerState);
-
-	AuraPlayerState->OnXPChangedDelegate.AddUObject(
+	GetAuraPlayerState()->OnXPChangedDelegate.AddUObject(
 		this,
 		&UAttributeMenuWidgetController::OnXPChanged
 	);
-	AuraPlayerState->OnAttributePointsChangedDelegate.AddUObject(
+	GetAuraPlayerState()->OnAttributePointsChangedDelegate.AddUObject(
 		this,
 		&UAttributeMenuWidgetController::OnAttributePointsChanged
 	);
@@ -38,11 +36,10 @@ void UAttributeMenuWidgetController::BindCallbacksToDependencies()
 
 void UAttributeMenuWidgetController::BroadcastInitialValues()
 {
-	const AAuraPlayerState* AuraPlayerState = CastChecked<AAuraPlayerState>(PlayerState);
 	check(AttributeInfo);
 
-	OnXPChanged(AuraPlayerState->GetXP());
-	OnAttributePointsChanged((AuraPlayerState->GetAttributePoints()));
+	OnXPChanged(GetAuraPlayerState()->GetXP());
+	OnAttributePointsChanged(GetAuraPlayerState()->GetAttributePoints());
 
 	for (auto& Tag : AttributeInfo.Get()->AttributeInformation)
 	{
@@ -52,14 +49,12 @@ void UAttributeMenuWidgetController::BroadcastInitialValues()
 
 void UAttributeMenuWidgetController::UpgradeAttribute(const FGameplayTag& AttributeTag)
 {
-	UAuraAbilitySystemComponent* AuraASC = CastChecked<UAuraAbilitySystemComponent>(AbilitySystemComponent);
-	AuraASC->UpgradeAttribute(AttributeTag);
+	GetAuraAbilitySystemComponent()->UpgradeAttribute(AttributeTag);
 }
 
-void UAttributeMenuWidgetController::OnXPChanged(int32 NewXP) const
+void UAttributeMenuWidgetController::OnXPChanged(int32 NewXP)
 {
-	const AAuraPlayerState* AuraPlayerState = CastChecked<AAuraPlayerState>(PlayerState);
-	const ULevelInfo* LevelInfo = AuraPlayerState->LevelInfo;
+	const ULevelInfo* LevelInfo = GetAuraPlayerState()->LevelInfo;
 	checkf(LevelInfo, TEXT("Unable to find LevelInfo. Please fill out AuraPlayerState Blueprint."));
 	
 	const int32 Level = LevelInfo->FindLevelByXP(NewXP);

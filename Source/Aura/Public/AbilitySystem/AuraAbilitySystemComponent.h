@@ -6,9 +6,25 @@
 #include "AbilitySystemComponent.h"
 #include "AuraAbilitySystemComponent.generated.h"
 
+class AAuraCharacterBase;
+struct FAuraGameplayTags;
+enum class EAbilityStatus : uint8;
 DECLARE_MULTICAST_DELEGATE_OneParam(FEffectAssetTags, const FGameplayTagContainer& /* AssetTags */)
-DECLARE_MULTICAST_DELEGATE_OneParam(FAbilitiesGiven, UAuraAbilitySystemComponent*);
+DECLARE_MULTICAST_DELEGATE(FAbilitiesGiven);
 DECLARE_DELEGATE_OneParam(FForEachAbility, const FGameplayAbilitySpec&);
+DECLARE_MULTICAST_DELEGATE_ThreeParams(
+	FAbilityStateChanged,
+	const FGameplayTag& /* AbilityTag */,
+	const FGameplayTag& /* StatusTag */,
+	int32 /* AbilityLevel */
+);
+DECLARE_MULTICAST_DELEGATE_FourParams(
+	FAbilityEquipped,
+	const FGameplayTag& /* AbilityTag */,
+	const FGameplayTag& /* StatusTag */,
+	const FGameplayTag& /* InputTag */,
+	const FGameplayTag& /* PreviousInputTag */
+);
 
 /**
  * 
@@ -24,6 +40,8 @@ public:
 
 	FEffectAssetTags EffectAssetTags;
 	FAbilitiesGiven AbilitiesGivenDelegate;
+	FAbilityStateChanged AbilityStateChanged;
+	FAbilityEquipped AbilityEquipped;
 
 	void AddCharacterAbilities(const TArray<TSubclassOf<UGameplayAbility>>& InAbilities);
 	bool bStartupAbilitiesGiven = false;
@@ -33,13 +51,55 @@ public:
 
 	void ForEachAbility(const FForEachAbility& Delegate);
 
+	UFUNCTION(BlueprintCallable)
+	AAuraCharacterBase* GetAvatarCharacter();
+
+	static void SetExclusiveGameplayTagFromSpec(
+		FGameplayAbilitySpec& AbilitySpec,
+		const FGameplayTag& GameplayTag,
+		FName ParentTag
+		);
+
 	static FGameplayTag GetAbilityTagFromSpec(const FGameplayAbilitySpec& AbilitySpec);
 	static FGameplayTag GetInputTagFromSpec(const FGameplayAbilitySpec& AbilitySpec);
+	static FGameplayTag GetAbilityStatusFromSpec(const FGameplayAbilitySpec& AbilitySpec);
+	static void SetAbilityStatusFromSpec(
+		FGameplayAbilitySpec& AbilitySpec,
+		const FGameplayTag& StatusTag
+		);
+	static void SetInputTagFromSpec(
+		FGameplayAbilitySpec& AbilitySpec,
+		const FGameplayTag& InputTag
+		);
+	void RemoveInputTagFromAbilities(const FGameplayTag& InputTag);
+	FGameplayTag GetStatusFromAbilityTag(const FGameplayTag& AbilityTag);
+	FGameplayTag GetInputTagFromAbilityTag(const FGameplayTag& AbilityTag);
+
+	FGameplayAbilitySpec* GetSpecFromAbilityTag(const FGameplayTag& AbilityTag);
 
 	void UpgradeAttribute(const FGameplayTag& AttributeTag);
 
 	UFUNCTION(Server, Reliable)
 	void ServerUpgradeAttribute(const FGameplayTag& AttributeTag);
+
+	void UpdateAbilityStatuses(int32 Level);
+
+	UFUNCTION(Server, Reliable)
+	void ServerSpendSkillPoint(const FGameplayTag& AbilityTag);
+
+	UFUNCTION(Server, Reliable)
+	void ServerEquipAbility(const FGameplayTag& AbilityTag, const FGameplayTag& InputTag);
+	UFUNCTION(Client, Reliable)
+	void ClientEquipAbility(
+		const FGameplayTag& AbilityTag,
+		const FGameplayTag& StatusTag,
+		const FGameplayTag& InputTag,
+		const FGameplayTag& PreviousInputTag
+		);
+
+	FString GetDescriptionByAbilityTag(const FGameplayTag& AbilityTag);
+	FString GetNextLevelDescriptionByAbilityTag(const FGameplayTag& AbilityTag);
+	FString GetLockedDescriptionByAbilityTag(const FGameplayTag& AbilityTag);
 protected:
 	virtual void OnRep_ActivateAbilities() override;
 	
@@ -48,5 +108,16 @@ protected:
 		const FGameplayEffectSpec& EffectSpec,
 		FActiveGameplayEffectHandle ActiveEffectHandle
 	);
+
+	UFUNCTION(Client, Reliable)
+	void ClientUpdateAbilityState(
+		const FGameplayTag& AbilityTag,
+		const FGameplayTag& StatusTag,
+		int32 AbilityLevel = 1
+	);
+
+private:
+	UPROPERTY()
+	AAuraCharacterBase* AvatarCharacter = nullptr;
 
 };

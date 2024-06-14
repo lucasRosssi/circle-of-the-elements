@@ -5,8 +5,11 @@
 #include "CoreMinimal.h"
 #include "AbilitySystemInterface.h"
 #include "GameFramework/PlayerState.h"
+#include "Interaction/AttributeSetInterface.h"
 #include "AuraPlayerState.generated.h"
 
+class UAuraAbilitySystemComponent;
+class AAuraCharacterBase;
 class ULevelInfo;
 class UAbilitySystemComponent;
 class UAttributeSet;
@@ -17,14 +20,20 @@ DECLARE_MULTICAST_DELEGATE_OneParam(FOnPlayerStatChanged, int32 /* StatValue */)
  * 
  */
 UCLASS()
-class AURA_API AAuraPlayerState : public APlayerState, public IAbilitySystemInterface
+class AURA_API AAuraPlayerState : public APlayerState, public IAbilitySystemInterface, public IAttributeSetInterface
 {
 	GENERATED_BODY()
 public:
 	AAuraPlayerState();
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+	UAuraAbilitySystemComponent* GetAuraASC();
 	UAttributeSet* GetAttributeSet() const { return AttributeSet; }
+
+	/* Attribute Set Interface */
+	virtual void SetMovementSpeed_Implementation(float InMovementSpeed) override;
+	virtual void SetActionSpeed_Implementation(float InActionSpeed) override;
+	/* END Attribute Set Interface */
 
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<ULevelInfo> LevelInfo;
@@ -55,6 +64,11 @@ protected:
 	TObjectPtr<UAttributeSet> AttributeSet;
 
 private:
+	UPROPERTY()
+	UAuraAbilitySystemComponent* AuraASC;
+	
+	AAuraCharacterBase* GetCharacterBase();
+	
 	UPROPERTY(VisibleAnywhere, ReplicatedUsing=OnRep_Level)
 	int32 Level = 1;
 	UFUNCTION()

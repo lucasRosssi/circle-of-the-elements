@@ -6,6 +6,7 @@
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
 #include "AbilitySystem/AuraAttributeSet.h"
 #include "AbilitySystem/Data/LevelInfo.h"
+#include "Character/AuraCharacterBase.h"
 #include "Interaction/PlayerInterface.h"
 #include "Net/UnrealNetwork.h"
 
@@ -36,6 +37,32 @@ UAbilitySystemComponent* AAuraPlayerState::GetAbilitySystemComponent() const
 	return AbilitySystemComponent;
 }
 
+UAuraAbilitySystemComponent* AAuraPlayerState::GetAuraASC()
+{
+	if (AuraASC == nullptr)
+	{
+		AuraASC = Cast<UAuraAbilitySystemComponent>(GetAbilitySystemComponent());
+	}
+	
+	return AuraASC;
+}
+
+void AAuraPlayerState::SetMovementSpeed_Implementation(float InMovementSpeed)
+{
+	if (const auto Character = GetCharacterBase())
+	{
+		Character->ChangeMovementSpeed(InMovementSpeed);
+	}
+}
+
+void AAuraPlayerState::SetActionSpeed_Implementation(float InActionSpeed)
+{
+	if (const auto Character = GetCharacterBase())
+	{
+		Character->ChangeActionSpeed(InActionSpeed);
+	}
+}
+
 void AAuraPlayerState::SetLevel(int32 InLevel)
 {
 	Level = InLevel;
@@ -56,6 +83,11 @@ void AAuraPlayerState::AddLevel(int32 InLevel)
 
 	AddAttributePoints(APReward);
 	AddSkillPoints(SPReward);
+
+	if (GetAuraASC())
+	{
+		GetAuraASC()->UpdateAbilityStatuses(Level);
+	}
 }
 
 void AAuraPlayerState::SetXP(int32 InXP)
@@ -110,6 +142,13 @@ void AAuraPlayerState::AddSkillPoints(int32 InSkillPoints)
 	
 	SkillPoints += InSkillPoints;
 	OnSkillPointsChangedDelegate.Broadcast(SkillPoints);
+}
+
+AAuraCharacterBase* AAuraPlayerState::GetCharacterBase()
+{
+	AAuraCharacterBase* CharacterBase = Cast<AAuraCharacterBase>(GetPawn());
+
+	return CharacterBase;
 }
 
 void AAuraPlayerState::OnRep_Level(int32 OldLevel)

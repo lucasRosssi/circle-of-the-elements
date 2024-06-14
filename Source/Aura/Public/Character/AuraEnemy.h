@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Character/AuraCharacterBase.h"
+#include "Interaction/AttributeSetInterface.h"
 #include "Interaction/TargetInterface.h"
 #include "UI/WidgetController/OverlayWidgetController.h"
 #include "AuraEnemy.generated.h"
@@ -15,7 +16,8 @@ class AAuraAIController;
  * 
  */
 UCLASS()
-class AURA_API AAuraEnemy : public AAuraCharacterBase, public ITargetInterface
+class AURA_API AAuraEnemy : public AAuraCharacterBase, public ITargetInterface, public 
+IAttributeSetInterface
 {
 	GENERATED_BODY()
 public:
@@ -32,6 +34,11 @@ public:
 	virtual int32 GetCharacterLevel_Implementation() override;
 	virtual void Die() override;
 	/** end Combat Interface */
+
+	/* Attribute Set Interface */
+	virtual void SetMovementSpeed_Implementation(float InMovementSpeed) override;
+	virtual void SetActionSpeed_Implementation(float InActionSpeed) override;
+	/* END Attribute Set Interface */
 
 	UPROPERTY(BlueprintAssignable)
 	FOnAttributeChangedSignature OnHealthChanged;
