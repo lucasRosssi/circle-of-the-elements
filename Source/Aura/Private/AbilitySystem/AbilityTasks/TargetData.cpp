@@ -5,6 +5,7 @@
 
 #include "AbilitySystemComponent.h"
 #include "AbilitySystem/Abilities/ActiveAbility.h"
+#include "Aura/Aura.h"
 #include "Player/MainPlayerController.h"
 
 UTargetData* UTargetData::
@@ -60,7 +61,7 @@ void UTargetData::SendMouseOrGamepadData()
 	else
 	{
 		MainPC->GetHitResultUnderCursor(
-			ECC_Visibility,
+			ECC_Target,
 			false,
 			HitResult
 		);

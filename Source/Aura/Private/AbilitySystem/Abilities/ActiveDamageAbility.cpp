@@ -6,19 +6,28 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
 
+FAbilityParams UActiveDamageAbility::MakeAbilityParamsFromDefaults(AActor* TargetActor) const
+{
+	FAbilityParams AbilityParams = Super::MakeAbilityParamsFromDefaults(TargetActor);
+	AbilityParams.DamageParams.DamageEffectClass = DamageEffectClass;
+	AbilityParams.DamageParams.BaseDamage = GetDamageAtLevel(GetAbilityLevel());
+	AbilityParams.DamageParams.DamageType = DamageType;
+	AbilityParams.DamageParams.bApplyHitReact = bApplyHitReact;
+
+	return AbilityParams;
+}
+
 void UActiveDamageAbility::CauseDamage(AActor* TargetActor)
 {
 	const FGameplayEffectSpecHandle DamageSpecHandle =  MakeOutgoingGameplayEffectSpec
 	(DamageEffectClass, 1.f);
-	for (auto Pair : DamageTypes)
-	{
-		const float ScaledDamage = Pair.Value.GetValueAtLevel(GetAbilityLevel());
-		UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(
-			DamageSpecHandle,
-			Pair.Key,
-			ScaledDamage
-		);
-	}
+	
+	const float ScaledDamage = GetDamageAtLevel(GetAbilityLevel());
+	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(
+		DamageSpecHandle,
+		DamageType,
+		ScaledDamage
+	);
 	
 	GetAbilitySystemComponentFromActorInfo()->ApplyGameplayEffectSpecToTarget(
 		*DamageSpecHandle.Data.Get(),
@@ -26,20 +35,12 @@ void UActiveDamageAbility::CauseDamage(AActor* TargetActor)
 	);
 }
 
-float UActiveDamageAbility::GetDamageAtLevel(
-	int32 Level,
-	FGameplayTag DamageTypeTag
-)
+float UActiveDamageAbility::GetDamageAtLevel(int32 Level) const
 {
-	if (const FScalableFloat* Damage = DamageTypes.Find(DamageTypeTag))
-	{
-		return Damage->GetValueAtLevel(Level);
-	}
-	
-	return 0.f;
+	return Damage.GetValueAtLevel(Level);
 }
 
-int32 UActiveDamageAbility::GetRoundedDamageAtLevel(int32 Level, FGameplayTag DamageTypeTag)
+int32 UActiveDamageAbility::GetRoundedDamageAtLevel(int32 Level) const
 {
-	return FMath::RoundToInt32(GetDamageAtLevel(Level, DamageTypeTag));
+	return FMath::RoundToInt32(GetDamageAtLevel(Level));
 }

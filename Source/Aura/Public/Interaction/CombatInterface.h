@@ -7,6 +7,11 @@
 #include "CombatInterface.generated.h"
 
 class UNiagaraSystem;
+class UAbilitySystemComponent;
+
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnASCRegistered, UAbilitySystemComponent*);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDeath, AActor*, DeadActor);
+
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI, BlueprintType)
 class UCombatInterface : public UInterface
@@ -30,6 +35,9 @@ public:
 	USkeletalMeshComponent* GetWeapon();
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	USkeletalMeshComponent* GetAvatarMesh();
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	FVector GetAbilitySocketLocation(const FName SocketName, bool bSocketInWeapon = true);
 
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
@@ -38,8 +46,11 @@ public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	UAnimMontage* GetHitReactMontage();
 
-	virtual void Die() = 0;
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	UAnimMontage* GetStunMontage();
 
+	virtual void Die(const FVector& DeathImpulse) = 0;
+	
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	void SetCombatTarget(AActor* InCombatTarget);
 
@@ -69,4 +80,16 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	ECharacterClass GetCharacterClass();
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void ApplyForce(const FVector& InForce);
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	USceneComponent* GetTopStatusEffectSceneComponent();
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	USceneComponent* GetBottomStatusEffectSceneComponent();
+	
+
+	virtual FOnASCRegistered& GetOnASCRegisteredDelegate() = 0;
+	virtual FOnDeath& GetOnDeathDelegate() = 0;
 };

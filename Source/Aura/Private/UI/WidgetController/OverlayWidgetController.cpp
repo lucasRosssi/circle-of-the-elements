@@ -104,7 +104,7 @@ void UOverlayWidgetController::OnAbilityEquipped(
 	const FGameplayTag& PreviousInputTag
 	)
 {
-	const FAuraGameplayTags Tags = FAuraGameplayTags::Get();
+	const FAuraGameplayTags& Tags = FAuraGameplayTags::Get();
 	FAuraAbilityInfo LastAbilitySlotInfo;
 	LastAbilitySlotInfo.StatusTag = Tags.Abilities_Status_Unlocked;
 	LastAbilitySlotInfo.InputTag = PreviousInputTag;

@@ -9,8 +9,11 @@
 #include "AuraNamedArguments.h"
 #include "AbilitySystem/Abilities/ActiveDamageAbility.h"
 #include "AbilitySystem/Abilities/BaseAbility.h"
+#include "AbilitySystem/Abilities/BeamAbility.h"
 #include "AbilitySystem/Data/AbilityInfo.h"
+#include "Aura/Aura.h"
 #include "Character/AuraCharacterBase.h"
+#include "Enums/TargetTeam.h"
 #include "Game/AuraGameModeBase.h"
 #include "Game/TeamComponent.h"
 #include "Interaction/CombatInterface.h"
@@ -87,6 +90,15 @@ UAbilityInfo* UAuraAbilitySystemLibrary::GetAbilitiesInfo(const UObject* WorldCo
 	);
 
 	return AuraGameMode->AbilityInfo;
+}
+
+UStatusEffectInfo* UAuraAbilitySystemLibrary::GetStatusEffectInfo(const UObject* WorldContextObject)
+{
+	const AAuraGameModeBase* AuraGameMode = CastChecked<AAuraGameModeBase>(
+		UGameplayStatics::GetGameMode(WorldContextObject)
+	);
+
+	return AuraGameMode->StatusEffectInfo;
 }
 
 void UAuraAbilitySystemLibrary::InitializeDefaultAttributes(
@@ -195,8 +207,94 @@ bool UAuraAbilitySystemLibrary::IsCriticalHit(
 	return false;
 }
 
+bool UAuraAbilitySystemLibrary::IsApplyingEffect(
+	const FGameplayEffectContextHandle& EffectContextHandle)
+{
+	const FAuraGameplayEffectContext* AuraEffectContext = 
+		static_cast<const FAuraGameplayEffectContext*>(EffectContextHandle.Get());
+
+	if (AuraEffectContext)
+	{
+		return AuraEffectContext->IsApplyingEffect();
+	}
+
+	return false;
+}
+
+float UAuraAbilitySystemLibrary::GetEffectValue(
+	const FGameplayEffectContextHandle& EffectContextHandle)
+{
+	const FAuraGameplayEffectContext* AuraEffectContext = 
+		static_cast<const FAuraGameplayEffectContext*>(EffectContextHandle.Get());
+
+	if (AuraEffectContext)
+	{
+		return AuraEffectContext->GetEffectValue();
+	}
+
+	return 0.f;
+}
+
+float UAuraAbilitySystemLibrary::GetEffectDuration(
+	const FGameplayEffectContextHandle& EffectContextHandle)
+{
+	const FAuraGameplayEffectContext* AuraEffectContext = 
+		static_cast<const FAuraGameplayEffectContext*>(EffectContextHandle.Get());
+
+	if (AuraEffectContext)
+	{
+		return AuraEffectContext->GetEffectDuration();
+	}
+
+	return 0.f;
+}
+
+FGameplayTag UAuraAbilitySystemLibrary::GetEffectType(
+	const FGameplayEffectContextHandle& EffectContextHandle)
+{
+	const FAuraGameplayEffectContext* AuraEffectContext = 
+		static_cast<const FAuraGameplayEffectContext*>(EffectContextHandle.Get());
+
+	if (AuraEffectContext)
+	{
+		if (AuraEffectContext->GetEffectType().IsValid())
+		{
+			return *AuraEffectContext->GetEffectType();
+		}
+	}
+
+	return FGameplayTag();
+}
+
+FVector UAuraAbilitySystemLibrary::GetForwardVector(const FGameplayEffectContextHandle& EffectContextHandle)
+{
+	const FAuraGameplayEffectContext* AuraEffectContext = 
+	static_cast<const FAuraGameplayEffectContext*>(EffectContextHandle.Get());
+
+	if (AuraEffectContext)
+	{
+		return AuraEffectContext->GetForwardVector();
+	}
+
+	return FVector::ZeroVector;
+}
+
+bool UAuraAbilitySystemLibrary::GetApplyHitReact(
+	const FGameplayEffectContextHandle& EffectContextHandle)
+{
+	const FAuraGameplayEffectContext* AuraEffectContext = 
+		static_cast<const FAuraGameplayEffectContext*>(EffectContextHandle.Get());
+
+	if (AuraEffectContext)
+	{
+		return AuraEffectContext->GetApplyHitReact();
+	}
+
+	return false;
+}
+
 void UAuraAbilitySystemLibrary::SetIsParried(FGameplayEffectContextHandle& EffectContextHandle,
-	bool bInParried)
+                                             bool bInParried)
 {
 	FAuraGameplayEffectContext* AuraEffectContext =
 		static_cast<FAuraGameplayEffectContext*>(EffectContextHandle.Get());
@@ -217,19 +315,97 @@ void UAuraAbilitySystemLibrary::SetIsCriticalHit(FGameplayEffectContextHandle& E
 	}
 }
 
+void UAuraAbilitySystemLibrary::SetIsApplyingEffect(
+	FGameplayEffectContextHandle& EffectContextHandle,
+	bool bInApplyingEffect
+	)
+{
+	FAuraGameplayEffectContext* AuraEffectContext =
+		static_cast<FAuraGameplayEffectContext*>(EffectContextHandle.Get());
+	if (AuraEffectContext)
+	{
+		AuraEffectContext->SetIsApplyingEffect(bInApplyingEffect);
+	}
+}
+
+void UAuraAbilitySystemLibrary::SetEffectValue(
+	FGameplayEffectContextHandle& EffectContextHandle,
+	float InEffectValue
+	)
+{
+	FAuraGameplayEffectContext* AuraEffectContext =
+		static_cast<FAuraGameplayEffectContext*>(EffectContextHandle.Get());
+	if (AuraEffectContext)
+	{
+		AuraEffectContext->SetEffectValue(InEffectValue);
+	}
+}
+
+void UAuraAbilitySystemLibrary::SetEffectDuration(
+	FGameplayEffectContextHandle& EffectContextHandle,
+	float InEffectDuration
+	)
+{
+	FAuraGameplayEffectContext* AuraEffectContext =
+		static_cast<FAuraGameplayEffectContext*>(EffectContextHandle.Get());
+	if (AuraEffectContext)
+	{
+		AuraEffectContext->SetEffectDuration(InEffectDuration);
+	}
+}
+
+void UAuraAbilitySystemLibrary::SetEffectType(
+	FGameplayEffectContextHandle& EffectContextHandle,
+	const FGameplayTag& InEffectType
+	)
+{
+	FAuraGameplayEffectContext* AuraEffectContext =
+		static_cast<FAuraGameplayEffectContext*>(EffectContextHandle.Get());
+	if (AuraEffectContext)
+	{
+		const TSharedPtr<FGameplayTag> EffectType = MakeShared<FGameplayTag>(InEffectType);
+		AuraEffectContext->SetEffectType(EffectType);
+	}
+}
+
+void UAuraAbilitySystemLibrary::SetForwardVector(FGameplayEffectContextHandle& EffectContextHandle,
+	const FVector& InForce)
+{
+	FAuraGameplayEffectContext* AuraEffectContext =
+		static_cast<FAuraGameplayEffectContext*>(EffectContextHandle.Get());
+	if (AuraEffectContext)
+	{
+		AuraEffectContext->SetForwardVector(InForce);
+	}
+}
+
+void UAuraAbilitySystemLibrary::SetApplyHitReact(FGameplayEffectContextHandle& EffectContextHandle,
+	bool bInApplyHitReact)
+{
+	FAuraGameplayEffectContext* AuraEffectContext =
+		static_cast<FAuraGameplayEffectContext*>(EffectContextHandle.Get());
+	if (AuraEffectContext)
+	{
+		AuraEffectContext->SetApplyHitReact(bInApplyHitReact);
+	}
+}
+
 void UAuraAbilitySystemLibrary::GetAliveCharactersWithinRadius(
-	const UObject* WorldContextObject,
+	const AActor* ContextActor,
 	TArray<AActor*>& OutOverlappingActors,
 	TArray<AActor*>& ActorsToIgnore,
 	float Radius,
-	const FVector& SphereOrigin
+	const FVector& SphereOrigin,
+	ETargetTeam TargetTeam
 )
 {
+	if (TargetTeam == ETargetTeam::ETT_Self) return;
+	
 	FCollisionQueryParams SphereParams;
 	SphereParams.AddIgnoredActors(ActorsToIgnore);
 
 	TArray<FOverlapResult> Overlaps;
-	if (const UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull))
+	if (const UWorld* World = GEngine->GetWorldFromContextObject(ContextActor, EGetWorldErrorMode::LogAndReturnNull))
 	{
 		World->OverlapMultiByObjectType(
 			Overlaps,
@@ -243,15 +419,100 @@ void UAuraAbilitySystemLibrary::GetAliveCharactersWithinRadius(
 		{
 			AActor* OverlappedActor = Overlap.GetActor();
 
-			if (!OverlappedActor->Implements<UCombatInterface>()) return;
-			
-			const bool bIsAlive = !ICombatInterface::Execute_IsDead(OverlappedActor);
-			if (bIsAlive)
+			if (!OverlappedActor->Implements<UCombatInterface>()) continue;
+			if (ICombatInterface::Execute_IsDead(OverlappedActor)) continue;
+
+			if (TargetTeam == ETargetTeam::ETT_Both)
+			{
+				OutOverlappingActors.AddUnique(OverlappedActor);
+				continue;
+			}
+
+			if (TargetTeam == ETargetTeam::ETT_Enemies &&
+				AreActorsEnemies(ContextActor, OverlappedActor)
+				)
+			{
+				OutOverlappingActors.AddUnique(OverlappedActor);
+				continue;
+			}
+
+			if (TargetTeam == ETargetTeam::ETT_Friends &&
+				AreActorsFriends(ContextActor, OverlappedActor)
+				)
 			{
 				OutOverlappingActors.AddUnique(OverlappedActor);
 			}
 		}
 	}
+}
+
+AActor* UAuraAbilitySystemLibrary::GetClosestActorToTarget(
+	AActor* TargetActor,
+	float Radius,
+	ETargetTeam TargetTeam,
+	TArray<AActor*>& ActorsToIgnore
+	)
+{
+	if (TargetTeam == ETargetTeam::ETT_Self) return nullptr;
+	
+	const UWorld* World = GEngine->GetWorldFromContextObject(TargetActor, EGetWorldErrorMode::LogAndReturnNull);
+	if (!World) return nullptr;
+	
+	ActorsToIgnore.AddUnique(TargetActor);
+	
+	FCollisionQueryParams SphereParams;
+	SphereParams.AddIgnoredActors(ActorsToIgnore);
+
+	TArray<FOverlapResult> Overlaps;
+	World->OverlapMultiByObjectType(
+		Overlaps,
+		TargetActor->GetActorLocation(),
+		FQuat::Identity,
+		FCollisionObjectQueryParams(FCollisionObjectQueryParams::InitType::AllDynamicObjects),
+		FCollisionShape::MakeSphere(Radius),
+		SphereParams
+	);
+
+	if (Overlaps.IsEmpty()) return nullptr;
+	
+	float ClosestDistance = Radius;
+	AActor* ClosestActor = nullptr;
+	for (auto& Overlap : Overlaps)
+	{
+		AActor* OverlappedActor = Overlap.GetActor();
+
+		if (!OverlappedActor->Implements<UCombatInterface>()) continue;
+		if (ICombatInterface::Execute_IsDead(OverlappedActor)) continue;
+		const float Distance = TargetActor->GetDistanceTo(OverlappedActor);
+		if (ClosestDistance < Distance) continue;
+
+		if (TargetTeam == ETargetTeam::ETT_Enemies &&
+			AreActorsEnemies(TargetActor, OverlappedActor)
+			)
+		{
+			ClosestDistance = Distance;
+			ClosestActor = OverlappedActor;
+			continue;
+		}
+
+		if (
+			TargetTeam == ETargetTeam::ETT_Friends &&
+			AreActorsFriends(TargetActor, OverlappedActor)
+			)
+		{
+			ClosestDistance = Distance;
+			ClosestActor = OverlappedActor;
+			continue;
+		}
+
+		if (TargetTeam == ETargetTeam::ETT_Both)
+		{
+			ClosestDistance = Distance;
+			ClosestActor = OverlappedActor;
+		}
+	}
+
+	return ClosestActor;
 }
 
 bool UAuraAbilitySystemLibrary::AreActorsFriends(const AActor* FirstActor, const AActor* 
@@ -270,8 +531,61 @@ bool UAuraAbilitySystemLibrary::AreActorsFriends(const AActor* FirstActor, const
 	return FirstTeamComponent->TeamID == SecondTeamComponent->TeamID;
 }
 
+void UAuraAbilitySystemLibrary::GetFriendsWithinRadius(
+	AActor* TargetActor,
+	TArray<AActor*>& OutFriends,
+	float Radius,
+	const FVector& SphereOrigin)
+{
+	TArray ActorsToIgnore({
+		TargetActor
+	});
+	GetAliveCharactersWithinRadius(
+	 TargetActor,
+	 OutFriends,
+	 ActorsToIgnore,
+	 Radius,
+	 SphereOrigin,
+	 ETargetTeam::ETT_Friends
+	);
+}
+
+void UAuraAbilitySystemLibrary::GetFriendsWithinTrace(
+	AActor* TargetActor,
+	TArray<AActor*>& OutFriends,
+	const FVector& Start,
+	const FVector& End,
+	float Radius)
+{
+	const TArray ActorsToIgnore({ TargetActor });
+	TArray<FHitResult> HitResults;
+	UKismetSystemLibrary::SphereTraceMulti(
+		TargetActor,
+		Start,
+		End,
+		Radius,
+		ETT_MultiHitTrace,
+		false,
+		ActorsToIgnore,
+		EDrawDebugTrace::None,
+		HitResults,
+		true
+	);
+
+	for (const auto& HitResult : HitResults)
+	{
+		if (
+			HitResult.GetActor() &&
+			AreActorsFriends(TargetActor, HitResult.GetActor())
+			)
+		{
+			OutFriends.AddUnique(HitResult.GetActor());
+		}
+	}
+}
+
 bool UAuraAbilitySystemLibrary::AreActorsEnemies(const AActor* FirstActor, const AActor* 
-SecondActor)
+                                                 SecondActor)
 {
 	if (!IsValid(FirstActor) || !IsValid(SecondActor)) return false;
 	
@@ -284,6 +598,27 @@ SecondActor)
 	}
 
 	return FirstTeamComponent->TeamID != SecondTeamComponent->TeamID;
+}
+
+void UAuraAbilitySystemLibrary::GetEnemiesWithinRadius(AActor* TargetActor,
+	TArray<AActor*>& OutEnemies, float Radius, const FVector& SphereOrigin)
+{
+	TArray ActorsToIgnore({
+		TargetActor
+	});
+	GetAliveCharactersWithinRadius(
+	 TargetActor,
+	 OutEnemies,
+	 ActorsToIgnore,
+	 Radius,
+	 SphereOrigin,
+	 ETargetTeam::ETT_Enemies
+	);
+}
+
+TArray<AActor*> UAuraAbilitySystemLibrary::GetAllTeamMembersFromActor(AActor* Actor)
+{
+	return TArray({ Actor });
 }
 
 bool UAuraAbilitySystemLibrary::IsPlayerUsingGamepad(const AActor* AvatarActor)
@@ -305,16 +640,16 @@ bool UAuraAbilitySystemLibrary::IsTargetInvulnerable(AActor* TargetActor)
 
 	if (!ASC) return false;
 
-	return ASC->HasMatchingGameplayTag(FAuraGameplayTags::Get().Effects_Invulnerable);
+	return ASC->HasMatchingGameplayTag(FAuraGameplayTags::Get().StatusEffects_Invulnerable);
 }
 
 FString UAuraAbilitySystemLibrary::GetAbilityDescription(
-	const UObject* WorldContextObject,
+	const UAbilityInfo* AbilityInfo,
 	const FGameplayTag& AbilityTag,
 	int32 Level
 	)
 {
-	FAuraAbilityInfo Info = GetAbilitiesInfo(WorldContextObject)->FindAbilityInfoByTag(AbilityTag);
+	FAuraAbilityInfo Info = AbilityInfo->FindAbilityInfoByTag(AbilityTag);
 	UBaseAbility* Ability = Info.Ability.GetDefaultObject();
 	FormatAbilityDescriptionAtLevel(Ability, Level, Info.Description);
 	
@@ -337,12 +672,12 @@ FString UAuraAbilitySystemLibrary::GetAbilityDescription(
 }
 
 FString UAuraAbilitySystemLibrary::GetAbilityNextLevelDescription(
-	const UObject* WorldContextObject,
+	const UAbilityInfo* AbilityInfo,
 	const FGameplayTag& AbilityTag,
 	int32 Level
 	)
 {
-	FAuraAbilityInfo Info = GetAbilitiesInfo(WorldContextObject)->FindAbilityInfoByTag(AbilityTag);
+	FAuraAbilityInfo Info = AbilityInfo->FindAbilityInfoByTag(AbilityTag);
 	UBaseAbility* Ability = Info.Ability.GetDefaultObject();
 	FormatAbilityDescriptionAtLevel(Ability, Level, Info.NextLevelDescription);
 
@@ -391,18 +726,38 @@ void UAuraAbilitySystemLibrary::FormatAbilityDescriptionAtLevel(
 	FText& OutDescription
 	)
 {
-	const FAuraGameplayTags Tags = FAuraGameplayTags::Get();
-	const FAuraNamedArguments Args = FAuraNamedArguments::Get();
+	const FAuraNamedArguments& Args = FAuraNamedArguments::Get();
+
+	if (const UActiveAbility* ActiveAbility = Cast<UActiveAbility>(Ability))
+		if (ActiveAbility->IsBounceModeActive())
+		{
+			OutDescription = FText::FormatNamed(
+				OutDescription,
+				Args.BounceCount_0,
+				ActiveAbility->GetMaxBounceCountAtLevel(Level),
+				Args.BounceCount_1,
+				ActiveAbility->GetMaxBounceCountAtLevel(Level + 1)
+			);
+		}
 	
-	if (UActiveDamageAbility* DamageAbility = Cast<UActiveDamageAbility>(Ability))
+	if (const UActiveDamageAbility* DamageAbility = Cast<UActiveDamageAbility>(Ability))
 	{
 		OutDescription = FText::FormatNamed(
 			OutDescription,
-			Args.FDmg_0,
-			DamageAbility->GetRoundedDamageAtLevel(Level, Tags.Damage_Fire),
-			Args.FDmg_1,
-			DamageAbility->GetRoundedDamageAtLevel(Level + 1, Tags.Damage_Fire)
+			Args.Dmg_0,
+			DamageAbility->GetRoundedDamageAtLevel(Level),
+			Args.Dmg_1,
+			DamageAbility->GetRoundedDamageAtLevel(Level + 1)
 			);
+
+		if (const UBeamAbility* BeamAbility = Cast<UBeamAbility>(DamageAbility))
+		{
+			OutDescription = FText::FormatNamed(
+				OutDescription,
+				Args.Period,
+				BeamAbility->GetBeamTickPeriod()
+			);
+		}
 	}
 }
 
@@ -449,6 +804,165 @@ FString UAuraAbilitySystemLibrary::GetAbilityLockedDescription(
 	}
 	
 	return RequirementText;
+}
+
+FGameplayEffectContextHandle UAuraAbilitySystemLibrary::ApplyAbilityEffect(
+	const FAbilityParams& AbilityParams,
+	bool& bSuccess
+	)
+{
+	bSuccess = false;
+	
+	const AActor* SourceAvatarActor = AbilityParams.SourceASC->GetAvatarActor();
+	
+	FGameplayEffectContextHandle EffectContextHandle = AbilityParams
+		.SourceASC->MakeEffectContext();
+	EffectContextHandle.AddSourceObject(SourceAvatarActor);
+
+	if (HasAnyHarmfulEffectBlockTag(AbilityParams.TargetASC))
+	{
+		if (HasAnyParryTag(AbilityParams.TargetASC))
+		{
+			const FGameplayTagContainer TagContainer({
+				FAuraGameplayTags::Get().Abilities_Reaction_ShieldStackRemove
+			});
+			AbilityParams.TargetASC->TryActivateAbilitiesByTag(TagContainer);
+		}
+		return EffectContextHandle;
+	}
+	
+	const FDamageParams& DamageParams = AbilityParams.DamageParams;
+	const FEffectParams& EffectParams = AbilityParams.EffectParams;
+	
+	SetForwardVector(EffectContextHandle, AbilityParams.ForwardVector);
+	
+	if (DamageParams.IsValid())
+	{
+		SetApplyHitReact(EffectContextHandle, DamageParams.bApplyHitReact);
+
+		const FGameplayEffectSpecHandle DamageSpecHandle = AbilityParams.SourceASC->MakeOutgoingSpec(
+				DamageParams.DamageEffectClass,
+				AbilityParams.AbilityLevel,
+				EffectContextHandle
+				);
+
+		UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(
+			DamageSpecHandle,
+			DamageParams.DamageType,
+			DamageParams.BaseDamage
+			);
+		
+		AbilityParams.TargetASC
+			->ApplyGameplayEffectSpecToSelf(*DamageSpecHandle.Data);
+		bSuccess = true;
+	}
+
+	if (EffectParams.IsValid())
+	{
+		const FGameplayEffectSpecHandle EffectSpecHandle = AbilityParams.SourceASC->MakeOutgoingSpec(
+				EffectParams.GameplayEffectClass,
+				AbilityParams.AbilityLevel,
+				EffectContextHandle
+				);
+
+		UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(
+			EffectSpecHandle,
+			EffectParams.GameplayTag,
+			EffectParams.Value
+			);
+		UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(
+			EffectSpecHandle,
+			FAuraGameplayTags::Get().StatusEffects_Duration,
+			EffectParams.Duration
+			);
+
+		AbilityParams.TargetASC
+			->ApplyGameplayEffectSpecToSelf(*EffectSpecHandle.Data);
+		
+		bSuccess = true;
+	}
+
+	return EffectContextHandle;
+}
+
+bool UAuraAbilitySystemLibrary::HasAnyHarmfulEffectBlockTag(const UAbilitySystemComponent* TargetASC)
+{
+	const FAuraGameplayTags& Tags = FAuraGameplayTags::Get();
+	const TArray EffectBlockTagsArray({
+		Tags.StatusEffects_Invulnerable,
+		Tags.StatusEffects_Buff_Shield
+	});
+	
+	const FGameplayTagContainer EffectBlockTagsContainer = FGameplayTagContainer::CreateFromArray(EffectBlockTagsArray);
+	return TargetASC->HasAnyMatchingGameplayTags(EffectBlockTagsContainer);
+}
+
+bool UAuraAbilitySystemLibrary::HasAnyParryTag(const UAbilitySystemComponent* TargetASC)
+{
+	const FAuraGameplayTags& Tags = FAuraGameplayTags::Get();
+	const TArray ParryTagsArray({
+		Tags.StatusEffects_Buff_Shield
+	});
+	
+	const FGameplayTagContainer ParryTagsContainer = FGameplayTagContainer::CreateFromArray
+	(ParryTagsArray);
+	return TargetASC->HasAnyMatchingGameplayTags(ParryTagsContainer);
+}
+
+TArray<FRotator> UAuraAbilitySystemLibrary::EvenlySpacedRotators(
+	const FVector& Forward,
+	const FVector& Axis,
+	float Spread,
+	int32 Count
+	)
+{
+	TArray<FRotator> Rotators;
+	
+	if (Count > 1)
+	{
+		const FVector LeftOfSpread = Forward.RotateAngleAxis(-Spread / 2.f, Axis);
+		const float DeltaSpread = Spread / (Count - 1);
+
+		for (int32 i = 0; i < Count; i++)
+		{
+			const FVector Direction = LeftOfSpread.RotateAngleAxis(DeltaSpread * i, Axis);
+			Rotators.Add(Direction.Rotation());
+		}
+	}
+	else
+	{
+		Rotators.Add(Forward.Rotation());
+	}
+
+	return Rotators;
+}
+
+TArray<FVector> UAuraAbilitySystemLibrary::EvenlyRotatedVectors(
+	const FVector& Forward,
+	const FVector& Axis,
+	float Spread,
+	int32 Count
+	)
+{
+	TArray<FVector> Vectors;
+	
+	if (Count > 1)
+	{
+		const FVector LeftOfSpread = Forward.RotateAngleAxis(-Spread / 2.f, Axis);
+		const float DeltaSpread = Spread / (Count - 1);
+
+		for (int32 i = 0; i < Count; i++)
+		{
+			const FVector Direction = LeftOfSpread.RotateAngleAxis(DeltaSpread * i, Axis);
+			Vectors.Add(Direction);
+		}
+	}
+	else
+	{
+		Vectors.Add(Forward);
+	}
+
+	return Vectors;
 }
 
 int32 UAuraAbilitySystemLibrary::GetXPRewardForTypeAndLevel(

@@ -1,7 +1,81 @@
 #pragma once
 
+#include "GameplayEffect.h"
 #include "GameplayEffectTypes.h"
 #include "AuraAbilityTypes.generated.h"
+
+USTRUCT(BlueprintType)
+struct FDamageParams
+{
+	GENERATED_BODY()
+	
+	UPROPERTY(BlueprintReadWrite)
+	TSubclassOf<UGameplayEffect> DamageEffectClass = nullptr;
+
+	UPROPERTY(BlueprintReadWrite)
+	FGameplayTag DamageType = FGameplayTag();
+	
+	UPROPERTY(BlueprintReadWrite)
+	float BaseDamage = 0.f;
+
+	UPROPERTY(BlueprintReadWrite)
+	bool bApplyHitReact = false;
+
+	bool IsValid() const
+	{
+		return DamageEffectClass != nullptr;
+	}
+};
+
+USTRUCT(BlueprintType)
+struct FEffectParams
+{
+	GENERATED_BODY()
+	
+	UPROPERTY(BlueprintReadWrite)
+	TSubclassOf<UGameplayEffect> GameplayEffectClass = nullptr;
+
+	UPROPERTY(BlueprintReadWrite)
+	FGameplayTag GameplayTag = FGameplayTag();
+	
+	UPROPERTY(BlueprintReadWrite)
+	float Value = 0.f;
+
+	UPROPERTY(BlueprintReadWrite)
+	float Duration = 0.f;
+
+	bool IsValid() const
+	{
+		return GameplayEffectClass != nullptr && GameplayTag.IsValid();
+	}
+};
+
+USTRUCT(BlueprintType)
+struct FAbilityParams
+{
+	GENERATED_BODY()
+	
+	UPROPERTY(BlueprintReadWrite)
+	TObjectPtr<UObject> WorldContextObject = nullptr;
+
+	UPROPERTY(BlueprintReadWrite)
+	TObjectPtr<UAbilitySystemComponent> SourceASC;
+	
+	UPROPERTY(BlueprintReadWrite)
+	TObjectPtr<UAbilitySystemComponent> TargetASC;
+	
+	UPROPERTY(BlueprintReadWrite)
+	int32 AbilityLevel = 1;
+
+	UPROPERTY(BlueprintReadWrite)
+	FDamageParams DamageParams = FDamageParams();
+
+	UPROPERTY(BlueprintReadWrite)
+	FEffectParams EffectParams = FEffectParams();
+
+	UPROPERTY(BlueprintReadWrite)
+	FVector ForwardVector = FVector::ZeroVector;
+};
 
 USTRUCT(BlueprintType)
 struct FAuraGameplayEffectContext : public FGameplayEffectContext
@@ -11,9 +85,21 @@ struct FAuraGameplayEffectContext : public FGameplayEffectContext
 public:
 	bool IsCriticalHit() const { return bCriticalHit; }
 	bool IsParried() const { return bParried; }
+	bool IsApplyingEffect() const { return bApplyingEffect; }
+	float GetEffectValue() const { return EffectValue; }
+	float GetEffectDuration() const { return EffectDuration; }
+	TSharedPtr<FGameplayTag> GetEffectType() const { return EffectType; }
+	FVector GetForwardVector() const { return ForwardVector; }
+	bool GetApplyHitReact() const { return bApplyHitReact; }
 
 	void SetIsCriticalHit(bool bInCriticalHit) { bCriticalHit = bInCriticalHit; }
 	void SetIsParried(bool bInParried) { bParried = bInParried; }
+	void SetIsApplyingEffect(bool bInApplyingEffect) { bApplyingEffect = bInApplyingEffect; }
+	void SetEffectValue(float InEffectValue) { EffectValue = InEffectValue; }
+	void SetEffectDuration(float InEffectDuration) { EffectDuration = InEffectDuration; }
+	void SetEffectType(TSharedPtr<FGameplayTag> InEffectType) { EffectType = InEffectType; }
+	void SetForwardVector(const FVector& InVector) { ForwardVector = InVector; }
+	void SetApplyHitReact(bool InApplyHitReact) { bApplyHitReact = InApplyHitReact; }
 	
 	/** Returns the actual struct used for serialization, subclasses must override this! */
 	virtual UScriptStruct* GetScriptStruct() const
@@ -42,6 +128,22 @@ protected:
 	bool bParried = false;
 	UPROPERTY()
 	bool bCriticalHit = false;
+	UPROPERTY()
+	bool bDoT = false;
+	UPROPERTY()
+	bool bApplyingEffect = false;
+	UPROPERTY()
+	float EffectValue = 0.f;
+	UPROPERTY()
+	float EffectDuration = 0.f;
+	
+	TSharedPtr<FGameplayTag> EffectType;
+
+	UPROPERTY()
+	FVector ForwardVector = FVector::ZeroVector;
+
+	UPROPERTY()
+	bool bApplyHitReact = true;
 };
 
 template<>

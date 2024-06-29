@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "AbilitySystemInterface.h"
+#include "AbilitySystem/Components/StatusEffectsManager.h"
 #include "Enums/CharacterType.h"
 #include "AbilitySystem/Data/CharacterInfo.h"
 #include "Enums/CharacterName.h"
@@ -35,26 +36,35 @@ public:
 	ECharacterName GetCharacterName() const { return CharacterName; }
 	
 	virtual void HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
-
-	virtual void Die() override;
-
+	
 	UFUNCTION(NetMulticast, Reliable)
-	virtual void MulticastHandleDeath();
+	virtual void MulticastHandleDeath(const FVector& DeathImpulse);
 
 	/** Combat Interface */
-	virtual UAnimMontage* GetHitReactMontage_Implementation() override;
 	virtual UAnimMontage* GetDodgeMontage_Implementation() override;
+	virtual UAnimMontage* GetHitReactMontage_Implementation() override;
+	virtual UAnimMontage* GetStunMontage_Implementation() override;
 	virtual void SetCombatTarget_Implementation(AActor* InCombatTarget) override;
 	virtual AActor* GetCombatTarget_Implementation() const override;
 	virtual USkeletalMeshComponent* GetWeapon_Implementation() override;
+	virtual USkeletalMeshComponent* GetAvatarMesh_Implementation() override;
 	virtual FVector GetAbilitySocketLocation_Implementation(const FName SocketName, bool bSocketInWeapon = true) override;;
+	virtual void Die(const FVector& DeathImpulse = FVector::ZeroVector) override;
 	virtual bool IsDead_Implementation() const override;
 	virtual AActor* GetAvatar_Implementation() override;
 	virtual UNiagaraSystem* GetBloodEffect_Implementation() override;
 	virtual USoundBase* GetHitSound_Implementation() override;
 	virtual ECharacterType GetCharacterType_Implementation() override;
 	virtual ECharacterClass GetCharacterClass_Implementation() override;
+	virtual FOnASCRegistered& GetOnASCRegisteredDelegate() override;
+	virtual FOnDeath& GetOnDeathDelegate() override;
+	virtual void ApplyForce_Implementation(const FVector& InForce) override;
+	virtual USceneComponent* GetTopStatusEffectSceneComponent_Implementation() override;
+	virtual USceneComponent* GetBottomStatusEffectSceneComponent_Implementation() override;
 	/** end Combat Interface */
+
+	FOnASCRegistered OnASCRegistered;
+	FOnDeath OnDeath;
 	
 	UPROPERTY(BlueprintReadOnly, Category="Combat")
 	bool bHitReacting = false;
@@ -82,11 +92,14 @@ protected:
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnSummoned();
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Montages|Combat")
-	TObjectPtr<UAnimMontage> HitReactMontage;
-
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Montages|Combat")
 	TObjectPtr<UAnimMontage> DodgeMontage;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Montages|Combat")
+	TObjectPtr<UAnimMontage> HitReactMontage;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Montages|Combat")
+	TObjectPtr<UAnimMontage> StunMontage;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
 	TObjectPtr<USkeletalMeshComponent> Weapon;
@@ -122,6 +135,9 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Attributes")
 	TSubclassOf<UGameplayEffect> DefaultVitalAttributes;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Attributes")
+	TSubclassOf<UGameplayEffect> DefaultRegenerationEffect;
 
 	void ApplyEffectToSelf(TSubclassOf<UGameplayEffect> GameplayEffectClass, float Level) const;
 	virtual void InitializeDefaultAttributes() const;
@@ -164,6 +180,13 @@ protected:
 	float DefaultWalkSpeed = 600.f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Speed")
 	float CurrentWalkSpeed = DefaultWalkSpeed;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UStatusEffectsManager> StatusEffectsManager;
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<USceneComponent> TopStatusEffectSceneComponent;
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<USceneComponent> BottomStatusEffectSceneComponent;
 
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "Abilities")

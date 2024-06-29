@@ -10,7 +10,17 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 {
 	/*
 	 * PRIMARY ATTRIBUTES
-	 */ 
+	 */
+
+	GameplayTags.Attributes = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Attributes"),
+		FString("Attribute tags")
+		);
+
+	GameplayTags.Attributes_Primary = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Attributes.Primary"),
+		FString("Primary attribute tags")
+		);
 	
 	GameplayTags.Attributes_Primary_Strength = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Attributes.Primary.Strength"),
@@ -40,6 +50,11 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	/*
 	 * SECONDARY ATTRIBUTES
 	 */
+
+	GameplayTags.Attributes_Secondary = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Attributes.Secondary"),
+		FString("Secondary attribute tags")
+		);
 
 	GameplayTags.Attributes_Secondary_MaxHealth = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Attributes.Secondary.MaxHealth"),
@@ -109,6 +124,11 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	 * SPECIAL ATTRIBUTES
 	 */
 
+	GameplayTags.Attributes_Special = UGameplayTagsManager::Get().AddNativeGameplayTag(
+			FName("Attributes.Special"),
+			FString("Special attribute tags")
+			);
+	
 	GameplayTags.Attributes_Special_ParryChance = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Attributes.Special.ParryChance"),
 		FString("Chance to parry an attack and negate damage")
@@ -123,6 +143,11 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	 * META ATTRIBUTES
 	 */
 
+	GameplayTags.Attributes_Meta = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Attributes.Meta"),
+		FString("Meta attribute tags")
+		);
+
 	GameplayTags.Attributes_Meta_IncomingXP = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Attributes.Meta.IncomingXP"),
 		FString("Incoming XP Meta Attribute")
@@ -131,6 +156,11 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	/*
 	 * INPUT TAGS
 	 */
+
+	GameplayTags.InputTag = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("InputTag"),
+		FString("Input tags")
+		);
 
 	GameplayTags.InputTag_Primary = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("InputTag.Primary"),
@@ -193,7 +223,7 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 
 	GameplayTags.Damage = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Damage"),
-		FString("Damage")
+		FString("Damage tags")
 		);
 
 	GameplayTags.Damage_Physical = UGameplayTagsManager::Get().AddNativeGameplayTag(
@@ -229,6 +259,11 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	/*
 	 * Resistances Tags
 	 */
+
+	GameplayTags.Attributes_Resistance = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Attributes.Resistance"),
+		FString("Resistance attribute tags")
+		);
 
 	GameplayTags.Attributes_Resistance_Physical = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Attributes.Resistance.Physical"),
@@ -295,29 +330,158 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	);
 	
 	/*
-	 * Effects Tags
+	 * Status Effects Tags
 	 */
-
-	GameplayTags.Effects_HitReact = UGameplayTagsManager::Get().AddNativeGameplayTag(
-		FName("Effects.HitReact"),
-		FString("Hit reaction effect")
+	
+	GameplayTags.StatusEffects = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("StatusEffects"),
+		FString("Status Effect tags")
 		);
 
-	GameplayTags.Effects_Invulnerable = UGameplayTagsManager::Get().AddNativeGameplayTag(
-		FName("Effects.Invulnerable"),
+	GameplayTags.StatusEffects_Duration = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("StatusEffects.Duration"),
+		FString("Duration for the status effect")
+		);
+
+
+	GameplayTags.StatusEffects_Invulnerable = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("StatusEffects.Invulnerable"),
 		FString("Invulnerability effect")
 		);
 
+	GameplayTags.StatusEffects_ManaRegenOff = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("StatusEffects.ManaRegenOff"),
+		FString("Effect that stops mana regen in some situations (ongoing spending, few seconds after spending)")
+		);
+
+	// Buffs
+
+	GameplayTags.StatusEffects_Buff = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("StatusEffects.Buff"),
+		FString("Buff effect tags")
+		);
+
+	GameplayTags.StatusEffects_Buff_Shield = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("StatusEffects.Buff.Shield"),
+		FString("Blocks limited instances of damage")
+		);
+
+	// Debuffs
+
+	GameplayTags.StatusEffects_Debuff = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("StatusEffects.Debuff"),
+		FString("Debuff effect tags")
+		);
+
+	GameplayTags.StatusEffects_Debuff_Bleeding = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("StatusEffects.Debuff.Bleeding"),
+		FString("Bleeding effect. Slow overtime damage. Stacks when applied and when moving.")
+		);
+
+	GameplayTags.StatusEffects_Debuff_Burning = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("StatusEffects.Debuff.Burning"),
+		FString("Burning effect. Quick overtime damage. Can stack.")
+		);
+
+	GameplayTags.StatusEffects_Debuff_Chill = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("StatusEffects.Debuff.Chill"),
+		FString("Chill effect. Reduces movement and actions speeds. Can stack.")
+		);
+
+	// Incapacitations
+
+	GameplayTags.StatusEffects_Incapacitation = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("StatusEffects.Incapacitation"),
+		FString("Incapacitation effects tags. Interrupt and block most actions.")
+		);
+
+	GameplayTags.StatusEffects_Incapacitation_HitReact = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("StatusEffects.Incapacitation.HitReact"),
+		FString("Hit reaction effect.")
+		);
+	
+	GameplayTags.StatusEffects_Incapacitation_Knockback = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("StatusEffects.Incapacitation.Knockback"),
+		FString("Knockback effect. Gets pushed away.")
+		);
+	
+	GameplayTags.StatusEffects_Incapacitation_Stun = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("StatusEffects.Incapacitation.Stun"),
+		FString("Stun effect. Can't do anything. Temporarily resist new applications after recovery.")
+		);
+
+	
+	 // Conditions
+	 
+	GameplayTags.StatusEffects_Condition = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("StatusEffects.Condition"),
+		FString("Condition tags")
+		);
+
+	GameplayTags.StatusEffects_Condition_Alive = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("StatusEffects.Condition.Alive"),
+		FString("Alive condition. Entity can interact with the world normally.")
+		);
+
+	GameplayTags.StatusEffects_Condition_Dead = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("StatusEffects.Condition.Dead"),
+		FString("Dead condition. Entity cannot interact with world, but can be revived or reanimated.")
+		);
+
+	GameplayTags.StatusEffects_Condition_Reanimated = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("StatusEffects.Condition.Reanimated"),
+		FString("Reanimated tag. Entity was dead, but brought back to 'life' under someone else's control.")
+		);
+
+	GameplayTags.StatusEffects_Condition_Possessed = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("StatusEffects.Condition.Possessed"),
+		FString("Possessed tag. Entity is under someone else's control.")
+		);
+
+	/*
+	 * Immunities Tags
+	 */
+
+	GameplayTags.Immunities = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Immunities"),
+		FString("Immunity tags")
+		);
+
+	GameplayTags.Immunities_Incapacitation = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Immunities.Incapacitation"),
+		FString("Immunity to incapacitation effects")
+		);
+
+	GameplayTags.Immunities_Incapacitation_Stun = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Immunities.Incapacitation.Stun"),
+		FString("Immunity to stun effect")
+		);
+	
 	/*
 	 * Abilities Tags
 	 */
+
+	GameplayTags.Abilities = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities"),
+		FString("Ability tags")
+		);
 
 	GameplayTags.Abilities_NONE = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Abilities.NONE"),
 		FString("No ability.")
 		);
 
+	GameplayTags.Cooldown = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Cooldown"),
+		FString("Cooldown tags")
+		);
+
 	// Type
+
+	GameplayTags.Abilities_Type = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Type"),
+		FString("Type of ability tags")
+		);
 
 	GameplayTags.Abilities_Type_Active = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Abilities.Type.Active"),
@@ -340,6 +504,11 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		);
 
 	// Status
+
+	GameplayTags.Abilities_Status= UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Status"),
+		FString("Status of ability tags")
+		);
 
 	GameplayTags.Abilities_Status_Locked = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Abilities.Status.Locked"),
@@ -366,11 +535,33 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FString("Ability is native and can always be used. This status is not supposed to change.")
 		);
 	
-	// Attacks
+	// Reactions
 
-	GameplayTags.Abilities_HitReact = UGameplayTagsManager::Get().AddNativeGameplayTag(
-		FName("Abilities.HitReact"),
+	GameplayTags.Abilities_Reaction = UGameplayTagsManager::Get().AddNativeGameplayTag(
+			FName("Abilities.Reaction"),
+			FString("Reaction ability tags")
+			);
+	
+	GameplayTags.Abilities_Reaction_HitReact = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Reaction.HitReact"),
 		FString("Hit reaction ability")
+		);
+
+	GameplayTags.Abilities_Reaction_Stun = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Reaction.Stun"),
+		FString("Get stunned ability")
+		);
+
+	GameplayTags.Abilities_Reaction_ShieldStackRemove = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Reaction.ShieldStackRemove"),
+		FString("Removes stacks of shield if applicable")
+		);
+
+	// Actions
+
+	GameplayTags.Abilities_Action = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Action"),
+		FString("Action ability tags")
 		);
 	
 	GameplayTags.Abilities_Action_Dodge = UGameplayTagsManager::Get().AddNativeGameplayTag(
@@ -382,41 +573,160 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FName("Cooldown.Action.Dodge"),
 		FString("Dodge ability cooldown")
 		);
+
+	// Attacks
 	
-	GameplayTags.Abilities_Attack_Primary = UGameplayTagsManager::Get().AddNativeGameplayTag(
-		FName("Abilities.Attack.Primary"),
+	GameplayTags.Abilities_Active = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Active"),
+		FString("Attack ability tags")
+		);
+	
+	GameplayTags.Abilities_Active_Primary = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Active.Primary"),
 		FString("Primary attack ability")
 		);
 
-	GameplayTags.Abilities_Attack_Secondary = UGameplayTagsManager::Get().AddNativeGameplayTag(
-		FName("Abilities.Attack.Secondary"),
+	GameplayTags.Abilities_Active_Secondary = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Active.Secondary"),
 		FString("Secondary attack ability")
 		);
 
-	GameplayTags.Abilities_Attack_Fireball = UGameplayTagsManager::Get().AddNativeGameplayTag(
-		FName("Abilities.Attack.Fireball"),
+	// Aura active abilities
+	
+	GameplayTags.Abilities_Active_Aura = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Active.Aura"),
+		FString("Aura active abilities")
+		);
+
+	GameplayTags.Abilities_Active_Aura_Fireball = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Active.Aura.Fireball"),
 		FString("Fireball ability")
 		);
 
-	GameplayTags.Cooldown_Attack_Fireball = UGameplayTagsManager::Get().AddNativeGameplayTag(
-		FName("Cooldown.Attack.Fireball"),
+	GameplayTags.Cooldown_Active_Aura_Fireball = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Cooldown.Active.Aura.Fireball"),
 		FString("Fireball ability cooldown")
 		);
 
-	GameplayTags.Abilities_Attack_ChainLightning = UGameplayTagsManager::Get().AddNativeGameplayTag(
-		FName("Abilities.Attack.ChainLightning"),
+	GameplayTags.Abilities_Active_Aura_ChainLightning = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Active.Aura.ChainLightning"),
 		FString("ChainLightning ability")
 		);
 
-	GameplayTags.Cooldown_Attack_ChainLightning = UGameplayTagsManager::Get().AddNativeGameplayTag(
-		FName("Cooldown.Attack.ChainLightning"),
+	GameplayTags.Cooldown_Active_Aura_ChainLightning = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Cooldown.Active.Aura.ChainLightning"),
 		FString("ChainLightning ability cooldown")
+		);
+
+	GameplayTags.Abilities_Active_Aura_ArcaneMissiles = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Active.Aura.ArcaneMissiles"),
+		FString("ArcaneMissiles ability")
+		);
+
+	GameplayTags.Cooldown_Active_Aura_ArcaneMissiles = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Cooldown.Active.Aura.ArcaneMissiles"),
+		FString("ArcaneMissiles ability cooldown")
+		);
+
+	GameplayTags.Abilities_Active_Aura_ArcaneShards = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Active.Aura.ArcaneShards"),
+		FString("ArcaneShards ability")
+		);
+
+	GameplayTags.Cooldown_Active_Aura_ArcaneShards = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Cooldown.Active.Aura.ArcaneShards"),
+		FString("ArcaneShards ability cooldown")
+		);
+
+	// Vilkar active abilities
+
+	GameplayTags.Abilities_Active_Vilkar = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Active.Vilkar"),
+		FString("Vilkar active abilities")
 		);
 
 	// Summoning
 
-	GameplayTags.Abilities_Summon = UGameplayTagsManager::Get().AddNativeGameplayTag(
-		FName("Abilities.Summon"),
+	GameplayTags.Abilities_Active_Summon = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Active.Summon"),
 		FString("Summon ability")
 		);
+
+	// Passive
+
+	GameplayTags.Abilities_Passive = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Passive"),
+		FString("Passive abilities")
+		);
+
+	// Aura passive abilities
+
+	GameplayTags.Abilities_Passive_Aura = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Passive.Aura"),
+		FString("Aura passive abilities")
+		);
+
+	GameplayTags.Abilities_Passive_Aura_EnergyShield = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Passive.Aura.EnergyShield"),
+		FString("Energy Shield ability")
+		);
+
+	GameplayTags.Cooldown_Passive_Aura_EnergyShield = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Cooldown.Passive.Aura.EnergyShield"),
+		FString("Energy Shield cooldown")
+		);
+
+
+	GameplayTags.Abilities_Passive_Aura_LifeSiphon = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Passive.Aura.LifeSiphon"),
+		FString("Life Siphon ability")
+		);
+
+	
+	GameplayTags.Abilities_Passive_Aura_SpiritSiphon = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Passive.Aura.SpiritSiphon"),
+		FString("Spirit Siphon ability")
+		);
+
+	// Vilkar passive abilities
+
+	GameplayTags.Abilities_Passive_Vilkar = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Passive.Vilkar"),
+		FString("Vilkar passive abilities")
+		);
+
+	/*
+	 * Map of Tags to their children
+	 */
+
+	const TArray BuffTags({
+		GameplayTags.StatusEffects_Buff_Shield
+	});
+	const TArray DebuffTags({
+		GameplayTags.StatusEffects_Debuff_Bleeding,
+		GameplayTags.StatusEffects_Debuff_Burning,
+		GameplayTags.StatusEffects_Debuff_Chill,
+	});
+	const TArray IncapacitationTags({
+		GameplayTags.StatusEffects_Incapacitation_HitReact,
+		GameplayTags.StatusEffects_Incapacitation_Knockback,
+		GameplayTags.StatusEffects_Incapacitation_Stun,
+	});
+	const TArray ConditionTags({
+		GameplayTags.StatusEffects_Condition_Alive,
+		GameplayTags.StatusEffects_Condition_Dead,
+		GameplayTags.StatusEffects_Condition_Reanimated,
+		GameplayTags.StatusEffects_Condition_Possessed,
+	});
+	TArray<FGameplayTag> StatusEffectTags;
+	StatusEffectTags.Append(BuffTags);
+	StatusEffectTags.Append(DebuffTags);
+	StatusEffectTags.Append(IncapacitationTags);
+	StatusEffectTags.Append(ConditionTags);
+	
+	GameplayTags.ParentsToChildren.Add(GameplayTags.StatusEffects, StatusEffectTags);
+	GameplayTags.ParentsToChildren.Add(GameplayTags.StatusEffects_Buff, BuffTags);
+	GameplayTags.ParentsToChildren.Add(GameplayTags.StatusEffects_Debuff, DebuffTags);
+	GameplayTags.ParentsToChildren.Add(GameplayTags.StatusEffects_Incapacitation, IncapacitationTags);
+	GameplayTags.ParentsToChildren.Add(GameplayTags.StatusEffects_Condition, ConditionTags);
 }

@@ -7,7 +7,7 @@
 #include "PlayerInterface.generated.h"
 
 // This class does not need to be modified.
-UINTERFACE(MinimalAPI)
+UINTERFACE(MinimalAPI, BlueprintType)
 class UPlayerInterface : public UInterface
 {
 	GENERATED_BODY()
@@ -42,4 +42,9 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent)
 	void SpendSkillPoints(int32 Amount);
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void ShowTargetingActor(TSubclassOf<ATargetingActor> TargetingActorClass);
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void HideTargetingActor();
 };

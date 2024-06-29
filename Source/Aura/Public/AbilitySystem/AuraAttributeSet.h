@@ -13,6 +13,8 @@
 	GAMEPLAYATTRIBUTE_VALUE_SETTER(PropertyName) \
 	GAMEPLAYATTRIBUTE_VALUE_INITTER(PropertyName)
 
+class ICombatInterface;
+
 USTRUCT()
 struct FEffectProperties
 {
@@ -54,6 +56,7 @@ public:
 
 	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
 	virtual void PreAttributeBaseChange(const FGameplayAttribute& Attribute, float& NewValue) const override;
+	void HandleDeath(const FEffectProperties& Props, float DeathImpulseMagnitude);
 	virtual void PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue) override;
 
 	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
@@ -201,6 +204,14 @@ public:
 	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, IncomingDamage);
 
 	UPROPERTY(BlueprintReadOnly, Category = "Meta Attributes")
+	FGameplayAttributeData IncomingDoT;
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, IncomingDoT);
+
+	UPROPERTY(BlueprintReadOnly, Category = "Meta Attributes")
+	FGameplayAttributeData IncomingForce;
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, IncomingForce);
+
+	UPROPERTY(BlueprintReadOnly, Category = "Meta Attributes")
 	FGameplayAttributeData IncomingXP;
 	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, IncomingXP);
 	
@@ -309,11 +320,23 @@ public:
 	void OnRep_CooldownReduction(const FGameplayAttributeData& OldCooldownReduction) const;
 
 private:
-	void SetEffectProperties(const FGameplayEffectModCallbackData& Data, FEffectProperties& Props) 
-	const;
-
-	void ShowFloatingText(const FEffectProperties& Props, float Damage, bool bParried, bool bCriticalHit) 
-	const;
-
+	void HandleIncomingDamage(const FEffectProperties& Props, const FGameplayAttribute& Attribute);
+	void HandleIncomingXP(const FEffectProperties& Props);
+	void HandleKnockback(const FEffectProperties& Props);
+	void SetEffectProperties(
+		const FGameplayEffectModCallbackData& Data,
+		FEffectProperties& Props
+		) const;
+	void ShowFloatingText(
+		const FEffectProperties& Props,
+		float Damage,
+		bool bParried,
+		bool bCriticalHit
+		)	const;
 	void SendXPEvent(const FEffectProperties& Props);
+
+	ICombatInterface* GetAvatarCombatInterface();
+	ICombatInterface* AvatarCombatInterface;
+
+	bool bAvatarDead = false;
 };

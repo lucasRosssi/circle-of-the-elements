@@ -6,6 +6,8 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "EnhancedInputSubsystems.h"
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
+#include "Actor/TargetingActor.h"
+#include "Aura/Aura.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Input/AuraInputComponent.h"
@@ -19,6 +21,28 @@ AMainPlayerController::AMainPlayerController()
 {
 	bReplicates = true;
 	
+}
+
+void AMainPlayerController::ShowTargetingActor(TSubclassOf<ATargetingActor> TargetingActorClass)
+{
+	if (!IsValid(TargetingActor))
+	{
+		bShowMouseCursor = false;
+		TargetingActor = GetWorld()->SpawnActor<ATargetingActor>(
+			TargetingActorClass,
+			CursorHit.ImpactPoint,
+			FRotator::ZeroRotator
+			);
+	}
+}
+
+void AMainPlayerController::HideTargetingActor()
+{
+	bShowMouseCursor = true;
+	if (IsValid(TargetingActor))
+	{
+		TargetingActor->Destroy();
+	}
 }
 
 void AMainPlayerController::BeginPlay()
@@ -59,7 +83,8 @@ void AMainPlayerController::PlayerTick(float DeltaTime)
 {
 	Super::PlayerTick(DeltaTime);
 
-	CursorTrace();	
+	CursorTrace();
+	UpdateTargetingActorLocation();
 }
 
 void AMainPlayerController::ShowDamageNumber_Implementation(
@@ -89,6 +114,7 @@ void AMainPlayerController::ShowDamageNumber_Implementation(
 void AMainPlayerController::ChangeUsingGamepad(bool bIsGamepad)
 {
 	bUsingGamepad = bIsGamepad;
+	bShowMouseCursor = !bIsGamepad;
 	ControllerDeviceChangedDelegate.Broadcast(bIsGamepad);
 }
 
@@ -225,7 +251,6 @@ void AMainPlayerController::MoveComplete(const FInputActionValue& InputActionVal
 
 void AMainPlayerController::CursorTrace()
 {
-	FHitResult CursorHit;
 	GetHitResultUnderCursor(ECC_Visibility, false, CursorHit);
 
 	if (!CursorHit.bBlockingHit)
@@ -289,7 +314,9 @@ void AMainPlayerController::CursorTrace()
 
 void AMainPlayerController::AbilityInputTagPressed(FGameplayTag InputTag)
 {
-	
+	if (!GetASC()) return;
+
+	GetASC()->AbilityInputTagPressed(InputTag);
 }
 
 void AMainPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
@@ -317,6 +344,14 @@ UAuraAbilitySystemComponent* AMainPlayerController::GetASC()
 	}
 	
 	return AuraAbilitySystemComponent;
+}
+
+void AMainPlayerController::UpdateTargetingActorLocation()
+{
+	if (IsValid(TargetingActor))
+	{
+		TargetingActor->SetActorLocation(CursorHit.ImpactPoint);
+	}
 }
 
 bool AMainPlayerController::HideOccludedActor(const AActor* Actor)
@@ -379,7 +414,7 @@ bool AMainPlayerController::OnHideOccludedActor(const FCameraOccludedActor& Occl
 		OccludedActor.StaticMesh->SetMaterial(i, FadeMaterial);
 	}
 	OccludedActor.StaticMesh->SetCollisionResponseToChannel(
-		ECC_Visibility,
+		ECC_Target,
 		ECR_Ignore
 	);
  

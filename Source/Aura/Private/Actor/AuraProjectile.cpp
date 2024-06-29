@@ -14,6 +14,7 @@
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "Actor/ProjectileEffect.h"
 #include "Aura/Aura.h"
+#include "Interaction/CombatInterface.h"
 
 AAuraProjectile::AAuraProjectile()
 {
@@ -29,10 +30,24 @@ AAuraProjectile::AAuraProjectile()
 	Sphere->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Overlap);
 	Sphere->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
 
+	HomingRadius = CreateDefaultSubobject<USphereComponent>("HomingRadius");
+	HomingRadius->SetupAttachment(GetRootComponent());
+	HomingRadius->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	HomingRadius->SetCollisionResponseToAllChannels(ECR_Ignore);
+	HomingRadius->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
+
+
 	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>("ProjectileMovement");
 	ProjectileMovement->InitialSpeed = 550.f;
 	ProjectileMovement->MaxSpeed = 550.f;
 	ProjectileMovement->ProjectileGravityScale = 0.f;
+}
+
+void AAuraProjectile::ActivateHomingMode()
+{
+	ProjectileMovement->bIsHomingProjectile = true;
+
+	HomingRadius->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 }
 
 void AAuraProjectile::BeginPlay()
@@ -40,6 +55,7 @@ void AAuraProjectile::BeginPlay()
 	Super::BeginPlay();
 	SetLifeSpan(LifeSpan);
 	Sphere->OnComponentBeginOverlap.AddDynamic(this, &AAuraProjectile::OnSphereOverlap);
+	HomingRadius->OnComponentBeginOverlap.AddDynamic(this, &AAuraProjectile::OnEnteringHomingRadius);
 
 	if (ProjectileNiagaraEffect)
 	{
@@ -50,7 +66,7 @@ void AAuraProjectile::BeginPlay()
 		);
 
 		const FAttachmentTransformRules Rules = FAttachmentTransformRules(
-			EAttachmentRule::SnapToTarget,
+			EAttachmentRule::KeepWorld,
 			false
 		);
 		ProjectileNiagaraEffectActor->AttachToActor(this, Rules);
@@ -58,16 +74,12 @@ void AAuraProjectile::BeginPlay()
 	
 	if (MuzzleEffect)
 	{
-		UNiagaraComponent* MuzzleNiagara = UNiagaraFunctionLibrary::SpawnSystemAtLocation(
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation(
 			this,
 			MuzzleEffect,
 			GetActorLocation(),
 			GetActorRotation()
 		);
-		if (MuzzleNiagara)
-		{
-			MuzzleNiagara->SetNiagaraVariableFloat(FString("Scale"), MuzzleEffectScale);
-		}
 	}
 		
 	if (MuzzleSound)
@@ -83,37 +95,52 @@ void AAuraProjectile::BeginPlay()
 	}
 }
 
+void AAuraProjectile::OnHit()
+{
+	UGameplayStatics::PlaySoundAtLocation(
+		this,
+		ImpactSound,
+		GetActorLocation(),
+		FRotator::ZeroRotator,
+		ImpactSoundVolume,
+		ImpactSoundPitch
+	);
+	UNiagaraFunctionLibrary::SpawnSystemAtLocation(
+		this,
+		ImpactEffect,
+		GetActorLocation(),
+		GetActorRotation()
+	);
+
+	if (ProjectileNiagaraEffectActor)
+	{
+		ProjectileNiagaraEffectActor->DeactivateNiagara();
+		ProjectileNiagaraEffectActor = nullptr;
+	}
+}
+
 void AAuraProjectile::Destroyed()
 {
-	if (!bHit && !HasAuthority())
-	{
-		UGameplayStatics::PlaySoundAtLocation(
-			this,
-			ImpactSound,
-			GetActorLocation(),
-			FRotator::ZeroRotator,
-			ImpactSoundVolume,
-			ImpactSoundPitch
-		);
-		UNiagaraComponent* ImpactNiagara = UNiagaraFunctionLibrary::SpawnSystemAtLocation(
-			this,
-			ImpactEffect,
-			GetActorLocation(),
-			GetActorRotation()
-		);
-		if (ImpactNiagara)
-		{
-			ImpactNiagara->SetNiagaraVariableFloat(FString("Scale"), ImpactEffectScale);
-		}
+	if (!bHit && !HasAuthority())	OnHit();
 
-		if (ProjectileNiagaraEffectActor)
-		{
-			ProjectileNiagaraEffectActor->DeactivateNiagara();
-			ProjectileNiagaraEffectActor = nullptr;
-		}
+	if (ProjectileNiagaraEffectActor)
+	{
+		ProjectileNiagaraEffectActor->DeactivateNiagara();
+		ProjectileNiagaraEffectActor = nullptr;
 	}
-	
 	Super::Destroyed();
+}
+
+void AAuraProjectile::ScheduleHomingActivation(float Delay)
+{
+	FTimerHandle HomingTimer;
+	GetWorld()->GetTimerManager().SetTimer(
+		HomingTimer,
+		this,
+		&AAuraProjectile::ActivateHomingMode,
+		Delay,
+		false
+	);
 }
 
 void AAuraProjectile::OnSphereOverlap(
@@ -125,10 +152,8 @@ void AAuraProjectile::OnSphereOverlap(
 	const FHitResult& SweepResult
 )
 {
-	const TSharedPtr<FGameplayEffectSpec> SpecHandleData = DamageEffectSpecHandle.Data;
-	if (!SpecHandleData.IsValid()) return;
-	
-	const AActor* EffectCauser = SpecHandleData.Get()->GetContext().GetEffectCauser();
+	if (!IsValid(AbilityParams.SourceASC)) return;
+	const AActor* EffectCauser = AbilityParams.SourceASC->GetAvatarActor();
 	
 	if (
 		// OtherActor is the instigator
@@ -136,38 +161,11 @@ void AAuraProjectile::OnSphereOverlap(
 		// OtherActor is friend
 		UAuraAbilitySystemLibrary::AreActorsFriends(EffectCauser, OtherActor)
 	)
-	{
 		return;
-	}
 
-	if (UAuraAbilitySystemLibrary::IsTargetInvulnerable(OtherActor))
-	{
-		return;
-	}
+	if (UAuraAbilitySystemLibrary::IsTargetInvulnerable(OtherActor)) return;
 	
-	UGameplayStatics::PlaySoundAtLocation(
-		this,
-		ImpactSound,
-		GetActorLocation(),
-		FRotator::ZeroRotator
-	);
-	UNiagaraComponent* ImpactNiagara = UNiagaraFunctionLibrary::SpawnSystemAtLocation(
-		this,
-		ImpactEffect,
-		GetActorLocation(),
-		GetActorRotation()
-	);
-	if (ImpactNiagara)
-	{
-		ImpactNiagara->SetNiagaraVariableFloat(FString("Scale"), ImpactEffectScale);
-	}
-	ImpactEffect->GetExposedParameters();
-
-	if (ProjectileNiagaraEffectActor)
-	{
-		ProjectileNiagaraEffectActor->DeactivateNiagara();
-		ProjectileNiagaraEffectActor = nullptr;
-	}
+	OnHit();
 
 	if (HasAuthority())
 	{
@@ -176,7 +174,10 @@ void AAuraProjectile::OnSphereOverlap(
 				::GetAbilitySystemComponent(OtherActor)
 		)
 		{
-			TargetASC->ApplyGameplayEffectSpecToSelf(*DamageEffectSpecHandle.Data.Get());
+			AbilityParams.ForwardVector = GetActorForwardVector();
+			AbilityParams.TargetASC = TargetASC;
+			bool bSuccess;
+			UAuraAbilitySystemLibrary::ApplyAbilityEffect(AbilityParams, bSuccess);
 		}
 		
 		Destroy();
@@ -186,3 +187,71 @@ void AAuraProjectile::OnSphereOverlap(
 		bHit = true;
 	}
 }
+
+void AAuraProjectile::OnEnteringHomingRadius(
+	UPrimitiveComponent* OverlappedComponent,
+	AActor* OtherActor,
+	UPrimitiveComponent* OtherComp,
+	int32 OtherBodyIndex,
+	bool bFromSweep,
+	const FHitResult& SweepResult
+	)
+{
+	const AActor* EffectCauser = AbilityParams.SourceASC->GetAvatarActor();
+	
+	if (
+		// OtherActor is the instigator
+		EffectCauser == OtherActor ||
+		// Already has a target
+		IsValid(HomingTarget) ||
+		// OtherActor is friend
+		UAuraAbilitySystemLibrary::AreActorsFriends(EffectCauser, OtherActor)
+	)
+		return;
+
+	SetReplicateMovement(true);
+	MulticastHomingTarget(OtherActor);
+}
+
+void AAuraProjectile::OnHomingTargetDied(AActor* DeadActor)
+{
+	if (IsValid(DeadActor))
+	{
+		if (ICombatInterface* CombatTarget = Cast<ICombatInterface>(DeadActor))
+		{
+			CombatTarget->GetOnDeathDelegate().RemoveDynamic(this, &AAuraProjectile::OnHomingTargetDied);
+		}
+		
+		TArray<AActor*> ActorsToIgnore;
+		AActor* ClosestActor = UAuraAbilitySystemLibrary::GetClosestActorToTarget(
+			DeadActor,
+			HomingRadius->GetUnscaledSphereRadius(),
+			ETargetTeam::ETT_Friends,
+			ActorsToIgnore
+			);
+		
+		MulticastHomingTarget(ClosestActor);
+	}
+}
+
+void AAuraProjectile::MulticastHomingTarget_Implementation(AActor* Target)
+{
+	if (!IsValid(Target))
+	{
+		HomingTarget = nullptr;
+		ProjectileMovement->HomingTargetComponent = nullptr;
+		ProjectileMovement->bRotationFollowsVelocity = false;
+		return;
+	}
+	
+	HomingTarget = Target;
+	ProjectileMovement->HomingTargetComponent = Target->GetRootComponent();
+	ProjectileMovement->bRotationFollowsVelocity = true;
+
+	if (!HasAuthority()) return;
+	if (ICombatInterface* CombatTarget = Cast<ICombatInterface>(Target))
+	{
+		CombatTarget->GetOnDeathDelegate().AddDynamic(this, &AAuraProjectile::OnHomingTargetDied);
+	}
+}
+

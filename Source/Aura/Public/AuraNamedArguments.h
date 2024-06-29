@@ -24,8 +24,15 @@ public:
 	FString CD_0;
 	FString CD_1;
 	
-	FString FDmg_0;
-	FString FDmg_1;
+	FString Dmg_0;
+	FString Dmg_1;
+
+	FString Duration_0;
+	FString Duration_1;
+	FString Period;
+
+	FString BounceCount_0;
+	FString BounceCount_1;
 
 private:
 	static FAuraNamedArguments NamedArguments;

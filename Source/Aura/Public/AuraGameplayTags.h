@@ -17,12 +17,15 @@ public:
   static const FAuraGameplayTags& Get() { return GameplayTags; }
   static void InitializeNativeGameplayTags();
 	
+	FGameplayTag Attributes;
+	FGameplayTag Attributes_Primary;
 	FGameplayTag Attributes_Primary_Strength;
 	FGameplayTag Attributes_Primary_Intelligence;
 	FGameplayTag Attributes_Primary_Toughness;
 	FGameplayTag Attributes_Primary_Agility;
 	FGameplayTag Attributes_Primary_Finesse;
 
+	FGameplayTag Attributes_Secondary;
 	FGameplayTag Attributes_Secondary_MaxHealth;
 	FGameplayTag Attributes_Secondary_MaxMana;
 	FGameplayTag Attributes_Secondary_MaxStamina;
@@ -37,6 +40,7 @@ public:
   FGameplayTag Attributes_Secondary_StaminaRegeneration;
   FGameplayTag Attributes_Secondary_StaminaEfficiency;
 
+	FGameplayTag Attributes_Resistance;
 	FGameplayTag Attributes_Resistance_Physical;
 	FGameplayTag Attributes_Resistance_Energy;
 	FGameplayTag Attributes_Resistance_Fire;
@@ -44,9 +48,11 @@ public:
 	FGameplayTag Attributes_Resistance_Lightning;
 	FGameplayTag Attributes_Resistance_Necrotic;
 
+	FGameplayTag Attributes_Special;
 	FGameplayTag Attributes_Special_ParryChance;
 	FGameplayTag Attributes_Special_CooldownReduction;
 
+	FGameplayTag Attributes_Meta;
 	FGameplayTag Attributes_Meta_IncomingXP;
 
 	FGameplayTag Damage;
@@ -58,7 +64,38 @@ public:
 	FGameplayTag Damage_Necrotic;
 
 	TMap<FGameplayTag, FGameplayTag> DamageTypesToResistances;
+
+	FGameplayTag StatusEffects;
+	FGameplayTag StatusEffects_Duration;
 	
+	FGameplayTag StatusEffects_Invulnerable;
+	FGameplayTag StatusEffects_ManaRegenOff;
+
+	FGameplayTag StatusEffects_Buff;
+	FGameplayTag StatusEffects_Buff_Shield;
+	
+	FGameplayTag StatusEffects_Debuff;
+	FGameplayTag StatusEffects_Debuff_Bleeding;
+	FGameplayTag StatusEffects_Debuff_Burning;
+	FGameplayTag StatusEffects_Debuff_Chill;
+
+	FGameplayTag StatusEffects_Incapacitation;
+	FGameplayTag StatusEffects_Incapacitation_HitReact;
+	FGameplayTag StatusEffects_Incapacitation_Knockback;
+	FGameplayTag StatusEffects_Incapacitation_Stun;
+
+	FGameplayTag StatusEffects_Condition;
+	FGameplayTag StatusEffects_Condition_Alive;
+	FGameplayTag StatusEffects_Condition_Dead;
+	FGameplayTag StatusEffects_Condition_Reanimated;
+	FGameplayTag StatusEffects_Condition_Possessed;
+
+	FGameplayTag Immunities;
+	
+	FGameplayTag Immunities_Incapacitation;
+	FGameplayTag Immunities_Incapacitation_Stun;
+
+	FGameplayTag InputTag;
 	FGameplayTag InputTag_Primary;
 	FGameplayTag InputTag_Secondary;
 	FGameplayTag InputTag_1;
@@ -72,36 +109,65 @@ public:
 	
 	FGameplayTag InputTag_AttributesMenu;
 	FGameplayTag InputTag_SkillsMenu;
-	
-	FGameplayTag Effects_HitReact;
-	FGameplayTag Effects_Invulnerable;
 
+	FGameplayTag Abilities;
 	FGameplayTag Abilities_NONE;
+	FGameplayTag Cooldown;
 
+	FGameplayTag Abilities_Type;
 	FGameplayTag Abilities_Type_Active;
 	FGameplayTag Abilities_Type_Passive;
 	FGameplayTag Abilities_Type_Triggered;
 	FGameplayTag Abilities_Type_None;
-	
+
+	FGameplayTag Abilities_Status;
 	FGameplayTag Abilities_Status_Locked;
 	FGameplayTag Abilities_Status_Eligible;
 	FGameplayTag Abilities_Status_Unlocked;
 	FGameplayTag Abilities_Status_Equipped;
 	FGameplayTag Abilities_Status_Native;
-
-
-	FGameplayTag Abilities_HitReact;
+	
+	FGameplayTag Abilities_Reaction;
+	FGameplayTag Abilities_Reaction_HitReact;
+	FGameplayTag Abilities_Reaction_Stun;
+	FGameplayTag Abilities_Reaction_ShieldStackRemove;
+	
+	FGameplayTag Abilities_Action;
 	FGameplayTag Abilities_Action_Dodge;
 	FGameplayTag Cooldown_Action_Dodge;
-	
-	FGameplayTag Abilities_Attack_Primary;
-	FGameplayTag Abilities_Attack_Secondary;
-	FGameplayTag Abilities_Attack_Fireball;
-	FGameplayTag Cooldown_Attack_Fireball;
-	FGameplayTag Abilities_Attack_ChainLightning;
-	FGameplayTag Cooldown_Attack_ChainLightning;
 
-	FGameplayTag Abilities_Summon;
+	FGameplayTag Abilities_Active;
+	FGameplayTag Abilities_Active_Primary;
+	FGameplayTag Abilities_Active_Secondary;
+
+	FGameplayTag Abilities_Active_Aura;
+	
+	FGameplayTag Abilities_Active_Aura_Fireball;
+	FGameplayTag Cooldown_Active_Aura_Fireball;
+	
+	FGameplayTag Abilities_Active_Aura_ChainLightning;
+	FGameplayTag Cooldown_Active_Aura_ChainLightning;
+	
+	FGameplayTag Abilities_Active_Aura_ArcaneMissiles;
+	FGameplayTag Cooldown_Active_Aura_ArcaneMissiles;
+	FGameplayTag Abilities_Active_Aura_ArcaneShards;
+	FGameplayTag Cooldown_Active_Aura_ArcaneShards;
+
+	FGameplayTag Abilities_Active_Vilkar;
+
+	FGameplayTag Abilities_Active_Summon;
+
+	FGameplayTag Abilities_Passive;
+	
+	FGameplayTag Abilities_Passive_Aura;
+	FGameplayTag Abilities_Passive_Aura_EnergyShield;
+	FGameplayTag Cooldown_Passive_Aura_EnergyShield;
+	FGameplayTag Abilities_Passive_Aura_LifeSiphon;
+	FGameplayTag Abilities_Passive_Aura_SpiritSiphon;
+
+	FGameplayTag Abilities_Passive_Vilkar;
+
+	TMap<FGameplayTag, TArray<FGameplayTag>> ParentsToChildren;
 
 private:
 	static FAuraGameplayTags GameplayTags;

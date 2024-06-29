@@ -6,6 +6,7 @@
 #include "AbilitySystemComponent.h"
 #include "AuraAbilitySystemComponent.generated.h"
 
+class UAbilityInfo;
 class AAuraCharacterBase;
 struct FAuraGameplayTags;
 enum class EAbilityStatus : uint8;
@@ -46,6 +47,7 @@ public:
 	void AddCharacterAbilities(const TArray<TSubclassOf<UGameplayAbility>>& InAbilities);
 	bool bStartupAbilitiesGiven = false;
 
+	void AbilityInputTagPressed(const FGameplayTag& InputTag);
 	void AbilityInputTagHeld(const FGameplayTag& InputTag);
 	void AbilityInputTagReleased(const FGameplayTag& InputTag);
 
@@ -57,7 +59,7 @@ public:
 	static void SetExclusiveGameplayTagFromSpec(
 		FGameplayAbilitySpec& AbilitySpec,
 		const FGameplayTag& GameplayTag,
-		FName ParentTag
+		const FGameplayTag& ParentTag
 		);
 
 	static FGameplayTag GetAbilityTagFromSpec(const FGameplayAbilitySpec& AbilitySpec);
@@ -97,8 +99,14 @@ public:
 		const FGameplayTag& PreviousInputTag
 		);
 
-	FString GetDescriptionByAbilityTag(const FGameplayTag& AbilityTag);
-	FString GetNextLevelDescriptionByAbilityTag(const FGameplayTag& AbilityTag);
+	FString GetDescriptionByAbilityTag(
+		const UAbilityInfo* AbilityInfo,
+		const FGameplayTag& AbilityTag
+		);
+	FString GetNextLevelDescriptionByAbilityTag(
+		const UAbilityInfo* AbilityInfo,
+		const FGameplayTag& AbilityTag
+		);
 	FString GetLockedDescriptionByAbilityTag(const FGameplayTag& AbilityTag);
 protected:
 	virtual void OnRep_ActivateAbilities() override;

@@ -42,10 +42,34 @@ bool FAuraGameplayEffectContext::NetSerialize(FArchive& Ar, UPackageMap* Map, bo
 		{
 			RepBits |= 1 << 8;
 		}
+		if (bApplyingEffect)
+		{
+			RepBits |= 1 << 9;
+		}
+		if (EffectValue > 0.f)
+		{
+			RepBits |= 1 << 10;
+		}
+		if (EffectDuration > 0.f)
+		{
+			RepBits |= 1 << 11;
+		}
+		if (EffectType.IsValid())
+		{
+			RepBits |= 1 << 12;
+		}
+		if (!ForwardVector.IsZero())
+		{
+			RepBits |= 1 << 13;
+		}
+		if (bApplyHitReact)
+		{
+			RepBits |= 1 << 14;
+		}
 		
 	}
 
-	Ar.SerializeBits(&RepBits, 9);
+	Ar.SerializeBits(&RepBits, 15);
 
 	if (RepBits & (1 << 0))
 	{
@@ -94,6 +118,37 @@ bool FAuraGameplayEffectContext::NetSerialize(FArchive& Ar, UPackageMap* Map, bo
 	if (RepBits & (1 << 8))
 	{
 		Ar << bCriticalHit;
+	}
+	if (RepBits & (1 << 9))
+	{
+		Ar << bApplyingEffect;
+	}
+	if (RepBits & (1 << 10))
+	{
+		Ar << EffectValue;
+	}
+	if (RepBits & (1 << 11))
+	{
+		Ar << EffectDuration;
+	}
+	if (RepBits & (1 << 12))
+	{
+		if (Ar.IsLoading())
+		{
+			if (!EffectType.IsValid())
+			{
+				EffectType = MakeShared<FGameplayTag>();
+			}
+		}
+		EffectType->NetSerialize(Ar, Map, bOutSuccess);
+	}
+	if (RepBits & (1 << 14))
+	{
+		ForwardVector.NetSerialize(Ar, Map, bOutSuccess);
+	}
+	if (RepBits & (1 << 15))
+	{
+		Ar << bApplyHitReact;
 	}
 
 	if (Ar.IsLoading())

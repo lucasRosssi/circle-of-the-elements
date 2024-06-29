@@ -3,16 +3,18 @@
 
 #include "AbilitySystem/Abilities/PassiveAbility.h"
 
+UPassiveAbility::UPassiveAbility()
+{
+	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
+	NetExecutionPolicy = EGameplayAbilityNetExecutionPolicy::ServerInitiated;
+}
+
 void UPassiveAbility::OnGiveAbility(
 	const FGameplayAbilityActorInfo* ActorInfo,
 	const FGameplayAbilitySpec& Spec
 )
 {
 	Super::OnGiveAbility(ActorInfo, Spec);
-	
-	CallActivateAbility(
-		Spec.Handle,
-		ActorInfo,
-		Spec.ActivationInfo
-	);
+
+	if (bActivatesOnGranted)	CallActivateAbility(Spec.Handle, ActorInfo,	Spec.ActivationInfo);
 }

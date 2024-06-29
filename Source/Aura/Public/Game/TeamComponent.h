@@ -20,8 +20,6 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
-	
-
 public:
 	// ID of the team this actor belongs to
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Team")

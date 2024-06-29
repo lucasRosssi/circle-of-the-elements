@@ -3,8 +3,11 @@
 
 #include "AbilitySystem/Abilities/BaseAbility.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
+#include "AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "AbilitySystem/AuraAttributeSet.h"
-#include "AbilitySystem/Data/AbilityInfo.h"
+#include "AbilitySystem/Data/StatusEffectInfo.h"
+#include "AbilitySystem/GameplayEffects/StatusEffect.h"
 
 float UBaseAbility::GetManaCost(int32 Level)
 {
@@ -42,6 +45,28 @@ int32 UBaseAbility::GetRoundedCooldown()
 	return FMath::RoundToInt32(GetCooldown());
 }
 
+FAbilityParams UBaseAbility::MakeAbilityParamsFromDefaults(AActor* TargetActor) const
+{
+	FAbilityParams AbilityParams;
+	AbilityParams.WorldContextObject = GetAvatarActorFromActorInfo();
+	AbilityParams.SourceASC = GetAbilitySystemComponentFromActorInfo();
+	AbilityParams.TargetASC =
+		UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(TargetActor);
+	AbilityParams.AbilityLevel = GetAbilityLevel();
+	if (StatusEffectData.IsValid())
+	{
+		UStatusEffectInfo* StatusEffectInfo = UAuraAbilitySystemLibrary
+			::GetStatusEffectInfo(AbilityParams.WorldContextObject);
+		AbilityParams.EffectParams.GameplayEffectClass = StatusEffectInfo
+			->StatusEffects.Find(StatusEffectData.StatusEffectTag)->StatusEffectClass;
+		AbilityParams.EffectParams.GameplayTag = StatusEffectData.StatusEffectTag;
+		AbilityParams.EffectParams.Value = StatusEffectData.Value;
+		AbilityParams.EffectParams.Duration = StatusEffectData.Duration;
+	}
+	
+	return AbilityParams;
+}
+
 FGameplayTag UBaseAbility::GetAbilityTag()
 {
 	if (AbilityTag.IsValid()) return AbilityTag;
@@ -58,9 +83,4 @@ FGameplayTag UBaseAbility::GetAbilityTag()
 	}
 
 	return AbilityTag;
-}
-
-void UBaseAbility::FormatDescriptionAtLevel(FText& Description,  int32 Level)
-{
-	
 }

@@ -5,10 +5,14 @@
 #include "CoreMinimal.h"
 #include "Enums/CharacterType.h"
 #include "Data/CharacterInfo.h"
+#include "Enums/TargetTeam.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "UI/WidgetController/AuraWidgetController.h"
 #include "AuraAbilitySystemLibrary.generated.h"
 
+enum class ETargetTeam : uint8;
+class UStatusEffectInfo;
+struct FAbilityParams;
 class UActiveDamageAbility;
 class UBaseAbility;
 class AAuraHUD;
@@ -64,6 +68,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|CharacterClassDefaults")
 	static UAbilityInfo* GetAbilitiesInfo(const UObject* WorldContextObject);
 
+	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|StatusEffectsDefaults")
+	static UStatusEffectInfo* GetStatusEffectInfo(const UObject* WorldContextObject);
+
 	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|CharacterClassDefaults")
 	static void InitializeDefaultAttributes(
 		const UObject* WorldContextObject,
@@ -85,26 +92,124 @@ public:
 	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|GameplayEffects")
 	static bool IsCriticalHit(const FGameplayEffectContextHandle& EffectContextHandle);
 
-	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|GameplayEffects")
-	static void SetIsParried(UPARAM(ref) FGameplayEffectContextHandle& EffectContextHandle, bool bInParried);
+	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|GameplayEffects")
+	static bool IsApplyingEffect(const FGameplayEffectContextHandle& EffectContextHandle);
+
+	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|GameplayEffects")
+	static float GetEffectValue(const FGameplayEffectContextHandle& EffectContextHandle);
+
+	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|GameplayEffects")
+	static float GetEffectDuration(const FGameplayEffectContextHandle& EffectContextHandle);
+
+	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|GameplayEffects")
+	static FGameplayTag GetEffectType(const FGameplayEffectContextHandle& EffectContextHandle);
+
+	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|GameplayEffects")
+	static FVector GetForwardVector(const FGameplayEffectContextHandle& EffectContextHandle);
+	
+	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|GameplayEffects")
+	static bool GetApplyHitReact(const FGameplayEffectContextHandle& EffectContextHandle);
 
 	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|GameplayEffects")
-	static void SetIsCriticalHit(UPARAM(ref) FGameplayEffectContextHandle& EffectContextHandle, bool bInCriticalHit);
+	static void SetIsParried(
+		UPARAM(ref) FGameplayEffectContextHandle& EffectContextHandle,
+		bool bInParried
+		);
+
+	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|GameplayEffects")
+	static void SetIsCriticalHit(
+		UPARAM(ref) FGameplayEffectContextHandle& EffectContextHandle,
+		bool bInCriticalHit
+		);
+
+	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|GameplayEffects")
+	static void SetIsApplyingEffect(
+		UPARAM(ref) FGameplayEffectContextHandle& EffectContextHandle,
+		bool bInApplyingEffect
+		);
+
+	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|GameplayEffects")
+	static void SetEffectValue(
+		UPARAM(ref) FGameplayEffectContextHandle& EffectContextHandle,
+		float InEffectValue
+		);
+
+	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|GameplayEffects")
+	static void SetEffectDuration(
+		UPARAM(ref) FGameplayEffectContextHandle& EffectContextHandle,
+		float InEffectDuration
+		);
+
+	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|GameplayEffects")
+	static void SetEffectType(
+		UPARAM(ref) FGameplayEffectContextHandle& EffectContextHandle,
+		const FGameplayTag& InEffectType
+		);
+
+	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|GameplayEffects")
+	static void SetForwardVector(
+		UPARAM(ref) FGameplayEffectContextHandle& EffectContextHandle,
+		const FVector& InForce
+		);
+
+	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|GameplayEffects")
+	static void SetApplyHitReact(
+		UPARAM(ref) FGameplayEffectContextHandle& EffectContextHandle,
+		bool bInApplyHitReact
+		);
+	
 
 	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|GameplayMechanics")
 	static void GetAliveCharactersWithinRadius(
-		const UObject* WorldContextObject,
+		const AActor* ContextActor,
 		TArray<AActor*>& OutOverlappingActors,
 		UPARAM(ref) TArray<AActor*>& ActorsToIgnore,
 		float Radius,
-		const FVector& SphereOrigin
+		const FVector& SphereOrigin,
+		ETargetTeam TargetTeam = ETargetTeam::ETT_Both
+	);
+
+	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|GameplayMechanics")
+	static AActor* GetClosestActorToTarget(
+		AActor* TargetActor,
+		float Radius,
+		ETargetTeam TargetTeam,
+		UPARAM(ref) TArray<AActor*>& ActorsToIgnore
 	);
 
 	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|GameplayMechanics")
 	static bool AreActorsFriends(const AActor* FirstActor, const AActor* SecondActor);
 
 	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|GameplayMechanics")
+	static void GetFriendsWithinRadius(
+		AActor* TargetActor,
+		TArray<AActor*>& OutFriends,
+		float Radius,
+		const FVector& SphereOrigin
+	);
+
+	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|GameplayMechanics")
+	static void GetFriendsWithinTrace(
+		AActor* TargetActor,
+		TArray<AActor*>& OutFriends,
+		const FVector& Start, 
+		const FVector& End, 
+		float Radius
+		);
+
+	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|GameplayMechanics")
 	static bool AreActorsEnemies(const AActor* FirstActor, const AActor* SecondActor);
+
+	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|GameplayMechanics")
+	static void GetEnemiesWithinRadius(
+		AActor* TargetActor,
+		TArray<AActor*>& OutEnemies,
+		float Radius,
+		const FVector& SphereOrigin
+	);
+
+	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|GameplayMechanics")
+	static TArray<AActor*> GetAllTeamMembersFromActor(AActor* Actor);
 
 	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|GameplayMechanics")
 	static bool IsPlayerUsingGamepad(const AActor* AvatarActor);
@@ -120,13 +225,13 @@ public:
 	
 	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|UI", meta = (HidePin = "WorldContextObject", DefaultToSelf = "WorldContextObject"))
 	static FString GetAbilityDescription(
-		const UObject* WorldContextObject,
+		const UAbilityInfo* AbilityInfo,
 		const FGameplayTag& AbilityTag,
 		int32 Level
 		);
 	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|UI", meta = (HidePin = "WorldContextObject", DefaultToSelf = "WorldContextObject"))
 	static FString GetAbilityNextLevelDescription(
-		const UObject* WorldContextObject,
+		const UAbilityInfo* AbilityInfo,
 		const FGameplayTag& AbilityTag,
 		int32 Level
 		);
@@ -141,4 +246,34 @@ public:
 		int32 Level,
 		const FGameplayTagContainer& AbilitiesRequirement
 	);
+	
+	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|GameplayEffects")
+	static FGameplayEffectContextHandle ApplyAbilityEffect(
+		const FAbilityParams& AbilityParams,
+		bool& bSuccess
+		);
+
+	// If has ANY tag that prevents harmful effects
+	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|GameplayMechanics")
+	static bool HasAnyHarmfulEffectBlockTag(const UAbilitySystemComponent* TargetASC);
+
+	// If has tags that prevents harmful effects, but abilities still interact with target
+	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|GameplayMechanics")
+	static bool HasAnyParryTag(const UAbilitySystemComponent* TargetASC);
+
+	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|GameplayMechanics")
+	static TArray<FRotator> EvenlySpacedRotators(
+		const FVector& Forward,
+		const FVector& Axis,
+		float Spread,
+		int32 Count
+		);
+	
+	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|GameplayMechanics")
+	static TArray<FVector> EvenlyRotatedVectors(
+		const FVector& Forward,
+		const FVector& Axis,
+		float Spread,
+		int32 Count
+		);
 };

@@ -42,7 +42,7 @@ void USkillMenuWidgetController::BindCallbacksToDependencies()
 
 void USkillMenuWidgetController::SkillGlobeSelected(const FGameplayTag& AbilityTag)
 {
-	const FAuraGameplayTags GameplayTags = FAuraGameplayTags::Get();
+	const FAuraGameplayTags& GameplayTags = FAuraGameplayTags::Get();
 	const int32 SkillPoints = GetAuraPlayerState()->GetSkillPoints();
 	FGameplayTag AbilityStatus;
 	
@@ -71,12 +71,12 @@ void USkillMenuWidgetController::SkillGlobeSelected(const FGameplayTag& AbilityT
 		)
 	{
 		Description = GetAuraAbilitySystemComponent()
-			->GetDescriptionByAbilityTag(AbilityTag);
+			->GetDescriptionByAbilityTag(AbilityInfo, AbilityTag);
 	}
 	else
 	{
 		Description = GetAuraAbilitySystemComponent()
-			->GetNextLevelDescriptionByAbilityTag(AbilityTag);
+			->GetNextLevelDescriptionByAbilityTag(AbilityInfo, AbilityTag);
 	}
 
 	bool bEnableSpendPoint;
@@ -95,7 +95,7 @@ void USkillMenuWidgetController::SpendPoint(FGameplayTag AbilityTag)
 
 FString USkillMenuWidgetController::GetSkillDescription(FGameplayTag AbilityTag)
 {
-	const FAuraGameplayTags GameplayTags = FAuraGameplayTags::Get();
+	const FAuraGameplayTags& GameplayTags = FAuraGameplayTags::Get();
 	const int32 SkillPoints = GetAuraPlayerState()->GetSkillPoints();
 	FGameplayTag AbilityStatus;
 	
@@ -124,12 +124,12 @@ FString USkillMenuWidgetController::GetSkillDescription(FGameplayTag AbilityTag)
 		)
 	{
 		Description = GetAuraAbilitySystemComponent()
-			->GetDescriptionByAbilityTag(AbilityTag);
+			->GetDescriptionByAbilityTag(AbilityInfo, AbilityTag);
 	}
 	else // Unlocked or equipped and can level up
 	{
 		Description = GetAuraAbilitySystemComponent()
-			->GetNextLevelDescriptionByAbilityTag(AbilityTag);
+			->GetNextLevelDescriptionByAbilityTag(AbilityInfo, AbilityTag);
 	}
 
 	return Description;
@@ -150,7 +150,7 @@ void USkillMenuWidgetController::ShouldEnableInteractions(
 	bool& bShouldEnableEquip
 )
 {
-	const FAuraGameplayTags GameplayTags = FAuraGameplayTags::Get();
+	const FAuraGameplayTags& GameplayTags = FAuraGameplayTags::Get();
 	
 	if(AbilityStatus.MatchesTagExact(GameplayTags.Abilities_Status_Equipped))
 	{

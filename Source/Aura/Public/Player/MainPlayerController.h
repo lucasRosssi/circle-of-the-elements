@@ -9,6 +9,7 @@
 
 #include "MainPlayerController.generated.h"
 
+class ATargetingActor;
 class UCapsuleComponent;
 class UCameraComponent;
 class USpringArmComponent;
@@ -35,7 +36,7 @@ struct FCameraOccludedActor
 	TArray<UMaterialInterface*> Materials;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	bool bIsOccluded;
+	bool bIsOccluded = false;
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnControllerDeviceChanged, bool, bIsGamepad);
@@ -70,6 +71,11 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category="ControllerDevice")
 	FOnControllerDeviceChanged ControllerDeviceChangedDelegate;
+
+	UFUNCTION(BlueprintCallable)
+	void ShowTargetingActor(TSubclassOf<ATargetingActor> TargetingActorClass);
+	UFUNCTION(BlueprintCallable)
+	void HideTargetingActor();
 
 protected:
 	virtual void BeginPlay() override;
@@ -124,6 +130,7 @@ private:
 	void MoveComplete(const FInputActionValue& InputActionValue);
 	
 	void CursorTrace();
+	FHitResult CursorHit;
 	ITargetInterface* LastActor = nullptr;
 	ITargetInterface* ThisActor = nullptr;
 
@@ -139,16 +146,21 @@ private:
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UDamageTextComponent> DamageTextComponentClass;
 
+	UPROPERTY()
+	TObjectPtr<ATargetingActor> TargetingActor;
+
+	void UpdateTargetingActorLocation();
+
+	// Environment occlusion
 	TMap<const AActor*, FCameraOccludedActor> OccludedActors;
-	
 	bool HideOccludedActor(const AActor* Actor);
 	bool OnHideOccludedActor(const FCameraOccludedActor& OccludedActor) const;
 	void ShowOccludedActor(FCameraOccludedActor& OccludedActor);
 	bool OnShowOccludedActor(const FCameraOccludedActor& OccludedActor) const;
 	void ForceShowOccludedActors();
-
 	FORCEINLINE bool ShouldCheckCameraOcclusion() const
 	{
 		return bIsOcclusionEnabled && FadeMaterial && ActiveCamera && ActiveCapsuleComponent;
 	}
+	// END Environment occlusion
 };

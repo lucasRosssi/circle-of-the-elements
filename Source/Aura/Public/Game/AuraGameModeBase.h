@@ -6,6 +6,7 @@
 #include "GameFramework/GameModeBase.h"
 #include "AuraGameModeBase.generated.h"
 
+class UStatusEffectInfo;
 class UAbilityInfo;
 class UCharacterInfo;
 
@@ -23,4 +24,7 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category="Ability Info")
 	TObjectPtr<UAbilityInfo> AbilityInfo;
+
+	UPROPERTY(EditDefaultsOnly, Category="Status Effect Info")
+	TObjectPtr<UStatusEffectInfo> StatusEffectInfo;
 };

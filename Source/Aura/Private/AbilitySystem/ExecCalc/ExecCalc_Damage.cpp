@@ -6,7 +6,6 @@
 #include "AbilitySystemComponent.h"
 #include "AuraAbilityTypes.h"
 #include "AuraGameplayTags.h"
-#include "AbilitySystem/AuraAbilitySystemComponent.h"
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "AbilitySystem/AuraAttributeSet.h"
 
@@ -127,6 +126,7 @@ void UExecCalc_Damage::Execute_Implementation(
 	const FGameplayEffectCustomExecutionParameters& ExecutionParams,
 	FGameplayEffectCustomExecutionOutput& OutExecutionOutput) const
 {
+	const FAuraGameplayTags& Tags = FAuraGameplayTags::Get();
 	// const UAbilitySystemComponent* SourceASC = ExecutionParams.GetSourceAbilitySystemComponent();
 	const UAbilitySystemComponent* TargetASC = ExecutionParams.GetTargetAbilitySystemComponent();
 	
@@ -145,7 +145,7 @@ void UExecCalc_Damage::Execute_Implementation(
 	// Get Damage Set by Caller Magnitude
 	float Damage = 0.f;
 
-	int32 Invulnerable  = TargetASC->GetTagCount(FAuraGameplayTags::Get().Effects_Invulnerable);
+	int32 Invulnerable  = TargetASC->GetTagCount(Tags.StatusEffects_Invulnerable);
 	if (Invulnerable > 0)
 	{
 		const FGameplayModifierEvaluatedData EvaluatedData(
@@ -157,7 +157,7 @@ void UExecCalc_Damage::Execute_Implementation(
 		return;
 	}
 	
-	for (const auto& Pair : FAuraGameplayTags::Get().DamageTypesToResistances)
+	for (const auto& Pair : Tags.DamageTypesToResistances)
 	{
 		const FGameplayTag DamageTypeTag = Pair.Key;
 		const FGameplayTag ResistanceTag = Pair.Value;

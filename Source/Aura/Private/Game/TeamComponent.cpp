@@ -35,7 +35,7 @@ bool UTeamComponent::IsEnemy(AActor* TargetActor)
 
 bool UTeamComponent::IsFriend(AActor* TargetActor)
 {
-	if (TeamID == 255) return true;
+	if (TeamID == 255) return false;
 
 	if (const UTeamComponent* TargetTeamComponent = TargetActor->GetComponentByClass<UTeamComponent>())
 	{

@@ -18,18 +18,18 @@ struct FAuraAbilityInfo
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TSubclassOf<UBaseAbility> Ability;
 	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(Categories="Abilities"))
 	FGameplayTag AbilityTag = FGameplayTag();
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(Categories="Cooldown"))
+	FGameplayTag CooldownTag = FGameplayTag();
+	
 	UPROPERTY(BlueprintReadOnly)
 	FGameplayTag InputTag = FGameplayTag();
 
 	UPROPERTY(BlueprintReadOnly)
 	FGameplayTag StatusTag = FGameplayTag();
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	FGameplayTag CooldownTag = FGameplayTag();
-
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TObjectPtr<const UTexture2D> Icon = nullptr;
 
@@ -39,7 +39,7 @@ struct FAuraAbilityInfo
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	int32 LevelRequirement = 1;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(Categories="Abilities"))
 	FGameplayTagContainer AbilitiesRequirement;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
@@ -57,7 +57,15 @@ struct FAbilities
 {
 	GENERATED_BODY()
 	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	UPROPERTY(
+		EditDefaultsOnly,
+		BlueprintReadOnly,
+		Category="AbilityInformation",
+		meta=(
+			ShowOnlyInnerProperties,
+			NoResetToDefault,
+			TitleProperty="Name"
+			))
 	TArray<FAuraAbilityInfo> AbilityInformation;
 };
 
@@ -70,7 +78,12 @@ class AURA_API UAbilityInfo : public UDataAsset
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="AbilityInformation")
+	UPROPERTY(
+		EditDefaultsOnly,
+		BlueprintReadOnly,
+		Category="AbilityInformation",
+		meta=(NoResetToDefault)
+		)
 	TMap<ECharacterName, FAbilities> CharacterAbilities;
 
 	FAuraAbilityInfo FindAbilityInfoByTag(

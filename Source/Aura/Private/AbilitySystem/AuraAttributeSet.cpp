@@ -8,7 +8,9 @@
 #include "Net/UnrealNetwork.h"
 #include "GameplayEffectExtension.h"
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
+#include "AbilitySystem/Abilities/ActiveDamageAbility.h"
 #include "GameFramework/Character.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Interaction/AttributeSetInterface.h"
 #include "Interaction/CombatInterface.h"
 #include "Interaction/PlayerInterface.h"
@@ -86,7 +88,40 @@ void UAuraAttributeSet::PreAttributeBaseChange(const FGameplayAttribute& Attribu
 	{
 		NewValue = FMath::Clamp(NewValue, 0.f, GetMaxMana());
 	}
+
+	if (Attribute == GetIncomingDamageAttribute())
+	{
+		if (bAvatarDead)
+		{
+			NewValue = 0.f;
+		}
+	}
 	
+}
+
+void UAuraAttributeSet::HandleDeath(
+	const FEffectProperties& Props,
+	float DeathImpulseMagnitude
+	)
+{
+	bAvatarDead = true;
+	SendXPEvent(Props);
+	
+	if (GetAvatarCombatInterface())
+	{
+		const FVector ForwardVector =
+			UAuraAbilitySystemLibrary::GetForwardVector(Props.EffectContextHandle);
+		
+		AvatarCombatInterface->Die(ForwardVector * DeathImpulseMagnitude);
+	}
+
+	if (UAbilitySystemComponent* ASC = GetOwningAbilitySystemComponent())
+	{
+		
+		ASC->RemoveActiveEffectsWithGrantedTags(FGameplayTagContainer({
+			FAuraGameplayTags::Get().StatusEffects
+		}));
+	}
 }
 
 void UAuraAttributeSet::PostAttributeChange(
@@ -178,6 +213,77 @@ void UAuraAttributeSet::SetEffectProperties(const FGameplayEffectModCallbackData
 }
 
 
+void UAuraAttributeSet::HandleIncomingDamage(
+	const FEffectProperties& Props,
+	const FGameplayAttribute& Attribute
+	)
+{
+	if (GetIncomingDamage() + GetIncomingDoT() <= 0.f) return;
+	
+	const bool bDoT = Attribute == GetIncomingDoTAttribute();
+	float LocalIncomingDamage;
+	bool bParried;
+	bool bCriticalHit;
+	
+	if (bDoT)
+	{
+		LocalIncomingDamage = GetIncomingDoT();
+		SetIncomingDoT(0);
+		bParried = false;
+		bCriticalHit = false;
+	}
+	else
+	{
+		LocalIncomingDamage = GetIncomingDamage();
+		SetIncomingDamage(0.f);
+		bParried = UAuraAbilitySystemLibrary::IsParried(Props.EffectContextHandle);
+		bCriticalHit = UAuraAbilitySystemLibrary::IsCriticalHit(Props.EffectContextHandle);
+	}
+	
+	const float NewHealth = GetHealth() - LocalIncomingDamage;
+	SetHealth(FMath::Clamp(NewHealth, 0.f, GetMaxHealth()));
+
+	const bool bFatal = NewHealth <= 0.f;
+	if (bFatal)
+	{
+		const float DeathImpulseMagnitude = bDoT ? 0.f : FMath::Min(250 * LocalIncomingDamage, 20000.f);
+		HandleDeath(Props, DeathImpulseMagnitude);
+	}
+	else if (!bDoT && UAuraAbilitySystemLibrary::GetApplyHitReact(Props.EffectContextHandle))
+	{
+		const FGameplayTagContainer TagContainer({
+			FAuraGameplayTags::Get().Abilities_Reaction_HitReact
+		 });
+		Props.TargetASC->TryActivateAbilitiesByTag(TagContainer);
+	}
+	
+	ShowFloatingText(Props, LocalIncomingDamage, bParried, bCriticalHit);
+	
+}
+
+void UAuraAttributeSet::HandleIncomingXP(const FEffectProperties& Props)
+{
+	const float LocalIncomingXP = GetIncomingXP();
+	SetIncomingXP(0.f);
+		
+	IPlayerInterface::Execute_AddToXP(Props.SourceCharacter, LocalIncomingXP);
+}
+
+void UAuraAttributeSet::HandleKnockback(const FEffectProperties& Props)
+{
+	const float LocalIncomingForce = GetIncomingForce();
+	if (LocalIncomingForce > 0.f)
+	{
+		SetIncomingForce(0.f);
+			
+		const FVector ForwardVector =
+			UAuraAbilitySystemLibrary::GetForwardVector(Props.EffectContextHandle);
+		const FVector KnockbackForce = ForwardVector * LocalIncomingForce;
+
+		Props.TargetCharacter->GetCharacterMovement()->StopMovementImmediately();
+		Props.TargetCharacter->LaunchCharacter(KnockbackForce, true, true);
+	}
+}
 
 void UAuraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
 {
@@ -186,47 +292,25 @@ void UAuraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 	FEffectProperties Props;
 	SetEffectProperties(Data, Props);
 
-	if (Data.EvaluatedData.Attribute == GetIncomingDamageAttribute())
+	if (bAvatarDead) return;
+	if (!IsValid(Props.SourceCharacter)) return;
+
+	if (
+		Data.EvaluatedData.Attribute == GetIncomingDamageAttribute() ||
+		Data.EvaluatedData.Attribute == GetIncomingDoTAttribute()
+		)
 	{
-		const float LocalIncomingDamage = GetIncomingDamage();
-		if (LocalIncomingDamage > 0.f)
-		{
-			SetIncomingDamage(0.f);
-
-			const float NewHealth = GetHealth() - LocalIncomingDamage;
-			SetHealth(FMath::Clamp(NewHealth, 0.f, GetMaxHealth()));
-
-			const bool bFatal = NewHealth <= 0.f;
-			if (bFatal)
-			{
-				ICombatInterface* CombatInterface = Cast<ICombatInterface>(Props.TargetAvatarActor);
-				if (CombatInterface)
-				{
-					CombatInterface->Die();
-				}
-				SendXPEvent(Props);
-			}
-			else
-			{
-				FGameplayTagContainer TagContainer;
-				TagContainer.AddTag(FAuraGameplayTags::Get().Abilities_HitReact);
-				Props.TargetASC->TryActivateAbilitiesByTag(TagContainer);
-			}
-
-			const bool bParried = UAuraAbilitySystemLibrary::IsParried(Props.EffectContextHandle);
-			const bool bCriticalHit = UAuraAbilitySystemLibrary::IsCriticalHit(Props.EffectContextHandle);
-			
-			ShowFloatingText(Props, LocalIncomingDamage, bParried, bCriticalHit);
-		}
-		
+		HandleIncomingDamage(Props, Data.EvaluatedData.Attribute);
 	}
 
 	if (Data.EvaluatedData.Attribute == GetIncomingXPAttribute())
 	{
-		const float LocalIncomingXP = GetIncomingXP();
-		SetIncomingXP(0.f);
-		
-		IPlayerInterface::Execute_AddToXP(Props.SourceCharacter, LocalIncomingXP);
+		HandleIncomingXP(Props);
+	}
+
+	if (Data.EvaluatedData.Attribute == GetIncomingForceAttribute())
+	{
+		HandleKnockback(Props);
 	}
 }
 
@@ -275,6 +359,16 @@ void UAuraAttributeSet::SendXPEvent(const FEffectProperties& Props)
 			Payload
 		);
 	}
+}
+
+ICombatInterface* UAuraAttributeSet::GetAvatarCombatInterface()
+{
+	if (AvatarCombatInterface == nullptr)
+	{
+		AvatarCombatInterface =	Cast<ICombatInterface>(GetActorInfo()->AvatarActor);
+	}
+
+	return AvatarCombatInterface;
 }
 
 void UAuraAttributeSet::OnRep_Health(const FGameplayAttributeData& OldHealth) const

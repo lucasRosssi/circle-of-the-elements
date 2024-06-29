@@ -7,6 +7,7 @@
 #include "Interaction/PlayerInterface.h"
 #include "AuraCharacter.generated.h"
 
+class AMainPlayerController;
 class AAuraPlayerState;
 class UWidgetComponent;
 class USpringArmComponent;
@@ -36,6 +37,8 @@ public:
 	virtual int32 GetSkillPoints_Implementation() const override;
 	virtual void SpendAttributePoints_Implementation(int32 Amount) override;
 	virtual void SpendSkillPoints_Implementation(int32 Amount) override;
+	virtual void ShowTargetingActor_Implementation(TSubclassOf<ATargetingActor> TargetingActorClass) override;
+	virtual void HideTargetingActor_Implementation() override;
 	/** end Player Interface */
 
 	UFUNCTION(BlueprintCallable)
@@ -51,6 +54,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<UWidgetComponent> LevelUpWidgetComponent;
 
+	UPROPERTY(BlueprintReadOnly)
+	AMainPlayerController* MainPlayerController;
+
 private:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UCameraComponent> Camera;
@@ -62,4 +68,5 @@ private:
 
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastLevelUpParticles() const;
+	
 };

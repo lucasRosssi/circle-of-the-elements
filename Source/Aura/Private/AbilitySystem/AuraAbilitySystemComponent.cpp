@@ -39,6 +39,27 @@ void UAuraAbilitySystemComponent::AddCharacterAbilities(
 	AbilitiesGivenDelegate.Broadcast();
 }
 
+void UAuraAbilitySystemComponent::AbilityInputTagPressed(const FGameplayTag& InputTag)
+{
+	if (!InputTag.IsValid()) return;
+
+	for (auto& AbilitySpec : GetActivatableAbilities())
+	{
+		if (!AbilitySpec.DynamicAbilityTags.HasTagExact(InputTag)) continue;
+		
+		AbilitySpecInputPressed(AbilitySpec);
+		
+		if (!AbilitySpec.IsActive()) continue;
+		
+		InvokeReplicatedEvent(
+			EAbilityGenericReplicatedEvent::InputPressed,
+			AbilitySpec.Handle,
+			AbilitySpec.ActivationInfo.GetActivationPredictionKey()
+			);
+		break;
+	}
+}
+
 void UAuraAbilitySystemComponent::AbilityInputTagHeld(const FGameplayTag& InputTag)
 {
 	if (!InputTag.IsValid()) return;
@@ -52,6 +73,7 @@ void UAuraAbilitySystemComponent::AbilityInputTagHeld(const FGameplayTag& InputT
 		if (AbilitySpec.IsActive()) continue;
 		
 		TryActivateAbility(AbilitySpec.Handle);
+		break;
 	}
 }
 
@@ -61,9 +83,15 @@ void UAuraAbilitySystemComponent::AbilityInputTagReleased(const FGameplayTag& In
 
 	for (auto& AbilitySpec : GetActivatableAbilities())
 	{
-		if (!AbilitySpec.DynamicAbilityTags.HasTagExact(InputTag)) continue;
+		if (!AbilitySpec.DynamicAbilityTags.HasTagExact(InputTag) || !AbilitySpec.IsActive()) continue;
 		
 		AbilitySpecInputReleased(AbilitySpec);
+		InvokeReplicatedEvent(
+			EAbilityGenericReplicatedEvent::InputReleased,
+			AbilitySpec.Handle,
+			AbilitySpec.ActivationInfo.GetActivationPredictionKey()
+			);
+		break;
 	}
 }
 
@@ -92,23 +120,28 @@ AAuraCharacterBase* UAuraAbilitySystemComponent::GetAvatarCharacter()
 void UAuraAbilitySystemComponent::SetExclusiveGameplayTagFromSpec(
 	FGameplayAbilitySpec& AbilitySpec,
 	const FGameplayTag& GameplayTag,
-	FName ParentTag
+	const FGameplayTag& ParentTag
 	)
 {
-	const FGameplayTag ParentStatusTag = FGameplayTag::RequestGameplayTag(ParentTag);
-	if (!GameplayTag.MatchesTag(ParentStatusTag))
+	if (!GameplayTag.MatchesTag(ParentTag))
 	{
-		UE_LOG(LogAura, Error, TEXT("Trying to set an invalid gameplay tag for the provided parent tag"));
+		UE_LOG(LogAura, Error, TEXT(
+			"Trying to set an invalid gameplay tag (%s)"
+			" for the provided parent tag (%s)"
+			),
+			*GameplayTag.GetTagName().ToString(),
+			*ParentTag.GetTagName().ToString()
+			);
 		return;	
 	}
 	
-	if (AbilitySpec.DynamicAbilityTags.HasTag(ParentStatusTag))
+	if (AbilitySpec.DynamicAbilityTags.HasTag(ParentTag))
 	{
 		TArray<FGameplayTag> Tags;
 		AbilitySpec.DynamicAbilityTags.GetGameplayTagArray(Tags);
 		for (auto Tag : Tags)
 		{
-			if (Tag.MatchesTag(ParentStatusTag))
+			if (Tag.MatchesTag(ParentTag))
 			{
 				AbilitySpec.DynamicAbilityTags.RemoveTag(Tag);
 			}
@@ -171,7 +204,7 @@ void UAuraAbilitySystemComponent::SetAbilityStatusFromSpec(
 	SetExclusiveGameplayTagFromSpec(
 		AbilitySpec,
 		StatusTag,
-		FName("Abilities.Status")
+		FAuraGameplayTags::Get().Abilities_Status
 		);
 }
 
@@ -254,7 +287,7 @@ void UAuraAbilitySystemComponent::UpdateAbilityStatuses(int32 Level)
 		
 		if (GetSpecFromAbilityTag(Info.AbilityTag) == nullptr)
 		{
-			FAuraGameplayTags Tags = FAuraGameplayTags::Get();
+			const FAuraGameplayTags& Tags = FAuraGameplayTags::Get();
 			FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(Info.Ability, 1);
 			SetAbilityStatusFromSpec(AbilitySpec, Tags.Abilities_Status_Eligible);
 			GiveAbility(AbilitySpec);
@@ -272,7 +305,7 @@ void UAuraAbilitySystemComponent::ServerEquipAbility_Implementation(
 	FGameplayAbilitySpec* AbilitySpec = GetSpecFromAbilityTag(AbilityTag);
 	if (!AbilitySpec) return;
 
-	const FAuraGameplayTags Tags = FAuraGameplayTags::Get();
+	const FAuraGameplayTags& Tags = FAuraGameplayTags::Get();
 	FGameplayTagContainer AllowedStatuses = FGameplayTagContainer();
 	AllowedStatuses.AddTag(Tags.Abilities_Status_Equipped);
 	AllowedStatuses.AddTag(Tags.Abilities_Status_Unlocked);
@@ -300,12 +333,15 @@ void UAuraAbilitySystemComponent::ClientEquipAbility_Implementation(
 	AbilityEquipped.Broadcast(AbilityTag, StatusTag, InputTag, PreviousInputTag);
 }
 
-FString UAuraAbilitySystemComponent::GetDescriptionByAbilityTag(const FGameplayTag& AbilityTag)
+FString UAuraAbilitySystemComponent::GetDescriptionByAbilityTag(
+	const UAbilityInfo* AbilityInfo,
+	const FGameplayTag& AbilityTag
+	)
 {
 	if (const FGameplayAbilitySpec* AbilitySpec = GetSpecFromAbilityTag(AbilityTag))
 	{
 		return UAuraAbilitySystemLibrary::GetAbilityDescription(
-			GetAvatarActor(),
+			AbilityInfo,
 			AbilityTag,
 			AbilitySpec->Level
 		);
@@ -315,12 +351,14 @@ FString UAuraAbilitySystemComponent::GetDescriptionByAbilityTag(const FGameplayT
 }
 
 FString UAuraAbilitySystemComponent::GetNextLevelDescriptionByAbilityTag(
-	const FGameplayTag& AbilityTag)
+	const UAbilityInfo* AbilityInfo,
+	const FGameplayTag& AbilityTag
+	)
 {
 	if (const FGameplayAbilitySpec* AbilitySpec = GetSpecFromAbilityTag(AbilityTag))
 	{
 		return UAuraAbilitySystemLibrary::GetAbilityNextLevelDescription(
-			GetAvatarActor(),
+			AbilityInfo,
 			AbilityTag,
 			AbilitySpec->Level
 		);
@@ -349,7 +387,7 @@ void UAuraAbilitySystemComponent::SetInputTagFromSpec(
 	SetExclusiveGameplayTagFromSpec(
 		AbilitySpec,
 		InputTag,
-		FName("InputTag")
+		FAuraGameplayTags::Get().InputTag
 		);
 }
 
@@ -373,7 +411,7 @@ void UAuraAbilitySystemComponent::ServerSpendSkillPoint_Implementation(
 {
 	if (FGameplayAbilitySpec* AbilitySpec = GetSpecFromAbilityTag(AbilityTag))
 	{
-		const FAuraGameplayTags Tags = FAuraGameplayTags::Get();
+		const FAuraGameplayTags& Tags = FAuraGameplayTags::Get();
 		
 		FGameplayTag Status = GetAbilityStatusFromSpec(*AbilitySpec);
 		
@@ -381,6 +419,11 @@ void UAuraAbilitySystemComponent::ServerSpendSkillPoint_Implementation(
 		{
 			Status = Tags.Abilities_Status_Unlocked;
 			SetAbilityStatusFromSpec(*AbilitySpec, Status);
+			
+			if (AbilityTag.MatchesTag(Tags.Abilities_Passive))
+			{
+				TryActivateAbility(AbilitySpec->Handle);
+			}
 		}
 		else if (
 			Status.MatchesTagExact(Tags.Abilities_Status_Equipped) ||

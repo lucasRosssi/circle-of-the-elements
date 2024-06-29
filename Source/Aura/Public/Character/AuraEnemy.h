@@ -32,7 +32,7 @@ public:
 
 	/** Combat Interface */
 	virtual int32 GetCharacterLevel_Implementation() override;
-	virtual void Die() override;
+	virtual void Die(const FVector& DeathImpulse = FVector::ZeroVector) override;
 	/** end Combat Interface */
 
 	/* Attribute Set Interface */

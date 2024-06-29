@@ -101,6 +101,17 @@ void AAuraCharacter::SpendSkillPoints_Implementation(int32 Amount)
 	GetAuraPlayerState()->AddSkillPoints(-Amount);
 }
 
+void AAuraCharacter::ShowTargetingActor_Implementation(
+	TSubclassOf<ATargetingActor> TargetingActorClass)
+{
+	MainPlayerController->ShowTargetingActor(TargetingActorClass);
+}
+
+void AAuraCharacter::HideTargetingActor_Implementation()
+{
+	MainPlayerController->HideTargetingActor();
+}
+
 AAuraPlayerState* AAuraCharacter::GetAuraPlayerState() const
 {
 	AAuraPlayerState* AuraPlayerState = GetPlayerState<AAuraPlayerState>();
@@ -138,6 +149,7 @@ void AAuraCharacter::InitAbilityActorInfo()
 	check(AuraPlayerState);
 	
 	AbilitySystemComponent = AuraPlayerState->GetAbilitySystemComponent();
+	OnASCRegistered.Broadcast(AbilitySystemComponent);
 	AttributeSet = AuraPlayerState->GetAttributeSet();
 	
 	AbilitySystemComponent->InitAbilityActorInfo(AuraPlayerState, this);
@@ -147,14 +159,15 @@ void AAuraCharacter::InitAbilityActorInfo()
 
 	AuraASC->AbilityActorInfoSet();
 
-	if(AMainPlayerController* MainPlayerController = Cast<AMainPlayerController>(GetController()))
+	MainPlayerController = GetController<AMainPlayerController>();
+	check(MainPlayerController);
+	
+	if(AAuraHUD* AuraHUD = Cast<AAuraHUD>(MainPlayerController->GetHUD()))
 	{
-		if(AAuraHUD* AuraHUD = Cast<AAuraHUD>(MainPlayerController->GetHUD()))
-		{
-			AuraHUD->InitOverlay(MainPlayerController, AuraPlayerState, AbilitySystemComponent, 
-			AttributeSet);
-		}
+		AuraHUD->InitOverlay(MainPlayerController, AuraPlayerState, AbilitySystemComponent, 
+		AttributeSet);
 	}
+	
 
 	InitializeDefaultAttributes();
 }

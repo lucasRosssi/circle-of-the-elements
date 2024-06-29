@@ -17,6 +17,20 @@ AAuraCharacterBase::AAuraCharacterBase()
 {
 	PrimaryActorTick.bCanEverTick = false;
 
+	StatusEffectsManager = CreateDefaultSubobject<UStatusEffectsManager>("StatusEffectsManager");
+	TopStatusEffectSceneComponent = CreateDefaultSubobject<USceneComponent>("TopStatusEffectSceneComponent");
+	TopStatusEffectSceneComponent->SetupAttachment(GetRootComponent());
+	TopStatusEffectSceneComponent->SetRelativeLocation(FVector(
+		0.f,
+		0.f,
+		GetCapsuleComponent()->GetScaledCapsuleHalfHeight()));
+	BottomStatusEffectSceneComponent = CreateDefaultSubobject<USceneComponent>("BottomStatusEffectSceneComponent");
+	BottomStatusEffectSceneComponent->SetupAttachment(GetRootComponent());
+	BottomStatusEffectSceneComponent->SetRelativeLocation(FVector(
+		0.f,
+		0.f,
+		-GetCapsuleComponent()->GetScaledCapsuleHalfHeight()));
+
 	Weapon = CreateDefaultSubobject<USkeletalMeshComponent>("Weapon");
 	Weapon->SetupAttachment(GetMesh(), FName("WeaponHandSocket"));
 	Weapon->SetCollisionEnabled(ECollisionEnabled::NoCollision);
@@ -43,18 +57,23 @@ UAnimMontage* AAuraCharacterBase::GetHitReactMontage_Implementation()
 	return HitReactMontage;
 }
 
+UAnimMontage* AAuraCharacterBase::GetStunMontage_Implementation()
+{
+	return StunMontage;
+}
+
 UAnimMontage* AAuraCharacterBase::GetDodgeMontage_Implementation()
 {
 	return DodgeMontage;
 }
 
-void AAuraCharacterBase::Die()
+void AAuraCharacterBase::Die(const FVector& DeathImpulse)
 {
 	Weapon->DetachFromComponent(FDetachmentTransformRules(
 		EDetachmentRule::KeepWorld,
 		true
 	));
-	MulticastHandleDeath();
+	MulticastHandleDeath(DeathImpulse);
 }
 
 void AAuraCharacterBase::SetCombatTarget_Implementation(AActor* InCombatTarget)
@@ -72,7 +91,12 @@ USkeletalMeshComponent* AAuraCharacterBase::GetWeapon_Implementation()
 	return Weapon.Get();
 }
 
-void AAuraCharacterBase::MulticastHandleDeath_Implementation()
+USkeletalMeshComponent* AAuraCharacterBase::GetAvatarMesh_Implementation()
+{
+	return GetMesh();
+}
+
+void AAuraCharacterBase::MulticastHandleDeath_Implementation(const FVector& DeathImpulse)
 {
 	UGameplayStatics::PlaySoundAtLocation(
 		this,
@@ -82,6 +106,7 @@ void AAuraCharacterBase::MulticastHandleDeath_Implementation()
 	);
 	
 	bDead = true;
+	OnDeath.Broadcast(this);
 	
 	Weapon->SetSimulatePhysics(true);
 	Weapon->SetEnableGravity(true);
@@ -91,6 +116,7 @@ void AAuraCharacterBase::MulticastHandleDeath_Implementation()
 	GetMesh()->SetEnableGravity(true);
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
 	GetMesh()->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
+	GetMesh()->AddImpulse(DeathImpulse, NAME_None, true);
 	
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	DissolveCharacter();
@@ -158,6 +184,31 @@ ECharacterClass AAuraCharacterBase::GetCharacterClass_Implementation()
 	return CharacterClass;
 }
 
+FOnASCRegistered& AAuraCharacterBase::GetOnASCRegisteredDelegate()
+{
+	return OnASCRegistered;
+}
+
+FOnDeath& AAuraCharacterBase::GetOnDeathDelegate()
+{
+	return OnDeath;
+}
+
+void AAuraCharacterBase::ApplyForce_Implementation(const FVector& InForce)
+{
+	LaunchCharacter(InForce, true, true);
+}
+
+USceneComponent* AAuraCharacterBase::GetTopStatusEffectSceneComponent_Implementation()
+{
+	return TopStatusEffectSceneComponent;
+}
+
+USceneComponent* AAuraCharacterBase::GetBottomStatusEffectSceneComponent_Implementation()
+{
+	return BottomStatusEffectSceneComponent;
+}
+
 void AAuraCharacterBase::InitAbilityActorInfo()
 {
 }
@@ -185,6 +236,11 @@ void AAuraCharacterBase::InitializeDefaultAttributes() const
 	ApplyEffectToSelf(DefaultPrimaryAttributes, 1.f);
 	ApplyEffectToSelf(DefaultSecondaryAttributes, 1.f);
 	ApplyEffectToSelf(DefaultVitalAttributes, 1.f);
+
+	if (DefaultRegenerationEffect)
+	{
+		ApplyEffectToSelf(DefaultRegenerationEffect, 1.f);
+	}
 }
 
 void AAuraCharacterBase::AddCharacterAbilities()
@@ -193,7 +249,7 @@ void AAuraCharacterBase::AddCharacterAbilities()
 
 	AbilitySystemComponent
 		->RegisterGameplayTagEvent(
-			FAuraGameplayTags::Get().Effects_HitReact,
+			FAuraGameplayTags::Get().StatusEffects_Incapacitation_HitReact,
 			EGameplayTagEventType::NewOrRemoved
 		)
 		.AddUObject(

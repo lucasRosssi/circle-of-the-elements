@@ -14,6 +14,11 @@ class AURA_API UPassiveAbility : public UBaseAbility
 {
 	GENERATED_BODY()
 public:
+	UPassiveAbility();
+	
 	virtual void OnGiveAbility(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec) override;
 
+private:
+	UPROPERTY(EditDefaultsOnly)
+	bool bActivatesOnGranted = false;
 };
