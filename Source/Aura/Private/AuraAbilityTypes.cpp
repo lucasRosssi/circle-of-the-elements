@@ -66,10 +66,27 @@ bool FAuraGameplayEffectContext::NetSerialize(FArchive& Ar, UPackageMap* Map, bo
 		{
 			RepBits |= 1 << 14;
 		}
+		if (bIsAreaAbility)
+		{
+			RepBits |= 1 << 15;
+
+			if (AreaInnerRadius > 0.f)
+			{
+				RepBits |= 1 << 16;
+			}
+			if (AreaOuterRadius > 0.f)
+			{
+				RepBits |= 1 << 17;
+			}
+			if (!AreaOrigin.IsZero())
+			{
+				RepBits |= 1 << 18;
+			}
+		}
 		
 	}
 
-	Ar.SerializeBits(&RepBits, 15);
+	Ar.SerializeBits(&RepBits, 19);
 
 	if (RepBits & (1 << 0))
 	{
@@ -142,13 +159,30 @@ bool FAuraGameplayEffectContext::NetSerialize(FArchive& Ar, UPackageMap* Map, bo
 		}
 		EffectType->NetSerialize(Ar, Map, bOutSuccess);
 	}
-	if (RepBits & (1 << 14))
+	if (RepBits & (1 << 13))
 	{
 		ForwardVector.NetSerialize(Ar, Map, bOutSuccess);
 	}
-	if (RepBits & (1 << 15))
+	if (RepBits & (1 << 14))
 	{
 		Ar << bApplyHitReact;
+	}
+	if (RepBits & (1 << 15))
+	{
+		Ar << bIsAreaAbility;
+		
+		if (RepBits & (1 << 16))
+		{
+			Ar << AreaInnerRadius;
+		}
+		if (RepBits & (1 << 17))
+		{
+			Ar << AreaOuterRadius;	
+		}
+		if (RepBits & (1 << 18))
+		{
+			AreaOrigin.NetSerialize(Ar, Map, bOutSuccess);
+		}
 	}
 
 	if (Ar.IsLoading())

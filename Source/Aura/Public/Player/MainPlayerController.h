@@ -9,6 +9,7 @@
 
 #include "MainPlayerController.generated.h"
 
+enum class ETargetTeam : uint8;
 class ATargetingActor;
 class UCapsuleComponent;
 class UCameraComponent;
@@ -73,7 +74,10 @@ public:
 	FOnControllerDeviceChanged ControllerDeviceChangedDelegate;
 
 	UFUNCTION(BlueprintCallable)
-	void ShowTargetingActor(TSubclassOf<ATargetingActor> TargetingActorClass);
+	void ShowTargetingActor(
+		TSubclassOf<ATargetingActor> TargetingActorClass,
+		ETargetTeam TargetTeam,
+		float Radius = 300.f);
 	UFUNCTION(BlueprintCallable)
 	void HideTargetingActor();
 
@@ -122,6 +126,10 @@ private:
 
 	UPROPERTY(EditAnywhere, Category="Input")
 	TObjectPtr<UInputAction> MoveAction;
+	UPROPERTY(EditAnywhere, Category="Input")
+	TObjectPtr<UInputAction> ConfirmAction;
+	UPROPERTY(EditAnywhere, Category="Input")
+	TObjectPtr<UInputAction> CancelAction;
 
 	UPROPERTY(EditAnywhere, Category="Input")
 	TObjectPtr<UInputAction> CheckInputSourceAction;
@@ -138,6 +146,9 @@ private:
 	void AbilityInputTagReleased(FGameplayTag InputTag);
 	void AbilityInputTagHeld(FGameplayTag InputTag);
 
+	void ConfirmPressed();
+	void CancelPressed();
+
 	UPROPERTY()
 	TObjectPtr<UAuraAbilitySystemComponent> AuraAbilitySystemComponent;
 	
@@ -150,6 +161,8 @@ private:
 	TObjectPtr<ATargetingActor> TargetingActor;
 
 	void UpdateTargetingActorLocation();
+
+	bool bTargeting = false;
 
 	// Environment occlusion
 	TMap<const AActor*, FCameraOccludedActor> OccludedActors;

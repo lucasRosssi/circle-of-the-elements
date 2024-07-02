@@ -6,6 +6,7 @@
 #include "UObject/Interface.h"
 #include "CombatInterface.generated.h"
 
+class UCapsuleComponent;
 class UNiagaraSystem;
 class UAbilitySystemComponent;
 
@@ -88,8 +89,10 @@ public:
 	USceneComponent* GetTopStatusEffectSceneComponent();
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	USceneComponent* GetBottomStatusEffectSceneComponent();
-	
 
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	UCapsuleComponent* EnableWeaponCollision(bool bEnable);
+	
 	virtual FOnASCRegistered& GetOnASCRegisteredDelegate() = 0;
 	virtual FOnDeath& GetOnDeathDelegate() = 0;
 };

@@ -75,6 +75,18 @@ struct FAbilityParams
 
 	UPROPERTY(BlueprintReadWrite)
 	FVector ForwardVector = FVector::ZeroVector;
+
+	UPROPERTY(BlueprintReadWrite)
+	bool bIsAreaAbility = false;
+
+	UPROPERTY(BlueprintReadWrite)
+	float AreaInnerRadius = 0.f;
+
+	UPROPERTY(BlueprintReadWrite)
+	float AreaOuterRadius = 0.f;
+
+	UPROPERTY(BlueprintReadWrite)
+	FVector AreaOrigin = FVector::ZeroVector;
 };
 
 USTRUCT(BlueprintType)
@@ -91,6 +103,10 @@ public:
 	TSharedPtr<FGameplayTag> GetEffectType() const { return EffectType; }
 	FVector GetForwardVector() const { return ForwardVector; }
 	bool GetApplyHitReact() const { return bApplyHitReact; }
+	bool IsAreaAbility() const { return bIsAreaAbility; }
+	float GetAreaInnerRadius() const { return AreaInnerRadius; }
+	float GetAreaOuterRadius() const { return AreaOuterRadius; }
+	FVector GetAreaOrigin() const { return AreaOrigin; }
 
 	void SetIsCriticalHit(bool bInCriticalHit) { bCriticalHit = bInCriticalHit; }
 	void SetIsParried(bool bInParried) { bParried = bInParried; }
@@ -100,6 +116,10 @@ public:
 	void SetEffectType(TSharedPtr<FGameplayTag> InEffectType) { EffectType = InEffectType; }
 	void SetForwardVector(const FVector& InVector) { ForwardVector = InVector; }
 	void SetApplyHitReact(bool InApplyHitReact) { bApplyHitReact = InApplyHitReact; }
+	void SetIsAreaAbility(bool bInIsRadialDamage) { bIsAreaAbility = bInIsRadialDamage; }
+	void SetAreaInnerRadius(float InInnerRadius) { AreaInnerRadius = InInnerRadius; }
+	void SetAreaOuterRadius(float InOuterRadius) { AreaOuterRadius = InOuterRadius; }
+	void SetAreaOrigin(const FVector& InOrigin) { AreaOrigin = InOrigin; }
 	
 	/** Returns the actual struct used for serialization, subclasses must override this! */
 	virtual UScriptStruct* GetScriptStruct() const
@@ -144,6 +164,18 @@ protected:
 
 	UPROPERTY()
 	bool bApplyHitReact = true;
+
+	UPROPERTY()
+	bool bIsAreaAbility = false;
+
+	UPROPERTY()
+	float AreaInnerRadius = 0.f;
+
+	UPROPERTY()
+	float AreaOuterRadius = 0.f;
+
+	UPROPERTY()
+	FVector AreaOrigin = FVector::ZeroVector;
 };
 
 template<>

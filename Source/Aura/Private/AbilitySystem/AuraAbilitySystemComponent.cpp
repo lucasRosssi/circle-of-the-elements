@@ -49,13 +49,19 @@ void UAuraAbilitySystemComponent::AbilityInputTagPressed(const FGameplayTag& Inp
 		
 		AbilitySpecInputPressed(AbilitySpec);
 		
-		if (!AbilitySpec.IsActive()) continue;
+		if (AbilitySpec.IsActive())
+		{
+			InvokeReplicatedEvent(
+				EAbilityGenericReplicatedEvent::InputPressed,
+				AbilitySpec.Handle,
+				AbilitySpec.ActivationInfo.GetActivationPredictionKey()
+				);
+		}
+		else if (const UActiveAbility* ActiveAbility = Cast<UActiveAbility>(AbilitySpec.Ability))
+		{
+			if (!ActiveAbility->bCanHoldInput) TryActivateAbility(AbilitySpec.Handle);
+		}
 		
-		InvokeReplicatedEvent(
-			EAbilityGenericReplicatedEvent::InputPressed,
-			AbilitySpec.Handle,
-			AbilitySpec.ActivationInfo.GetActivationPredictionKey()
-			);
 		break;
 	}
 }
@@ -67,10 +73,14 @@ void UAuraAbilitySystemComponent::AbilityInputTagHeld(const FGameplayTag& InputT
 	for (auto& AbilitySpec : GetActivatableAbilities())
 	{
 		if (!AbilitySpec.DynamicAbilityTags.HasTagExact(InputTag)) continue;
+		if (const UActiveAbility* ActiveAbility = Cast<UActiveAbility>(AbilitySpec.Ability))
+		{
+			if (!ActiveAbility->bCanHoldInput) break;
+		}
 		
 		AbilitySpecInputPressed(AbilitySpec);
 		
-		if (AbilitySpec.IsActive()) continue;
+		if (AbilitySpec.IsActive()) break;
 		
 		TryActivateAbility(AbilitySpec.Handle);
 		break;
@@ -83,7 +93,8 @@ void UAuraAbilitySystemComponent::AbilityInputTagReleased(const FGameplayTag& In
 
 	for (auto& AbilitySpec : GetActivatableAbilities())
 	{
-		if (!AbilitySpec.DynamicAbilityTags.HasTagExact(InputTag) || !AbilitySpec.IsActive()) continue;
+		if (!AbilitySpec.DynamicAbilityTags.HasTagExact(InputTag)) continue;
+		if (!AbilitySpec.IsActive()) break;
 		
 		AbilitySpecInputReleased(AbilitySpec);
 		InvokeReplicatedEvent(
@@ -91,6 +102,30 @@ void UAuraAbilitySystemComponent::AbilityInputTagReleased(const FGameplayTag& In
 			AbilitySpec.Handle,
 			AbilitySpec.ActivationInfo.GetActivationPredictionKey()
 			);
+		break;
+	}
+}
+
+void UAuraAbilitySystemComponent::ConfirmPressed()
+{
+	for (auto& AbilitySpec : GetActivatableAbilities())
+	{
+		if (!AbilitySpec.IsActive()) continue;
+		if (!Cast<UActiveAbility>(AbilitySpec.Ability)) continue;
+
+		InputConfirm();
+		break;
+	}
+}
+
+void UAuraAbilitySystemComponent::CancelPressed()
+{
+	for (auto& AbilitySpec : GetActivatableAbilities())
+	{
+		if (!AbilitySpec.IsActive()) continue;
+		if (!Cast<UActiveAbility>(AbilitySpec.Ability)) continue;
+		
+		InputCancel();
 		break;
 	}
 }

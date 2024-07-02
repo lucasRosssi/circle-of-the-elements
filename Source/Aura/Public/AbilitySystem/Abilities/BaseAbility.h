@@ -36,13 +36,13 @@ class AURA_API UBaseAbility : public UGameplayAbility
 
 public:
 	UFUNCTION(BlueprintPure, Category="Resources", meta=(HidePin="Target", DefaultToSelf="Target"))
-	float GetManaCost(int32 Level);
+	float GetManaCost(int32 Level) const;
 	UFUNCTION(BlueprintPure, Category="Resources", meta=(HidePin="Target", DefaultToSelf="Target"))
-	float GetCooldown();
+	float GetCooldown(int32 Level) const;
 	UFUNCTION(BlueprintPure, Category="Resources", meta=(HidePin="Target", DefaultToSelf="Target"))
-	int32 GetRoundedManaCost(int32 Level);
+	int32 GetRoundedManaCost(int32 Level) const;
 	UFUNCTION(BlueprintPure, Category="Resources", meta=(HidePin="Target", DefaultToSelf="Target"))
-	int32 GetRoundedCooldown();
+	int32 GetRoundedCooldown(int32 Level) const;
 
 	UFUNCTION(BlueprintPure, Category="Ability Effect", meta=(HidePin="Target", DefaultToSelf="Target"))
 	virtual FAbilityParams MakeAbilityParamsFromDefaults(AActor* TargetActor = nullptr) const;
@@ -54,13 +54,30 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Status Effects")
 	FStatusEffectApplicationData StatusEffectData;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Ability Defaults")
+	UPROPERTY(
+		EditDefaultsOnly,
+		BlueprintReadOnly,
+		Category="Ability Defaults|Targeting",
+		meta=(DisplayPriority=0)
+		)
 	ETargetTeam AbilityTargetTeam = ETargetTeam::ETT_Enemies;
 
-private:
-	UPROPERTY(EditDefaultsOnly, Category="Ability Defaults|Cooldowns")
-	float BaseCooldown = 0.f;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Ability Defaults|Targeting")
+	bool bIsAreaAbility = false;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Ability Defaults|Targeting")
+	float AreaInnerRadius = 0.f;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Ability Defaults|Targeting")
+	float AreaOuterRadius = 300.f;
+	
+	UPROPERTY(BlueprintReadWrite, Category="Ability Defaults|Targeting")
+	FVector AreaOrigin = FVector::ZeroVector;
+
+	UPROPERTY(EditDefaultsOnly, Category="Cooldowns")
+	FScalableFloat Cooldown;
+
+private:
 	UPROPERTY()
 	FGameplayTag AbilityTag = FGameplayTag();
 };

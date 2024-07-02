@@ -20,25 +20,40 @@
 AMainPlayerController::AMainPlayerController()
 {
 	bReplicates = true;
-	
 }
 
-void AMainPlayerController::ShowTargetingActor(TSubclassOf<ATargetingActor> TargetingActorClass)
+void AMainPlayerController::ShowTargetingActor(
+	TSubclassOf<ATargetingActor> TargetingActorClass,
+	ETargetTeam TargetTeam,
+	float Radius
+	)
 {
 	if (!IsValid(TargetingActor))
 	{
 		bShowMouseCursor = false;
-		TargetingActor = GetWorld()->SpawnActor<ATargetingActor>(
+		bTargeting = true;
+
+		FTransform SpawnTransform;
+		SpawnTransform.SetLocation(CursorHit.ImpactPoint);
+		TargetingActor = GetWorld()->SpawnActorDeferred<ATargetingActor>(
 			TargetingActorClass,
-			CursorHit.ImpactPoint,
-			FRotator::ZeroRotator
+			SpawnTransform,
+			this,
+			GetPawn(),
+			ESpawnActorCollisionHandlingMethod::AlwaysSpawn
 			);
+		TargetingActor->SetSourceActor(GetPawn());
+		TargetingActor->SetTargetTeam(TargetTeam);
+		TargetingActor->SetTargetingRadius(Radius);
+
+		TargetingActor->FinishSpawning(SpawnTransform);
 	}
 }
 
 void AMainPlayerController::HideTargetingActor()
 {
 	bShowMouseCursor = true;
+	bTargeting = false;
 	if (IsValid(TargetingActor))
 	{
 		TargetingActor->Destroy();
@@ -215,6 +230,18 @@ void AMainPlayerController::SetupInputComponent()
 		this,
 		&AMainPlayerController::MoveComplete
 	);
+	AuraInputComponent->BindAction(
+		ConfirmAction,
+		ETriggerEvent::Started,
+		this,
+		&AMainPlayerController::ConfirmPressed
+	);
+	AuraInputComponent->BindAction(
+		CancelAction,
+		ETriggerEvent::Started,
+		this,
+		&AMainPlayerController::CancelPressed
+	);
 
 	AuraInputComponent->BindAbilityActions(
 		InputConfig,
@@ -251,12 +278,10 @@ void AMainPlayerController::MoveComplete(const FInputActionValue& InputActionVal
 
 void AMainPlayerController::CursorTrace()
 {
-	GetHitResultUnderCursor(ECC_Visibility, false, CursorHit);
+	const ECollisionChannel TraceChannel = bTargeting ? ECC_ExcludeCharacters : ECC_Visibility;
+	GetHitResultUnderCursor(TraceChannel, false, CursorHit);
 
-	if (!CursorHit.bBlockingHit)
-	{
-		return;
-	}
+	if (!CursorHit.bBlockingHit) return;
 
 	LastActor = ThisActor;
 	ThisActor = Cast<ITargetInterface>(CursorHit.GetActor());
@@ -314,23 +339,27 @@ void AMainPlayerController::CursorTrace()
 
 void AMainPlayerController::AbilityInputTagPressed(FGameplayTag InputTag)
 {
-	if (!GetASC()) return;
-
 	GetASC()->AbilityInputTagPressed(InputTag);
 }
 
 void AMainPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 {
-	if (!GetASC()) return;
-	
 	GetASC()->AbilityInputTagReleased(InputTag);
 }
 
 void AMainPlayerController::AbilityInputTagHeld(FGameplayTag InputTag)
 {
-	if (!GetASC()) return;
-	
 	GetASC()->AbilityInputTagHeld(InputTag);
+}
+
+void AMainPlayerController::ConfirmPressed()
+{
+	GetASC()->ConfirmPressed();
+}
+
+void AMainPlayerController::CancelPressed()
+{
+	GetASC()->CancelPressed();
 }
 
 UAuraAbilitySystemComponent* AMainPlayerController::GetASC()

@@ -13,6 +13,7 @@
 #include "AbilitySystem/Data/AbilityInfo.h"
 #include "Aura/Aura.h"
 #include "Character/AuraCharacterBase.h"
+#include "Engine/DamageEvents.h"
 #include "Enums/TargetTeam.h"
 #include "Game/AuraGameModeBase.h"
 #include "Game/TeamComponent.h"
@@ -293,8 +294,78 @@ bool UAuraAbilitySystemLibrary::GetApplyHitReact(
 	return false;
 }
 
-void UAuraAbilitySystemLibrary::SetIsParried(FGameplayEffectContextHandle& EffectContextHandle,
-                                             bool bInParried)
+bool UAuraAbilitySystemLibrary::IsRadialDamage(
+	const FGameplayEffectContextHandle& EffectContextHandle)
+{
+	const FAuraGameplayEffectContext* AuraEffectContext = 
+		static_cast<const FAuraGameplayEffectContext*>(EffectContextHandle.Get());
+
+	if (AuraEffectContext)
+	{
+		return AuraEffectContext->IsAreaAbility();
+	}
+
+	return false;
+}
+
+float UAuraAbilitySystemLibrary::GetRadialDamageInnerRadius(
+	const FGameplayEffectContextHandle& EffectContextHandle)
+{
+	const FAuraGameplayEffectContext* AuraEffectContext = 
+		static_cast<const FAuraGameplayEffectContext*>(EffectContextHandle.Get());
+
+	if (AuraEffectContext)
+	{
+		return AuraEffectContext->GetAreaInnerRadius();
+	}
+
+	return 0.f;
+}
+
+float UAuraAbilitySystemLibrary::GetRadialDamageOuterRadius(
+	const FGameplayEffectContextHandle& EffectContextHandle)
+{
+	const FAuraGameplayEffectContext* AuraEffectContext = 
+		static_cast<const FAuraGameplayEffectContext*>(EffectContextHandle.Get());
+
+	if (AuraEffectContext)
+	{
+		return AuraEffectContext->GetAreaOuterRadius();
+	}
+
+	return 0.f;
+}
+
+FVector UAuraAbilitySystemLibrary::GetOrigin(
+	const FGameplayEffectContextHandle& EffectContextHandle)
+{
+	const FAuraGameplayEffectContext* AuraEffectContext = 
+	static_cast<const FAuraGameplayEffectContext*>(EffectContextHandle.Get());
+
+	if (AuraEffectContext)
+	{
+		return AuraEffectContext->GetAreaOrigin();
+	}
+
+	return FVector::ZeroVector;
+}
+
+FRadialProps UAuraAbilitySystemLibrary::GetRadialProps(
+	const FGameplayEffectContextHandle& EffectContextHandle
+	)
+{
+	FRadialProps RadialProps;
+	RadialProps.Origin = GetOrigin(EffectContextHandle);
+	RadialProps.InnerRadius = GetRadialDamageInnerRadius(EffectContextHandle);
+	RadialProps.OuterRadius = GetRadialDamageOuterRadius(EffectContextHandle);
+
+	return RadialProps;
+}
+
+void UAuraAbilitySystemLibrary::SetIsParried(
+	FGameplayEffectContextHandle& EffectContextHandle,
+	bool bInParried
+	)
 {
 	FAuraGameplayEffectContext* AuraEffectContext =
 		static_cast<FAuraGameplayEffectContext*>(EffectContextHandle.Get());
@@ -304,7 +375,8 @@ void UAuraAbilitySystemLibrary::SetIsParried(FGameplayEffectContextHandle& Effec
 	}
 }
 
-void UAuraAbilitySystemLibrary::SetIsCriticalHit(FGameplayEffectContextHandle& EffectContextHandle,
+void UAuraAbilitySystemLibrary::SetIsCriticalHit(
+	FGameplayEffectContextHandle& EffectContextHandle,
 	bool bInCriticalHit)
 {
 	FAuraGameplayEffectContext* AuraEffectContext =
@@ -387,6 +459,58 @@ void UAuraAbilitySystemLibrary::SetApplyHitReact(FGameplayEffectContextHandle& E
 	if (AuraEffectContext)
 	{
 		AuraEffectContext->SetApplyHitReact(bInApplyHitReact);
+	}
+}
+
+void UAuraAbilitySystemLibrary::SetIsAreaAbility(
+	FGameplayEffectContextHandle& EffectContextHandle,
+	bool bInIsRadialDamage
+	)
+{
+	FAuraGameplayEffectContext* AuraEffectContext =
+		static_cast<FAuraGameplayEffectContext*>(EffectContextHandle.Get());
+	if (AuraEffectContext)
+	{
+		AuraEffectContext->SetIsAreaAbility(bInIsRadialDamage);
+	}
+}
+
+void UAuraAbilitySystemLibrary::SetAreaInnerRadius(
+	FGameplayEffectContextHandle& EffectContextHandle,
+	float InInnerRadius
+	)
+{
+	FAuraGameplayEffectContext* AuraEffectContext =
+		static_cast<FAuraGameplayEffectContext*>(EffectContextHandle.Get());
+	if (AuraEffectContext)
+	{
+		AuraEffectContext->SetAreaInnerRadius(InInnerRadius);
+	}
+}
+
+void UAuraAbilitySystemLibrary::SetAreaOuterRadius(
+	FGameplayEffectContextHandle& EffectContextHandle,
+	float InOuterRadius
+	)
+{
+	FAuraGameplayEffectContext* AuraEffectContext =
+		static_cast<FAuraGameplayEffectContext*>(EffectContextHandle.Get());
+	if (AuraEffectContext)
+	{
+		AuraEffectContext->SetAreaOuterRadius(InOuterRadius);
+	}
+}
+
+void UAuraAbilitySystemLibrary::SetAreaOrigin(
+	FGameplayEffectContextHandle& EffectContextHandle,
+	const FVector& InOrigin
+	)
+{
+	FAuraGameplayEffectContext* AuraEffectContext =
+		static_cast<FAuraGameplayEffectContext*>(EffectContextHandle.Get());
+	if (AuraEffectContext)
+	{
+		AuraEffectContext->SetAreaOrigin(InOrigin);
 	}
 }
 
@@ -652,6 +776,10 @@ FString UAuraAbilitySystemLibrary::GetAbilityDescription(
 	FAuraAbilityInfo Info = AbilityInfo->FindAbilityInfoByTag(AbilityTag);
 	UBaseAbility* Ability = Info.Ability.GetDefaultObject();
 	FormatAbilityDescriptionAtLevel(Ability, Level, Info.Description);
+
+	FString ManaCostText;
+	FString CooldownText;
+	MakeManaAndCooldownText(Ability, Level, ManaCostText, CooldownText);
 	
 	return FString::Printf(
 		TEXT(
@@ -659,15 +787,14 @@ FString UAuraAbilitySystemLibrary::GetAbilityDescription(
 			"<Title18>Level </><Level>%d</>\n"
 			"\n"
 			"%s\n"
-			"\n"
-			"<Info>Mana - </><Mana>%d</>\n"
-			"<Info>Cooldown - </>%ds"
+			"%s"
+			"%s"
 			),
 		*Info.Name.ToString(),
 		Level,
 		*Info.Description.ToString(),
-		Ability->GetRoundedManaCost(Level),
-		Ability->GetRoundedCooldown()
+		*ManaCostText,
+		*CooldownText
 	);
 }
 
@@ -680,26 +807,10 @@ FString UAuraAbilitySystemLibrary::GetAbilityNextLevelDescription(
 	FAuraAbilityInfo Info = AbilityInfo->FindAbilityInfoByTag(AbilityTag);
 	UBaseAbility* Ability = Info.Ability.GetDefaultObject();
 	FormatAbilityDescriptionAtLevel(Ability, Level, Info.NextLevelDescription);
-
-	const int32 ManaCost = Ability->GetRoundedManaCost(Level);
-	const int32 NextManaCost = Ability->GetRoundedManaCost(Level + 1);
+	
 	FString ManaCostText;
-	if (NextManaCost - ManaCost == 0)
-	{
-		ManaCostText = FString::Printf(
-			TEXT("<Info>Mana - </><Mana>%d</>"),
-			ManaCost
-		);
-		
-	}
-	else
-	{
-		ManaCostText = FString::Printf(
-			TEXT("<Info>Mana - </><Old>%d</> > <Mana>%d</>"),
-			ManaCost,
-			NextManaCost
-		);
-	}
+	FString CooldownText;
+	MakeManaAndCooldownTextNextLevel(Ability, Level, ManaCostText, CooldownText);
 
 	return FString::Printf(
 		TEXT(
@@ -709,14 +820,14 @@ FString UAuraAbilitySystemLibrary::GetAbilityNextLevelDescription(
 			"%s\n"
 			"\n"
 			"%s\n"
-			"<Info>Cooldown - </>%ds"
+			"%s"
 			),
 		*Info.Name.ToString(),
 		Level,
 		Level + 1,
 		*Info.NextLevelDescription.ToString(),
 		*ManaCostText,
-		Ability->GetRoundedCooldown()
+		*CooldownText
 	);
 }
 
@@ -729,6 +840,7 @@ void UAuraAbilitySystemLibrary::FormatAbilityDescriptionAtLevel(
 	const FAuraNamedArguments& Args = FAuraNamedArguments::Get();
 
 	if (const UActiveAbility* ActiveAbility = Cast<UActiveAbility>(Ability))
+	{
 		if (ActiveAbility->IsBounceModeActive())
 		{
 			OutDescription = FText::FormatNamed(
@@ -739,6 +851,7 @@ void UAuraAbilitySystemLibrary::FormatAbilityDescriptionAtLevel(
 				ActiveAbility->GetMaxBounceCountAtLevel(Level + 1)
 			);
 		}
+	}
 	
 	if (const UActiveDamageAbility* DamageAbility = Cast<UActiveDamageAbility>(Ability))
 	{
@@ -806,6 +919,99 @@ FString UAuraAbilitySystemLibrary::GetAbilityLockedDescription(
 	return RequirementText;
 }
 
+void UAuraAbilitySystemLibrary::MakeManaAndCooldownText(
+	const UBaseAbility* Ability,
+	int32 Level,
+	FString& OutManaText,
+	FString& OutCooldownText
+	)
+{
+	const int32 ManaCost = Ability->GetRoundedManaCost(Level);
+	const int32 Cooldown = Ability->GetRoundedCooldown(Level);
+
+	if (ManaCost == 0)
+	{
+		OutManaText = FString::Printf(TEXT(""));
+	}
+	else
+	{
+		OutManaText = FString::Printf(
+			TEXT("\n<Info>Mana - </><Mana>%d</>"),
+			ManaCost
+		);
+	}
+
+	if (Cooldown == 0)
+	{
+		OutCooldownText = FString::Printf(TEXT(""));
+	}
+	else
+	{
+		OutCooldownText = FString::Printf(
+			TEXT("\n<Info>Cooldown - </>%ds"),
+			Cooldown
+		);
+	}
+}
+
+void UAuraAbilitySystemLibrary::MakeManaAndCooldownTextNextLevel(
+	const UBaseAbility* Ability,
+	int32 Level,
+	FString& OutManaText,
+	FString& OutCooldownText
+	)
+{
+	const int32 ManaCost = Ability->GetRoundedManaCost(Level);
+	const int32 NextManaCost = Ability->GetRoundedManaCost(Level + 1);
+	const int32 Cooldown = Ability->GetRoundedCooldown(Level);
+	const int32 NextCooldown = Ability->GetRoundedCooldown(Level + 1);
+	if (NextManaCost - ManaCost == 0)
+	{
+		if (ManaCost == 0)
+		{
+			OutManaText = FString::Printf(TEXT(""));
+		}
+		else
+		{
+			OutManaText = FString::Printf(
+				TEXT("<Info>Mana - </><Mana>%d</>"),
+				ManaCost
+			);
+		}
+	}
+	else
+	{
+		OutManaText = FString::Printf(
+			TEXT("<Info>Mana - </><Old>%d</> > <Mana>%d</>"),
+			ManaCost,
+			NextManaCost
+		);
+	}
+	
+	if (NextCooldown - Cooldown == 0)
+	{
+		if (Cooldown == 0)
+		{
+			OutCooldownText = FString::Printf(TEXT(""));
+		}
+		else
+		{
+			OutCooldownText = FString::Printf(
+				TEXT("<Info>Cooldown - </>%ds"),
+				Cooldown
+			);
+		}
+	}
+	else
+	{
+		OutCooldownText = FString::Printf(
+			TEXT("<Info>Cooldown - </><Old>%d</> > %ds"),
+			Cooldown,
+			NextCooldown
+		);
+	}
+}
+
 FGameplayEffectContextHandle UAuraAbilitySystemLibrary::ApplyAbilityEffect(
 	const FAbilityParams& AbilityParams,
 	bool& bSuccess
@@ -835,6 +1041,13 @@ FGameplayEffectContextHandle UAuraAbilitySystemLibrary::ApplyAbilityEffect(
 	const FEffectParams& EffectParams = AbilityParams.EffectParams;
 	
 	SetForwardVector(EffectContextHandle, AbilityParams.ForwardVector);
+	SetIsAreaAbility(EffectContextHandle, AbilityParams.bIsAreaAbility);
+	if (AbilityParams.bIsAreaAbility)
+	{
+		SetAreaOrigin(EffectContextHandle, AbilityParams.AreaOrigin);
+		SetAreaInnerRadius(EffectContextHandle, AbilityParams.AreaInnerRadius);
+		SetAreaOuterRadius(EffectContextHandle, AbilityParams.AreaOuterRadius);
+	}
 	
 	if (DamageParams.IsValid())
 	{
@@ -883,6 +1096,30 @@ FGameplayEffectContextHandle UAuraAbilitySystemLibrary::ApplyAbilityEffect(
 	}
 
 	return EffectContextHandle;
+}
+
+float UAuraAbilitySystemLibrary::GetRadialDamageWithFalloff(
+	const AActor* TargetActor,
+	float BaseDamage,
+	float MinimumDamage,
+	const FVector& Origin,
+	float DamageInnerRadius,
+	float DamageOuterRadius,
+	float DamageFalloff
+	)
+{
+	if (!IsValid(TargetActor)) return BaseDamage;
+	
+	FRadialDamageParams RadialDamageParams;
+	RadialDamageParams.BaseDamage = BaseDamage;
+	RadialDamageParams.MinimumDamage = MinimumDamage;
+	RadialDamageParams.DamageFalloff = DamageFalloff;
+	RadialDamageParams.InnerRadius = DamageInnerRadius;
+	RadialDamageParams.OuterRadius = DamageOuterRadius;
+	const float DamageScale = RadialDamageParams.GetDamageScale(
+		(Origin - TargetActor->GetActorLocation()).Length()
+		);
+	return BaseDamage * DamageScale;
 }
 
 bool UAuraAbilitySystemLibrary::HasAnyHarmfulEffectBlockTag(const UAbilitySystemComponent* TargetASC)

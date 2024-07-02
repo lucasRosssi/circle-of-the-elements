@@ -34,14 +34,23 @@ AAuraCharacterBase::AAuraCharacterBase()
 	Weapon = CreateDefaultSubobject<USkeletalMeshComponent>("Weapon");
 	Weapon->SetupAttachment(GetMesh(), FName("WeaponHandSocket"));
 	Weapon->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	Weapon->bReceivesDecals = false;
+	WeaponCapsule = CreateDefaultSubobject<UCapsuleComponent>("WeaponCapsule");
+	WeaponCapsule->SetupAttachment(Weapon);
+	WeaponCapsule->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	WeaponCapsule->SetCollisionResponseToAllChannels(ECR_Ignore);
+	WeaponCapsule->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
 
 	TeamComponent = CreateDefaultSubobject<UTeamComponent>("TeamComponent");
 
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_ExcludeCharacters, ECR_Ignore);
 	GetCapsuleComponent()->SetGenerateOverlapEvents(false);
 	GetMesh()->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
 	GetMesh()->SetCollisionResponseToChannel(ECC_Projectile, ECR_Overlap);
+	GetMesh()->SetCollisionResponseToChannel(ECC_ExcludeCharacters, ECR_Ignore);
 	GetMesh()->SetGenerateOverlapEvents(true);
+	GetMesh()->bReceivesDecals = false;
 
 	CurrentWalkSpeed = DefaultWalkSpeed;
 	GetCharacterMovement()->MaxWalkSpeed = CurrentWalkSpeed;
@@ -207,6 +216,20 @@ USceneComponent* AAuraCharacterBase::GetTopStatusEffectSceneComponent_Implementa
 USceneComponent* AAuraCharacterBase::GetBottomStatusEffectSceneComponent_Implementation()
 {
 	return BottomStatusEffectSceneComponent;
+}
+
+UCapsuleComponent* AAuraCharacterBase::EnableWeaponCollision_Implementation(bool bEnable)
+{
+	if (bEnable)
+	{
+		WeaponCapsule->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	}
+	else
+	{
+		WeaponCapsule->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	}
+
+	return WeaponCapsule;
 }
 
 void AAuraCharacterBase::InitAbilityActorInfo()

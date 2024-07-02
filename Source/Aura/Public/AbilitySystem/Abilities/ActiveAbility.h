@@ -21,11 +21,12 @@ public:
 	AActor* GetNextBounceTarget(AActor* HitTarget);
 	
 	// Starting input for the player, when the ability is granted
-	UPROPERTY(EditDefaultsOnly, Category="Input", meta=(EditCondition="bIsPlayerAbility"))
+	UPROPERTY(EditDefaultsOnly, Category="Input", meta=(EditCondition="bIsPlayerAbility", DisplayPriority=1))
 	FGameplayTag StartupInputTag;
-	
 	// True if the ability should target accordingly to the player movement input direction 
-	UPROPERTY(EditDefaultsOnly, Category="Input", meta=(EditCondition="bIsPlayerAbility"))
+	UPROPERTY(EditDefaultsOnly, Category="Input", meta=(EditCondition="bIsPlayerAbility", DisplayPriority=2))
+	bool bCanHoldInput = false;
+	UPROPERTY(EditDefaultsOnly, Category="Input", meta=(EditCondition="bIsPlayerAbility", DisplayPriority=3))
 	bool bUsesMovementInputDirection = false;
 
 	bool IsBounceModeActive() const { return bBounces; }
@@ -36,11 +37,16 @@ protected:
 	void ClearBounceHitTargets();
 	
 	// True when a player uses the ability, false when its an AI
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Input")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Input", meta=(DisplayPriority=0))
 	bool bIsPlayerAbility = false;
 
 	// True when the ability is related to a weapon (uses a weapon socket)
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Ability Defaults")
+	UPROPERTY(
+		EditDefaultsOnly,
+		BlueprintReadOnly,
+		Category="Ability Defaults|Weapon",
+		meta=(DisplayPriority=0)
+		)
 	bool bUsesWeapon;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Ability Defaults")
 	TObjectPtr<UAnimMontage> MontageToPlay;
@@ -50,22 +56,29 @@ protected:
 	float AnimRootMotionTranslateScale = 1.0f;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Ability Defaults")
 	FName AbilitySocketName;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Ability Defaults")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Ability Defaults|Targeting")
 	TSubclassOf<ATargetingActor> TargetingActorClass;
 
 	// True if the ability effect can bounce to a nearby target
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Ability Defaults|Mode")
 	bool bBounces = false;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Ability Defaults|Mode", meta=(EditCondition="bBounces"))
+	UPROPERTY(
+		EditDefaultsOnly,
+		BlueprintReadOnly,
+		Category="Ability Defaults|Mode",
+		meta=(EditCondition="bBounces",ClampMin=0,UIMin=0)
+		)
 	int32 MaxBounceCount = 0;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Ability Defaults|Mode", meta=(EditCondition="bBounces"))
 	float BounceRadius = 500.f;
 	// How much of the ability effect is changed per target hit
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Ability Defaults|Mode", meta=(EditCondition="bBounces"))
+	UPROPERTY(
+		EditDefaultsOnly,
+		BlueprintReadOnly,
+		Category="Ability Defaults|Mode",
+		meta=(EditCondition="bBounces", Units="Percent"))
 	float BounceEffectChangePerHit = 0.f;
 
-	UPROPERTY(BlueprintReadWrite, Category="Ability States")
-	FName TargetingState = FName("TargetingState");
 private:
 	UPROPERTY()
 	TArray<AActor*> BounceHitActors;

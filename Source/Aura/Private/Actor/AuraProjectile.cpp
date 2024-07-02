@@ -15,6 +15,7 @@
 #include "Actor/ProjectileEffect.h"
 #include "Aura/Aura.h"
 #include "Interaction/CombatInterface.h"
+#include "Kismet/KismetMathLibrary.h"
 
 AAuraProjectile::AAuraProjectile()
 {
@@ -169,14 +170,46 @@ void AAuraProjectile::OnSphereOverlap(
 
 	if (HasAuthority())
 	{
-		if (
+		bool bSuccess;
+		if (AbilityParams.bIsAreaAbility)
+		{
+			AbilityParams.AreaOrigin = GetActorLocation();
+			AbilityParams.ForwardVector = UKismetMathLibrary::GetDirectionUnitVector(
+				AbilityParams.AreaOrigin, 
+				OtherActor->GetActorLocation()
+				);
+
+			TArray<AActor*> EnemiesInArea;
+			TArray<AActor*> IgnoreActors;
+			UAuraAbilitySystemLibrary::GetAliveCharactersWithinRadius(
+				EffectCauser,
+				EnemiesInArea,
+				IgnoreActors,
+				AbilityParams.AreaOuterRadius,
+				AbilityParams.AreaOrigin,
+				ETargetTeam::ETT_Enemies
+				);
+
+			for (const auto Enemy : EnemiesInArea)
+			{
+				if (
+					UAbilitySystemComponent* EnemyASC = UAbilitySystemBlueprintLibrary
+						::GetAbilitySystemComponent(Enemy)
+				)
+				{
+					AbilityParams.TargetASC = EnemyASC;
+					UAuraAbilitySystemLibrary::ApplyAbilityEffect(AbilityParams, bSuccess);
+				}
+			}
+		}
+		else if (
 			UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary
 				::GetAbilitySystemComponent(OtherActor)
 		)
 		{
 			AbilityParams.ForwardVector = GetActorForwardVector();
 			AbilityParams.TargetASC = TargetASC;
-			bool bSuccess;
+				
 			UAuraAbilitySystemLibrary::ApplyAbilityEffect(AbilityParams, bSuccess);
 		}
 		

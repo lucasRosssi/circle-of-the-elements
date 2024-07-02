@@ -13,5 +13,15 @@ UCLASS()
 class AURA_API UMeleeAttackAbility : public UActiveDamageAbility
 {
 	GENERATED_BODY()
+
+public:
 	
+protected:
+	UPROPERTY(
+		EditDefaultsOnly,
+		BlueprintReadOnly,
+		Category="Ability Defaults|Weapon",
+		meta=(EditCondition="bUsesWeapon", DisplayPriority=1)
+		)
+	bool bWithWeaponCollision;
 };

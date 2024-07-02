@@ -22,10 +22,11 @@ AAuraCharacter::AAuraCharacter()
 	CameraBoom->SetupAttachment(GetRootComponent());
 	CameraBoom->SetUsingAbsoluteRotation(true);
 	CameraBoom->bDoCollisionTest = false;
-	CameraBoom->TargetArmLength = 800.f;
+	CameraBoom->TargetArmLength = 4000.f;
 	Camera = CreateDefaultSubobject<UCameraComponent>("Camera");
 	Camera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 	Camera->bUsePawnControlRotation = false;
+	Camera->SetFieldOfView(30.f);
 
 	LevelUpWidgetComponent = CreateDefaultSubobject<UWidgetComponent>("LevelUpMessage");
 	LevelUpWidgetComponent->SetupAttachment(GetRootComponent());
@@ -102,9 +103,12 @@ void AAuraCharacter::SpendSkillPoints_Implementation(int32 Amount)
 }
 
 void AAuraCharacter::ShowTargetingActor_Implementation(
-	TSubclassOf<ATargetingActor> TargetingActorClass)
+	TSubclassOf<ATargetingActor> TargetingActorClass,
+	ETargetTeam TargetTeam,
+	float Radius
+	)
 {
-	MainPlayerController->ShowTargetingActor(TargetingActorClass);
+	MainPlayerController->ShowTargetingActor(TargetingActorClass, TargetTeam, Radius);
 }
 
 void AAuraCharacter::HideTargetingActor_Implementation()

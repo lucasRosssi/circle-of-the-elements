@@ -21,6 +21,16 @@ struct FGameplayEffectContextHandle;
 class UAbilitySystemComponent;
 class UOverlayWidgetController;
 class UAttributeMenuWidgetController;
+
+USTRUCT(BlueprintType)
+struct FRadialProps
+{
+	GENERATED_BODY()
+	
+	float InnerRadius = 0.f;
+	float OuterRadius = 0.f;
+	FVector Origin = FVector::ZeroVector;
+};
 /**
  * 
  */
@@ -30,6 +40,10 @@ class AURA_API UAuraAbilitySystemLibrary : public UBlueprintFunctionLibrary
 	GENERATED_BODY()
 
 public:
+	/*
+	 * WIDGET CONTROLLER
+	 */
+		
 	UFUNCTION(
 		BlueprintPure,
 		Category = "AuraAbilitySystemLibrary|WidgetController",
@@ -62,6 +76,10 @@ public:
 		const UObject* WorldContextObject
 	);
 
+	/*
+	 * DEFAULTS
+	 */
+
 	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|CharacterClassDefaults")
 	static UCharacterInfo* GetCharacterClassInfo(const UObject* WorldContextObject);
 
@@ -86,6 +104,12 @@ public:
 		ECharacterClass CharacterClass
 	);
 
+	/*
+	 * GAMEPLAY EFFECTS
+	 */
+
+	// EFFECT CONTEXT GETTERS
+
 	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|GameplayEffects")
 	static bool IsParried(const FGameplayEffectContextHandle& EffectContextHandle);
 	
@@ -109,6 +133,23 @@ public:
 	
 	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|GameplayEffects")
 	static bool GetApplyHitReact(const FGameplayEffectContextHandle& EffectContextHandle);
+
+	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|GameplayEffects")
+	static bool IsRadialDamage(const FGameplayEffectContextHandle& EffectContextHandle);
+
+	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|GameplayEffects")
+	static float GetRadialDamageInnerRadius(const FGameplayEffectContextHandle& EffectContextHandle);
+
+	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|GameplayEffects")
+	static float GetRadialDamageOuterRadius(const FGameplayEffectContextHandle& EffectContextHandle);
+
+	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|GameplayEffects")
+	static FVector GetOrigin(const FGameplayEffectContextHandle& EffectContextHandle);
+
+	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|GameplayEffects")
+	static FRadialProps GetRadialProps(const FGameplayEffectContextHandle& EffectContextHandle);
+
+	// EFFECT CONTEXT SETTERS
 
 	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|GameplayEffects")
 	static void SetIsParried(
@@ -157,7 +198,51 @@ public:
 		UPARAM(ref) FGameplayEffectContextHandle& EffectContextHandle,
 		bool bInApplyHitReact
 		);
+
+	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|GameplayEffects")
+	static void SetIsAreaAbility(
+		UPARAM(ref) FGameplayEffectContextHandle& EffectContextHandle,
+		bool bInIsRadialDamage
+		);
+
+	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|GameplayEffects")
+	static void SetAreaInnerRadius(
+		UPARAM(ref) FGameplayEffectContextHandle& EffectContextHandle,
+		float InInnerRadius
+		);
+
+	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|GameplayEffects")
+	static void SetAreaOuterRadius(
+		UPARAM(ref) FGameplayEffectContextHandle& EffectContextHandle,
+		float InOuterRadius
+		);
+
+	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|GameplayEffects")
+	static void SetAreaOrigin(
+		UPARAM(ref) FGameplayEffectContextHandle& EffectContextHandle,
+		const FVector& InOrigin
+		);
+
+	/*
+	 * GAMEPLAY MECHANICS
+	 */
+
+	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|GameplayMechanics")
+	static FGameplayEffectContextHandle ApplyAbilityEffect(
+		const FAbilityParams& AbilityParams,
+		bool& bSuccess
+		);
 	
+	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|GameplayMechanics")
+	static float GetRadialDamageWithFalloff(
+		const AActor* TargetActor,
+		float BaseDamage,
+		float MinimumDamage,
+		const FVector& Origin,
+		float DamageInnerRadius,
+		float DamageOuterRadius,
+		float DamageFalloff
+		);
 
 	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|GameplayMechanics")
 	static void GetAliveCharactersWithinRadius(
@@ -222,36 +307,6 @@ public:
 		ECharacterType CharacterType,
 		int32 Level
 	);
-	
-	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|UI", meta = (HidePin = "WorldContextObject", DefaultToSelf = "WorldContextObject"))
-	static FString GetAbilityDescription(
-		const UAbilityInfo* AbilityInfo,
-		const FGameplayTag& AbilityTag,
-		int32 Level
-		);
-	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|UI", meta = (HidePin = "WorldContextObject", DefaultToSelf = "WorldContextObject"))
-	static FString GetAbilityNextLevelDescription(
-		const UAbilityInfo* AbilityInfo,
-		const FGameplayTag& AbilityTag,
-		int32 Level
-		);
-	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|UI")
-	static void FormatAbilityDescriptionAtLevel(
-		UBaseAbility* Ability,
-		int32 Level,
-		FText& OutDescription
-		);
-	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|UI")
-	static FString GetAbilityLockedDescription(
-		int32 Level,
-		const FGameplayTagContainer& AbilitiesRequirement
-	);
-	
-	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|GameplayEffects")
-	static FGameplayEffectContextHandle ApplyAbilityEffect(
-		const FAbilityParams& AbilityParams,
-		bool& bSuccess
-		);
 
 	// If has ANY tag that prevents harmful effects
 	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|GameplayMechanics")
@@ -276,4 +331,47 @@ public:
 		float Spread,
 		int32 Count
 		);
+
+	/*
+	 * UI
+	 */
+	
+	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|UI", meta = (HidePin = "WorldContextObject", DefaultToSelf = "WorldContextObject"))
+	static FString GetAbilityDescription(
+		const UAbilityInfo* AbilityInfo,
+		const FGameplayTag& AbilityTag,
+		int32 Level
+		);
+	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|UI", meta = (HidePin = "WorldContextObject", DefaultToSelf = "WorldContextObject"))
+	static FString GetAbilityNextLevelDescription(
+		const UAbilityInfo* AbilityInfo,
+		const FGameplayTag& AbilityTag,
+		int32 Level
+		);
+	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|UI")
+	static void FormatAbilityDescriptionAtLevel(
+		UBaseAbility* Ability,
+		int32 Level,
+		FText& OutDescription
+		);
+	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|UI")
+	static FString GetAbilityLockedDescription(
+		int32 Level,
+		const FGameplayTagContainer& AbilitiesRequirement
+	);
+	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|UI", meta = (HidePin = "WorldContextObject", DefaultToSelf = "WorldContextObject"))
+	static void MakeManaAndCooldownText(
+		const UBaseAbility* Ability,
+		int32 Level,
+		FString& OutManaText,
+		FString& OutCooldownText
+		);
+	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|UI", meta = (HidePin = "WorldContextObject", DefaultToSelf = "WorldContextObject"))
+	static void MakeManaAndCooldownTextNextLevel(
+		const UBaseAbility* Ability,
+		int32 Level,
+		FString& OutManaText,
+		FString& OutCooldownText
+		);
+	
 };

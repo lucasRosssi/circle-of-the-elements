@@ -124,16 +124,18 @@ UExecCalc_Damage::UExecCalc_Damage()
 
 void UExecCalc_Damage::Execute_Implementation(
 	const FGameplayEffectCustomExecutionParameters& ExecutionParams,
-	FGameplayEffectCustomExecutionOutput& OutExecutionOutput) const
+	FGameplayEffectCustomExecutionOutput& OutExecutionOutput
+	) const
 {
 	const FAuraGameplayTags& Tags = FAuraGameplayTags::Get();
 	// const UAbilitySystemComponent* SourceASC = ExecutionParams.GetSourceAbilitySystemComponent();
 	const UAbilitySystemComponent* TargetASC = ExecutionParams.GetTargetAbilitySystemComponent();
 	
 	// const AActor* SourceAvatar = SourceASC ? SourceASC->GetAvatarActor() : nullptr;
-	// const AActor* TargetAvatar = TargetASC ? TargetASC->GetAvatarActor() : nullptr;
+	const AActor* TargetAvatar = TargetASC ? TargetASC->GetAvatarActor() : nullptr;
 
 	const FGameplayEffectSpec& Spec = ExecutionParams.GetOwningSpec();
+	FGameplayEffectContextHandle EffectContextHandle = Spec.GetContext();
 
 	const FGameplayTagContainer* SourceTags = Spec.CapturedSourceTags.GetAggregatedTags();
 	const FGameplayTagContainer* TargetTags = Spec.CapturedTargetTags.GetAggregatedTags();
@@ -180,6 +182,20 @@ void UExecCalc_Damage::Execute_Implementation(
 		Resistance = FMath::Min(Resistance, 100.f);
 
 		DamageTypeValue *= ( 100.f - Resistance ) / 100.f;
+
+		if (UAuraAbilitySystemLibrary::IsRadialDamage(EffectContextHandle))
+		{
+			FRadialProps RadialProps = UAuraAbilitySystemLibrary::GetRadialProps(EffectContextHandle);
+			DamageTypeValue = UAuraAbilitySystemLibrary::GetRadialDamageWithFalloff(
+				 TargetAvatar,
+				 DamageTypeValue,
+				 DamageTypeValue / 4,
+				 RadialProps.Origin,
+				 RadialProps.InnerRadius,
+				 RadialProps.OuterRadius,
+				 1.f
+				 );
+		}
 		
 		Damage += DamageTypeValue;
 	}
@@ -197,7 +213,6 @@ void UExecCalc_Damage::Execute_Implementation(
 	TargetParryChance = FMath::Max<float>(TargetParryChance, 0.f);
 	const bool bParried = FMath::RandRange(1, 100) <= TargetParryChance;
 
-	FGameplayEffectContextHandle EffectContextHandle = Spec.GetContext();
 	UAuraAbilitySystemLibrary::SetIsParried(EffectContextHandle, bParried);
 
 	if (bParried)

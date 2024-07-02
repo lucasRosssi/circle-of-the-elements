@@ -44,7 +44,11 @@ public:
 	void SpendSkillPoints(int32 Amount);
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	void ShowTargetingActor(TSubclassOf<ATargetingActor> TargetingActorClass);
+	void ShowTargetingActor(
+		TSubclassOf<ATargetingActor> TargetingActorClass,
+		ETargetTeam TargetTeam,
+		float Radius
+		);
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void HideTargetingActor();
 };

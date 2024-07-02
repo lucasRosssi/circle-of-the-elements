@@ -40,5 +40,4 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Projectile|Homing", meta=(EditCondition="bHoming"))
 	float HomingActivationDelay = 0.f;
-
 };

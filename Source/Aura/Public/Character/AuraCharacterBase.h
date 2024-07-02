@@ -61,6 +61,7 @@ public:
 	virtual void ApplyForce_Implementation(const FVector& InForce) override;
 	virtual USceneComponent* GetTopStatusEffectSceneComponent_Implementation() override;
 	virtual USceneComponent* GetBottomStatusEffectSceneComponent_Implementation() override;
+	virtual UCapsuleComponent* EnableWeaponCollision_Implementation(bool bEnable) override;
 	/** end Combat Interface */
 
 	FOnASCRegistered OnASCRegistered;
@@ -103,6 +104,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
 	TObjectPtr<USkeletalMeshComponent> Weapon;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
+	TObjectPtr<UCapsuleComponent> WeaponCapsule;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
 	FName WeaponSocketName;

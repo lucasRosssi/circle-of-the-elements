@@ -7,6 +7,7 @@
 #include "Interaction/PlayerInterface.h"
 #include "AuraCharacter.generated.h"
 
+enum class ETargetTeam : uint8;
 class AMainPlayerController;
 class AAuraPlayerState;
 class UWidgetComponent;
@@ -37,7 +38,11 @@ public:
 	virtual int32 GetSkillPoints_Implementation() const override;
 	virtual void SpendAttributePoints_Implementation(int32 Amount) override;
 	virtual void SpendSkillPoints_Implementation(int32 Amount) override;
-	virtual void ShowTargetingActor_Implementation(TSubclassOf<ATargetingActor> TargetingActorClass) override;
+	virtual void ShowTargetingActor_Implementation(
+		TSubclassOf<ATargetingActor> TargetingActorClass,
+		ETargetTeam TargetTeam,
+		float Radius = 300.f
+		) override;
 	virtual void HideTargetingActor_Implementation() override;
 	/** end Player Interface */
 

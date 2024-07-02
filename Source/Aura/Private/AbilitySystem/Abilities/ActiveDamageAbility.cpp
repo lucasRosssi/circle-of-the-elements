@@ -13,7 +13,7 @@ FAbilityParams UActiveDamageAbility::MakeAbilityParamsFromDefaults(AActor* Targe
 	AbilityParams.DamageParams.BaseDamage = GetDamageAtLevel(GetAbilityLevel());
 	AbilityParams.DamageParams.DamageType = DamageType;
 	AbilityParams.DamageParams.bApplyHitReact = bApplyHitReact;
-
+	
 	return AbilityParams;
 }
 
