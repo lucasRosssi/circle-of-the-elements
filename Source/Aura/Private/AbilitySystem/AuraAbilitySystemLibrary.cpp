@@ -523,7 +523,7 @@ void UAuraAbilitySystemLibrary::GetAliveCharactersWithinRadius(
 	ETargetTeam TargetTeam
 )
 {
-	if (TargetTeam == ETargetTeam::ETT_Self) return;
+	if (TargetTeam == ETargetTeam::Self) return;
 	
 	FCollisionQueryParams SphereParams;
 	SphereParams.AddIgnoredActors(ActorsToIgnore);
@@ -546,13 +546,13 @@ void UAuraAbilitySystemLibrary::GetAliveCharactersWithinRadius(
 			if (!OverlappedActor->Implements<UCombatInterface>()) continue;
 			if (ICombatInterface::Execute_IsDead(OverlappedActor)) continue;
 
-			if (TargetTeam == ETargetTeam::ETT_Both)
+			if (TargetTeam == ETargetTeam::Both)
 			{
 				OutOverlappingActors.AddUnique(OverlappedActor);
 				continue;
 			}
 
-			if (TargetTeam == ETargetTeam::ETT_Enemies &&
+			if (TargetTeam == ETargetTeam::Enemies &&
 				AreActorsEnemies(ContextActor, OverlappedActor)
 				)
 			{
@@ -560,7 +560,7 @@ void UAuraAbilitySystemLibrary::GetAliveCharactersWithinRadius(
 				continue;
 			}
 
-			if (TargetTeam == ETargetTeam::ETT_Friends &&
+			if (TargetTeam == ETargetTeam::Friends &&
 				AreActorsFriends(ContextActor, OverlappedActor)
 				)
 			{
@@ -577,7 +577,7 @@ AActor* UAuraAbilitySystemLibrary::GetClosestActorToTarget(
 	TArray<AActor*>& ActorsToIgnore
 	)
 {
-	if (TargetTeam == ETargetTeam::ETT_Self) return nullptr;
+	if (TargetTeam == ETargetTeam::Self) return nullptr;
 	
 	const UWorld* World = GEngine->GetWorldFromContextObject(TargetActor, EGetWorldErrorMode::LogAndReturnNull);
 	if (!World) return nullptr;
@@ -610,7 +610,7 @@ AActor* UAuraAbilitySystemLibrary::GetClosestActorToTarget(
 		const float Distance = TargetActor->GetDistanceTo(OverlappedActor);
 		if (ClosestDistance < Distance) continue;
 
-		if (TargetTeam == ETargetTeam::ETT_Enemies &&
+		if (TargetTeam == ETargetTeam::Enemies &&
 			AreActorsEnemies(TargetActor, OverlappedActor)
 			)
 		{
@@ -620,7 +620,7 @@ AActor* UAuraAbilitySystemLibrary::GetClosestActorToTarget(
 		}
 
 		if (
-			TargetTeam == ETargetTeam::ETT_Friends &&
+			TargetTeam == ETargetTeam::Friends &&
 			AreActorsFriends(TargetActor, OverlappedActor)
 			)
 		{
@@ -629,7 +629,7 @@ AActor* UAuraAbilitySystemLibrary::GetClosestActorToTarget(
 			continue;
 		}
 
-		if (TargetTeam == ETargetTeam::ETT_Both)
+		if (TargetTeam == ETargetTeam::Both)
 		{
 			ClosestDistance = Distance;
 			ClosestActor = OverlappedActor;
@@ -670,7 +670,7 @@ void UAuraAbilitySystemLibrary::GetFriendsWithinRadius(
 	 ActorsToIgnore,
 	 Radius,
 	 SphereOrigin,
-	 ETargetTeam::ETT_Friends
+	 ETargetTeam::Friends
 	);
 }
 
@@ -736,7 +736,7 @@ void UAuraAbilitySystemLibrary::GetEnemiesWithinRadius(AActor* TargetActor,
 	 ActorsToIgnore,
 	 Radius,
 	 SphereOrigin,
-	 ETargetTeam::ETT_Enemies
+	 ETargetTeam::Enemies
 	);
 }
 

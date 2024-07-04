@@ -133,7 +133,7 @@ void AAuraCharacterBase::MulticastHandleDeath_Implementation(const FVector& Deat
 
 void AAuraCharacterBase::InitSummon(int32 TeamID)
 {
-	CharacterType = ECharacterType::ECT_Minion;
+	CharacterType = ECharacterType::Minion;
 	SetTeamID(TeamID);
 	LifeSpanDuration = 2.f;
 	SpawnDefaultController();

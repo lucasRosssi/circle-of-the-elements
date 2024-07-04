@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "BaseAbility.h"
+#include "Enums/AbilityHitMode.h"
 #include "ActiveAbility.generated.h"
 
 class ATargetingActor;
@@ -29,7 +30,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category="Input", meta=(EditCondition="bIsPlayerAbility", DisplayPriority=3))
 	bool bUsesMovementInputDirection = false;
 
-	bool IsBounceModeActive() const { return bBounces; }
+	bool IsBounceModeActive() const { return HitMode == EAbilityHitMode::Bounce; }
 	int32 GetMaxBounceCountAtLevel(int32 Level) const;
 
 protected:
@@ -59,28 +60,69 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Ability Defaults|Targeting")
 	TSubclassOf<ATargetingActor> TargetingActorClass;
 
-	// True if the ability effect can bounce to a nearby target
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Ability Defaults|Mode")
-	bool bBounces = false;
+	EAbilityHitMode HitMode = EAbilityHitMode::Default;
 	UPROPERTY(
 		EditDefaultsOnly,
 		BlueprintReadOnly,
 		Category="Ability Defaults|Mode",
-		meta=(EditCondition="bBounces",ClampMin=0,UIMin=0)
+		meta=(
+			EditCondition="HitMode == EAbilityHitMode::Bounce",
+			EditConditionHides,
+			ClampMin=0,
+			UIMin=0
+			)
 		)
 	int32 MaxBounceCount = 0;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Ability Defaults|Mode", meta=(EditCondition="bBounces"))
+	UPROPERTY(
+		EditDefaultsOnly,
+		BlueprintReadOnly,
+		Category="Ability Defaults|Mode",
+		meta=(EditCondition="HitMode == EAbilityHitMode::Bounce", EditConditionHides)
+		)
 	float BounceRadius = 500.f;
 	// How much of the ability effect is changed per target hit
 	UPROPERTY(
 		EditDefaultsOnly,
 		BlueprintReadOnly,
 		Category="Ability Defaults|Mode",
-		meta=(EditCondition="bBounces", Units="Percent"))
+		meta=(
+			EditCondition="HitMode == EAbilityHitMode::Bounce",
+			EditConditionHides,
+			Units="Percent"
+			)
+		)
 	float BounceEffectChangePerHit = 0.f;
+	UPROPERTY(
+		EditDefaultsOnly,
+		BlueprintReadOnly,
+		Category="Ability Defaults|Mode",
+		meta=(
+			EditCondition="HitMode == EAbilityHitMode::Penetration",
+			EditConditionHides,
+			ClampMin=0,
+			UIMin=0
+			)
+		)
+	int32 MaxPenetrationCount = 0;
+	// How much of the ability effect is changed per target hit
+	UPROPERTY(
+		EditDefaultsOnly,
+		BlueprintReadOnly,
+		Category="Ability Defaults|Mode",
+		meta=(
+			EditCondition="HitMode == EAbilityHitMode::Penetration",
+			EditConditionHides,
+			Units="Percent"
+			)
+		)
+	float PenetrationEffectChangePerHit = 0.f;
 
 private:
 	UPROPERTY()
 	TArray<AActor*> BounceHitActors;
+
+	UPROPERTY()
+	int32 PenetrationCount = 0;
 
 };

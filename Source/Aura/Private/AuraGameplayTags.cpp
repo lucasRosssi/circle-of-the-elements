@@ -476,6 +476,11 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FString("Cooldown tags")
 		);
 
+	GameplayTags.Charges = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Charges"),
+		FString("Charges tags")
+		);
+
 	// Type
 
 	GameplayTags.Abilities_Type = UGameplayTagsManager::Get().AddNativeGameplayTag(
@@ -574,6 +579,11 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FString("Dodge ability cooldown")
 		);
 
+	GameplayTags.Charges_Action_Dodge = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Charges.Action.Dodge"),
+		FString("Dodge ability charges")
+		);
+
 	// Attacks
 	
 	GameplayTags.Abilities_Active = UGameplayTagsManager::Get().AddNativeGameplayTag(
@@ -606,6 +616,11 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	GameplayTags.Cooldown_Active_Aura_Fireball = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Cooldown.Active.Aura.Fireball"),
 		FString("Fireball ability cooldown")
+		);
+
+	GameplayTags.Charges_Active_Aura_Fireball = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Charges.Active.Aura.Fireball"),
+		FString("Fireball ability charges")
 		);
 
 	GameplayTags.Abilities_Active_Aura_ChainLightning = UGameplayTagsManager::Get().AddNativeGameplayTag(

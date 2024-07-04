@@ -74,6 +74,9 @@ protected:
 		const FGameplayTag& InputTag,
 		const FGameplayTag& PreviousInputTag
 		);
+
+	UFUNCTION(BlueprintCallable)
+	int32 GetCurrentAbilityCharges(const FGameplayTag& ChargeTag);
 };
 
 template <typename T>

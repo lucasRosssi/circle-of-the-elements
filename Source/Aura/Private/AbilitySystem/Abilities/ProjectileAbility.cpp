@@ -58,8 +58,15 @@ void UProjectileAbility::SpawnProjectile(
 				Projectile->ActivateHomingMode();
 			}
 		}
+
+		if (HitMode != EAbilityHitMode::Default)
+		{
+			Projectile->HitMode = HitMode;
+			Projectile->MaxHitCount = FMath::Max(MaxBounceCount, MaxPenetrationCount);
+		}
+
+		Projectile->TargetTeam = AbilityTargetTeam;
 		Projectile->AbilityParams = MakeAbilityParamsFromDefaults();
-		
 		Projectile->FinishSpawning(SpawnTransform);;
 	}
 }

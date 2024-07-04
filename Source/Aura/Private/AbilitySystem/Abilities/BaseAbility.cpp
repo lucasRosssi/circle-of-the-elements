@@ -1,6 +1,7 @@
 // Copyright Lucas Rossi
 
 
+// ReSharper disable CppExpressionWithoutSideEffects
 #include "AbilitySystem/Abilities/BaseAbility.h"
 
 #include "AbilitySystemBlueprintLibrary.h"
@@ -8,7 +9,103 @@
 #include "AbilitySystem/AuraAttributeSet.h"
 #include "AbilitySystem/Data/StatusEffectInfo.h"
 #include "AbilitySystem/GameplayEffects/StatusEffect.h"
+#include "Aura/AuraLogChannels.h"
 #include "Kismet/KismetMathLibrary.h"
+
+void UBaseAbility::OnGiveAbility(
+	const FGameplayAbilityActorInfo* ActorInfo,
+	const FGameplayAbilitySpec& Spec
+	)
+{
+	Super::OnGiveAbility(ActorInfo, Spec);
+	
+	if (IsChargesModeActive())
+	{
+		if (InstancingPolicy != EGameplayAbilityInstancingPolicy::InstancedPerActor)
+		{
+			UE_LOG(LogAura, Error, TEXT("Ability with Charges (%s) needs to be Instanced Per Actor!!"), *GetName());
+			return;
+		}
+		
+		ApplyGameplayEffectToOwner(
+			Spec.Handle,
+			ActorInfo,
+			Spec.ActivationInfo,
+			GetChargesEffect(),
+			1.f,
+			Charges
+			);
+		
+		FGameplayTagContainer ChargesTags;
+		GetChargesEffect()->GetOwnedGameplayTags(ChargesTags);
+		
+		ActivationRequiredTags.AppendTags(ChargesTags);
+
+		GetChargesEffect()->StackLimitCount = Charges;
+	}
+}
+
+bool UBaseAbility::CommitAbility(
+	const FGameplayAbilitySpecHandle Handle,
+	const FGameplayAbilityActorInfo* ActorInfo,
+	const FGameplayAbilityActivationInfo ActivationInfo,
+	FGameplayTagContainer* OptionalRelevantTags
+	)
+{
+	if (IsChargesModeActive())
+	{
+		FGameplayTagContainer ChargesTags;
+		GetChargesEffect()->GetOwnedGameplayTags(ChargesTags);
+		
+		const FGameplayEffectQuery Query = FGameplayEffectQuery
+			::MakeQuery_MatchAnyOwningTags(ChargesTags);
+		
+		ActorInfo->AbilitySystemComponent->RemoveActiveEffects(Query, 1);
+
+		HandleCooldownRecharge(Handle, ActorInfo, ActivationInfo);
+		
+		return CommitAbilityCost(Handle, ActorInfo, ActivationInfo, OptionalRelevantTags);
+	}
+	
+	return Super::CommitAbility(Handle, ActorInfo, ActivationInfo, OptionalRelevantTags);
+}
+
+bool UBaseAbility::CommitAbilityCooldown(
+	const FGameplayAbilitySpecHandle Handle,
+	const FGameplayAbilityActorInfo* ActorInfo,
+	const FGameplayAbilityActivationInfo ActivationInfo,
+	const bool ForceCooldown,
+	FGameplayTagContainer* OptionalRelevantTags
+	)
+{
+	if (IsChargesModeActive())
+	{
+		FGameplayTagContainer ChargesTags;
+		GetChargesEffect()->GetOwnedGameplayTags(ChargesTags);
+		
+		const FGameplayEffectQuery Query = FGameplayEffectQuery
+			::MakeQuery_MatchAnyOwningTags(ChargesTags);
+		
+		ActorInfo->AbilitySystemComponent->RemoveActiveEffects(Query, 1);
+
+		HandleCooldownRecharge(Handle, ActorInfo, ActivationInfo);
+		return true;
+	}
+	
+	return Super::CommitAbilityCooldown(Handle, ActorInfo, ActivationInfo, ForceCooldown, OptionalRelevantTags);
+}
+
+bool UBaseAbility::CheckCooldown(
+	const FGameplayAbilitySpecHandle Handle,
+	const FGameplayAbilityActorInfo* ActorInfo,
+	FGameplayTagContainer* OptionalRelevantTags
+	) const
+{
+	// With charges, cooldown will only affect the frequency a charge is recharged
+	if (IsChargesModeActive()) return true;
+	
+	return Super::CheckCooldown(Handle, ActorInfo, OptionalRelevantTags);
+}
 
 float UBaseAbility::GetManaCost(int32 Level) const
 {
@@ -44,6 +141,16 @@ int32 UBaseAbility::GetRoundedManaCost(int32 Level) const
 int32 UBaseAbility::GetRoundedCooldown(int32 Level) const
 {
 	return FMath::RoundToInt32(GetCooldown(Level));
+}
+
+UGameplayEffect* UBaseAbility::GetChargesEffect()
+{
+	if (ChargesEffect == nullptr)
+	{
+		ChargesEffect = ChargesEffectClass.GetDefaultObject();
+	}
+
+	return ChargesEffect;
 }
 
 FAbilityParams UBaseAbility::MakeAbilityParamsFromDefaults(AActor* TargetActor) const
@@ -101,4 +208,91 @@ FGameplayTag UBaseAbility::GetAbilityTag()
 	}
 
 	return AbilityTag;
+}
+
+void UBaseAbility::HandleCooldownRecharge(
+	const FGameplayAbilitySpecHandle Handle,
+	const FGameplayAbilityActorInfo* ActorInfo,
+	const FGameplayAbilityActivationInfo& ActivationInfo)
+{
+	if (
+		RechargeMode == EAbilityRechargeMode::AllCharges &&
+		ActorInfo->AbilitySystemComponent->GetGameplayEffectCount(
+			CooldownGameplayEffectClass,
+			nullptr
+			) > 0
+		) return;
+	
+	const FActiveGameplayEffectHandle CooldownHandle = ApplyGameplayEffectToOwner(
+		Handle,
+		ActorInfo,
+		ActivationInfo,
+		GetCooldownGameplayEffect(),
+		1.f,
+		1
+	);
+
+	const bool bRemoveAlreadyBound = ActorInfo->AbilitySystemComponent
+		->OnGameplayEffectRemoved_InfoDelegate(CooldownHandle)
+		->IsBoundToObject(this);
+
+	if (!bRemoveAlreadyBound)
+	{
+		ActorInfo->AbilitySystemComponent
+			->OnGameplayEffectRemoved_InfoDelegate(CooldownHandle)
+			->AddWeakLambda(this, [this, Handle, ActorInfo, 
+			ActivationInfo](
+				const FGameplayEffectRemovalInfo& RemovalInfo
+				)
+			{
+				int32 Stacks;
+				if (RechargeMode == EAbilityRechargeMode::OneCharge)
+				{
+					Stacks = 1;
+				}
+				else
+				{
+					Stacks = Charges;
+				}
+
+				ApplyGameplayEffectToOwner(
+						Handle,
+						ActorInfo,
+						ActivationInfo,
+						ChargesEffect,
+						1.f,
+						Stacks
+						);
+			});
+	}
+
+	if (RechargeMode == EAbilityRechargeMode::AllCharges) return;
+
+	const bool bStackChangeAlreadyBound = ActorInfo->AbilitySystemComponent
+		->OnGameplayEffectStackChangeDelegate(CooldownHandle)
+		->IsBoundToObject(this);
+
+	if (!bStackChangeAlreadyBound)
+	{
+		ActorInfo->AbilitySystemComponent
+			->OnGameplayEffectStackChangeDelegate(CooldownHandle)
+			->AddWeakLambda(this,[this, Handle, ActorInfo, ActivationInfo](
+					FActiveGameplayEffectHandle EffectHandle,
+					int32 NewStack,
+					int32 PrevStack
+					)
+					{
+						if (NewStack > PrevStack) return;
+		
+						const int32 CooldownStacksRemoved = PrevStack - NewStack;
+						ApplyGameplayEffectToOwner(
+							Handle,
+							ActorInfo,
+							ActivationInfo,
+							GetChargesEffect(),
+							1.f,
+							CooldownStacksRemoved
+							);
+					});
+	}
 }

@@ -106,19 +106,19 @@ void UStatusEffectsManager::MulticastActivateStatusEffect_Implementation(
 	USceneComponent* AttachmentComponent;
 	switch (Position)
 	{
-	case EStatusEffectPosition::ESEP_Top:
+	case EStatusEffectPosition::Top:
 		{
 			AttachmentComponent = ICombatInterface
 				::Execute_GetTopStatusEffectSceneComponent(GetOwner());
 			break;
 		}
-	case EStatusEffectPosition::ESEP_Bottom:
+	case EStatusEffectPosition::Bottom:
 		{
 			AttachmentComponent = ICombatInterface
 				::Execute_GetBottomStatusEffectSceneComponent(GetOwner());
 			break;
 		}
-	case EStatusEffectPosition::ESEP_Center:
+	case EStatusEffectPosition::Center:
 	default:
 		{
 			AttachmentComponent = GetOwner()->GetRootComponent();

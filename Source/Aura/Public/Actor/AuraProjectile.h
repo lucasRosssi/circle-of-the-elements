@@ -4,10 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "AuraAbilityTypes.h"
+#include "Enums/AbilityHitMode.h"
+#include "Enums/TargetTeam.h"
 #include "GameFramework/Actor.h"
 
 #include "AuraProjectile.generated.h"
 
+enum class EAbilityHitMode : uint8;
 class AProjectileEffect;
 class USphereComponent;
 class UProjectileMovementComponent;
@@ -31,10 +34,22 @@ public:
 	void ActivateHomingMode();
 
 	void ScheduleHomingActivation(float Delay);
+	void HandleAreaAbility(AActor* OtherActor, const AActor* EffectCauser, bool bSuccess);
+	void HandleSingleTarget(AActor* OtherActor, bool bSuccess);
+	void HandleBounceHitMode(AActor* OtherActor);
+	void HandlePenetrationHitMode(AActor* OtherActor);
+
+	TObjectPtr<UNiagaraSystem> GetMuzzleEffect() { return MuzzleEffect; }
+	TObjectPtr<USoundBase> GetMuzzleSound() { return MuzzleSound; }
+
+	ETargetTeam TargetTeam = ETargetTeam::Enemies;
+	EAbilityHitMode HitMode = EAbilityHitMode::Default;
+	float BounceRadius = 500.f;
+	int32 MaxHitCount = 0;
 
 protected:
 	virtual void BeginPlay() override;
-	void OnHit();
+	void OnHit(bool bDeactivateEffect = true);
 	virtual void Destroyed() override;
 	
 	UFUNCTION()
@@ -108,8 +123,8 @@ private:
 	UPROPERTY(VisibleInstanceOnly, Category="Homing")
 	AActor* HomingTarget;
 	
-public:
-	TObjectPtr<UNiagaraSystem> GetMuzzleEffect() { return MuzzleEffect; }
-	TObjectPtr<USoundBase> GetMuzzleSound() { return MuzzleSound; }
+	int32 HitCount = 0;
+	UPROPERTY()
+	TArray<AActor*> ActorsHit;
 };
 

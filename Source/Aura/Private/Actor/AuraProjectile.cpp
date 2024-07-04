@@ -96,7 +96,7 @@ void AAuraProjectile::BeginPlay()
 	}
 }
 
-void AAuraProjectile::OnHit()
+void AAuraProjectile::OnHit(bool bDeactivateEffect)
 {
 	UGameplayStatics::PlaySoundAtLocation(
 		this,
@@ -113,7 +113,7 @@ void AAuraProjectile::OnHit()
 		GetActorRotation()
 	);
 
-	if (ProjectileNiagaraEffectActor)
+	if (ProjectileNiagaraEffectActor && bDeactivateEffect)
 	{
 		ProjectileNiagaraEffectActor->DeactivateNiagara();
 		ProjectileNiagaraEffectActor = nullptr;
@@ -144,6 +144,113 @@ void AAuraProjectile::ScheduleHomingActivation(float Delay)
 	);
 }
 
+void AAuraProjectile::HandleAreaAbility(AActor* OtherActor, const AActor* EffectCauser, bool bSuccess)
+{
+	AbilityParams.AreaOrigin = GetActorLocation();
+	AbilityParams.ForwardVector = UKismetMathLibrary::GetDirectionUnitVector(
+		AbilityParams.AreaOrigin, 
+		OtherActor->GetActorLocation()
+	);
+
+	TArray<AActor*> TargetsInArea;
+	TArray<AActor*> IgnoreActors;
+	UAuraAbilitySystemLibrary::GetAliveCharactersWithinRadius(
+		EffectCauser,
+		TargetsInArea,
+		IgnoreActors,
+		AbilityParams.AreaOuterRadius,
+		AbilityParams.AreaOrigin,
+		TargetTeam
+	);
+
+	for (const auto Target : TargetsInArea)
+	{
+		if (
+			UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary
+				::GetAbilitySystemComponent(Target)
+		)
+		{
+			AbilityParams.TargetASC = TargetASC;
+			UAuraAbilitySystemLibrary::ApplyAbilityEffect(AbilityParams, bSuccess);
+		}
+	}
+}
+
+void AAuraProjectile::HandleSingleTarget(AActor* OtherActor, bool bSuccess)
+{
+	if (
+		UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary
+			::GetAbilitySystemComponent(OtherActor)
+	)
+	{
+		AbilityParams.ForwardVector = GetActorForwardVector();
+		AbilityParams.TargetASC = TargetASC;
+				
+		UAuraAbilitySystemLibrary::ApplyAbilityEffect(AbilityParams, bSuccess);
+	}
+}
+
+void AAuraProjectile::HandleBounceHitMode(AActor* OtherActor)
+{
+	TArray<AActor*> ActorsToIgnore;
+	ActorsToIgnore.Append(ActorsHit);
+	AActor* ClosestActor = UAuraAbilitySystemLibrary::GetClosestActorToTarget(
+		OtherActor,
+		BounceRadius,
+		TargetTeam == ETargetTeam::Both ? TargetTeam : ETargetTeam::Friends,
+		ActorsToIgnore
+	);
+
+	if (ClosestActor)
+	{
+		OnHit(false);
+		HitCount++;
+		SetActorRotation(UKismetMathLibrary::FindLookAtRotation(
+			GetActorLocation(),
+			ClosestActor->GetActorLocation()
+		));
+		ActorsHit.Add(OtherActor);
+		ProjectileMovement->SetVelocityInLocalSpace(GetVelocity());
+		// If it is also homing, set the homing target to the closest actor
+		if (ProjectileMovement->bIsHomingProjectile)
+		{
+			MulticastHomingTarget(ClosestActor);
+		}
+	}
+	// No actor close
+	else
+	{
+		Destroy();
+	}
+}
+
+void AAuraProjectile::HandlePenetrationHitMode(AActor* OtherActor)
+{
+	if (OtherActor->Implements<UCombatInterface>())
+	{
+		OnHit(false);
+		HitCount++;
+		ActorsHit.Add(OtherActor);
+		// If it is also homing, we should set a new target after penetrating
+		if (ProjectileMovement->bIsHomingProjectile)
+		{
+			TArray<AActor*> ActorsToIgnore;
+			AActor* ClosestActor = UAuraAbilitySystemLibrary::GetClosestActorToTarget(
+				OtherActor,
+				BounceRadius,
+				TargetTeam == ETargetTeam::Both ? TargetTeam : ETargetTeam::Friends,
+				ActorsToIgnore
+			);
+			MulticastHomingTarget(ClosestActor);
+		}
+	}
+	// Hit the environment
+	else
+	{
+		Destroy();
+	}
+}
+
 void AAuraProjectile::OnSphereOverlap(
 	UPrimitiveComponent* OverlappedComponent,
 	AActor* OtherActor,
@@ -154,6 +261,7 @@ void AAuraProjectile::OnSphereOverlap(
 )
 {
 	if (!IsValid(AbilityParams.SourceASC)) return;
+	if (ActorsHit.Contains(OtherActor)) return;
 	const AActor* EffectCauser = AbilityParams.SourceASC->GetAvatarActor();
 	
 	if (
@@ -165,59 +273,48 @@ void AAuraProjectile::OnSphereOverlap(
 		return;
 
 	if (UAuraAbilitySystemLibrary::IsTargetInvulnerable(OtherActor)) return;
-	
-	OnHit();
 
+	OnHit(
+		HitMode == EAbilityHitMode::Default ||
+		HitCount >= MaxHitCount
+		);
+	
 	if (HasAuthority())
 	{
-		bool bSuccess;
-		if (AbilityParams.bIsAreaAbility)
+		bool bSuccess = false;
+		/*
+		 * If the ability affects an area we should apply the effect in everyone
+		 * within radius
+		 */
+		if (AbilityParams.bIsAreaAbility) HandleAreaAbility(OtherActor, EffectCauser, bSuccess);
+		/*
+		 * If it is a single target, we just have to apply the effect to the actor hit
+		 */
+		else HandleSingleTarget(OtherActor, bSuccess);
+		/*
+		 * If it is a bouncing ability, we have to find the closest actor to bounce to.
+		 * If there is no actor close, we destroy the projectile.
+		 */
+		if (HitMode == EAbilityHitMode::Bounce && HitCount < MaxHitCount)
 		{
-			AbilityParams.AreaOrigin = GetActorLocation();
-			AbilityParams.ForwardVector = UKismetMathLibrary::GetDirectionUnitVector(
-				AbilityParams.AreaOrigin, 
-				OtherActor->GetActorLocation()
-				);
-
-			TArray<AActor*> EnemiesInArea;
-			TArray<AActor*> IgnoreActors;
-			UAuraAbilitySystemLibrary::GetAliveCharactersWithinRadius(
-				EffectCauser,
-				EnemiesInArea,
-				IgnoreActors,
-				AbilityParams.AreaOuterRadius,
-				AbilityParams.AreaOrigin,
-				ETargetTeam::ETT_Enemies
-				);
-
-			for (const auto Enemy : EnemiesInArea)
-			{
-				if (
-					UAbilitySystemComponent* EnemyASC = UAbilitySystemBlueprintLibrary
-						::GetAbilitySystemComponent(Enemy)
-				)
-				{
-					AbilityParams.TargetASC = EnemyASC;
-					UAuraAbilitySystemLibrary::ApplyAbilityEffect(AbilityParams, bSuccess);
-				}
-			}
+			HandleBounceHitMode(OtherActor);
 		}
-		else if (
-			UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary
-				::GetAbilitySystemComponent(OtherActor)
-		)
+		/*
+		 * If it is a penetrating ability, we just have to check if the target hit implements
+		 * the combat interface and keep the projectile trajectory. If if doesn't implement it,
+		 * then the projectile hit the environment and should destroy itself
+		 */
+		else if (HitMode == EAbilityHitMode::Penetration && HitCount < MaxHitCount)
 		{
-			AbilityParams.ForwardVector = GetActorForwardVector();
-			AbilityParams.TargetASC = TargetASC;
-				
-			UAuraAbilitySystemLibrary::ApplyAbilityEffect(AbilityParams, bSuccess);
+			HandlePenetrationHitMode(OtherActor);
 		}
-		
-		Destroy();
-	}
-	else
-	{
-		bHit = true;
+		/*
+		 * Has a default hit mode or reached maximum bounce/penetration hits
+		 */
+		else
+		{
+			Destroy();
+		}
 	}
 }
 
@@ -259,7 +356,7 @@ void AAuraProjectile::OnHomingTargetDied(AActor* DeadActor)
 		AActor* ClosestActor = UAuraAbilitySystemLibrary::GetClosestActorToTarget(
 			DeadActor,
 			HomingRadius->GetUnscaledSphereRadius(),
-			ETargetTeam::ETT_Friends,
+			ETargetTeam::Friends,
 			ActorsToIgnore
 			);
 		

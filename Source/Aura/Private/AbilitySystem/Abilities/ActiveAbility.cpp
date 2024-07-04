@@ -12,7 +12,7 @@ AActor* UActiveAbility::GetNextBounceTarget(AActor* HitTarget)
 	AActor* NextTarget = UAuraAbilitySystemLibrary::GetClosestActorToTarget(
 		HitTarget,
 		BounceRadius,
-		AbilityTargetTeam == ETargetTeam::ETT_Both ? AbilityTargetTeam : ETargetTeam::ETT_Friends,
+		AbilityTargetTeam == ETargetTeam::Both ? AbilityTargetTeam : ETargetTeam::Friends,
 		ActorsToIgnore
 		);
 

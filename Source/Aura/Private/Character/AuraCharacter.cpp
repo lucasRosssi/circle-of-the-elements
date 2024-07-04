@@ -41,7 +41,7 @@ AAuraCharacter::AAuraCharacter()
 	bUseControllerRotationRoll = false;
 	bUseControllerRotationYaw = false;
 
-	CharacterType = ECharacterType::ECT_Player;
+	CharacterType = ECharacterType::Player;
 	TeamComponent->TeamID = 1;
 }
 

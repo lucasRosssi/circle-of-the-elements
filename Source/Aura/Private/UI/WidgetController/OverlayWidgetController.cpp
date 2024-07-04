@@ -118,3 +118,17 @@ void UOverlayWidgetController::OnAbilityEquipped(
 	Info.InputTag = InputTag;
 	AbilityInfoDelegate.Broadcast(Info);
 }
+
+int32 UOverlayWidgetController::GetCurrentAbilityCharges(const FGameplayTag& ChargeTag)
+{
+	if (!IsValid(AbilitySystemComponent)) return 0;
+
+	const FGameplayEffectQuery Query = FGameplayEffectQuery
+			::MakeQuery_MatchAnyOwningTags(ChargeTag.GetSingleTagContainer());
+		
+	const TArray<FActiveGameplayEffectHandle> Handles = AbilitySystemComponent->GetActiveEffects(Query);
+
+	if (Handles.IsEmpty()) return 0;
+
+	return AbilitySystemComponent->GetCurrentStackCount(Handles[0]);
+}

@@ -8,7 +8,6 @@
 #include "Kismet/BlueprintAsyncActionBase.h"
 #include "WaitCooldownChange.generated.h"
 
-class UAbilitySystemComponent;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FCooldownChangeSignature, float, TimeRemaining);
 
 /**
@@ -39,7 +38,7 @@ protected:
 	TObjectPtr<UAbilitySystemComponent> ASC;
 
 	FGameplayTag CooldownTag;
-
+	
 	void OnCooldownTagChanged(const FGameplayTag InCooldownTag, int32 NewCount);
 	void OnActiveCooldownAdded(
 		UAbilitySystemComponent* TargetASC,

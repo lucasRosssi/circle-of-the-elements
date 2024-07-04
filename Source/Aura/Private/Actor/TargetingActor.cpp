@@ -47,21 +47,21 @@ void ATargetingActor::OnTargetingBeginOverlap(
 {
 	if (ITargetInterface* Target = Cast<ITargetInterface>(OtherActor))
 	{
-		if (TargetTeam == ETargetTeam::ETT_Enemies &&
+		if (TargetTeam == ETargetTeam::Enemies &&
 			UAuraAbilitySystemLibrary::AreActorsEnemies(SourceActor, OtherActor)
 			)
 		{
 			Target->HighlightActor();
 		}
 
-		if (TargetTeam == ETargetTeam::ETT_Friends &&
+		if (TargetTeam == ETargetTeam::Friends &&
 			UAuraAbilitySystemLibrary::AreActorsFriends(SourceActor, OtherActor)
 			)
 		{
 			Target->HighlightActor();
 		}
 
-		if (TargetTeam == ETargetTeam::ETT_Both)
+		if (TargetTeam == ETargetTeam::Both)
 		{
 			Target->HighlightActor();
 		}

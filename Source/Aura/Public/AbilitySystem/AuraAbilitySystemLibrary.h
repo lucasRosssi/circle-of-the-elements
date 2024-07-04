@@ -251,7 +251,7 @@ public:
 		UPARAM(ref) TArray<AActor*>& ActorsToIgnore,
 		float Radius,
 		const FVector& SphereOrigin,
-		ETargetTeam TargetTeam = ETargetTeam::ETT_Both
+		ETargetTeam TargetTeam = ETargetTeam::Both
 	);
 
 	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|GameplayMechanics")

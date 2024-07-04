@@ -115,10 +115,10 @@ protected:
 	TObjectPtr<UTeamComponent> TeamComponent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Defaults")
-	ECharacterName CharacterName = ECharacterName::ECN_Undefined;
+	ECharacterName CharacterName = ECharacterName::Undefined;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Defaults")
-	ECharacterType CharacterType = ECharacterType::ECT_Regular;
+	ECharacterType CharacterType = ECharacterType::Regular;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Defaults")
 	ECharacterClass CharacterClass = ECharacterClass::Warrior;

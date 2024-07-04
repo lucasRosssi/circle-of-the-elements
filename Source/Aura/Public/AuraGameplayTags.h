@@ -113,6 +113,7 @@ public:
 	FGameplayTag Abilities;
 	FGameplayTag Abilities_NONE;
 	FGameplayTag Cooldown;
+	FGameplayTag Charges;
 
 	FGameplayTag Abilities_Type;
 	FGameplayTag Abilities_Type_Active;
@@ -135,6 +136,7 @@ public:
 	FGameplayTag Abilities_Action;
 	FGameplayTag Abilities_Action_Dodge;
 	FGameplayTag Cooldown_Action_Dodge;
+	FGameplayTag Charges_Action_Dodge;
 
 	FGameplayTag Abilities_Active;
 	FGameplayTag Abilities_Active_Primary;
@@ -144,6 +146,7 @@ public:
 	
 	FGameplayTag Abilities_Active_Aura_Fireball;
 	FGameplayTag Cooldown_Active_Aura_Fireball;
+	FGameplayTag Charges_Active_Aura_Fireball;
 	
 	FGameplayTag Abilities_Active_Aura_ChainLightning;
 	FGameplayTag Cooldown_Active_Aura_ChainLightning;
