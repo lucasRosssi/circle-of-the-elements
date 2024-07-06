@@ -6,6 +6,8 @@
 #include "UObject/Interface.h"
 #include "PlayerInterface.generated.h"
 
+class ATargetingActor;
+enum class ETargetTeam : uint8;
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI, BlueprintType)
 class UPlayerInterface : public UInterface

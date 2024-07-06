@@ -6,9 +6,11 @@
 #include "GameFramework/PlayerController.h"
 #include "GameplayTagContainer.h"
 #include "InputActionValue.h"
+#include "Components/TimelineComponent.h"
 
 #include "MainPlayerController.generated.h"
 
+struct FTimeline;
 enum class ETargetTeam : uint8;
 class ATargetingActor;
 class UCapsuleComponent;
@@ -22,25 +24,8 @@ class ITargetInterface;
 class UAuraInputConfig;
 class UAuraAbilitySystemComponent;
 
-USTRUCT(BlueprintType)
-struct FCameraOccludedActor
-{
-	GENERATED_BODY()
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	const AActor* Actor;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	UStaticMeshComponent* StaticMesh;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	TArray<UMaterialInterface*> Materials;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	bool bIsOccluded = false;
-};
-
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnControllerDeviceChanged, bool, bIsGamepad);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnOcclusionChanged, bool, bShouldOcclude);
 
 /**
  * 
@@ -52,7 +37,7 @@ class AURA_API AMainPlayerController : public APlayerController
 public:
 	AMainPlayerController();
 	virtual void PlayerTick(float DeltaTime) override;
-
+	
 	UFUNCTION(Client, Reliable)
 	void ShowDamageNumber(
 		float DamageAmount,
@@ -67,10 +52,7 @@ public:
 	void ChangeUsingGamepad(bool bIsGamepad);
 	FVector GetInputDirection() { return InputDirection; }
 
-	UFUNCTION(BlueprintCallable)
-	void SyncOccludedActors();
-
-	UPROPERTY(BlueprintAssignable, Category="ControllerDevice")
+	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category="ControllerDevice")
 	FOnControllerDeviceChanged ControllerDeviceChangedDelegate;
 
 	UFUNCTION(BlueprintCallable)
@@ -81,8 +63,16 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void HideTargetingActor();
 
+	void SetShouldOccludeObjects(bool bInShouldOcclude);
+
+	void SetPlayerCamera(UCameraComponent* InCamera) { PlayerCamera = InCamera; }
+
+	UFUNCTION(BlueprintImplementableEvent, Category="Camera|Occlusion")
+	void OnOcclusionChange(bool bIsOccluding);
+
 protected:
 	virtual void BeginPlay() override;
+	void HandleEnvironmentOcclusion();
 	virtual void SetupInputComponent() override;
 
 	UPROPERTY(BlueprintReadWrite, Category="Input")
@@ -91,49 +81,19 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category="Input")
 	FVector InputDirection = FVector::Zero();
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Camera Occlusion|Occlusion", meta=
-	(ClampMin="0", ClampMax="600.0"))
-	float DistanceFromTraceEndToCharacter = 200.f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Camera Occlusion|Occlusion", meta=
-	(ClampMin="0.1", ClampMax="10.0"))
-	float CapsulePercentageForTrace = 1.0f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Camera Occlusion|Materials")
-	TObjectPtr<UMaterialInterface> FadeMaterial;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Camera Occlusion")
-	bool bIsOcclusionEnabled = true;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Camera Occlusion|Occlusion")
-	bool bDebugLineTraces = false;
-
-	UPROPERTY(BlueprintReadWrite, Category="Camera Occlusion|Components")
-	USpringArmComponent* ActiveSpringArm;
- 
-	UPROPERTY(BlueprintReadWrite, Category="Camera Occlusion|Components")
-	UCameraComponent* ActiveCamera;
- 
-	UPROPERTY(BlueprintReadWrite, Category="Camera Occlusion|Components")
-	UCapsuleComponent* ActiveCapsuleComponent;
-
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Input")
 	TObjectPtr<UAuraInputConfig> InputConfig;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Camera|Occlusion")
+	TObjectPtr<UMaterialParameterCollection> OcclusionMaskParameterCollection;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Camera|Occlusion")
+	float OcclusionSize = 120.f;
+	
+	UPROPERTY(EditAnywhere, Category="Camera|Occlusion")
+	bool bDebugCameraOcclusionTrace = false;
 	
 private:
-	UPROPERTY(EditAnywhere, Category="Input")
-	TObjectPtr<UInputMappingContext> MainContext;
-
-	UPROPERTY(EditAnywhere, Category="Input")
-	TObjectPtr<UInputAction> MoveAction;
-	UPROPERTY(EditAnywhere, Category="Input")
-	TObjectPtr<UInputAction> ConfirmAction;
-	UPROPERTY(EditAnywhere, Category="Input")
-	TObjectPtr<UInputAction> CancelAction;
-
-	UPROPERTY(EditAnywhere, Category="Input")
-	TObjectPtr<UInputAction> CheckInputSourceAction;
-	
 	void Move(const FInputActionValue& InputActionValue);
 	void MoveComplete(const FInputActionValue& InputActionValue);
 	
@@ -149,6 +109,22 @@ private:
 	void ConfirmPressed();
 	void CancelPressed();
 
+	void UpdateTargetingActorLocation();
+	void UpdatePlayerLocationParameterCollection();
+	
+	UPROPERTY(EditAnywhere, Category="Input")
+	TObjectPtr<UInputMappingContext> MainContext;
+
+	UPROPERTY(EditAnywhere, Category="Input")
+	TObjectPtr<UInputAction> MoveAction;
+	UPROPERTY(EditAnywhere, Category="Input")
+	TObjectPtr<UInputAction> ConfirmAction;
+	UPROPERTY(EditAnywhere, Category="Input")
+	TObjectPtr<UInputAction> CancelAction;
+
+	UPROPERTY(EditAnywhere, Category="Input")
+	TObjectPtr<UInputAction> CheckInputSourceAction;
+
 	UPROPERTY()
 	TObjectPtr<UAuraAbilitySystemComponent> AuraAbilitySystemComponent;
 	
@@ -159,21 +135,17 @@ private:
 
 	UPROPERTY()
 	TObjectPtr<ATargetingActor> TargetingActor;
-
-	void UpdateTargetingActorLocation();
-
+	
 	bool bTargeting = false;
 
-	// Environment occlusion
-	TMap<const AActor*, FCameraOccludedActor> OccludedActors;
-	bool HideOccludedActor(const AActor* Actor);
-	bool OnHideOccludedActor(const FCameraOccludedActor& OccludedActor) const;
-	void ShowOccludedActor(FCameraOccludedActor& OccludedActor);
-	bool OnShowOccludedActor(const FCameraOccludedActor& OccludedActor) const;
-	void ForceShowOccludedActors();
-	FORCEINLINE bool ShouldCheckCameraOcclusion() const
-	{
-		return bIsOcclusionEnabled && FadeMaterial && ActiveCamera && ActiveCapsuleComponent;
-	}
+	// BEGIN Environment occlusion
+	UPROPERTY()
+	UMaterialParameterCollectionInstance* OcclusionMaskParameterCollectionInstance = nullptr;
+	UMaterialParameterCollectionInstance* GetOcclusionMaskParameterCollectionInstance();
+	bool bCameraOcclusionActive = false;
+	FTimeline FadeTimeline = FTimeline();
 	// END Environment occlusion
+
+	UPROPERTY()
+	UCameraComponent* PlayerCamera = nullptr;
 };

@@ -9,12 +9,11 @@
 #include "Actor/TargetingActor.h"
 #include "Aura/Aura.h"
 #include "Camera/CameraComponent.h"
-#include "Components/CapsuleComponent.h"
 #include "Input/AuraInputComponent.h"
 #include "Interaction/TargetInterface.h"
 #include "GameFramework/Character.h"
-#include "GameFramework/SpringArmComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "Materials/MaterialParameterCollectionInstance.h"
 #include "UI/Widget/DamageTextComponent.h"
 
 AMainPlayerController::AMainPlayerController()
@@ -60,6 +59,16 @@ void AMainPlayerController::HideTargetingActor()
 	}
 }
 
+void AMainPlayerController::SetShouldOccludeObjects(bool bInShouldOcclude)
+{
+	if (!OcclusionMaskParameterCollection) return;
+	
+	GetOcclusionMaskParameterCollectionInstance()->SetScalarParameterValue(
+		FName("OcclusionSize"),
+		OcclusionSize
+		);
+}
+
 void AMainPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
@@ -79,18 +88,37 @@ void AMainPlayerController::BeginPlay()
 	InputModeData.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
 	InputModeData.SetHideCursorDuringCapture(false);
 	SetInputMode(InputModeData);
+}
 
-	if (IsValid(GetPawn()))
+void AMainPlayerController::HandleEnvironmentOcclusion()
+{
+	if (!PlayerCamera) return;
+	
+	const TArray<AActor*> ActorsToIgnore;
+	FHitResult HitResult;
+	UKismetSystemLibrary::CapsuleTraceSingle(
+		this,
+		PlayerCamera->GetComponentLocation(),
+		GetPawn()->GetActorLocation(),
+		GetPawn()->GetSimpleCollisionRadius() - 5.f,
+		GetPawn()->GetSimpleCollisionHalfHeight(),
+		ETT_CameraToPlayer,
+		false,
+		ActorsToIgnore,
+		bDebugCameraOcclusionTrace ? EDrawDebugTrace::ForOneFrame : EDrawDebugTrace::None,
+		HitResult,
+		true
+	);
+	
+	if (HitResult.bBlockingHit && !bCameraOcclusionActive)
 	{
-		ActiveSpringArm = Cast<USpringArmComponent>(
-			GetPawn()->GetComponentByClass(USpringArmComponent::StaticClass())
-		);
-		ActiveCamera = Cast<UCameraComponent>(
-			GetPawn()->GetComponentByClass(UCameraComponent::StaticClass())
-		);
-		ActiveCapsuleComponent = Cast<UCapsuleComponent>(
-			GetPawn()->GetComponentByClass(UCapsuleComponent::StaticClass())
-		);
+		bCameraOcclusionActive = true;
+		OnOcclusionChange(true);
+	}
+	else if (!HitResult.bBlockingHit && bCameraOcclusionActive)
+	{
+		bCameraOcclusionActive = false;
+		OnOcclusionChange(false);
 	}
 }
 
@@ -100,6 +128,8 @@ void AMainPlayerController::PlayerTick(float DeltaTime)
 
 	CursorTrace();
 	UpdateTargetingActorLocation();
+	UpdatePlayerLocationParameterCollection();
+	HandleEnvironmentOcclusion();
 }
 
 void AMainPlayerController::ShowDamageNumber_Implementation(
@@ -131,84 +161,6 @@ void AMainPlayerController::ChangeUsingGamepad(bool bIsGamepad)
 	bUsingGamepad = bIsGamepad;
 	bShowMouseCursor = !bIsGamepad;
 	ControllerDeviceChangedDelegate.Broadcast(bIsGamepad);
-}
-
-void AMainPlayerController::SyncOccludedActors()
-{
-	if (!ShouldCheckCameraOcclusion()) return;
- 
-	// Camera is currently colliding, show all current occluded actors
-	// and do not perform further occlusion
-	if (ActiveSpringArm->bDoCollisionTest)
-	{
-		ForceShowOccludedActors();
-		return;
-	}
-	
-	FVector Start = ActiveCamera->GetComponentLocation();
-	FVector NormalizedVector = Start - GetPawn()->GetActorLocation();
-	NormalizedVector.Normalize();
-	FVector End = GetPawn()->GetActorLocation() + NormalizedVector * DistanceFromTraceEndToCharacter;
-	
- 
-	TArray<TEnumAsByte<EObjectTypeQuery>> CollisionObjectTypes;
-	CollisionObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_WorldStatic));
- 
-	TArray<AActor*> ActorsToIgnore; // TODO: Add configuration to ignore actor types
-	TArray<FHitResult> OutHits;
- 
-	auto ShouldDebug = bDebugLineTraces ? EDrawDebugTrace::ForDuration : EDrawDebugTrace::None;
- 
-	bool bGotHits = UKismetSystemLibrary::CapsuleTraceMultiForObjects(
-		GetWorld(),
-		Start,
-		End,
-		ActiveCapsuleComponent->GetScaledCapsuleRadius() * CapsulePercentageForTrace,
-		ActiveCapsuleComponent->GetScaledCapsuleHalfHeight() * CapsulePercentageForTrace,
-		CollisionObjectTypes,
-		true,
-		ActorsToIgnore,
-		ShouldDebug,
-		OutHits,
-		true
-	);
- 
-	if (bGotHits)
-	{
-		// The list of actors hit by the line trace, that means that they are occluded from view
-		TSet<const AActor*> ActorsJustOccluded;
- 
-		// Hide actors that are occluded by the camera
-		for (FHitResult Hit : OutHits)
-		{
-			const AActor* HitActor = Cast<AActor>(Hit.GetActor());
-			HideOccludedActor(HitActor);
-			ActorsJustOccluded.Add(HitActor);
-		}
- 
-		// Show actors that are currently hidden but that are not occluded by the camera anymore 
-		for (auto& Elem : OccludedActors)
-		{
-			if (!ActorsJustOccluded.Contains(Elem.Value.Actor) && Elem.Value.bIsOccluded)
-			{
-				ShowOccludedActor(Elem.Value);
- 
-				if (bDebugLineTraces)
-				{
-					UE_LOG(
-						LogTemp,
-						Warning,
-						TEXT("Actor %s was occluded, but it's not occluded anymore with the new hits."),
-						*Elem.Value.Actor->GetName()
-					);
-				}
-			}
-		}
-	}
-	else
-	{
-		ForceShowOccludedActors();
-	}
 }
 
 void AMainPlayerController::SetupInputComponent()
@@ -383,113 +335,29 @@ void AMainPlayerController::UpdateTargetingActorLocation()
 	}
 }
 
-bool AMainPlayerController::HideOccludedActor(const AActor* Actor)
+UMaterialParameterCollectionInstance* AMainPlayerController::GetOcclusionMaskParameterCollectionInstance()
 {
-	FCameraOccludedActor* ExistingOccludedActor = OccludedActors.Find(Actor);
- 
-	if (ExistingOccludedActor && ExistingOccludedActor->bIsOccluded)
+	if (OcclusionMaskParameterCollectionInstance == nullptr)
 	{
-		if (bDebugLineTraces) UE_LOG(
-			LogTemp,
-			Warning,
-			TEXT("Actor %s was already occluded. Ignoring."),
-			*Actor->GetName()
-		);
-		
-		return false;
+		OcclusionMaskParameterCollectionInstance = GetWorld()
+		->GetParameterCollectionInstance(OcclusionMaskParameterCollection);
 	}
- 
-	if (ExistingOccludedActor && IsValid(ExistingOccludedActor->Actor))
-	{
-		ExistingOccludedActor->bIsOccluded = true;
-		OnHideOccludedActor(*ExistingOccludedActor);
- 
-		if (bDebugLineTraces) UE_LOG(
-			LogTemp,
-			Warning,
-			TEXT("Actor %s exists, but was not occluded. Occluding it now."),
-			*Actor->GetName()
-		);
-	}
-	else
-	{
-		UStaticMeshComponent* StaticMesh = Cast<UStaticMeshComponent>(
-			Actor->GetComponentByClass(UStaticMeshComponent::StaticClass())
-		);
- 
-		FCameraOccludedActor OccludedActor;
-		OccludedActor.Actor = Actor;
-		OccludedActor.StaticMesh = StaticMesh;
-		OccludedActor.Materials = StaticMesh->GetMaterials();
-		OccludedActor.bIsOccluded = true;
-		OccludedActors.Add(Actor, OccludedActor);
-		OnHideOccludedActor(OccludedActor);
- 
-		if (bDebugLineTraces) UE_LOG(
-			LogTemp,
-			Warning,
-			TEXT("Actor %s does not exist, creating and occluding it now."),
-			*Actor->GetName()
-		);
-	}
- 
-	return true;
+
+	return OcclusionMaskParameterCollectionInstance;
 }
 
-bool AMainPlayerController::OnHideOccludedActor(const FCameraOccludedActor& OccludedActor) const
+void AMainPlayerController::UpdatePlayerLocationParameterCollection()
 {
-	for (int i = 0; i < OccludedActor.StaticMesh->GetNumMaterials(); ++i)
-	{
-		OccludedActor.StaticMesh->SetMaterial(i, FadeMaterial);
-	}
-	OccludedActor.StaticMesh->SetCollisionResponseToChannel(
-		ECC_Target,
-		ECR_Ignore
-	);
- 
-	return true;
-}
+	if (!OcclusionMaskParameterCollection) return;
 
-void AMainPlayerController::ShowOccludedActor(FCameraOccludedActor& OccludedActor)
-{
-	if (!IsValid(OccludedActor.Actor))
-	{
-		OccludedActors.Remove(OccludedActor.Actor);
-	}
- 
-	OccludedActor.bIsOccluded = false;
-	OnShowOccludedActor(OccludedActor);
-}
-
-bool AMainPlayerController::OnShowOccludedActor(const FCameraOccludedActor& OccludedActor) const
-{
-	for (int matIdx = 0; matIdx < OccludedActor.Materials.Num(); ++matIdx)
-	{
-		OccludedActor.StaticMesh->SetMaterial(matIdx, OccludedActor.Materials[matIdx]);
-	}
-	
-	OccludedActor.StaticMesh->SetCollisionResponseToChannel(
-		ECC_Visibility,
-		ECR_Block
-	);
-	
-	return true;
-}
-
-void AMainPlayerController::ForceShowOccludedActors()
-{
-	for (auto& Elem : OccludedActors)
-	{
-		if (Elem.Value.bIsOccluded)
-		{
-			ShowOccludedActor(Elem.Value);
- 
-			if (bDebugLineTraces) UE_LOG(
-				LogTemp,
-				Warning,
-				TEXT("Actor %s was occluded, force to show again."),
-				*Elem.Value.Actor->GetName()
-			);
-		}
-	}
+	const FVector PlayerLocation = GetPawn()->GetActorLocation();
+	const FLinearColor ColorPlayerLocation = FLinearColor(
+		PlayerLocation.X,
+		PlayerLocation.Y, 
+		PlayerLocation.Z
+		);
+	GetOcclusionMaskParameterCollectionInstance()->SetVectorParameterValue(
+		FName("PlayerLocation"),
+		ColorPlayerLocation
+		);
 }

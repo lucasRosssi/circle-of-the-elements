@@ -18,7 +18,7 @@
 
 AAuraCharacter::AAuraCharacter()
 {
-	CameraBoom = CreateDefaultSubobject<USpringArmComponent>("CameraBoon");
+	CameraBoom = CreateDefaultSubobject<USpringArmComponent>("CameraBoom");
 	CameraBoom->SetupAttachment(GetRootComponent());
 	CameraBoom->SetUsingAbsoluteRotation(true);
 	CameraBoom->bDoCollisionTest = false;
@@ -27,7 +27,7 @@ AAuraCharacter::AAuraCharacter()
 	Camera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 	Camera->bUsePawnControlRotation = false;
 	Camera->SetFieldOfView(30.f);
-
+	
 	LevelUpWidgetComponent = CreateDefaultSubobject<UWidgetComponent>("LevelUpMessage");
 	LevelUpWidgetComponent->SetupAttachment(GetRootComponent());
 	
@@ -163,8 +163,13 @@ void AAuraCharacter::InitAbilityActorInfo()
 
 	AuraASC->AbilityActorInfoSet();
 
-	MainPlayerController = GetController<AMainPlayerController>();
-	check(MainPlayerController);
+	if (IsLocallyControlled() || HasAuthority())
+	{
+		MainPlayerController = GetController<AMainPlayerController>();
+		check(MainPlayerController);
+		
+		MainPlayerController->SetPlayerCamera(Camera);
+	}
 	
 	if(AAuraHUD* AuraHUD = Cast<AAuraHUD>(MainPlayerController->GetHUD()))
 	{
