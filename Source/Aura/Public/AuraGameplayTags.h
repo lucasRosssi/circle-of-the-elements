@@ -94,6 +94,8 @@ public:
 	
 	FGameplayTag Immunities_Incapacitation;
 	FGameplayTag Immunities_Incapacitation_Stun;
+	FGameplayTag Immunities_Incapacitation_HitReact;
+	FGameplayTag Immunities_Incapacitation_Knockback;
 
 	FGameplayTag InputTag;
 	FGameplayTag InputTag_Primary;

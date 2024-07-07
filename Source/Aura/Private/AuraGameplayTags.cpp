@@ -456,6 +456,16 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FName("Immunities.Incapacitation.Stun"),
 		FString("Immunity to stun effect")
 		);
+
+	GameplayTags.Immunities_Incapacitation_HitReact = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Immunities.Incapacitation.HitReact"),
+		FString("Immunity to hit react effect")
+		);
+
+	GameplayTags.Immunities_Incapacitation_Knockback = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Immunities.Incapacitation.Knockback"),
+		FString("Immunity to knockback effect")
+		);
 	
 	/*
 	 * Abilities Tags

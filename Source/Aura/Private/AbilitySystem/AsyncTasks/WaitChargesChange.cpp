@@ -36,6 +36,7 @@ UWaitChargesChange* UWaitChargesChange::WaitForChargesChange(
 			&UWaitChargesChange::OnChargesAdded
 	);
 
+	// Charge effect may already be active, because we grant them when giving the ability, so we have to check here
 	const FGameplayEffectQuery Query = FGameplayEffectQuery
 			::MakeQuery_MatchAnyOwningTags(InChargeTag.GetSingleTagContainer());
 		

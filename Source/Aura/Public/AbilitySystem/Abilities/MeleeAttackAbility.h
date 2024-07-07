@@ -24,4 +24,5 @@ protected:
 		meta=(EditCondition="bUsesWeapon", DisplayPriority=1)
 		)
 	bool bWithWeaponCollision;
+	
 };

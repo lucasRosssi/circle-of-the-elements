@@ -9,6 +9,7 @@
 #include "AuraGameplayTags.h"
 #include "AbilitySystem/Abilities/SummonAbility.h"
 #include "Animation/CharacterAnimInstance.h"
+#include "Components/BoxComponent.h"
 #include "Game/TeamComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -35,11 +36,11 @@ AAuraCharacterBase::AAuraCharacterBase()
 	Weapon->SetupAttachment(GetMesh(), FName("WeaponHandSocket"));
 	Weapon->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	Weapon->bReceivesDecals = false;
-	WeaponCapsule = CreateDefaultSubobject<UCapsuleComponent>("WeaponCapsule");
-	WeaponCapsule->SetupAttachment(Weapon);
-	WeaponCapsule->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	WeaponCapsule->SetCollisionResponseToAllChannels(ECR_Ignore);
-	WeaponCapsule->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
+	WeaponHitBox = CreateDefaultSubobject<UBoxComponent>("WeaponHitBox");
+	WeaponHitBox->SetupAttachment(Weapon);
+	WeaponHitBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	WeaponHitBox->SetCollisionResponseToAllChannels(ECR_Ignore);
+	WeaponHitBox->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
 
 	TeamComponent = CreateDefaultSubobject<UTeamComponent>("TeamComponent");
 
@@ -218,18 +219,18 @@ USceneComponent* AAuraCharacterBase::GetBottomStatusEffectSceneComponent_Impleme
 	return BottomStatusEffectSceneComponent;
 }
 
-UCapsuleComponent* AAuraCharacterBase::EnableWeaponCollision_Implementation(bool bEnable)
+UBoxComponent* AAuraCharacterBase::EnableWeaponCollision_Implementation(bool bEnable)
 {
 	if (bEnable)
 	{
-		WeaponCapsule->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+		WeaponHitBox->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	}
 	else
 	{
-		WeaponCapsule->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		WeaponHitBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	}
 
-	return WeaponCapsule;
+	return WeaponHitBox;
 }
 
 void AAuraCharacterBase::InitAbilityActorInfo()

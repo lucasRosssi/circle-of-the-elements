@@ -38,4 +38,13 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category="Status Effects")
 	bool bApplyHitReact = true;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Ability Defaults|Combo")
+	TArray<TObjectPtr<UAnimMontage>> ComboSequenceMontages;
+
+	UPROPERTY(BlueprintReadWrite, Category="Ability Defaults|Combo")
+	bool bComboInputPressed = false;
+
+	UPROPERTY(BlueprintReadWrite, Category="Ability Defaults|Combo")
+	int32 ComboIndex = 0;
 };
