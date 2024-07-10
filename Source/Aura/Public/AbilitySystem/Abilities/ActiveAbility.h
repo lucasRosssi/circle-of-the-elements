@@ -18,7 +18,7 @@ class AURA_API UActiveAbility : public UBaseAbility
 	GENERATED_BODY()
 
 public:
-	UFUNCTION(BlueprintCallable, meta=(DefaultToSelf="Target", HidePin="Target"))
+	UFUNCTION(BlueprintCallable)
 	AActor* GetNextBounceTarget(AActor* HitTarget);
 	
 	// Starting input for the player, when the ability is granted
@@ -31,9 +31,20 @@ public:
 	bool bUsesMovementInputDirection = false;
 
 	bool IsBounceModeActive() const { return HitMode == EAbilityHitMode::Bounce; }
-	int32 GetMaxBounceCountAtLevel(int32 Level) const;
+	int32 GetMaxHitCountAtLevel(int32 Level) const;
+	float GetEffectChangePerHitAtLevel(int32 Level) const;
 
 protected:
+	UFUNCTION(BlueprintPure, Category="Ability Defaults")
+	float GetMontagePlayRate() const;
+	UFUNCTION(BlueprintPure, Category="Ability Defaults")
+	float GetAnimRootMotionTranslateScale() const;
+	
+	UFUNCTION(BlueprintPure, Category="Ability Defaults|Mode")
+	int32 GetMaxHitCount() const;
+	UFUNCTION(BlueprintPure, Category="Ability Defaults|Mode")
+	float GetEffectChangePerHit() const;
+	
 	UFUNCTION(BlueprintCallable)
 	void ClearBounceHitTargets();
 	
@@ -48,13 +59,13 @@ protected:
 		Category="Ability Defaults|Weapon",
 		meta=(DisplayPriority=0)
 		)
-	bool bUsesWeapon;
+	bool bUseWeapon;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Ability Defaults")
 	TObjectPtr<UAnimMontage> MontageToPlay;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Ability Defaults")
-	float MontagePlayRate = 1.0f;
+	FScalableFloat MontagePlayRate = 1.0f;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Ability Defaults")
-	float AnimRootMotionTranslateScale = 1.0f;
+	FScalableFloat AnimRootMotionTranslateScale = 1.0f;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Ability Defaults")
 	FName AbilitySocketName;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Ability Defaults|Targeting")
@@ -67,62 +78,34 @@ protected:
 		BlueprintReadOnly,
 		Category="Ability Defaults|Mode",
 		meta=(
-			EditCondition="HitMode == EAbilityHitMode::Bounce",
-			EditConditionHides,
-			ClampMin=0,
-			UIMin=0
+			EditCondition="HitMode != EAbilityHitMode::Default",
+			EditConditionHides
 			)
 		)
-	int32 MaxBounceCount = 0;
+	FScalableFloat MaxHitCount = 1.f;
+
+	// How much of the ability effect is changed per target hit
+	UPROPERTY(
+		EditDefaultsOnly,
+		BlueprintReadOnly,
+		Category="Ability Defaults|Mode",
+		meta=(
+			EditCondition="HitMode != EAbilityHitMode::Default",
+			EditConditionHides
+			)
+		)
+	FScalableFloat EffectChangePerHit = 0.f;
+	
 	UPROPERTY(
 		EditDefaultsOnly,
 		BlueprintReadOnly,
 		Category="Ability Defaults|Mode",
 		meta=(EditCondition="HitMode == EAbilityHitMode::Bounce", EditConditionHides)
 		)
-	float BounceRadius = 500.f;
-	// How much of the ability effect is changed per target hit
-	UPROPERTY(
-		EditDefaultsOnly,
-		BlueprintReadOnly,
-		Category="Ability Defaults|Mode",
-		meta=(
-			EditCondition="HitMode == EAbilityHitMode::Bounce",
-			EditConditionHides,
-			Units="Percent"
-			)
-		)
-	float BounceEffectChangePerHit = 0.f;
-	UPROPERTY(
-		EditDefaultsOnly,
-		BlueprintReadOnly,
-		Category="Ability Defaults|Mode",
-		meta=(
-			EditCondition="HitMode == EAbilityHitMode::Penetration",
-			EditConditionHides,
-			ClampMin=0,
-			UIMin=0
-			)
-		)
-	int32 MaxPenetrationCount = 0;
-	// How much of the ability effect is changed per target hit
-	UPROPERTY(
-		EditDefaultsOnly,
-		BlueprintReadOnly,
-		Category="Ability Defaults|Mode",
-		meta=(
-			EditCondition="HitMode == EAbilityHitMode::Penetration",
-			EditConditionHides,
-			Units="Percent"
-			)
-		)
-	float PenetrationEffectChangePerHit = 0.f;
+	FScalableFloat BounceRadius = 500.f;
 
 private:
 	UPROPERTY()
 	TArray<AActor*> BounceHitActors;
-
-	UPROPERTY()
-	int32 PenetrationCount = 0;
 
 };

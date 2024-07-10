@@ -94,6 +94,24 @@ void UOverlayWidgetController::BindCallbacksToDependencies()
 			this,
 			&UOverlayWidgetController::OnAbilityEquipped
 			);
+		
+		GetAuraAbilitySystemComponent()->AbilityStateChanged.AddLambda(
+		[this](
+				const FGameplayTag& AbilityTag,
+				const FGameplayTag& StatusTag,
+				const FGameplayTag& InputTag,
+				int32 NewLevel
+				)
+			{
+				if (AbilityInfo)
+				{
+					FAuraAbilityInfo Info = AbilityInfo->FindAbilityInfoByTag(AbilityTag);
+					Info.StatusTag = StatusTag;
+					Info.InputTag = InputTag;
+					AbilityInfoDelegate.Broadcast(Info);
+				}
+			}
+		);
 	}
 }
 

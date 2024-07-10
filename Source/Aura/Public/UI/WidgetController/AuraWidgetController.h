@@ -72,7 +72,7 @@ public:
 	
 	virtual void BindCallbacksToDependencies();
 
-	UPROPERTY(BlueprintAssignable, Category = "GAS|Messages")
+	UPROPERTY(BlueprintAssignable, Category = "Ability")
 	FAbilityInfoSignature AbilityInfoDelegate;
 
 	void BroadcastAbilityInfo();

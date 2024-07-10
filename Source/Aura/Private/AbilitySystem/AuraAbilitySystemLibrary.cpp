@@ -708,8 +708,10 @@ void UAuraAbilitySystemLibrary::GetFriendsWithinTrace(
 	}
 }
 
-bool UAuraAbilitySystemLibrary::AreActorsEnemies(const AActor* FirstActor, const AActor* 
-                                                 SecondActor)
+bool UAuraAbilitySystemLibrary::AreActorsEnemies(
+	const AActor* FirstActor,
+	const AActor* SecondActor
+	)
 {
 	if (!IsValid(FirstActor) || !IsValid(SecondActor)) return false;
 	
@@ -846,9 +848,9 @@ void UAuraAbilitySystemLibrary::FormatAbilityDescriptionAtLevel(
 			OutDescription = FText::FormatNamed(
 				OutDescription,
 				Args.BounceCount_0,
-				ActiveAbility->GetMaxBounceCountAtLevel(Level),
+				ActiveAbility->GetMaxHitCountAtLevel(Level),
 				Args.BounceCount_1,
-				ActiveAbility->GetMaxBounceCountAtLevel(Level + 1)
+				ActiveAbility->GetMaxHitCountAtLevel(Level + 1)
 			);
 		}
 	}
@@ -926,8 +928,8 @@ void UAuraAbilitySystemLibrary::MakeManaAndCooldownText(
 	FString& OutCooldownText
 	)
 {
-	const int32 ManaCost = Ability->GetRoundedManaCost(Level);
-	const int32 Cooldown = Ability->GetRoundedCooldown(Level);
+	const int32 ManaCost = Ability->GetRoundedManaCostAtLevel(Level);
+	const int32 Cooldown = Ability->GetRoundedCooldownAtLevel(Level);
 
 	if (ManaCost == 0)
 	{
@@ -961,10 +963,10 @@ void UAuraAbilitySystemLibrary::MakeManaAndCooldownTextNextLevel(
 	FString& OutCooldownText
 	)
 {
-	const int32 ManaCost = Ability->GetRoundedManaCost(Level);
-	const int32 NextManaCost = Ability->GetRoundedManaCost(Level + 1);
-	const int32 Cooldown = Ability->GetRoundedCooldown(Level);
-	const int32 NextCooldown = Ability->GetRoundedCooldown(Level + 1);
+	const int32 ManaCost = Ability->GetRoundedManaCostAtLevel(Level);
+	const int32 NextManaCost = Ability->GetRoundedManaCostAtLevel(Level + 1);
+	const int32 Cooldown = Ability->GetRoundedCooldownAtLevel(Level);
+	const int32 NextCooldown = Ability->GetRoundedCooldownAtLevel(Level + 1);
 	if (NextManaCost - ManaCost == 0)
 	{
 		if (ManaCost == 0)

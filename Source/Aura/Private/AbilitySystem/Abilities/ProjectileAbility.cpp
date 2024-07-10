@@ -62,7 +62,8 @@ void UProjectileAbility::SpawnProjectile(
 		if (HitMode != EAbilityHitMode::Default)
 		{
 			Projectile->HitMode = HitMode;
-			Projectile->MaxHitCount = FMath::Max(MaxBounceCount, MaxPenetrationCount);
+			Projectile->MaxHitCount = GetMaxHitCount();
+			Projectile->EffectChangePerHit = GetEffectChangePerHit();
 		}
 
 		Projectile->TargetTeam = AbilityTargetTeam;

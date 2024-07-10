@@ -6,6 +6,7 @@
 #include "AbilitySystemComponent.h"
 #include "NiagaraFunctionLibrary.h"
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
+#include "Aura/Aura.h"
 #include "Camera/CameraComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Game/TeamComponent.h"
@@ -42,7 +43,7 @@ AAuraCharacter::AAuraCharacter()
 	bUseControllerRotationYaw = false;
 
 	CharacterType = ECharacterType::Player;
-	TeamComponent->TeamID = 1;
+	TeamComponent->TeamID = PLAYER_TEAM;
 }
 
 void AAuraCharacter::PossessedBy(AController* NewController)

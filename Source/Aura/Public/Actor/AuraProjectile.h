@@ -45,7 +45,8 @@ public:
 	ETargetTeam TargetTeam = ETargetTeam::Enemies;
 	EAbilityHitMode HitMode = EAbilityHitMode::Default;
 	float BounceRadius = 500.f;
-	int32 MaxHitCount = 0;
+	int32 MaxHitCount = 1;
+	float EffectChangePerHit = 0.f;
 
 protected:
 	virtual void BeginPlay() override;
@@ -75,14 +76,17 @@ protected:
 	UFUNCTION()
 	void OnHomingTargetDied(AActor* DeadActor);
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Effects|GameplayCue")
+	FGameplayTag GameplayCueTag;
+
 private:
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastHomingTarget(AActor* Target);
+
+	void ApplyProjectileEffect(bool& bSuccess);
 	
 	UPROPERTY(EditDefaultsOnly)
-	float LifeSpan = 10.f;
-	
-	bool bHit;
+	float LifeSpan = 5.f;
 	
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<USphereComponent> Sphere;
@@ -96,28 +100,28 @@ private:
 	UPROPERTY()
 	AProjectileEffect* ProjectileNiagaraEffectActor;
 	
-	UPROPERTY(EditAnywhere, Category="Impact")
+	UPROPERTY(EditAnywhere, Category="Effects|Impact")
 	TObjectPtr<UNiagaraSystem> ImpactEffect;
 	
-	UPROPERTY(EditAnywhere, Category="Impact")
+	UPROPERTY(EditAnywhere, Category="Effects|Impact")
 	TObjectPtr<USoundBase> ImpactSound;
 
-	UPROPERTY(EditAnywhere, Category="Impact")
+	UPROPERTY(EditAnywhere, Category="Effects|Impact")
 	float ImpactSoundVolume = 1.0f;
 
-	UPROPERTY(EditAnywhere, Category="Impact")
+	UPROPERTY(EditAnywhere, Category="Effects|Impact")
 	float ImpactSoundPitch = 1.0f;
 	
-	UPROPERTY(EditAnywhere, Category="Muzzle")
+	UPROPERTY(EditAnywhere, Category="Effects|Muzzle")
 	TObjectPtr<UNiagaraSystem> MuzzleEffect;
 	
-	UPROPERTY(EditAnywhere, Category="Muzzle")
+	UPROPERTY(EditAnywhere, Category="Effects|Muzzle")
 	TObjectPtr<USoundBase> MuzzleSound;
 
-	UPROPERTY(EditAnywhere, Category="Muzzle")
+	UPROPERTY(EditAnywhere, Category="Effects|Muzzle")
 	float MuzzleSoundVolume = 1.0f;
 
-	UPROPERTY(EditAnywhere, Category="Muzzle")
+	UPROPERTY(EditAnywhere, Category="Effects|Muzzle")
 	float MuzzleSoundPitch = 1.0f;
 
 	UPROPERTY(VisibleInstanceOnly, Category="Homing")

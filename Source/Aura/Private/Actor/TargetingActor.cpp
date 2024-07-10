@@ -51,19 +51,19 @@ void ATargetingActor::OnTargetingBeginOverlap(
 			UAuraAbilitySystemLibrary::AreActorsEnemies(SourceActor, OtherActor)
 			)
 		{
-			Target->HighlightActor();
+			Target->HighlightActor(SourceActor);
 		}
 
 		if (TargetTeam == ETargetTeam::Friends &&
 			UAuraAbilitySystemLibrary::AreActorsFriends(SourceActor, OtherActor)
 			)
 		{
-			Target->HighlightActor();
+			Target->HighlightActor(SourceActor);
 		}
 
 		if (TargetTeam == ETargetTeam::Both)
 		{
-			Target->HighlightActor();
+			Target->HighlightActor(SourceActor);
 		}
 	}
 }

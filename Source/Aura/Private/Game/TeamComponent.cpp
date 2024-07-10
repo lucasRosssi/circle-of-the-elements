@@ -3,6 +3,8 @@
 
 #include "Game/TeamComponent.h"
 
+#include "Aura/Aura.h"
+
 // Sets default values for this component's properties
 UTeamComponent::UTeamComponent()
 {
@@ -10,7 +12,7 @@ UTeamComponent::UTeamComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
 
-	TeamID = 255;
+	TeamID = NEUTRAL_TEAM;
 }
 
 
@@ -23,7 +25,7 @@ void UTeamComponent::BeginPlay()
 
 bool UTeamComponent::IsEnemy(AActor* TargetActor)
 {
-	if (TeamID == 255) return false;
+	if (TeamID == NEUTRAL_TEAM) return false;
 	
 	if (const UTeamComponent* TargetTeamComponent = TargetActor->GetComponentByClass<UTeamComponent>())
 	{
@@ -35,7 +37,7 @@ bool UTeamComponent::IsEnemy(AActor* TargetActor)
 
 bool UTeamComponent::IsFriend(AActor* TargetActor)
 {
-	if (TeamID == 255) return false;
+	if (TeamID == NEUTRAL_TEAM) return false;
 
 	if (const UTeamComponent* TargetTeamComponent = TargetActor->GetComponentByClass<UTeamComponent>())
 	{

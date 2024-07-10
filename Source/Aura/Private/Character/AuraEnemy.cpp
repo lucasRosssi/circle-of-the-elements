@@ -34,7 +34,7 @@ AAuraEnemy::AAuraEnemy()
 	HealthBar = CreateDefaultSubobject<UWidgetComponent>("HealthBar");
 	HealthBar->SetupAttachment(GetRootComponent());
 
-	TeamComponent->TeamID = 2;
+	TeamComponent->TeamID = GOBLIN_TEAM;
 }
 
 void AAuraEnemy::PossessedBy(AController* NewController)
@@ -55,22 +55,6 @@ void AAuraEnemy::HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCou
 
 	if (!HasAuthority()) return;
 	AuraAIController->GetBlackboardComponent()->SetValueAsBool(FName("HitReacting"), bHitReacting);
-}
-
-void AAuraEnemy::HighlightActor()
-{
-	
-	GetMesh()->SetRenderCustomDepth(true);
-	GetMesh()->SetCustomDepthStencilValue(CUSTOM_DEPTH_RED);
-	Weapon->SetRenderCustomDepth(true);
-	Weapon->SetCustomDepthStencilValue(CUSTOM_DEPTH_RED);
-}
-
-void AAuraEnemy::UnHighlightActor()
-{
-	
-	GetMesh()->SetRenderCustomDepth(false);
-	Weapon->SetRenderCustomDepth(false);
 }
 
 int32 AAuraEnemy::GetCharacterLevel_Implementation()

@@ -33,7 +33,7 @@ void UBaseAbility::OnGiveAbility(
 			Spec.ActivationInfo,
 			GetChargesEffect(),
 			1.f,
-			Charges
+			GetMaxCharges()
 			);
 		
 		FGameplayTagContainer ChargesTags;
@@ -41,7 +41,7 @@ void UBaseAbility::OnGiveAbility(
 		
 		ActivationRequiredTags.AppendTags(ChargesTags);
 
-		GetChargesEffect()->StackLimitCount = Charges;
+		GetChargesEffect()->StackLimitCount = GetMaxCharges();
 	}
 }
 
@@ -107,7 +107,30 @@ bool UBaseAbility::CheckCooldown(
 	return Super::CheckCooldown(Handle, ActorInfo, OptionalRelevantTags);
 }
 
-float UBaseAbility::GetManaCost(int32 Level) const
+void UBaseAbility::OnAbilityLevelUp(
+		const FGameplayAbilityActorInfo* ActorInfo,
+		const FGameplayAbilitySpec* Spec
+		)
+{
+	const FGameplayEffectQuery Query = FGameplayEffectQuery
+		::MakeQuery_MatchAnyOwningTags(*GetCooldownTags());
+	ActorInfo->AbilitySystemComponent->RemoveActiveEffects(Query);
+	
+	if (bUseCharges)
+	{
+		GetChargesEffect()->StackLimitCount = GetMaxChargesAtLevel(Spec->Level);
+		ApplyGameplayEffectToOwner(
+			Spec->Handle,
+			ActorInfo,
+			Spec->ActivationInfo,
+			GetChargesEffect(),
+			1.f,
+			GetMaxChargesAtLevel(Spec->Level)
+			);
+	}
+}
+
+float UBaseAbility::GetManaCostAtLevel(int32 Level) const
 {
 	float ManaCost = 0.f;
 	if(const UGameplayEffect* CostEffect = GetCostGameplayEffect())
@@ -128,19 +151,39 @@ float UBaseAbility::GetManaCost(int32 Level) const
 	return FMath::Abs(ManaCost);
 }
 
-float UBaseAbility::GetCooldown(int32 Level) const
+int32 UBaseAbility::GetRoundedManaCostAtLevel(int32 Level) const
+{
+	return FMath::RoundToInt32(GetManaCostAtLevel(Level));
+}
+
+float UBaseAbility::GetCooldownAtLevel(int32 Level) const
 {
 	return Cooldown.GetValueAtLevel(Level);
 }
 
-int32 UBaseAbility::GetRoundedManaCost(int32 Level) const
+int32 UBaseAbility::GetRoundedCooldownAtLevel(int32 Level) const
 {
-	return FMath::RoundToInt32(GetManaCost(Level));
+	return FMath::RoundToInt32(GetCooldownAtLevel(Level));
 }
 
-int32 UBaseAbility::GetRoundedCooldown(int32 Level) const
+int32 UBaseAbility::GetMaxChargesAtLevel(int32 Level) const
 {
-	return FMath::RoundToInt32(GetCooldown(Level));
+	return FMath::RoundToInt32(MaxCharges.GetValueAtLevel(Level));
+}
+
+float UBaseAbility::GetAreaInnerRadius() const
+{
+	return AreaInnerRadius.GetValueAtLevel(GetAbilityLevel());
+}
+
+float UBaseAbility::GetAreaOuterRadius() const
+{
+	return AreaOuterRadius.GetValueAtLevel(GetAbilityLevel());
+}
+
+int32 UBaseAbility::GetMaxCharges() const
+{
+	return FMath::RoundToInt32(MaxCharges.GetValueAtLevel(GetAbilityLevel()));
 }
 
 UGameplayEffect* UBaseAbility::GetChargesEffect()
@@ -165,8 +208,8 @@ FAbilityParams UBaseAbility::MakeAbilityParamsFromDefaults(AActor* TargetActor) 
 	if (bIsAreaAbility)
 	{
 		AbilityParams.bIsAreaAbility = true;
-		AbilityParams.AreaInnerRadius = AreaInnerRadius;
-		AbilityParams.AreaOuterRadius = AreaOuterRadius;
+		AbilityParams.AreaInnerRadius = AreaInnerRadius.GetValueAtLevel(GetAbilityLevel());
+		AbilityParams.AreaOuterRadius = AreaOuterRadius.GetValueAtLevel(GetAbilityLevel());
 		AbilityParams.AreaOrigin = AreaOrigin;
 		if (IsValid(TargetActor))
 		{
@@ -185,8 +228,8 @@ FAbilityParams UBaseAbility::MakeAbilityParamsFromDefaults(AActor* TargetActor) 
 		AbilityParams.EffectParams.GameplayEffectClass = StatusEffectInfo
 			->StatusEffects.Find(StatusEffectData.StatusEffectTag)->StatusEffectClass;
 		AbilityParams.EffectParams.GameplayTag = StatusEffectData.StatusEffectTag;
-		AbilityParams.EffectParams.Value = StatusEffectData.Value;
-		AbilityParams.EffectParams.Duration = StatusEffectData.Duration;
+		AbilityParams.EffectParams.Value = StatusEffectData.Value.GetValueAtLevel(GetAbilityLevel());
+		AbilityParams.EffectParams.Duration = StatusEffectData.Duration.GetValueAtLevel(GetAbilityLevel());
 	}
 	
 	return AbilityParams;
@@ -252,7 +295,7 @@ void UBaseAbility::HandleCooldownRecharge(
 				}
 				else
 				{
-					Stacks = Charges;
+					Stacks = GetMaxCharges();
 				}
 
 				ApplyGameplayEffectToOwner(
@@ -295,4 +338,9 @@ void UBaseAbility::HandleCooldownRecharge(
 							);
 					});
 	}
+}
+
+bool UBaseAbility::IsChargesModeActive() const
+{
+	return bUseCharges && MaxCharges.GetValueAtLevel(GetAbilityLevel()) > 1 && IsValid(ChargesEffectClass);
 }

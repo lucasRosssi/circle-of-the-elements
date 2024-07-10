@@ -5,7 +5,6 @@
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
-#include "NiagaraComponent.h"
 
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
@@ -122,7 +121,7 @@ void AAuraProjectile::OnHit(bool bDeactivateEffect)
 
 void AAuraProjectile::Destroyed()
 {
-	if (!bHit && !HasAuthority())	OnHit();
+	if (!HasAuthority())	OnHit();
 
 	if (ProjectileNiagaraEffectActor)
 	{
@@ -171,7 +170,7 @@ void AAuraProjectile::HandleAreaAbility(AActor* OtherActor, const AActor* Effect
 		)
 		{
 			AbilityParams.TargetASC = TargetASC;
-			UAuraAbilitySystemLibrary::ApplyAbilityEffect(AbilityParams, bSuccess);
+			ApplyProjectileEffect(bSuccess);
 		}
 	}
 }
@@ -186,7 +185,7 @@ void AAuraProjectile::HandleSingleTarget(AActor* OtherActor, bool bSuccess)
 		AbilityParams.ForwardVector = GetActorForwardVector();
 		AbilityParams.TargetASC = TargetASC;
 				
-		UAuraAbilitySystemLibrary::ApplyAbilityEffect(AbilityParams, bSuccess);
+		ApplyProjectileEffect(bSuccess);
 	}
 }
 
@@ -295,7 +294,7 @@ void AAuraProjectile::OnSphereOverlap(
 		 * If it is a bouncing ability, we have to find the closest actor to bounce to.
 		 * If there is no actor close, we destroy the projectile.
 		 */
-		if (HitMode == EAbilityHitMode::Bounce && HitCount < MaxHitCount)
+		if (HitMode == EAbilityHitMode::Bounce && HitCount + 1 < MaxHitCount)
 		{
 			HandleBounceHitMode(OtherActor);
 		}
@@ -304,7 +303,7 @@ void AAuraProjectile::OnSphereOverlap(
 		 * the combat interface and keep the projectile trajectory. If if doesn't implement it,
 		 * then the projectile hit the environment and should destroy itself
 		 */
-		else if (HitMode == EAbilityHitMode::Penetration && HitCount < MaxHitCount)
+		else if (HitMode == EAbilityHitMode::Penetration && HitCount + 1 < MaxHitCount)
 		{
 			HandlePenetrationHitMode(OtherActor);
 		}
@@ -362,6 +361,18 @@ void AAuraProjectile::OnHomingTargetDied(AActor* DeadActor)
 		
 		MulticastHomingTarget(ClosestActor);
 	}
+}
+
+void AAuraProjectile::ApplyProjectileEffect(bool& bSuccess)
+{
+	if (HitMode != EAbilityHitMode::Default && MaxHitCount > 1)
+	{
+		AbilityParams.DamageParams.BaseDamage *= (1.f + EffectChangePerHit * HitCount);
+		AbilityParams.EffectParams.Value *= (1.f + EffectChangePerHit * HitCount);
+		AbilityParams.EffectParams.Duration *= (1.f + EffectChangePerHit * HitCount);
+	}
+	
+	UAuraAbilitySystemLibrary::ApplyAbilityEffect(AbilityParams, bSuccess);
 }
 
 void AAuraProjectile::MulticastHomingTarget_Implementation(AActor* Target)

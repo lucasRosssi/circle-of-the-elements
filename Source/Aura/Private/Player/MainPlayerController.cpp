@@ -257,7 +257,7 @@ void AMainPlayerController::CursorTrace()
 		if (ThisActor != nullptr)
 		{
 			// Case B
-			ThisActor->HighlightActor();
+			ThisActor->HighlightActor(GetPawn());
 		}
 		else // ThisActor == nullptr
 		{
@@ -278,7 +278,7 @@ void AMainPlayerController::CursorTrace()
 			{
 				// Case D
 				LastActor->UnHighlightActor();
-				ThisActor->HighlightActor();
+				ThisActor->HighlightActor(GetPawn());
 			}
 			else
 			{

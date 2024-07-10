@@ -7,6 +7,7 @@
 #include "Aura/Aura.h"
 #include "Components/CapsuleComponent.h"
 #include "AuraGameplayTags.h"
+#include "AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "AbilitySystem/Abilities/SummonAbility.h"
 #include "Animation/CharacterAnimInstance.h"
 #include "Components/BoxComponent.h"
@@ -154,8 +155,32 @@ void AAuraCharacterBase::HitReactTagChanged(const FGameplayTag CallbackTag, int3
 	GetCharacterMovement()->MaxWalkSpeed = bHitReacting ? 0.f : CurrentWalkSpeed;
 }
 
+void AAuraCharacterBase::HighlightActor(AActor* InstigatorActor)
+{
+	int32 CustomDepth = 0;
+	if (UAuraAbilitySystemLibrary::AreActorsEnemies(this, InstigatorActor))
+	{
+		CustomDepth = CUSTOM_DEPTH_RED;
+	}
+	if (UAuraAbilitySystemLibrary::AreActorsFriends(this, InstigatorActor))
+	{
+		CustomDepth = CUSTOM_DEPTH_GREEN;
+	}
+	
+	GetMesh()->SetRenderCustomDepth(true);
+	GetMesh()->SetCustomDepthStencilValue(CustomDepth);
+	Weapon->SetRenderCustomDepth(true);
+	Weapon->SetCustomDepthStencilValue(CustomDepth);
+}
+
+void AAuraCharacterBase::UnHighlightActor()
+{
+	GetMesh()->SetRenderCustomDepth(false);
+	Weapon->SetRenderCustomDepth(false);
+}
+
 FVector AAuraCharacterBase::GetAbilitySocketLocation_Implementation(const FName SocketName, bool 
-bSocketInWeapon)
+                                                                    bSocketInWeapon)
 {
 	if (bSocketInWeapon && IsValid(Weapon))
 	{

@@ -11,6 +11,7 @@
 #include "Game/TeamComponent.h"
 #include "GameFramework/Character.h"
 #include "Interaction/CombatInterface.h"
+#include "Interaction/TargetInterface.h"
 #include "AuraCharacterBase.generated.h"
 
 class UBoxComponent;
@@ -26,7 +27,7 @@ class UAttributeSet;
 
 UCLASS(Abstract)
 class AURA_API AAuraCharacterBase : public ACharacter, public IAbilitySystemInterface, public 
-ICombatInterface
+ICombatInterface, public ITargetInterface
 {
 	GENERATED_BODY()
 
@@ -40,6 +41,11 @@ public:
 	
 	UFUNCTION(NetMulticast, Reliable)
 	virtual void MulticastHandleDeath(const FVector& DeathImpulse);
+
+	/** Target Interface */
+	virtual void HighlightActor(AActor* InstigatorActor) override;
+	virtual void UnHighlightActor() override;
+	/** end Target Interface */
 
 	/** Combat Interface */
 	virtual UAnimMontage* GetDodgeMontage_Implementation() override;

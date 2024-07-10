@@ -11,7 +11,7 @@ AActor* UActiveAbility::GetNextBounceTarget(AActor* HitTarget)
 	ActorsToIgnore.Append(BounceHitActors);
 	AActor* NextTarget = UAuraAbilitySystemLibrary::GetClosestActorToTarget(
 		HitTarget,
-		BounceRadius,
+		BounceRadius.GetValueAtLevel(GetAbilityLevel()),
 		AbilityTargetTeam == ETargetTeam::Both ? AbilityTargetTeam : ETargetTeam::Friends,
 		ActorsToIgnore
 		);
@@ -20,9 +20,34 @@ AActor* UActiveAbility::GetNextBounceTarget(AActor* HitTarget)
 	return NextTarget;
 }
 
-int32 UActiveAbility::GetMaxBounceCountAtLevel(int32 Level) const
+int32 UActiveAbility::GetMaxHitCountAtLevel(int32 Level) const
 {
-	return MaxBounceCount + Level - 1;
+	return FMath::RoundToInt32(MaxHitCount.GetValueAtLevel(Level));
+}
+
+float UActiveAbility::GetEffectChangePerHitAtLevel(int32 Level) const
+{
+	return EffectChangePerHit.GetValueAtLevel(Level);
+}
+
+float UActiveAbility::GetMontagePlayRate() const
+{
+	return MontagePlayRate.GetValueAtLevel(GetAbilityLevel());
+}
+
+float UActiveAbility::GetAnimRootMotionTranslateScale() const
+{
+	return AnimRootMotionTranslateScale.GetValueAtLevel(GetAbilityLevel());
+}
+
+int32 UActiveAbility::GetMaxHitCount() const
+{
+	return FMath::RoundToInt32(MaxHitCount.GetValueAtLevel(GetAbilityLevel())); 
+}
+
+float UActiveAbility::GetEffectChangePerHit() const
+{
+	return EffectChangePerHit.GetValueAtLevel(GetAbilityLevel());
 }
 
 void UActiveAbility::ClearBounceHitTargets()

@@ -13,10 +13,11 @@ enum class EAbilityStatus : uint8;
 DECLARE_MULTICAST_DELEGATE_OneParam(FEffectAssetTags, const FGameplayTagContainer& /* AssetTags */)
 DECLARE_MULTICAST_DELEGATE(FAbilitiesGiven);
 DECLARE_DELEGATE_OneParam(FForEachAbility, const FGameplayAbilitySpec&);
-DECLARE_MULTICAST_DELEGATE_ThreeParams(
+DECLARE_MULTICAST_DELEGATE_FourParams(
 	FAbilityStateChanged,
 	const FGameplayTag& /* AbilityTag */,
 	const FGameplayTag& /* StatusTag */,
+	const FGameplayTag& /* InputTag */,
 	int32 /* AbilityLevel */
 );
 DECLARE_MULTICAST_DELEGATE_FourParams(
@@ -90,7 +91,7 @@ public:
 	void UpdateAbilityStatuses(int32 Level);
 
 	UFUNCTION(Server, Reliable)
-	void ServerSpendSkillPoint(const FGameplayTag& AbilityTag);
+	void ServerSpendSkillPoint(const FGameplayTag& AbilityTag, const FGameplayTag& InputTag);
 
 	UFUNCTION(Server, Reliable)
 	void ServerEquipAbility(const FGameplayTag& AbilityTag, const FGameplayTag& InputTag);
@@ -124,6 +125,7 @@ protected:
 	void ClientUpdateAbilityState(
 		const FGameplayTag& AbilityTag,
 		const FGameplayTag& StatusTag,
+		const FGameplayTag& InputTag = FGameplayTag(),
 		int32 AbilityLevel = 1
 	);
 

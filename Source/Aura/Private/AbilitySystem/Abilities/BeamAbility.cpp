@@ -18,7 +18,7 @@ void UBeamAbility::StoreMouseDataInfo(const FHitResult& HitResult)
 
 USceneComponent* UBeamAbility::GetComponentToAttachGameplayCue()
 {
-	if (bUsesWeapon)
+	if (bUseWeapon)
 	{
 		return ICombatInterface::Execute_GetWeapon(GetAvatarActorFromActorInfo());
 	}
@@ -34,7 +34,7 @@ void UBeamAbility::TraceFirstTarget(const FVector& BeamTargetLocation)
 	const FVector SocketLocation = ICombatInterface::Execute_GetAbilitySocketLocation(
 		AvatarActor,
 		AbilitySocketName,
-		bUsesWeapon
+		bUseWeapon
 		);
 	
 	TArray ActorsToIgnore({

@@ -6,7 +6,6 @@
 #include "AIController.h"
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "BehaviorTree/BlackboardComponent.h"
-#include "Kismet/GameplayStatics.h"
 
 UBTService_FindNearestTarget::UBTService_FindNearestTarget(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -22,35 +21,20 @@ void UBTService_FindNearestTarget::TickNode(
 {
 	Super::TickNode(OwnerComp, NodeMemory, DeltaSeconds);
 
-	const APawn* OwningPawn = OwnerComp.GetAIOwner()->GetPawn();
+	APawn* OwningPawn = OwnerComp.GetAIOwner()->GetPawn();
 
-	const FName TargetTag = OwningPawn->ActorHasTag(FName("Player")) ? FName("Enemy") : FName("Player");
-
-	TArray<AActor*> ActorsWithTag;
-	UGameplayStatics::GetAllActorsOfClassWithTag(
+	TArray<AActor*> ActorsToIgnore;
+	AActor* ClosestActor = UAuraAbilitySystemLibrary::GetClosestActorToTarget(
 		OwningPawn,
-		ActorClass,
-		TargetTag,
-		ActorsWithTag
-	);
-
-	float ClosestDistance = 2000.f;
-	AActor* ClosestActor = nullptr;
-	for (const auto Actor : ActorsWithTag)
-	{
-		const bool bIsTargetEnemy = UAuraAbilitySystemLibrary::AreActorsEnemies(Actor, OwningPawn);
-		if (bIsTargetEnemy)
-		{
-			const float Distance = OwningPawn->GetDistanceTo(Actor);
-			if (Distance < ClosestDistance)
-			{
-				ClosestDistance = Distance;
-				ClosestActor = Actor;
-			}
-		}
-	}
+		2000.f,
+		ETargetTeam::Enemies,
+		ActorsToIgnore
+		);
 
 	UBlackboardComponent* BlackboardComponent = OwnerComp.GetBlackboardComponent();
 	BlackboardComponent->SetValueAsObject(TargetToFollowSelector.SelectedKeyName, ClosestActor);
-	BlackboardComponent->SetValueAsFloat(DistanceToTargetSelector.SelectedKeyName, ClosestDistance);
+	BlackboardComponent->SetValueAsFloat(
+		DistanceToTargetSelector.SelectedKeyName,
+		OwningPawn->GetDistanceTo(ClosestActor)
+		);
 }

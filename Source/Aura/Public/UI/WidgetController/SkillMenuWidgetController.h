@@ -38,7 +38,7 @@ public:
 	void SkillGlobeSelected(const FGameplayTag& AbilityTag);
 
 	UFUNCTION(BlueprintCallable)
-	void SpendPoint(FGameplayTag AbilityTag);
+	void SpendPoint(const FGameplayTag& AbilityTag, const FGameplayTag& InputTag);
 
 	UFUNCTION(BlueprintCallable)
 	FString GetSkillDescription(FGameplayTag AbilityTag);

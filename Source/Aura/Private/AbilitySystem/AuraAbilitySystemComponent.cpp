@@ -441,7 +441,8 @@ void UAuraAbilitySystemComponent::RemoveInputTagFromAbilities(const FGameplayTag
 }
 
 void UAuraAbilitySystemComponent::ServerSpendSkillPoint_Implementation(
-	const FGameplayTag& AbilityTag
+	const FGameplayTag& AbilityTag,
+	const FGameplayTag& InputTag
 )
 {
 	if (FGameplayAbilitySpec* AbilitySpec = GetSpecFromAbilityTag(AbilityTag))
@@ -466,8 +467,12 @@ void UAuraAbilitySystemComponent::ServerSpendSkillPoint_Implementation(
 			)
 		{
 			AbilitySpec->Level += 1;
+			if (UBaseAbility* BaseAbility = Cast<UBaseAbility>(AbilitySpec->Ability))
+			{
+				BaseAbility->OnAbilityLevelUp(AbilityActorInfo.Get(), AbilitySpec);
+			}
 		}
-		ClientUpdateAbilityState(AbilityTag, Status, AbilitySpec->Level);
+		ClientUpdateAbilityState(AbilityTag, Status, InputTag, AbilitySpec->Level);
 		MarkAbilitySpecDirty(*AbilitySpec);
 
 		if (GetAvatarCharacter())
@@ -503,9 +508,10 @@ void UAuraAbilitySystemComponent::EffectApplied(
 void UAuraAbilitySystemComponent::ClientUpdateAbilityState_Implementation(
 	const FGameplayTag& AbilityTag,
 	const FGameplayTag& StatusTag,
+	const FGameplayTag& InputTag,
 	int32 AbilityLevel
 )
 {
-	AbilityStateChanged.Broadcast(AbilityTag, StatusTag, AbilityLevel);
+	AbilityStateChanged.Broadcast(AbilityTag, StatusTag, InputTag, AbilityLevel);
 }
 

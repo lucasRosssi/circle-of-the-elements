@@ -16,17 +16,31 @@ class AURA_API UActiveDamageAbility : public UActiveAbility
 public:
 	virtual FAbilityParams MakeAbilityParamsFromDefaults(AActor* TargetActor = nullptr) const 
 	override;
+
+	UFUNCTION(BlueprintCallable)
+	FAbilityParams ApplyEffectChangePerHitToAbilityParams(
+		UPARAM(ref) FAbilityParams& AbilityParams,
+		int32 HitCount
+		);
 	
 	UFUNCTION(BlueprintCallable)
 	void CauseDamage(AActor* TargetActor);
 
-	UFUNCTION(BlueprintPure, meta=(HidePin="Target", DefaultToSelf="Target"))
+	UFUNCTION(BlueprintPure, Category="Ability Defaults|Damage")
 	float GetDamageAtLevel(int32 Level) const;
-
-	UFUNCTION(BlueprintPure, meta=(HidePin="Target", DefaultToSelf="Target"))
+	UFUNCTION(BlueprintPure, Category="Ability Defaults|Damage")
 	int32 GetRoundedDamageAtLevel(int32 Level) const;
 	
 protected:
+	UFUNCTION(BlueprintPure, Category="AbilityDefaults")
+	UAnimMontage* GetAnimMontage();
+
+	UFUNCTION(BlueprintPure, Category="Ability Defaults|Combo")
+	float GetComboMagnitude() const;
+
+	UFUNCTION(BlueprintPure, Category="Ability Defaults|Combo")
+	float GetComboFinishMagnitude() const;
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Damage")
 	TSubclassOf<UGameplayEffect> DamageEffectClass;
 
@@ -40,7 +54,33 @@ protected:
 	bool bApplyHitReact = true;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Ability Defaults|Combo")
+	bool bIsComboSequence = false;
+
+	UPROPERTY(
+		EditDefaultsOnly,
+		BlueprintReadOnly,
+		Category="Ability Defaults|Combo",
+		meta=(EditCondition="bIsComboSequence")
+		)
 	TArray<TObjectPtr<UAnimMontage>> ComboSequenceMontages;
+
+	// How much each combo step increases/decrease the ability effect
+	UPROPERTY(
+		EditDefaultsOnly,
+		BlueprintReadOnly,
+		Category="Ability Defaults|Combo",
+		meta=(EditCondition="bIsComboSequence")
+		)
+	FScalableFloat ComboMagnitude = 0.f;
+
+	// How much the last combo step increases/decrease the ability effect
+	UPROPERTY(
+		EditDefaultsOnly,
+		BlueprintReadOnly,
+		Category="Ability Defaults|Combo",
+		meta=(EditCondition="bIsComboSequence")
+		)
+	FScalableFloat ComboFinishMagnitude = 0.f;
 
 	UPROPERTY(BlueprintReadWrite, Category="Ability Defaults|Combo")
 	bool bComboInputPressed = false;

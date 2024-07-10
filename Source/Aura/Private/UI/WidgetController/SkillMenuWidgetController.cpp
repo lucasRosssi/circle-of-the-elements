@@ -20,6 +20,7 @@ void USkillMenuWidgetController::BindCallbacksToDependencies()
 		[this](
 			const FGameplayTag& AbilityTag,
 			const FGameplayTag& StatusTag,
+			const FGameplayTag& InputTag,
 			int32 NewLevel
 			)
 		{
@@ -27,6 +28,7 @@ void USkillMenuWidgetController::BindCallbacksToDependencies()
 			{
 				FAuraAbilityInfo Info = AbilityInfo->FindAbilityInfoByTag(AbilityTag);
 				Info.StatusTag = StatusTag;
+				Info.InputTag = InputTag;
 				AbilityInfoDelegate.Broadcast(Info);
 			}
 		}
@@ -85,11 +87,14 @@ void USkillMenuWidgetController::SkillGlobeSelected(const FGameplayTag& AbilityT
 	SkillGlobeSelectedDelegate.Broadcast(bEnableSpendPoint, bEnableEquip, Description);
 }
 
-void USkillMenuWidgetController::SpendPoint(FGameplayTag AbilityTag)
+void USkillMenuWidgetController::SpendPoint(
+	const FGameplayTag& AbilityTag,
+	const FGameplayTag& InputTag
+	)
 {
 	if (GetAuraAbilitySystemComponent())
 	{
-		GetAuraAbilitySystemComponent()->ServerSpendSkillPoint(AbilityTag);
+		GetAuraAbilitySystemComponent()->ServerSpendSkillPoint(AbilityTag, InputTag);
 	}
 }
 

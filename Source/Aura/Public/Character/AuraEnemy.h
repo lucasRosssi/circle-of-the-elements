@@ -16,19 +16,13 @@ class AAuraAIController;
  * 
  */
 UCLASS()
-class AURA_API AAuraEnemy : public AAuraCharacterBase, public ITargetInterface, public 
-IAttributeSetInterface
+class AURA_API AAuraEnemy : public AAuraCharacterBase, public IAttributeSetInterface
 {
 	GENERATED_BODY()
 public:
 	AAuraEnemy();
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount) override;
-	
-	/** Target Interface */
-	virtual void HighlightActor() override;
-	virtual void UnHighlightActor() override;
-	/** end Target Interface */
 
 	/** Combat Interface */
 	virtual int32 GetCharacterLevel_Implementation() override;

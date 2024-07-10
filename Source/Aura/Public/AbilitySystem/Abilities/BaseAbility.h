@@ -20,10 +20,10 @@ struct FStatusEffectApplicationData
 	FGameplayTag StatusEffectTag = FGameplayTag();
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	float Value = 0.f;
+	FScalableFloat Value = 0.f;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(Units="Seconds"))
-	float Duration = 0.f;
+	FScalableFloat Duration = 0.f;
 
 	bool IsValid() const { return StatusEffectTag.IsValid(); }
 };
@@ -40,24 +40,40 @@ public:
 	virtual bool CommitAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, FGameplayTagContainer* OptionalRelevantTags) override;
 	virtual bool CommitAbilityCooldown(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const bool ForceCooldown, FGameplayTagContainer* OptionalRelevantTags) override;
 	virtual bool CheckCooldown(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, FGameplayTagContainer* OptionalRelevantTags) const override;
+
+	virtual void OnAbilityLevelUp(
+		const FGameplayAbilityActorInfo* ActorInfo,
+		const FGameplayAbilitySpec* Spec
+		);
 	
 	UFUNCTION(BlueprintPure, Category="Resources", meta=(HidePin="Target", DefaultToSelf="Target"))
-	float GetManaCost(int32 Level) const;
+	float GetManaCostAtLevel(int32 Level) const;
 	UFUNCTION(BlueprintPure, Category="Resources", meta=(HidePin="Target", DefaultToSelf="Target"))
-	float GetCooldown(int32 Level) const;
+	int32 GetRoundedManaCostAtLevel(int32 Level) const;
 	UFUNCTION(BlueprintPure, Category="Resources", meta=(HidePin="Target", DefaultToSelf="Target"))
-	int32 GetRoundedManaCost(int32 Level) const;
+	float GetCooldownAtLevel(int32 Level) const;
 	UFUNCTION(BlueprintPure, Category="Resources", meta=(HidePin="Target", DefaultToSelf="Target"))
-	int32 GetRoundedCooldown(int32 Level) const;
+	int32 GetRoundedCooldownAtLevel(int32 Level) const;
 
-	UGameplayEffect* GetChargesEffect(); 
+	UFUNCTION(BlueprintPure, Category="Cooldowns", meta=(HidePin="Target", DefaultToSelf="Target"))
+	int32 GetMaxChargesAtLevel(int32 Level) const;
+	
+	UGameplayEffect* GetChargesEffect();
+	bool IsUsingCharges() const { return bUseCharges; }
 
 	UFUNCTION(BlueprintPure, Category="Ability Effect", meta=(HidePin="Target", DefaultToSelf="Target"))
 	virtual FAbilityParams MakeAbilityParamsFromDefaults(AActor* TargetActor = nullptr) const;
 
 protected:
-	UFUNCTION(BlueprintPure, Category="Ability Info", meta=(HidePin="Target", DefaultToSelf="Target"))
+	UFUNCTION(BlueprintPure, Category="Ability Info")
 	FGameplayTag GetAbilityTag();
+
+	UFUNCTION(BlueprintPure, Category="Ability Defaults|Targeting")
+	float GetAreaInnerRadius() const;
+	UFUNCTION(BlueprintPure, Category="Ability Defaults|Targeting")
+	float GetAreaOuterRadius() const;
+	UFUNCTION(BlueprintPure, Category="Cooldowns")
+	int32 GetMaxCharges() const;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Status Effects")
 	FStatusEffectApplicationData StatusEffectData;
@@ -73,19 +89,21 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Ability Defaults|Targeting")
 	bool bIsAreaAbility = false;
 
-	UPROPERTY(EditDefaultsOnly, 
-	BlueprintReadWrite,
-	Category="Ability Defaults|Targeting",
-	meta=(EditCondition="bIsAreaAbility", EditConditionHides)
-	)
-	float AreaInnerRadius = 0.f;
+	UPROPERTY(
+		EditDefaultsOnly, 
+		BlueprintReadWrite,
+		Category="Ability Defaults|Targeting",
+		meta=(EditCondition="bIsAreaAbility", EditConditionHides)
+		)
+	FScalableFloat AreaInnerRadius = 200.f;
 	
-	UPROPERTY(EditDefaultsOnly, 
-	BlueprintReadWrite,
-	Category="Ability Defaults|Targeting",
-	meta=(EditCondition="bIsAreaAbility", EditConditionHides)
-	)
-	float AreaOuterRadius = 300.f;
+	UPROPERTY(
+		EditDefaultsOnly, 
+		BlueprintReadWrite,
+		Category="Ability Defaults|Targeting",
+		meta=(EditCondition="bIsAreaAbility", EditConditionHides)
+		)
+	FScalableFloat AreaOuterRadius = 200.f;
 	
 	UPROPERTY(BlueprintReadWrite, Category="Ability Defaults|Targeting")
 	FVector AreaOrigin = FVector::ZeroVector;
@@ -102,13 +120,13 @@ OnEndAbility event. Or make the ability not constantly dependent on variables.
 		Category="Cooldowns",
 		meta=(EditCondition="InstancingPolicy == EGameplayAbilityInstancingPolicy::InstancedPerActor")
 		)
-	bool bHasCharges = false;
+	bool bUseCharges = false;
 	
 	UPROPERTY(
 		EditDefaultsOnly,
 		BlueprintReadOnly,
 		Category="Cooldowns",
-		meta=(EditCondition="bHasCharges", EditConditionHides)
+		meta=(EditCondition="bUseCharges", EditConditionHides)
 		)
 	TSubclassOf<UGameplayEffect> ChargesEffectClass;
 	
@@ -116,16 +134,16 @@ OnEndAbility event. Or make the ability not constantly dependent on variables.
 		EditDefaultsOnly,
 		BlueprintReadOnly,
 		Category="Cooldowns",
-		meta=(EditCondition="bHasCharges", EditConditionHides, ClampMin=1, ClampMax=5, UIMin=1, UIMax=5)
+		meta=(EditCondition="bUseCharges", EditConditionHides)
 		)
-	int32 Charges = 1;
+	FScalableFloat MaxCharges = 1;
 
 	// How the ability charges will recover when the cooldown effect ends
 	UPROPERTY(
 		EditDefaultsOnly,
 		BlueprintReadOnly,
 		Category="Cooldowns",
-		meta=(EditCondition="bHasCharges", EditConditionHides)
+		meta=(EditCondition="bUseCharges", EditConditionHides)
 		)
 	EAbilityRechargeMode RechargeMode = EAbilityRechargeMode::OneCharge;
 
@@ -139,7 +157,7 @@ private:
 		const FGameplayAbilityActivationInfo& ActivationInfo
 		);
 	
-	bool IsChargesModeActive() const { return bHasCharges && Charges > 1 && IsValid(ChargesEffectClass); }
+	bool IsChargesModeActive() const;
 	
 	UPROPERTY()
 	FGameplayTag AbilityTag = FGameplayTag();
