@@ -27,4 +27,7 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void SetActionSpeed(float InActionSpeed);
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	float GetDamageMultiplier();
 };

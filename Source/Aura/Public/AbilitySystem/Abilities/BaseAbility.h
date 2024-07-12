@@ -36,6 +36,8 @@ class AURA_API UBaseAbility : public UGameplayAbility
 	GENERATED_BODY()
 
 public:
+	UBaseAbility();
+	
 	virtual void OnGiveAbility(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec) override;
 	virtual bool CommitAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, FGameplayTagContainer* OptionalRelevantTags) override;
 	virtual bool CommitAbilityCooldown(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const bool ForceCooldown, FGameplayTagContainer* OptionalRelevantTags) override;
@@ -60,6 +62,8 @@ public:
 	
 	UGameplayEffect* GetChargesEffect();
 	bool IsUsingCharges() const { return bUseCharges; }
+
+	const FStatusEffectApplicationData& GetStatusEffectData() const { return StatusEffectData; }
 
 	UFUNCTION(BlueprintPure, Category="Ability Effect", meta=(HidePin="Target", DefaultToSelf="Target"))
 	virtual FAbilityParams MakeAbilityParamsFromDefaults(AActor* TargetActor = nullptr) const;
@@ -163,6 +167,6 @@ private:
 	FGameplayTag AbilityTag = FGameplayTag();
 
 	UPROPERTY()
-	UGameplayEffect* ChargesEffect;
+	UGameplayEffect* ChargesEffect = nullptr;
 	
 };

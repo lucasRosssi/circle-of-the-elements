@@ -194,6 +194,10 @@ public:
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_CooldownReduction, Category = "Special Attributes")
 	FGameplayAttributeData CooldownReduction;
 	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, CooldownReduction);
+	
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_DamageMultiplier, Category = "Special Attributes")
+	FGameplayAttributeData DamageMultiplier;
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, DamageMultiplier);
 
 	/*
 	 * Meta attributes
@@ -318,6 +322,9 @@ public:
 
 	UFUNCTION()
 	void OnRep_CooldownReduction(const FGameplayAttributeData& OldCooldownReduction) const;
+
+	UFUNCTION()
+	void OnRep_DamageMultiplier(const FGameplayAttributeData& OldDamageMultiplier) const;
 
 private:
 	void HandleIncomingDamage(const FEffectProperties& Props, const FGameplayAttribute& Attribute);

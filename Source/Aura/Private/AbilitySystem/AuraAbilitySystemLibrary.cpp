@@ -7,6 +7,7 @@
 #include "AuraAbilityTypes.h"
 #include "AuraGameplayTags.h"
 #include "AuraNamedArguments.h"
+#include "AbilitySystem/AuraAttributeSet.h"
 #include "AbilitySystem/Abilities/ActiveDamageAbility.h"
 #include "AbilitySystem/Abilities/BaseAbility.h"
 #include "AbilitySystem/Abilities/BeamAbility.h"
@@ -841,16 +842,41 @@ void UAuraAbilitySystemLibrary::FormatAbilityDescriptionAtLevel(
 {
 	const FAuraNamedArguments& Args = FAuraNamedArguments::Get();
 
+	
+	if (Ability->GetStatusEffectData().IsValid())
+	{
+		OutDescription = FText::FormatNamed(
+			OutDescription,
+			Args.Effect_0,
+			Ability->GetStatusEffectData().Value.GetValueAtLevel(Level),
+			Args.Effect_1,
+			Ability->GetStatusEffectData().Value.GetValueAtLevel(Level + 1),
+			Args.EffectPercent_0,
+			Ability->GetStatusEffectData().Value.GetValueAtLevel(Level) * 100,
+			Args.EffectPercent_1,
+			Ability->GetStatusEffectData().Value.GetValueAtLevel(Level + 1) * 100,
+			Args.Duration_0,
+			Ability->GetStatusEffectData().Duration.GetValueAtLevel(Level),
+			Args.Duration_1,
+			Ability->GetStatusEffectData().Duration.GetValueAtLevel(Level + 1)
+		);
+	}
+	
+
 	if (const UActiveAbility* ActiveAbility = Cast<UActiveAbility>(Ability))
 	{
-		if (ActiveAbility->IsBounceModeActive())
+		if (ActiveAbility->GetHitMode() != EAbilityHitMode::Default)
 		{
 			OutDescription = FText::FormatNamed(
 				OutDescription,
-				Args.BounceCount_0,
-				ActiveAbility->GetMaxHitCountAtLevel(Level),
-				Args.BounceCount_1,
-				ActiveAbility->GetMaxHitCountAtLevel(Level + 1)
+				Args.AdditionalHitCount_0,
+				ActiveAbility->GetMaxHitCountAtLevel(Level) - 1,
+				Args.AdditionalHitCount_1,
+				ActiveAbility->GetMaxHitCountAtLevel(Level + 1) - 1,
+				Args.HitEffectChange_0,
+				FMath::Abs(ActiveAbility->GetEffectChangePerHitAtLevel(Level)) * 100,
+				Args.HitEffectChange_1,
+				FMath::Abs(ActiveAbility->GetEffectChangePerHitAtLevel(Level + 1)) * 100
 			);
 		}
 	}
@@ -1060,15 +1086,15 @@ FGameplayEffectContextHandle UAuraAbilitySystemLibrary::ApplyAbilityEffect(
 				AbilityParams.AbilityLevel,
 				EffectContextHandle
 				);
-
+		
 		UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(
 			DamageSpecHandle,
 			DamageParams.DamageType,
 			DamageParams.BaseDamage
 			);
 		
-		AbilityParams.TargetASC
-			->ApplyGameplayEffectSpecToSelf(*DamageSpecHandle.Data);
+		AbilityParams.SourceASC
+			->ApplyGameplayEffectSpecToTarget(*DamageSpecHandle.Data, AbilityParams.TargetASC);
 		bSuccess = true;
 	}
 
@@ -1091,8 +1117,8 @@ FGameplayEffectContextHandle UAuraAbilitySystemLibrary::ApplyAbilityEffect(
 			EffectParams.Duration
 			);
 
-		AbilityParams.TargetASC
-			->ApplyGameplayEffectSpecToSelf(*EffectSpecHandle.Data);
+		AbilityParams.SourceASC
+			->ApplyGameplayEffectSpecToTarget(*EffectSpecHandle.Data, AbilityParams.TargetASC);
 		
 		bSuccess = true;
 	}
@@ -1202,6 +1228,63 @@ TArray<FVector> UAuraAbilitySystemLibrary::EvenlyRotatedVectors(
 	}
 
 	return Vectors;
+}
+
+void UAuraAbilitySystemLibrary::ChangeActorTeam(
+	int32 InTeamID,
+	AActor* TargetActor,
+	bool bPermanent
+	)
+{
+	if (!IsValid(TargetActor)) return;
+
+	UTeamComponent* TeamComponent = TargetActor->GetComponentByClass<UTeamComponent>();
+
+	if (!TeamComponent) return;
+
+	TeamComponent->ChangeTeam(InTeamID, bPermanent);
+}
+
+void UAuraAbilitySystemLibrary::JoinToActorTeam(
+	AActor* ActorToJoinTo,
+	AActor* JoiningActor,
+	bool bPermanent
+	)
+{
+	if (!IsValid(ActorToJoinTo) || !IsValid(JoiningActor)) return;
+	
+	if (UTeamComponent* JoiningActorTC = JoiningActor->GetComponentByClass<UTeamComponent>())
+	{
+		JoiningActorTC->JoinActorTeam(ActorToJoinTo, bPermanent);
+	}
+
+}
+
+void UAuraAbilitySystemLibrary::GoBackToOriginalTeam(AActor* TargetActor)
+{
+	if (!IsValid(TargetActor)) return;
+
+	UTeamComponent* TeamComponent = TargetActor->GetComponentByClass<UTeamComponent>();
+
+	if (!TeamComponent) return;
+
+	TeamComponent->GoBackToOriginalTeam();
+}
+
+AActor* UAuraAbilitySystemLibrary::GetActiveEffectCauser(
+		UAbilitySystemComponent* AbilitySystemComponent,
+		const FGameplayTag& EffectTag
+		)
+{
+	FGameplayEffectQuery Query;
+	Query.OwningTagQuery = FGameplayTagQuery::MakeQuery_MatchTag(EffectTag);
+	const TArray<FActiveGameplayEffectHandle> ActiveEffects = AbilitySystemComponent
+		->GetActiveEffects(Query);
+
+	if (ActiveEffects.IsEmpty()) return nullptr;
+
+	return AbilitySystemComponent
+		->GetEffectContextFromActiveGEHandle(ActiveEffects[0]).GetEffectCauser();
 }
 
 int32 UAuraAbilitySystemLibrary::GetXPRewardForTypeAndLevel(

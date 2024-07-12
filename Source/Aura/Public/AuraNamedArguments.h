@@ -27,12 +27,18 @@ public:
 	FString Dmg_0;
 	FString Dmg_1;
 
+	FString Effect_0;
+	FString Effect_1;
+	FString EffectPercent_0;
+	FString EffectPercent_1;
 	FString Duration_0;
 	FString Duration_1;
 	FString Period;
 
-	FString BounceCount_0;
-	FString BounceCount_1;
+	FString AdditionalHitCount_0;
+	FString AdditionalHitCount_1;
+	FString HitEffectChange_0;
+	FString HitEffectChange_1;
 
 private:
 	static FAuraNamedArguments NamedArguments;

@@ -63,6 +63,11 @@ void AAuraPlayerState::SetActionSpeed_Implementation(float InActionSpeed)
 	}
 }
 
+float AAuraPlayerState::GetDamageMultiplier_Implementation()
+{
+	return AttributeSet->GetDamageMultiplier();
+}
+
 void AAuraPlayerState::SetLevel(int32 InLevel)
 {
 	Level = InLevel;

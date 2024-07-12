@@ -332,6 +332,29 @@ public:
 		int32 Count
 		);
 
+	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|GameplayMechanics")
+	static void ChangeActorTeam(
+		int32 InTeamID,
+		AActor* TargetActor,
+		bool bPermanent = false
+		);
+
+	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|GameplayMechanics")
+	static void JoinToActorTeam(
+		AActor* ActorToJoinTo,
+		AActor* JoiningActor,
+		bool bPermanent = false
+		);
+
+	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|GameplayMechanics")
+	static void GoBackToOriginalTeam(AActor* TargetActor);
+
+	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|GameplayMechanics")
+	static AActor* GetActiveEffectCauser(
+		UAbilitySystemComponent* AbilitySystemComponent,
+		const FGameplayTag& EffectTag
+		);
+
 	/*
 	 * UI
 	 */

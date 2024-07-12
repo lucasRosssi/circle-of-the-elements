@@ -8,11 +8,11 @@
 #include "Interaction/AttributeSetInterface.h"
 #include "AuraPlayerState.generated.h"
 
+class UAuraAttributeSet;
 class UAuraAbilitySystemComponent;
 class AAuraCharacterBase;
 class ULevelInfo;
 class UAbilitySystemComponent;
-class UAttributeSet;
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnPlayerStatChanged, int32 /* StatValue */)
 
@@ -28,11 +28,12 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	UAuraAbilitySystemComponent* GetAuraASC();
-	UAttributeSet* GetAttributeSet() const { return AttributeSet; }
+	UAuraAttributeSet* GetAttributeSet() const { return AttributeSet; }
 
 	/* Attribute Set Interface */
 	virtual void SetMovementSpeed_Implementation(float InMovementSpeed) override;
 	virtual void SetActionSpeed_Implementation(float InActionSpeed) override;
+	virtual float GetDamageMultiplier_Implementation() override;
 	/* END Attribute Set Interface */
 
 	UPROPERTY(EditDefaultsOnly)
@@ -61,7 +62,7 @@ protected:
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
 
 	UPROPERTY()
-	TObjectPtr<UAttributeSet> AttributeSet;
+	TObjectPtr<UAuraAttributeSet> AttributeSet;
 
 private:
 	UPROPERTY()

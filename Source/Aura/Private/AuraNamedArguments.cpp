@@ -18,10 +18,16 @@ void FAuraNamedArguments::InitializeNamedArguments()
 	NamedArguments.Dmg_0 = FString("$Dmg_0");
 	NamedArguments.Dmg_1 = FString("$Dmg_1");
 
+	NamedArguments.Effect_0 = FString("$Effect_0");
+	NamedArguments.Effect_1 = FString("$Effect_1");
+	NamedArguments.EffectPercent_0 = FString("$EffectPercent_0");
+	NamedArguments.EffectPercent_1 = FString("$EffectPercent_1");
 	NamedArguments.Duration_0 = FString("$Duration_0");
 	NamedArguments.Duration_1 = FString("$Duration_1");
 	NamedArguments.Period = FString("$Period");
 
-	NamedArguments.BounceCount_0 = FString("$BounceCount_0");
-	NamedArguments.BounceCount_1 = FString("$BounceCount_1");
+	NamedArguments.AdditionalHitCount_0 = FString("$AdditionalHitCount_0");
+	NamedArguments.AdditionalHitCount_1 = FString("$AdditionalHitCount_1");
+	NamedArguments.HitEffectChange_0 = FString("$HitEffectChange_0");
+	NamedArguments.HitEffectChange_1 = FString("$HitEffectChange_1");
 }

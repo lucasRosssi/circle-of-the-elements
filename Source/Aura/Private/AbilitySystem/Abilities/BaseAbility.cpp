@@ -12,6 +12,11 @@
 #include "Aura/AuraLogChannels.h"
 #include "Kismet/KismetMathLibrary.h"
 
+UBaseAbility::UBaseAbility()
+{
+	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
+}
+
 void UBaseAbility::OnGiveAbility(
 	const FGameplayAbilityActorInfo* ActorInfo,
 	const FGameplayAbilitySpec& Spec

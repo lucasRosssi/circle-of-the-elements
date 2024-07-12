@@ -388,6 +388,11 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FString("Chill effect. Reduces movement and actions speeds. Can stack.")
 		);
 
+	GameplayTags.StatusEffects_Debuff_Charm = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("StatusEffects.Debuff.Charm"),
+		FString("Charm effect. Temporarily fights for the source team.")
+		);
+
 	// Incapacitations
 
 	GameplayTags.StatusEffects_Incapacitation = UGameplayTagsManager::Get().AddNativeGameplayTag(
@@ -572,6 +577,11 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FString("Removes stacks of shield if applicable")
 		);
 
+	GameplayTags.Abilities_Reaction_Charm = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Reaction.Charm"),
+		FString("Get charmed ability")
+		);
+
 	// Actions
 
 	GameplayTags.Abilities_Action = UGameplayTagsManager::Get().AddNativeGameplayTag(
@@ -662,6 +672,16 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FName("Cooldown.Active.Aura.ArcaneShards"),
 		FString("ArcaneShards ability cooldown")
 		);
+	
+	GameplayTags.Abilities_Active_Aura_CharmingHex = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Active.Aura.CharmingHex"),
+		FString("CharmingHex ability")
+		);
+
+	GameplayTags.Cooldown_Active_Aura_CharmingHex = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Cooldown.Active.Aura.CharmingHex"),
+		FString("CharmingHex ability cooldown")
+		);
 
 	// Vilkar active abilities
 
@@ -731,6 +751,7 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		GameplayTags.StatusEffects_Debuff_Bleeding,
 		GameplayTags.StatusEffects_Debuff_Burning,
 		GameplayTags.StatusEffects_Debuff_Chill,
+		GameplayTags.StatusEffects_Debuff_Charm,
 	});
 	const TArray IncapacitationTags({
 		GameplayTags.StatusEffects_Incapacitation_HitReact,

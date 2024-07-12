@@ -23,7 +23,7 @@ struct FGameplayTag;
 class UGameplayAbility;
 class UGameplayEffect;
 class UAbilitySystemComponent;
-class UAttributeSet;
+class UAuraAttributeSet;
 
 UCLASS(Abstract)
 class AURA_API AAuraCharacterBase : public ACharacter, public IAbilitySystemInterface, public 
@@ -34,7 +34,7 @@ ICombatInterface, public ITargetInterface
 public:
 	AAuraCharacterBase();
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
-	UAttributeSet* GetAttributeSet() const { return AttributeSet; }
+	UAuraAttributeSet* GetAttributeSet() const { return AttributeSet; }
 	ECharacterName GetCharacterName() const { return CharacterName; }
 	
 	virtual void HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
@@ -134,7 +134,7 @@ protected:
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
 
 	UPROPERTY()
-	TObjectPtr<UAttributeSet> AttributeSet;
+	TObjectPtr<UAuraAttributeSet> AttributeSet;
 
 	virtual void InitAbilityActorInfo();
 

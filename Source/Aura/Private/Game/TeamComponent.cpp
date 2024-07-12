@@ -5,22 +5,12 @@
 
 #include "Aura/Aura.h"
 
-// Sets default values for this component's properties
 UTeamComponent::UTeamComponent()
 {
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
 
 	TeamID = NEUTRAL_TEAM;
-}
-
-
-// Called when the game starts
-void UTeamComponent::BeginPlay()
-{
-	Super::BeginPlay();
-	
+	OriginalTeamID = NEUTRAL_TEAM;
 }
 
 bool UTeamComponent::IsEnemy(AActor* TargetActor)
@@ -45,5 +35,38 @@ bool UTeamComponent::IsFriend(AActor* TargetActor)
 	}
 
 	return true;
+}
+
+void UTeamComponent::JoinActorTeam(AActor* Actor, bool bPermanent)
+{
+	if (const UTeamComponent* ActorTeamComponent = Actor->GetComponentByClass<UTeamComponent>())
+	{
+		TeamID = ActorTeamComponent->TeamID;
+		if (bPermanent)
+		{
+			OriginalTeamID = TeamID;
+		}
+	}
+}
+
+void UTeamComponent::ChangeTeam(int32 InTeamID, bool bPermanent)
+{
+	TeamID = InTeamID;
+	if (bPermanent)
+	{
+		OriginalTeamID = TeamID;
+	}
+}
+
+void UTeamComponent::GoBackToOriginalTeam()
+{
+	TeamID = OriginalTeamID;
+}
+
+void UTeamComponent::BeginPlay()
+{
+	Super::BeginPlay();
+
+	OriginalTeamID = TeamID;
 }
 

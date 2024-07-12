@@ -78,6 +78,7 @@ public:
 	FGameplayTag StatusEffects_Debuff_Bleeding;
 	FGameplayTag StatusEffects_Debuff_Burning;
 	FGameplayTag StatusEffects_Debuff_Chill;
+	FGameplayTag StatusEffects_Debuff_Charm;
 
 	FGameplayTag StatusEffects_Incapacitation;
 	FGameplayTag StatusEffects_Incapacitation_HitReact;
@@ -134,6 +135,7 @@ public:
 	FGameplayTag Abilities_Reaction_HitReact;
 	FGameplayTag Abilities_Reaction_Stun;
 	FGameplayTag Abilities_Reaction_ShieldStackRemove;
+	FGameplayTag Abilities_Reaction_Charm;
 	
 	FGameplayTag Abilities_Action;
 	FGameplayTag Abilities_Action_Dodge;
@@ -157,6 +159,8 @@ public:
 	FGameplayTag Cooldown_Active_Aura_ArcaneMissiles;
 	FGameplayTag Abilities_Active_Aura_ArcaneShards;
 	FGameplayTag Cooldown_Active_Aura_ArcaneShards;
+	FGameplayTag Abilities_Active_Aura_CharmingHex;
+	FGameplayTag Cooldown_Active_Aura_CharmingHex;
 
 	FGameplayTag Abilities_Active_Vilkar;
 

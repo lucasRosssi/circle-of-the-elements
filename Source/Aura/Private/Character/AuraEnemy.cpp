@@ -83,6 +83,11 @@ void AAuraEnemy::SetActionSpeed_Implementation(float InActionSpeed)
 	ChangeActionSpeed(InActionSpeed);
 }
 
+float AAuraEnemy::GetDamageMultiplier_Implementation()
+{
+	return AttributeSet->GetDamageMultiplier();
+}
+
 void AAuraEnemy::BeginPlay()
 {
 	Super::BeginPlay();

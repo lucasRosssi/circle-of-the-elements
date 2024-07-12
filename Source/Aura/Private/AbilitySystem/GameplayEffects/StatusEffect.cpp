@@ -8,7 +8,3 @@ UStatusEffect::UStatusEffect()
 	StackingType = EGameplayEffectStackingType::AggregateByTarget;
 	StackPeriodResetPolicy = EGameplayEffectStackingPeriodPolicy::NeverReset;
 }
-
-/*
- * 
- */

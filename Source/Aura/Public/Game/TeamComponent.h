@@ -13,21 +13,32 @@ class AURA_API UTeamComponent : public UActorComponent
 	GENERATED_BODY()
 
 public:	
-	// Sets default values for this component's properties
 	UTeamComponent();
 
-protected:
-	// Called when the game starts
-	virtual void BeginPlay() override;
+	UFUNCTION(BlueprintPure, Category="Team")
+	bool IsEnemy(AActor* TargetActor);
+	UFUNCTION(BlueprintPure, Category="Team")
+	bool IsFriend(AActor* TargetActor);
 
-public:
+	UFUNCTION(BlueprintCallable, Category="Team")
+	void JoinActorTeam(AActor* Actor, bool bPermanent = false);
+
+	UFUNCTION(BlueprintCallable, Category="Team")
+	void ChangeTeam(int32 InTeamID, bool bPermanent = false);
+
+	UFUNCTION(BlueprintCallable, Category="Team")
+	void GoBackToOriginalTeam();
+
 	// ID of the team this actor belongs to
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Team")
 	int32 TeamID;
+	
+protected:
+	virtual void BeginPlay() override;
+	
+	UPROPERTY(BlueprintReadWrite, Category="Team")
+	int32 OriginalTeamID;
 
-	UFUNCTION(BlueprintCallable, Category="Team")
-	bool IsEnemy(AActor* TargetActor);
-
-	UFUNCTION(BlueprintCallable, Category="Team")
-	bool IsFriend(AActor* TargetActor);
+private:
+	
 };

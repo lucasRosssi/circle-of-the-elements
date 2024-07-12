@@ -5,6 +5,8 @@
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
+#include "AbilitySystem/AuraAttributeSet.h"
+#include "Interaction/AttributeSetInterface.h"
 
 FAbilityParams UActiveDamageAbility::MakeAbilityParamsFromDefaults(AActor* TargetActor) const
 {
@@ -28,7 +30,12 @@ FAbilityParams UActiveDamageAbility::MakeAbilityParamsFromDefaults(AActor* Targe
 		}
 	}
 
-	AbilityParams.DamageParams.BaseDamage = CurrentDamage;
+	const float DamageMultiplier = IAttributeSetInterface::Execute_GetDamageMultiplier(
+		AbilityParams.SourceASC->GetOwnerActor()
+	);
+	
+	AbilityParams.DamageParams.BaseDamage = CurrentDamage * DamageMultiplier;
+	
 	
 	return AbilityParams;
 }

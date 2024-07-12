@@ -8,7 +8,6 @@
 #include "Net/UnrealNetwork.h"
 #include "GameplayEffectExtension.h"
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
-#include "AbilitySystem/Abilities/ActiveDamageAbility.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Interaction/AttributeSetInterface.h"
@@ -63,6 +62,7 @@ void UAuraAttributeSet::GetLifetimeReplicatedProps(
 	// Special
 	DOREPLIFETIME_CONDITION_NOTIFY(UAuraAttributeSet, ParryChance, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UAuraAttributeSet, CooldownReduction, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UAuraAttributeSet, DamageMultiplier, COND_None, REPNOTIFY_Always);
 }
 
 void UAuraAttributeSet::PreAttributeChange(
@@ -234,7 +234,9 @@ void UAuraAttributeSet::HandleIncomingDamage(
 	}
 	else
 	{
-		LocalIncomingDamage = GetIncomingDamage();
+		const float SourceDamageMultiplier = Props.SourceASC
+			->GetNumericAttribute(GetDamageMultiplierAttribute());
+		LocalIncomingDamage = GetIncomingDamage() * SourceDamageMultiplier;
 		SetIncomingDamage(0.f);
 		bParried = UAuraAbilitySystemLibrary::IsParried(Props.EffectContextHandle);
 		bCriticalHit = UAuraAbilitySystemLibrary::IsCriticalHit(Props.EffectContextHandle);
@@ -520,4 +522,10 @@ void UAuraAttributeSet::OnRep_CooldownReduction(
 	const FGameplayAttributeData& OldCooldownReduction) const
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuraAttributeSet, CooldownReduction, OldCooldownReduction);
+}
+
+void UAuraAttributeSet::OnRep_DamageMultiplier(
+	const FGameplayAttributeData& OldDamageMultiplier) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuraAttributeSet, DamageMultiplier, OldDamageMultiplier);
 }

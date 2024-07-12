@@ -94,7 +94,7 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<USphereComponent> HomingRadius;
 
-	UPROPERTY(EditAnywhere, Category="Trail")
+	UPROPERTY(EditAnywhere, Category="Effects")
 	TSubclassOf<AProjectileEffect> ProjectileNiagaraEffect;
 
 	UPROPERTY()
