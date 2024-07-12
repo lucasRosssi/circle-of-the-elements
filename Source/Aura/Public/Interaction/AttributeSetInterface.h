@@ -30,4 +30,7 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	float GetDamageMultiplier();
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void SetTimeDilation(float InTimeDilation);
 };

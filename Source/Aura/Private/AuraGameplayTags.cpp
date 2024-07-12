@@ -139,6 +139,11 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FString("Percentage of cooldown time reduced")
 		);
 
+	GameplayTags.Attributes_Special_DamageMultiplier = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Attributes.Special.DamageMultiplier"),
+		FString("How much of the base damage is dealt")
+		);
+
 	/*
 	 * META ATTRIBUTES
 	 */
@@ -151,6 +156,10 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	GameplayTags.Attributes_Meta_IncomingXP = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Attributes.Meta.IncomingXP"),
 		FString("Incoming XP Meta Attribute")
+		);
+	GameplayTags.Attributes_Meta_IncomingForce = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Attributes.Meta.IncomingForce"),
+		FString("Incoming Force Meta Attribute")
 		);
 
 	/*
@@ -413,6 +422,11 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	GameplayTags.StatusEffects_Incapacitation_Stun = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("StatusEffects.Incapacitation.Stun"),
 		FString("Stun effect. Can't do anything. Temporarily resist new applications after recovery.")
+		);
+
+	GameplayTags.StatusEffects_Incapacitation_Freeze = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("StatusEffects.Incapacitation.Freeze"),
+		FString("Freeze effect. Inflicted when having many stacks of Chill applied. Can't do anything. Temporarily resist new applications after recovery.")
 		);
 
 	
@@ -757,6 +771,7 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		GameplayTags.StatusEffects_Incapacitation_HitReact,
 		GameplayTags.StatusEffects_Incapacitation_Knockback,
 		GameplayTags.StatusEffects_Incapacitation_Stun,
+		GameplayTags.StatusEffects_Incapacitation_Freeze
 	});
 	const TArray ConditionTags({
 		GameplayTags.StatusEffects_Condition_Alive,

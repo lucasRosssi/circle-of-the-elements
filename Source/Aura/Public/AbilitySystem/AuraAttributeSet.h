@@ -199,6 +199,10 @@ public:
 	FGameplayAttributeData DamageMultiplier;
 	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, DamageMultiplier);
 
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_TimeDilation, Category = "Special Attributes")
+	FGameplayAttributeData TimeDilation;
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, TimeDilation);
+
 	/*
 	 * Meta attributes
 	 */
@@ -325,6 +329,9 @@ public:
 
 	UFUNCTION()
 	void OnRep_DamageMultiplier(const FGameplayAttributeData& OldDamageMultiplier) const;
+
+	UFUNCTION()
+	void OnRep_TimeDilation(const FGameplayAttributeData& OldTimeDilation) const;
 
 private:
 	void HandleIncomingDamage(const FEffectProperties& Props, const FGameplayAttribute& Attribute);

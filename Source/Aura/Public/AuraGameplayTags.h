@@ -51,9 +51,11 @@ public:
 	FGameplayTag Attributes_Special;
 	FGameplayTag Attributes_Special_ParryChance;
 	FGameplayTag Attributes_Special_CooldownReduction;
+	FGameplayTag Attributes_Special_DamageMultiplier;
 
 	FGameplayTag Attributes_Meta;
 	FGameplayTag Attributes_Meta_IncomingXP;
+	FGameplayTag Attributes_Meta_IncomingForce;
 
 	FGameplayTag Damage;
 	FGameplayTag Damage_Physical;
@@ -84,6 +86,7 @@ public:
 	FGameplayTag StatusEffects_Incapacitation_HitReact;
 	FGameplayTag StatusEffects_Incapacitation_Knockback;
 	FGameplayTag StatusEffects_Incapacitation_Stun;
+	FGameplayTag StatusEffects_Incapacitation_Freeze;
 
 	FGameplayTag StatusEffects_Condition;
 	FGameplayTag StatusEffects_Condition_Alive;

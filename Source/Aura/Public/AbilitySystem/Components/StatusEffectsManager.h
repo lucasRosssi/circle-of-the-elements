@@ -37,7 +37,6 @@ private:
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastActivateStatusEffect(
 		const FGameplayTag& StatusEffectTag,
-		UNiagaraSystem* StatusEffectNiagara,
-		EStatusEffectPosition Position
+		const FStatusEffectData* Data
 		);
 };

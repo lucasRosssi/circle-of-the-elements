@@ -79,8 +79,7 @@ void UStatusEffectsManager::OnActivateStatusEffect(const FGameplayTag& StatusEff
 	{
 		MulticastActivateStatusEffect(
 			StatusEffectTag,
-			Data->NiagaraSystem.Get(),
-			Data->Position
+			Data
 			);
 	}
 }
@@ -99,12 +98,11 @@ void UStatusEffectsManager::OnDeactivateStatusEffect(const FGameplayTag& StatusE
 
 void UStatusEffectsManager::MulticastActivateStatusEffect_Implementation(
 	const FGameplayTag& StatusEffectTag,
-	UNiagaraSystem* StatusEffectNiagara,
-	EStatusEffectPosition Position
+	const FStatusEffectData* Data
 	)
 {
 	USceneComponent* AttachmentComponent;
-	switch (Position)
+	switch (Data->Position)
 	{
 	case EStatusEffectPosition::Top:
 		{
@@ -126,7 +124,7 @@ void UStatusEffectsManager::MulticastActivateStatusEffect_Implementation(
 	}
 	
 	UNiagaraComponent* NiagaraComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(
-				StatusEffectNiagara,
+				Data->NiagaraSystem,
 				AttachmentComponent,
 				FName(),
 				FVector(0),
@@ -134,6 +132,7 @@ void UStatusEffectsManager::MulticastActivateStatusEffect_Implementation(
 				EAttachLocation::KeepRelativeOffset,
 				true
 			);
+	NiagaraComponent->AutoAttachRotationRule = EAttachmentRule::KeepWorld;
 
 	ActiveNiagaraComponents.Add(StatusEffectTag, NiagaraComponent);
 }

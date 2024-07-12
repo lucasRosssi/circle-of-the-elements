@@ -63,6 +63,7 @@ void UAuraAttributeSet::GetLifetimeReplicatedProps(
 	DOREPLIFETIME_CONDITION_NOTIFY(UAuraAttributeSet, ParryChance, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UAuraAttributeSet, CooldownReduction, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UAuraAttributeSet, DamageMultiplier, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UAuraAttributeSet, TimeDilation, COND_None, REPNOTIFY_Always);
 }
 
 void UAuraAttributeSet::PreAttributeChange(
@@ -166,6 +167,11 @@ void UAuraAttributeSet::PostAttributeChange(
 	if (Attribute == GetActionSpeedAttribute())
 	{
 		IAttributeSetInterface::Execute_SetActionSpeed(GetOwningActor(), NewValue);
+	}
+
+	if (Attribute == GetTimeDilationAttribute())
+	{
+		IAttributeSetInterface::Execute_SetTimeDilation(GetOwningActor(), NewValue);
 	}
 }
 
@@ -528,4 +534,9 @@ void UAuraAttributeSet::OnRep_DamageMultiplier(
 	const FGameplayAttributeData& OldDamageMultiplier) const
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuraAttributeSet, DamageMultiplier, OldDamageMultiplier);
+}
+
+void UAuraAttributeSet::OnRep_TimeDilation(const FGameplayAttributeData& OldTimeDilation) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuraAttributeSet, TimeDilation, OldTimeDilation);
 }
