@@ -10,7 +10,6 @@
 #include "Aura/Aura.h"
 #include "Game/TeamComponent.h"
 
-// Sets default values
 AAreaEffectActor::AAreaEffectActor()
 {
 	PrimaryActorTick.bCanEverTick = false;
@@ -26,7 +25,23 @@ void AAreaEffectActor::BeginPlay()
 
 	if (LifeSpan > 0.f)
 	{
-		SetLifeSpan(LifeSpan);
+		SetLifeSpan(LifeSpan + DelayDestroy);
+		if (UNiagaraComponent* NiagaraComponent = GetComponentByClass<UNiagaraComponent>())
+		{
+			FTimerHandle NiagaraDeactivateTimer;
+			GetWorld()->GetTimerManager().SetTimer(
+				NiagaraDeactivateTimer,
+				[this, NiagaraComponent]()
+				{
+					bDestroying = true;
+					NiagaraComponent->Deactivate();
+					if (PeriodicEffectTimer.IsValid()) PeriodicEffectTimer.Invalidate();
+				},
+				LifeSpan,
+				false,
+				LifeSpan
+			);
+		}
 	}
 
 	if (!bInstant)
@@ -49,26 +64,31 @@ void AAreaEffectActor::BeginDestroy()
 		HandlePair.RemoveCurrent();
 	}
 
-	if (PeriodicEffectTimer.IsValid()) PeriodicEffectTimer.Invalidate();
+	Super::BeginDestroy();
+}
 
+void AAreaEffectActor::DeactivateAndDestroy()
+{
 	if (UNiagaraComponent* NiagaraComponent = GetComponentByClass<UNiagaraComponent>())
 	{
+		bDestroying = true;
 		NiagaraComponent->Deactivate();
+			
 		FTimerHandle DestroyTimer;
 		GetWorld()->GetTimerManager().SetTimer(
 			DestroyTimer,
 			[this]()
 			{
-				Super::BeginDestroy();
+				Destroy();
 			},
-			2.f,
+			DelayDestroy,
 			false,
-			2.f
-			);
+			DelayDestroy
+		);
 	}
 	else
 	{
-		Super::BeginDestroy();
+		Destroy();
 	}
 }
 
@@ -100,12 +120,13 @@ void AAreaEffectActor::ApplyEffectToTarget(
 		bInstant && !bIsInfinite
 		)
 	{
-		Destroy();
+		DeactivateAndDestroy();
 	}
 }
 
 void AAreaEffectActor::OnOverlap(AActor* TargetActor)
 {
+	if (bDestroying) return;
 	if (
 		TargetTeam == ETargetTeam::Enemies &&
 		!UAuraAbilitySystemLibrary::AreActorsEnemies(this, TargetActor)

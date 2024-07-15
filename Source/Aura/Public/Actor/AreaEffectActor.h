@@ -44,6 +44,7 @@ public:
 protected:
 	virtual void BeginPlay() override;
 	virtual void BeginDestroy() override;
+	void DeactivateAndDestroy();
 
 	UFUNCTION(BlueprintCallable)
 	void ApplyEffectToTarget(UAbilitySystemComponent* TargetASC);
@@ -69,8 +70,11 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Applied Effects")
 	float ActorLevel = 1.f;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "Lifetime")
 	float LifeSpan = -1.f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Lifetime")
+	float DelayDestroy = 1.f;
 private:
 	UPROPERTY()
 	TArray<UAbilitySystemComponent*> ASCsInArea;
@@ -78,4 +82,6 @@ private:
 	TMap<FActiveGameplayEffectHandle, UAbilitySystemComponent*> ActiveEffectHandles;
 
 	FTimerHandle PeriodicEffectTimer;
+
+	bool bDestroying = false;
 };
