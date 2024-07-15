@@ -74,8 +74,8 @@ void UStatusEffectsManager::OnActivateStatusEffect(const FGameplayTag& StatusEff
 		::GetStatusEffectInfo(GetOwner());
 	if (!StatusEffectInfo->StatusEffects.Contains(StatusEffectTag)) return;
 	
-	const FStatusEffectData* Data = StatusEffectInfo->StatusEffects.Find(StatusEffectTag);
-	if (IsValid(Data->NiagaraSystem))
+	const FStatusEffectData& Data = *StatusEffectInfo->StatusEffects.Find(StatusEffectTag);
+	if (IsValid(Data.NiagaraSystem))
 	{
 		MulticastActivateStatusEffect(
 			StatusEffectTag,
@@ -98,11 +98,11 @@ void UStatusEffectsManager::OnDeactivateStatusEffect(const FGameplayTag& StatusE
 
 void UStatusEffectsManager::MulticastActivateStatusEffect_Implementation(
 	const FGameplayTag& StatusEffectTag,
-	const FStatusEffectData* Data
+	const FStatusEffectData& StatusData
 	)
 {
 	USceneComponent* AttachmentComponent;
-	switch (Data->Position)
+	switch (StatusData.Position)
 	{
 	case EStatusEffectPosition::Top:
 		{
@@ -124,7 +124,7 @@ void UStatusEffectsManager::MulticastActivateStatusEffect_Implementation(
 	}
 	
 	UNiagaraComponent* NiagaraComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(
-				Data->NiagaraSystem,
+				StatusData.NiagaraSystem,
 				AttachmentComponent,
 				FName(),
 				FVector(0),

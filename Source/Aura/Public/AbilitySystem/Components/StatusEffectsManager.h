@@ -7,7 +7,7 @@
 #include "StatusEffectsManager.generated.h"
 
 enum class EStatusEffectPosition : uint8;
-class UStatusEffectInfo;
+struct FStatusEffectData;
 class UNiagaraComponent;
 class UNiagaraSystem;
 class UAbilitySystemComponent;
@@ -37,6 +37,6 @@ private:
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastActivateStatusEffect(
 		const FGameplayTag& StatusEffectTag,
-		const FStatusEffectData* Data
+		const FStatusEffectData& StatusData
 		);
 };

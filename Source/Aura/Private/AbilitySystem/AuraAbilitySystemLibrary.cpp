@@ -648,7 +648,12 @@ bool UAuraAbilitySystemLibrary::AreActorsFriends(const AActor* FirstActor, const
 	const UTeamComponent* FirstTeamComponent = FirstActor->GetComponentByClass<UTeamComponent>();
 	const UTeamComponent* SecondTeamComponent = SecondActor->GetComponentByClass<UTeamComponent>();
 
-	if (!FirstTeamComponent || !SecondTeamComponent)
+	if (
+		!FirstTeamComponent ||
+		!SecondTeamComponent ||
+		FirstTeamComponent->TeamID == HOSTILE_TO_ALL ||
+		SecondTeamComponent->TeamID == HOSTILE_TO_ALL
+		)
 	{
 		return false;
 	}
@@ -724,7 +729,9 @@ bool UAuraAbilitySystemLibrary::AreActorsEnemies(
 		return false;
 	}
 
-	return FirstTeamComponent->TeamID != SecondTeamComponent->TeamID;
+	return FirstTeamComponent->TeamID != SecondTeamComponent->TeamID ||
+		FirstTeamComponent->TeamID == HOSTILE_TO_ALL ||
+		SecondTeamComponent->TeamID == HOSTILE_TO_ALL;
 }
 
 void UAuraAbilitySystemLibrary::GetEnemiesWithinRadius(AActor* TargetActor,

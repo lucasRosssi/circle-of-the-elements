@@ -157,6 +157,11 @@ public:
 	
 	FGameplayTag Abilities_Active_Aura_ChainLightning;
 	FGameplayTag Cooldown_Active_Aura_ChainLightning;
+
+	FGameplayTag Abilities_Active_Aura_FrostRay;
+	FGameplayTag Cooldown_Active_Aura_FrostRay;
+	FGameplayTag Abilities_Active_Aura_Blizzard;
+	FGameplayTag Cooldown_Active_Aura_Blizzard;
 	
 	FGameplayTag Abilities_Active_Aura_ArcaneMissiles;
 	FGameplayTag Cooldown_Active_Aura_ArcaneMissiles;

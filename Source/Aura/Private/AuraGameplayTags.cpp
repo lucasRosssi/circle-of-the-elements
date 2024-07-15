@@ -667,6 +667,26 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FString("ChainLightning ability cooldown")
 		);
 
+	GameplayTags.Abilities_Active_Aura_FrostRay = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Active.Aura.FrostRay"),
+		FString("FrostRay ability")
+		);
+
+	GameplayTags.Cooldown_Active_Aura_FrostRay = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Cooldown.Active.Aura.FrostRay"),
+		FString("FrostRay ability cooldown")
+		);
+
+	GameplayTags.Abilities_Active_Aura_Blizzard = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Active.Aura.Blizzard"),
+		FString("Blizzard ability")
+		);
+
+	GameplayTags.Cooldown_Active_Aura_Blizzard = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Cooldown.Active.Aura.Blizzard"),
+		FString("Blizzard ability cooldown")
+		);
+
 	GameplayTags.Abilities_Active_Aura_ArcaneMissiles = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Abilities.Active.Aura.ArcaneMissiles"),
 		FString("ArcaneMissiles ability")
