@@ -34,6 +34,7 @@ public:
 	virtual void SetMovementSpeed_Implementation(float InMovementSpeed) override;
 	virtual void SetActionSpeed_Implementation(float InActionSpeed) override;
 	virtual float GetDamageMultiplier_Implementation() override;
+	virtual void SetTimeDilation_Implementation(float InTimeDilation) override;
 	/* END Attribute Set Interface */
 
 	UPROPERTY(EditDefaultsOnly)
@@ -65,9 +66,6 @@ protected:
 	TObjectPtr<UAuraAttributeSet> AttributeSet;
 
 private:
-	UPROPERTY()
-	UAuraAbilitySystemComponent* AuraASC;
-	
 	AAuraCharacterBase* GetCharacterBase();
 	
 	UPROPERTY(VisibleAnywhere, ReplicatedUsing=OnRep_Level)
@@ -89,4 +87,10 @@ private:
 	int32 SkillPoints = 0;
 	UFUNCTION()
 	void OnRep_SkillPoints(int32 OldSkillPoints);
+
+	UPROPERTY()
+	UAuraAbilitySystemComponent* AuraASC;
+
+	UPROPERTY()
+	AAuraCharacterBase* CharacterBase;
 };

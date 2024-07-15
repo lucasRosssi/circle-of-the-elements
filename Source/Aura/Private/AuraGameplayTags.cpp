@@ -139,6 +139,11 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FString("Percentage of cooldown time reduced")
 		);
 
+	GameplayTags.Attributes_Special_DamageMultiplier = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Attributes.Special.DamageMultiplier"),
+		FString("How much of the base damage is dealt")
+		);
+
 	/*
 	 * META ATTRIBUTES
 	 */
@@ -151,6 +156,10 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	GameplayTags.Attributes_Meta_IncomingXP = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Attributes.Meta.IncomingXP"),
 		FString("Incoming XP Meta Attribute")
+		);
+	GameplayTags.Attributes_Meta_IncomingForce = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Attributes.Meta.IncomingForce"),
+		FString("Incoming Force Meta Attribute")
 		);
 
 	/*
@@ -415,6 +424,11 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FString("Stun effect. Can't do anything. Temporarily resist new applications after recovery.")
 		);
 
+	GameplayTags.StatusEffects_Incapacitation_Freeze = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("StatusEffects.Incapacitation.Freeze"),
+		FString("Freeze effect. Inflicted when having many stacks of Chill applied. Can't do anything. Temporarily resist new applications after recovery.")
+		);
+
 	
 	 // Conditions
 	 
@@ -653,6 +667,26 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FString("ChainLightning ability cooldown")
 		);
 
+	GameplayTags.Abilities_Active_Aura_FrostRay = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Active.Aura.FrostRay"),
+		FString("FrostRay ability")
+		);
+
+	GameplayTags.Cooldown_Active_Aura_FrostRay = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Cooldown.Active.Aura.FrostRay"),
+		FString("FrostRay ability cooldown")
+		);
+
+	GameplayTags.Abilities_Active_Aura_Blizzard = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Active.Aura.Blizzard"),
+		FString("Blizzard ability")
+		);
+
+	GameplayTags.Cooldown_Active_Aura_Blizzard = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Cooldown.Active.Aura.Blizzard"),
+		FString("Blizzard ability cooldown")
+		);
+
 	GameplayTags.Abilities_Active_Aura_ArcaneMissiles = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Abilities.Active.Aura.ArcaneMissiles"),
 		FString("ArcaneMissiles ability")
@@ -757,6 +791,7 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		GameplayTags.StatusEffects_Incapacitation_HitReact,
 		GameplayTags.StatusEffects_Incapacitation_Knockback,
 		GameplayTags.StatusEffects_Incapacitation_Stun,
+		GameplayTags.StatusEffects_Incapacitation_Freeze
 	});
 	const TArray ConditionTags({
 		GameplayTags.StatusEffects_Condition_Alive,

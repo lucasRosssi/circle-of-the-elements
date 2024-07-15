@@ -68,6 +68,11 @@ float AAuraPlayerState::GetDamageMultiplier_Implementation()
 	return AttributeSet->GetDamageMultiplier();
 }
 
+void AAuraPlayerState::SetTimeDilation_Implementation(float InTimeDilation)
+{
+	GetPawn()->CustomTimeDilation = InTimeDilation;
+}
+
 void AAuraPlayerState::SetLevel(int32 InLevel)
 {
 	Level = InLevel;
@@ -151,7 +156,10 @@ void AAuraPlayerState::AddSkillPoints(int32 InSkillPoints)
 
 AAuraCharacterBase* AAuraPlayerState::GetCharacterBase()
 {
-	AAuraCharacterBase* CharacterBase = Cast<AAuraCharacterBase>(GetPawn());
+	if (CharacterBase == nullptr)
+	{
+		CharacterBase = Cast<AAuraCharacterBase>(GetPawn());
+	}
 
 	return CharacterBase;
 }

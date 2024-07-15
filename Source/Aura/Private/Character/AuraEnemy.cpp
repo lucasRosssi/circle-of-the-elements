@@ -88,6 +88,11 @@ float AAuraEnemy::GetDamageMultiplier_Implementation()
 	return AttributeSet->GetDamageMultiplier();
 }
 
+void AAuraEnemy::SetTimeDilation_Implementation(float InTimeDilation)
+{
+	CustomTimeDilation = InTimeDilation;
+}
+
 void AAuraEnemy::BeginPlay()
 {
 	Super::BeginPlay();

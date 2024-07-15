@@ -25,6 +25,9 @@ struct FStatusEffectData
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(EditCondition="NiagaraSystem", EditConditionHides))
 	EStatusEffectPosition Position = EStatusEffectPosition::Center;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	FLinearColor MeshTint = FLinearColor::Black;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	FText Name = FText();

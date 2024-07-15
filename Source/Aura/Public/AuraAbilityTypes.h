@@ -87,6 +87,8 @@ struct FAbilityParams
 
 	UPROPERTY(BlueprintReadWrite)
 	FVector AreaOrigin = FVector::ZeroVector;
+
+	bool IsValid() const { return SourceASC != nullptr; }
 };
 
 USTRUCT(BlueprintType)
