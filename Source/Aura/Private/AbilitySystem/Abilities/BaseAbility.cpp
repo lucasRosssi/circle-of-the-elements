@@ -57,6 +57,8 @@ bool UBaseAbility::CommitAbility(
 	FGameplayTagContainer* OptionalRelevantTags
 	)
 {
+	if (!HasAuthority(&ActivationInfo)) return false;
+	
 	if (IsChargesModeActive())
 	{
 		FGameplayTagContainer ChargesTags;
@@ -83,6 +85,8 @@ bool UBaseAbility::CommitAbilityCooldown(
 	FGameplayTagContainer* OptionalRelevantTags
 	)
 {
+	if (!HasAuthority(&ActivationInfo)) return false;
+	
 	if (IsChargesModeActive())
 	{
 		FGameplayTagContainer ChargesTags;

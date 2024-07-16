@@ -16,7 +16,10 @@ class AURA_API UAreaEffectActorAbility : public UActiveDamageAbility
 	GENERATED_BODY()
 
 public:
+	UAreaEffectActorAbility();
 
+	int32 GetAreaEffectDurationAtLevel(int32 Level) const;
+	float GetPeriodAtLevel(int32 Level) const;
 protected:
 	UFUNCTION(BlueprintCallable, Category="Spawning")
 	AAreaEffectActor* SpawnEffectActor(const FVector& TargetLocation);

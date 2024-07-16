@@ -47,10 +47,12 @@ public:
 		bool bIsPlayer = false
 	);
 	
-	bool GetUsingGamepad() { return bUsingGamepad; }
+	bool IsUsingGamepad() const { return bUsingGamepad; }
 	UFUNCTION(BlueprintCallable)
 	void ChangeUsingGamepad(bool bIsGamepad);
 	FVector GetInputDirection() { return InputDirection; }
+	bool IsTargeting() const { return bTargeting; }
+	ATargetingActor* GetTargetingActor() const { return TargetingActor; }
 
 	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category="ControllerDevice")
 	FOnControllerDeviceChanged ControllerDeviceChangedDelegate;
@@ -72,8 +74,10 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
-	void HandleEnvironmentOcclusion();
 	virtual void SetupInputComponent() override;
+	
+	void HandleEnvironmentOcclusion();
+	void GamepadMoveTargetingActor(const FInputActionValue& InputActionValue);
 
 	UPROPERTY(BlueprintReadWrite, Category="Input")
 	bool bUsingGamepad = false;
@@ -117,6 +121,8 @@ private:
 
 	UPROPERTY(EditAnywhere, Category="Input")
 	TObjectPtr<UInputAction> MoveAction;
+	UPROPERTY(EditAnywhere, Category="Input")
+	TObjectPtr<UInputAction> TargetingActorMoveAction;
 	UPROPERTY(EditAnywhere, Category="Input")
 	TObjectPtr<UInputAction> ConfirmAction;
 	UPROPERTY(EditAnywhere, Category="Input")

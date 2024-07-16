@@ -7,6 +7,21 @@
 #include "Actor/AreaEffectActor.h"
 #include "Aura/Aura.h"
 
+UAreaEffectActorAbility::UAreaEffectActorAbility()
+{
+	bIsAreaAbility = true;
+}
+
+int32 UAreaEffectActorAbility::GetAreaEffectDurationAtLevel(int32 Level) const
+{
+	return FMath::RoundToInt32(AreaEffectDuration.GetValueAtLevel(Level));
+}
+
+float UAreaEffectActorAbility::GetPeriodAtLevel(int32 Level) const
+{
+	return Period.GetValueAtLevel(Level);
+}
+
 AAreaEffectActor* UAreaEffectActorAbility::SpawnEffectActor(const FVector& TargetLocation)
 {
 	AActor* AvatarActor = GetAvatarActorFromActorInfo();

@@ -29,11 +29,28 @@ void AMainPlayerController::ShowTargetingActor(
 {
 	if (!IsValid(TargetingActor))
 	{
-		bShowMouseCursor = false;
 		bTargeting = true;
-
 		FTransform SpawnTransform;
-		SpawnTransform.SetLocation(CursorHit.ImpactPoint);
+		if (bUsingGamepad)
+		{
+			FVector PawnLocation = GetPawn()->GetActorLocation();
+			FHitResult HitResult;
+			GetWorld()->LineTraceSingleByChannel(
+				HitResult,
+				PawnLocation + FVector(0.f, 0.f, 400.f),
+				PawnLocation - FVector(0.f, 0.f, -400.f),
+				ECC_ExcludeCharacters
+			);
+			
+			SpawnTransform.SetLocation(HitResult.bBlockingHit ? HitResult.ImpactPoint : PawnLocation);
+		}
+		else
+		{
+			bShowMouseCursor = false;
+			
+			SpawnTransform.SetLocation(CursorHit.ImpactPoint);
+		}
+
 		TargetingActor = GetWorld()->SpawnActorDeferred<ATargetingActor>(
 			TargetingActorClass,
 			SpawnTransform,
@@ -44,6 +61,7 @@ void AMainPlayerController::ShowTargetingActor(
 		TargetingActor->SetSourceActor(GetPawn());
 		TargetingActor->SetTargetTeam(TargetTeam);
 		TargetingActor->SetTargetingRadius(Radius);
+		TargetingActor->AttachToComponent(PlayerCamera, FAttachmentTransformRules::KeepWorldTransform);
 
 		TargetingActor->FinishSpawning(SpawnTransform);
 	}
@@ -51,7 +69,8 @@ void AMainPlayerController::ShowTargetingActor(
 
 void AMainPlayerController::HideTargetingActor()
 {
-	bShowMouseCursor = true;
+	if (!bUsingGamepad)	bShowMouseCursor = true;
+	
 	bTargeting = false;
 	if (IsValid(TargetingActor))
 	{
@@ -122,6 +141,23 @@ void AMainPlayerController::HandleEnvironmentOcclusion()
 	}
 }
 
+void AMainPlayerController::GamepadMoveTargetingActor(const FInputActionValue& InputActionValue)
+{
+	if (!bTargeting || !IsValid(TargetingActor)) return;
+	
+	const FVector2D InputAxisVector = InputActionValue.Get<FVector2D>();
+	const FRotator Rotation = GetControlRotation();
+	const FRotator YawRotation(0.f, Rotation.Yaw, 0.f);
+
+	const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+	const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+	InputDirection = ForwardDirection * InputAxisVector.Y + RightDirection * InputAxisVector.X;
+	InputDirection.Normalize();
+	
+	TargetingActor->AddMovementInput(ForwardDirection, InputAxisVector.Y);
+	TargetingActor->AddMovementInput(RightDirection, InputAxisVector.X);
+}
+
 void AMainPlayerController::PlayerTick(float DeltaTime)
 {
 	Super::PlayerTick(DeltaTime);
@@ -183,6 +219,12 @@ void AMainPlayerController::SetupInputComponent()
 		&AMainPlayerController::MoveComplete
 	);
 	AuraInputComponent->BindAction(
+		TargetingActorMoveAction,
+		ETriggerEvent::Triggered,
+		this,
+		&AMainPlayerController::GamepadMoveTargetingActor
+	);
+	AuraInputComponent->BindAction(
 		ConfirmAction,
 		ETriggerEvent::Started,
 		this,
@@ -220,12 +262,11 @@ void AMainPlayerController::Move(const FInputActionValue& InputActionValue)
 		ControlledPawn->AddMovementInput(ForwardDirection, InputAxisVector.Y);
 		ControlledPawn->AddMovementInput(RightDirection, InputAxisVector.X);
 	}
-
 }
 
 void AMainPlayerController::MoveComplete(const FInputActionValue& InputActionValue)
 {
-	InputDirection = FVector::Zero();
+	// InputDirection = FVector::Zero();
 }
 
 void AMainPlayerController::CursorTrace()
@@ -329,7 +370,7 @@ UAuraAbilitySystemComponent* AMainPlayerController::GetASC()
 
 void AMainPlayerController::UpdateTargetingActorLocation()
 {
-	if (IsValid(TargetingActor))
+	if (!bUsingGamepad && IsValid(TargetingActor))
 	{
 		TargetingActor->SetActorLocation(CursorHit.ImpactPoint);
 	}

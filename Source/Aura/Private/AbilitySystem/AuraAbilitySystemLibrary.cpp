@@ -9,6 +9,7 @@
 #include "AuraNamedArguments.h"
 #include "AbilitySystem/AuraAttributeSet.h"
 #include "AbilitySystem/Abilities/ActiveDamageAbility.h"
+#include "AbilitySystem/Abilities/AreaEffectActorAbility.h"
 #include "AbilitySystem/Abilities/BaseAbility.h"
 #include "AbilitySystem/Abilities/BeamAbility.h"
 #include "AbilitySystem/Data/AbilityInfo.h"
@@ -761,7 +762,7 @@ bool UAuraAbilitySystemLibrary::IsPlayerUsingGamepad(const AActor* AvatarActor)
 
 	if (AMainPlayerController* PlayerController = Cast<AMainPlayerController>(Controller))
 	{
-		return PlayerController->GetUsingGamepad();
+		return PlayerController->IsUsingGamepad();
 	}
 
 	return false;
@@ -848,7 +849,6 @@ void UAuraAbilitySystemLibrary::FormatAbilityDescriptionAtLevel(
 	)
 {
 	const FAuraNamedArguments& Args = FAuraNamedArguments::Get();
-
 	
 	if (Ability->GetStatusEffectData().IsValid())
 	{
@@ -905,6 +905,21 @@ void UAuraAbilitySystemLibrary::FormatAbilityDescriptionAtLevel(
 				Args.Period,
 				BeamAbility->GetBeamTickPeriod()
 			);
+		}
+
+		if (const UAreaEffectActorAbility* AreaEffectAbility = Cast<UAreaEffectActorAbility>(DamageAbility))
+		{
+			OutDescription = FText::FormatNamed(
+				OutDescription,
+				Args.ActorDuration_0,
+				AreaEffectAbility->GetAreaEffectDurationAtLevel(Level),
+				Args.ActorDuration_1,
+				AreaEffectAbility->GetAreaEffectDurationAtLevel(Level + 1),
+				Args.ActorPeriod_0,
+				AreaEffectAbility->GetPeriodAtLevel(Level),
+				Args.ActorPeriod_1,
+				AreaEffectAbility->GetPeriodAtLevel(Level + 1)
+				);
 		}
 	}
 }

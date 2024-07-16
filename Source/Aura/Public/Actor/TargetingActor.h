@@ -6,11 +6,12 @@
 #include "GameFramework/Actor.h"
 #include "TargetingActor.generated.h"
 
+class UFloatingPawnMovement;
 enum class ETargetTeam : uint8;
 class USphereComponent;
 
 UCLASS()
-class AURA_API ATargetingActor : public AActor
+class AURA_API ATargetingActor : public APawn
 {
 	GENERATED_BODY()
 	
@@ -18,6 +19,7 @@ public:
 	ATargetingActor();
 
 	virtual void Tick(float DeltaTime) override;
+	virtual void AddMovementInput(FVector WorldDirection, float ScaleValue, bool bForce = false) override;
 
 	void SetSourceActor(AActor* InActor) { SourceActor = InActor; }
 	void SetTargetTeam(ETargetTeam InTargetTeam) { TargetTeam = InTargetTeam; }
@@ -25,12 +27,15 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
-
+	
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<USphereComponent> TargetingSphere;
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UDecalComponent> TargetingDecal;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UFloatingPawnMovement> MovementComponent;
 
 private:
 	UFUNCTION()

@@ -21,7 +21,7 @@ protected:
 		EditDefaultsOnly,
 		BlueprintReadOnly,
 		Category="Ability Defaults|Weapon",
-		meta=(EditCondition="bUsesWeapon", DisplayPriority=1)
+		meta=(EditCondition="bUseWeapon", DisplayPriority=1)
 		)
 	bool bWithWeaponCollision;
 	

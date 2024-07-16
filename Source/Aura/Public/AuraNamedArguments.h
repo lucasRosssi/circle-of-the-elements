@@ -39,6 +39,10 @@ public:
 	FString AdditionalHitCount_1;
 	FString HitEffectChange_0;
 	FString HitEffectChange_1;
+	FString ActorDuration_0;
+	FString ActorDuration_1;
+	FString ActorPeriod_0;
+	FString ActorPeriod_1;
 
 private:
 	static FAuraNamedArguments NamedArguments;
