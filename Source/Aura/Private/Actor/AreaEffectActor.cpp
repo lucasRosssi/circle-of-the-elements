@@ -162,11 +162,11 @@ void AAreaEffectActor::ApplyAbilityEffect(UAbilitySystemComponent* TargetASC, bo
 void AAreaEffectActor::ApplyAbilityEffectToActorsInArea()
 {
 	bool bSuccess;
-	for (const auto ASC : ASCsInArea)
+	for (auto ASC = ASCsInArea.CreateIterator(); ASC; ++ASC)
 	{
-		if (!IsValid(ASC)) continue;
+		if (!IsValid(*ASC)) ASC.RemoveCurrent();
 
-		ApplyAbilityEffect(ASC, bSuccess);
+		ApplyAbilityEffect(*ASC, bSuccess);
 	}
 }
 
