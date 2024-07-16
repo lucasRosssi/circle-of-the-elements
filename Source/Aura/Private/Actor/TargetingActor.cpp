@@ -6,6 +6,7 @@
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "Components/DecalComponent.h"
 #include "Components/SphereComponent.h"
+#include "GameFramework/FloatingPawnMovement.h"
 #include "Interaction/TargetInterface.h"
 
 ATargetingActor::ATargetingActor()
@@ -16,10 +17,14 @@ ATargetingActor::ATargetingActor()
 	SetRootComponent(TargetingSphere);
 	TargetingSphere->SetCollisionResponseToChannels(ECR_Ignore);
 	TargetingSphere->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
+	TargetingSphere->SetUsingAbsoluteRotation(true);
 	
 	TargetingDecal = CreateDefaultSubobject<UDecalComponent>("TargetingDecal");
 	TargetingDecal->SetupAttachment(GetRootComponent());
 	TargetingDecal->DecalSize = FVector(TargetingSphere->GetUnscaledSphereRadius());
+
+	MovementComponent = CreateDefaultSubobject<UFloatingPawnMovement>("MovementComponent");
+	AutoPossessAI = EAutoPossessAI::Spawned;
 }
 
 void ATargetingActor::BeginPlay()
@@ -34,6 +39,11 @@ void ATargetingActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	
+}
+
+void ATargetingActor::AddMovementInput(FVector WorldDirection, float ScaleValue, bool bForce)
+{
+	MovementComponent->AddInputVector(WorldDirection * ScaleValue, bForce);
 }
 
 void ATargetingActor::OnTargetingBeginOverlap(

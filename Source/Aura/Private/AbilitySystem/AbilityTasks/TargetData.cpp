@@ -5,6 +5,7 @@
 
 #include "AbilitySystemComponent.h"
 #include "AbilitySystem/Abilities/ActiveAbility.h"
+#include "Actor/TargetingActor.h"
 #include "Aura/Aura.h"
 #include "Player/MainPlayerController.h"
 
@@ -53,18 +54,35 @@ void UTargetData::SendMouseOrGamepadData()
 	UActiveAbility* AuraAbility = CastChecked<UActiveAbility>(Ability);
 	
 	FHitResult HitResult;
-	if (MainPC->GetUsingGamepad() || AuraAbility->bUsesMovementInputDirection)
+	if (AuraAbility->bUsesMovementInputDirection)
 	{
 		FVector AvatarLocation = Ability->GetAvatarActorFromActorInfo()->GetActorLocation();
 		HitResult.Location = AvatarLocation + MainPC->GetInputDirection() * 10000;
+		HitResult.ImpactPoint = HitResult.Location;
 	}
 	else
 	{
-		MainPC->GetHitResultUnderCursor(
-			ECC_Target,
-			false,
-			HitResult
-		);
+		if (MainPC->IsUsingGamepad())
+		{
+			if (MainPC->IsTargeting())
+			{
+				HitResult.Location = MainPC->GetTargetingActor()->GetActorLocation();
+			}
+			else
+			{
+				FVector AvatarLocation = Ability->GetAvatarActorFromActorInfo()->GetActorLocation();
+				HitResult.Location = AvatarLocation + MainPC->GetInputDirection() * 10000;
+			}
+			HitResult.ImpactPoint = HitResult.Location;
+		}
+		else
+		{
+			MainPC->GetHitResultUnderCursor(
+				ECC_Target,
+				false,
+				HitResult
+			);
+		}
 	}
 
 	FGameplayAbilityTargetDataHandle DataHandle;

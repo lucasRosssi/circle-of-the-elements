@@ -30,4 +30,8 @@ void FAuraNamedArguments::InitializeNamedArguments()
 	NamedArguments.AdditionalHitCount_1 = FString("$AdditionalHitCount_1");
 	NamedArguments.HitEffectChange_0 = FString("$HitEffectChange_0");
 	NamedArguments.HitEffectChange_1 = FString("$HitEffectChange_1");
+	NamedArguments.ActorDuration_0 = FString("$ActorDuration_0");
+	NamedArguments.ActorDuration_1 = FString("$ActorDuration_1");
+	NamedArguments.ActorPeriod_0 = FString("$ActorPeriod_0");
+	NamedArguments.ActorPeriod_1 = FString("$ActorPeriod_1");
 }
