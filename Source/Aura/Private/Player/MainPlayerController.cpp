@@ -21,7 +21,7 @@ AMainPlayerController::AMainPlayerController()
 	bReplicates = true;
 }
 
-void AMainPlayerController::ShowTargetingActor(
+void AMainPlayerController::ShowTargetingActor_Implementation(
 	TSubclassOf<ATargetingActor> TargetingActorClass,
 	ETargetTeam TargetTeam,
 	float Radius
@@ -67,7 +67,7 @@ void AMainPlayerController::ShowTargetingActor(
 	}
 }
 
-void AMainPlayerController::HideTargetingActor()
+void AMainPlayerController::HideTargetingActor_Implementation()
 {
 	if (!bUsingGamepad)	bShowMouseCursor = true;
 	
@@ -387,9 +387,9 @@ UMaterialParameterCollectionInstance* AMainPlayerController::GetOcclusionMaskPar
 	return OcclusionMaskParameterCollectionInstance;
 }
 
-void AMainPlayerController::UpdatePlayerLocationParameterCollection()
+void AMainPlayerController::UpdatePlayerLocationParameterCollection_Implementation()
 {
-	if (!OcclusionMaskParameterCollection) return;
+	if (!OcclusionMaskParameterCollection || !IsValid(GetPawn())) return;
 
 	const FVector PlayerLocation = GetPawn()->GetActorLocation();
 	const FLinearColor ColorPlayerLocation = FLinearColor(

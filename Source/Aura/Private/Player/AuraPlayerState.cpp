@@ -70,7 +70,10 @@ float AAuraPlayerState::GetDamageMultiplier_Implementation()
 
 void AAuraPlayerState::SetTimeDilation_Implementation(float InTimeDilation)
 {
-	GetPawn()->CustomTimeDilation = InTimeDilation;
+	if (const auto Character = GetCharacterBase())
+	{
+		Character->CustomTimeDilation = InTimeDilation;
+	}
 }
 
 void AAuraPlayerState::SetLevel(int32 InLevel)

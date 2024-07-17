@@ -8,6 +8,7 @@
 #include "Interaction/AttributeSetInterface.h"
 #include "AuraPlayerState.generated.h"
 
+class UAttributeSet;
 class UAuraAttributeSet;
 class UAuraAbilitySystemComponent;
 class AAuraCharacterBase;
@@ -28,7 +29,7 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	UAuraAbilitySystemComponent* GetAuraASC();
-	UAuraAttributeSet* GetAttributeSet() const { return AttributeSet; }
+	UAuraAttributeSet* GetAuraAttributeSet() const { return AttributeSet; }
 
 	/* Attribute Set Interface */
 	virtual void SetMovementSpeed_Implementation(float InMovementSpeed) override;

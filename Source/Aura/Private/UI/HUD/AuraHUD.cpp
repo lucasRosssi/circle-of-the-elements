@@ -56,8 +56,12 @@ USkillMenuWidgetController* AAuraHUD::GetSkillMenuWidgetController(
 	return SkillMenuWidgetController;
 }
 
-void AAuraHUD::InitOverlay(APlayerController* PC, APlayerState* PS, UAbilitySystemComponent* ASC,
-                           UAttributeSet* AS)
+void AAuraHUD::InitOverlay(
+	APlayerController* PC,
+	APlayerState* PS,
+	UAbilitySystemComponent* ASC,
+	UAttributeSet* AS
+	)
 {
 	checkf(OverlayWidgetClass, TEXT("Overlay Widget Class unitialized, please fill out BP_AuraHUD"));
 	checkf(OverlayWidgetControllerClass, TEXT("Overlay Widget Controller Class unitialized, please fill out BP_AuraHUD"));

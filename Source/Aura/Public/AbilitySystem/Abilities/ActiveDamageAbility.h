@@ -14,17 +14,13 @@ class AURA_API UActiveDamageAbility : public UActiveAbility
 {
 	GENERATED_BODY()
 public:
-	virtual FAbilityParams MakeAbilityParamsFromDefaults(AActor* TargetActor = nullptr) const 
-	override;
+	virtual FAbilityParams MakeAbilityParamsFromDefaults(AActor* TargetActor = nullptr) const	override;
 
 	UFUNCTION(BlueprintCallable)
 	FAbilityParams ApplyEffectChangePerHitToAbilityParams(
 		UPARAM(ref) FAbilityParams& AbilityParams,
 		int32 HitCount
 		);
-	
-	UFUNCTION(BlueprintCallable)
-	void CauseDamage(AActor* TargetActor);
 
 	UFUNCTION(BlueprintPure, Category="Ability Defaults|Damage")
 	float GetDamageAtLevel(int32 Level) const;

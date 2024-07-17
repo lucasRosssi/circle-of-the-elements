@@ -15,6 +15,7 @@
 UBaseAbility::UBaseAbility()
 {
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
+	bServerRespectsRemoteAbilityCancellation = false;
 }
 
 void UBaseAbility::OnGiveAbility(
@@ -208,6 +209,9 @@ UGameplayEffect* UBaseAbility::GetChargesEffect()
 FAbilityParams UBaseAbility::MakeAbilityParamsFromDefaults(AActor* TargetActor) const
 {
 	FAbilityParams AbilityParams;
+
+	if (!GetAvatarActorFromActorInfo()->HasAuthority()) return AbilityParams;
+	
 	AbilityParams.WorldContextObject = GetAvatarActorFromActorInfo();
 	AbilityParams.SourceASC = GetAbilitySystemComponentFromActorInfo();
 	AbilityParams.TargetASC =

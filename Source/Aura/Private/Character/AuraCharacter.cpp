@@ -6,6 +6,7 @@
 #include "AbilitySystemComponent.h"
 #include "NiagaraFunctionLibrary.h"
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
+#include "AbilitySystem/AuraAttributeSet.h"
 #include "Aura/Aura.h"
 #include "Camera/CameraComponent.h"
 #include "Components/WidgetComponent.h"
@@ -109,11 +110,15 @@ void AAuraCharacter::ShowTargetingActor_Implementation(
 	float Radius
 	)
 {
+	if (!IsLocallyControlled()) return;
+		
 	MainPlayerController->ShowTargetingActor(TargetingActorClass, TargetTeam, Radius);
 }
 
 void AAuraCharacter::HideTargetingActor_Implementation()
 {
+	if (!IsLocallyControlled()) return;
+	
 	MainPlayerController->HideTargetingActor();
 }
 
@@ -155,7 +160,7 @@ void AAuraCharacter::InitAbilityActorInfo()
 	
 	AbilitySystemComponent = AuraPlayerState->GetAbilitySystemComponent();
 	OnASCRegistered.Broadcast(AbilitySystemComponent);
-	AttributeSet = AuraPlayerState->GetAttributeSet();
+	AttributeSet = AuraPlayerState->GetAuraAttributeSet();
 	
 	AbilitySystemComponent->InitAbilityActorInfo(AuraPlayerState, this);
 
@@ -164,20 +169,23 @@ void AAuraCharacter::InitAbilityActorInfo()
 
 	AuraASC->AbilityActorInfoSet();
 
-	if (IsLocallyControlled() || HasAuthority())
+	if (IsLocallyControlled())
 	{
 		MainPlayerController = GetController<AMainPlayerController>();
 		check(MainPlayerController);
 		
 		MainPlayerController->SetPlayerCamera(Camera);
+		
+		if(AAuraHUD* AuraHUD = Cast<AAuraHUD>(MainPlayerController->GetHUD()))
+		{
+			AuraHUD->InitOverlay(
+				MainPlayerController,
+				AuraPlayerState,
+				AbilitySystemComponent,
+				AttributeSet
+				);
+		}
 	}
-	
-	if(AAuraHUD* AuraHUD = Cast<AAuraHUD>(MainPlayerController->GetHUD()))
-	{
-		AuraHUD->InitOverlay(MainPlayerController, AuraPlayerState, AbilitySystemComponent, 
-		AttributeSet);
-	}
-	
 
 	InitializeDefaultAttributes();
 }

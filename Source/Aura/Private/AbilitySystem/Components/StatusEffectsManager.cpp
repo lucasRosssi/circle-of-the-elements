@@ -102,6 +102,7 @@ void UStatusEffectsManager::MulticastActivateStatusEffect_Implementation(
 	)
 {
 	USceneComponent* AttachmentComponent;
+	FVector Location(0.f);
 	switch (StatusData.Position)
 	{
 	case EStatusEffectPosition::Top:
@@ -114,6 +115,7 @@ void UStatusEffectsManager::MulticastActivateStatusEffect_Implementation(
 		{
 			AttachmentComponent = ICombatInterface
 				::Execute_GetBottomStatusEffectSceneComponent(GetOwner());
+			Location.Z = 20.f;
 			break;
 		}
 	case EStatusEffectPosition::Center:
@@ -127,12 +129,16 @@ void UStatusEffectsManager::MulticastActivateStatusEffect_Implementation(
 				StatusData.NiagaraSystem,
 				AttachmentComponent,
 				FName(),
-				FVector(0),
+				Location,
 				FRotator(0),
 				EAttachLocation::KeepRelativeOffset,
 				true
 			);
-	NiagaraComponent->AutoAttachRotationRule = EAttachmentRule::KeepWorld;
+	
+	if (IsValid(NiagaraComponent))
+	{
+		NiagaraComponent->SetUsingAbsoluteRotation(true);
 
-	ActiveNiagaraComponents.Add(StatusEffectTag, NiagaraComponent);
+		ActiveNiagaraComponents.Add(StatusEffectTag, NiagaraComponent);
+	}
 }

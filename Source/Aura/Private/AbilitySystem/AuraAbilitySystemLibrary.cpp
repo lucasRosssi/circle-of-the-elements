@@ -32,7 +32,7 @@ FWidgetControllerParams UAuraAbilitySystemLibrary::MakeWidgetControllerParams(
 	{
 		AAuraPlayerState* PS = PC->GetPlayerState<AAuraPlayerState>();
 		UAbilitySystemComponent* ASC = PS->GetAbilitySystemComponent();
-		UAttributeSet* AS = PS->GetAttributeSet();
+		UAttributeSet* AS = PS->GetAuraAttributeSet();
 		
 		return FWidgetControllerParams(PC, PS, ASC, AS);
 	}
@@ -77,7 +77,8 @@ USkillMenuWidgetController* UAuraAbilitySystemLibrary::GetSkillMenuWidgetControl
 }
 
 UCharacterInfo* UAuraAbilitySystemLibrary::GetCharacterClassInfo(
-	const UObject* WorldContextObject)
+	const UObject* WorldContextObject
+	)
 {
 	const AAuraGameModeBase* AuraGameMode = CastChecked<AAuraGameModeBase>(
 		UGameplayStatics::GetGameMode(WorldContextObject)
@@ -86,7 +87,9 @@ UCharacterInfo* UAuraAbilitySystemLibrary::GetCharacterClassInfo(
 	return AuraGameMode->CharacterClassInfo;
 }
 
-UAbilityInfo* UAuraAbilitySystemLibrary::GetAbilitiesInfo(const UObject* WorldContextObject)
+UAbilityInfo* UAuraAbilitySystemLibrary::GetAbilitiesInfo(
+	const UObject* WorldContextObject
+	)
 {
 	const AAuraGameModeBase* AuraGameMode = CastChecked<AAuraGameModeBase>(
 		UGameplayStatics::GetGameMode(WorldContextObject)
@@ -95,7 +98,9 @@ UAbilityInfo* UAuraAbilitySystemLibrary::GetAbilitiesInfo(const UObject* WorldCo
 	return AuraGameMode->AbilityInfo;
 }
 
-UStatusEffectInfo* UAuraAbilitySystemLibrary::GetStatusEffectInfo(const UObject* WorldContextObject)
+UStatusEffectInfo* UAuraAbilitySystemLibrary::GetStatusEffectInfo(
+	const UObject* WorldContextObject
+	)
 {
 	const AAuraGameModeBase* AuraGameMode = CastChecked<AAuraGameModeBase>(
 		UGameplayStatics::GetGameMode(WorldContextObject)
@@ -1067,6 +1072,8 @@ FGameplayEffectContextHandle UAuraAbilitySystemLibrary::ApplyAbilityEffect(
 	bool& bSuccess
 	)
 {
+	if (!AbilityParams.IsValid()) return FGameplayEffectContextHandle();
+	
 	bSuccess = false;
 	
 	const AActor* SourceAvatarActor = AbilityParams.SourceASC->GetAvatarActor();

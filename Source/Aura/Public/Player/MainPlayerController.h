@@ -57,12 +57,12 @@ public:
 	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category="ControllerDevice")
 	FOnControllerDeviceChanged ControllerDeviceChangedDelegate;
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(Client, Reliable, BlueprintCallable)
 	void ShowTargetingActor(
 		TSubclassOf<ATargetingActor> TargetingActorClass,
 		ETargetTeam TargetTeam,
 		float Radius = 300.f);
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(Client, Reliable, BlueprintCallable)
 	void HideTargetingActor();
 
 	void SetShouldOccludeObjects(bool bInShouldOcclude);
@@ -114,6 +114,7 @@ private:
 	void CancelPressed();
 
 	void UpdateTargetingActorLocation();
+	UFUNCTION(Client, Unreliable)
 	void UpdatePlayerLocationParameterCollection();
 	
 	UPROPERTY(EditAnywhere, Category="Input")

@@ -262,13 +262,17 @@ void AAuraProjectile::OnSphereOverlap(
 	if (!IsValid(AbilityParams.SourceASC)) return;
 	if (ActorsHit.Contains(OtherActor)) return;
 	const AActor* EffectCauser = AbilityParams.SourceASC->GetAvatarActor();
+
+	if (HitCount == 0 && EffectCauser == OtherActor) return;
+	if (
+		TargetTeam == ETargetTeam::Enemies &&
+		!UAuraAbilitySystemLibrary::AreActorsEnemies(EffectCauser, OtherActor)
+		) return;
 	
 	if (
-		// OtherActor is the instigator
-		EffectCauser == OtherActor ||
-		// OtherActor is friend
-		UAuraAbilitySystemLibrary::AreActorsFriends(EffectCauser, OtherActor)
-	)
+		TargetTeam == ETargetTeam::Friends &&
+		!UAuraAbilitySystemLibrary::AreActorsFriends(EffectCauser, OtherActor)
+		)
 		return;
 
 	if (UAuraAbilitySystemLibrary::IsTargetInvulnerable(OtherActor)) return;
