@@ -10,6 +10,7 @@
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "NiagaraFunctionLibrary.h"
+#include "AbilitySystem/AuraAbilitySystemComponent.h"
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "Actor/ProjectileEffect.h"
 #include "Aura/Aura.h"
@@ -263,13 +264,21 @@ void AAuraProjectile::OnSphereOverlap(
 	if (ActorsHit.Contains(OtherActor)) return;
 	const AActor* EffectCauser = AbilityParams.SourceASC->GetAvatarActor();
 	
-	if (
-		// OtherActor is the instigator
-		EffectCauser == OtherActor ||
-		// OtherActor is friend
-		UAuraAbilitySystemLibrary::AreActorsFriends(EffectCauser, OtherActor)
-	)
+	if (HitCount == 0 && EffectCauser == OtherActor) return;
+	if (UAuraAbilitySystemLibrary::IsEnvironment(OtherActor))
+	{
+		OnHit(true);
+		if (HasAuthority()) Destroy();
 		return;
+	}
+	if (
+		TargetTeam == ETargetTeam::Enemies &&
+		!UAuraAbilitySystemLibrary::AreActorsEnemies(EffectCauser, OtherActor)
+	)	return;
+	if (
+		TargetTeam == ETargetTeam::Friends &&
+		!UAuraAbilitySystemLibrary::AreActorsFriends(EffectCauser, OtherActor)
+	)	return;
 
 	if (UAuraAbilitySystemLibrary::IsTargetInvulnerable(OtherActor)) return;
 

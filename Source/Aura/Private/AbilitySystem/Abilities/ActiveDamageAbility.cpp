@@ -39,6 +39,18 @@ FAbilityParams UActiveDamageAbility::MakeAbilityParamsFromDefaults(AActor* Targe
 	return AbilityParams;
 }
 
+void UActiveDamageAbility::EndAbility(
+	const FGameplayAbilitySpecHandle Handle,
+	const FGameplayAbilityActorInfo* ActorInfo,
+	const FGameplayAbilityActivationInfo ActivationInfo,
+	bool bReplicateEndAbility,
+	bool bWasCancelled)
+{
+	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
+
+	ComboIndex = 0;
+}
+
 FAbilityParams UActiveDamageAbility::ApplyEffectChangePerHitToAbilityParams(
 	FAbilityParams& AbilityParams,
 	int32 HitCount

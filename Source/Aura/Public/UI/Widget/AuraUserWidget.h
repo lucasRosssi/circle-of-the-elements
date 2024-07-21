@@ -8,7 +8,7 @@
 
 class AAuraPlayerState;
 class AMainPlayerController;
-class AAuraCharacter;
+class AAuraHero;
 /**
  * 
  */
@@ -24,7 +24,7 @@ public:
 	TObjectPtr<UObject> WidgetController;
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, meta = (HidePin = "Target", DefaultToSelf = "Target"))
-	AAuraCharacter* GetOwningAuraCharacter();
+	AAuraHero* GetOwningHero();
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, meta = (HidePin = "Target", DefaultToSelf = "Target"))
 	AMainPlayerController* GetOwningMainPlayerController();
@@ -38,7 +38,7 @@ protected:
 
 private:
 	UPROPERTY()
-	AAuraCharacter* AuraCharacter = nullptr;
+	AAuraHero* Hero = nullptr;
 	UPROPERTY()
 	AMainPlayerController* MainPlayerController = nullptr;
 	UPROPERTY()

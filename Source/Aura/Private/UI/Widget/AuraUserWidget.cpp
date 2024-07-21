@@ -4,7 +4,7 @@
 #include "UI/Widget/AuraUserWidget.h"
 
 #include "Blueprint/WidgetTree.h"
-#include "Character/AuraCharacter.h"
+#include "Character/AuraHero.h"
 #include "Player/AuraPlayerState.h"
 #include "Player/MainPlayerController.h"
 
@@ -25,14 +25,14 @@ void UAuraUserWidget::SetWidgetController(UObject* InWidgetController)
 	);
 }
 
-AAuraCharacter* UAuraUserWidget::GetOwningAuraCharacter()
+AAuraHero* UAuraUserWidget::GetOwningHero()
 {
-	if (AuraCharacter == nullptr)
+	if (Hero == nullptr)
 	{
-		AuraCharacter = Cast<AAuraCharacter>(GetOwningPlayerPawn());
+		Hero = Cast<AAuraHero>(GetOwningPlayerPawn());
 	}
 
-	return AuraCharacter;
+	return Hero;
 }
 
 AMainPlayerController* UAuraUserWidget::GetOwningMainPlayerController()
