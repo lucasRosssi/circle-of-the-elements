@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "AbilitySystemComponent.h"
+#include "AuraGameplayTags.h"
 #include "AuraAbilitySystemComponent.generated.h"
 
 class UAbilityInfo;
@@ -45,7 +46,10 @@ public:
 	FAbilityStateChanged AbilityStateChanged;
 	FAbilityEquipped AbilityEquipped;
 
-	void AddCharacterAbilities(const TArray<TSubclassOf<UGameplayAbility>>& InAbilities);
+	void AddCharacterAbilities(
+		const TArray<TSubclassOf<UGameplayAbility>>& InAbilities,
+		const FGameplayTag AbilityStatus
+		);
 	bool bStartupAbilitiesGiven = false;
 
 	void AbilityInputTagPressed(const FGameplayTag& InputTag);

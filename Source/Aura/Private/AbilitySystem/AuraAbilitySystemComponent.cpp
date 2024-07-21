@@ -21,7 +21,8 @@ void UAuraAbilitySystemComponent::AbilityActorInfoSet()
 }
 
 void UAuraAbilitySystemComponent::AddCharacterAbilities(
-	const TArray<TSubclassOf<UGameplayAbility>>& InAbilities
+	const TArray<TSubclassOf<UGameplayAbility>>& InAbilities,
+	const FGameplayTag AbilityStatus
 )
 {
 	for (const auto AbilityClass : InAbilities)
@@ -30,7 +31,7 @@ void UAuraAbilitySystemComponent::AddCharacterAbilities(
 		if (const auto* ActiveAbility = Cast<UActiveAbility>(AbilitySpec.Ability))
 		{
 			AbilitySpec.DynamicAbilityTags.AddTag(ActiveAbility->StartupInputTag);
-			SetAbilityStatusFromSpec(AbilitySpec, FAuraGameplayTags::Get().Abilities_Status_Equipped);
+			SetAbilityStatusFromSpec(AbilitySpec, AbilityStatus);
 		}
 		GiveAbility(AbilitySpec);
 	}

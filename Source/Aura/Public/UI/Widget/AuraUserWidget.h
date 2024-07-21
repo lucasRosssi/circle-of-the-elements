@@ -9,7 +9,8 @@
 
 class AAuraPlayerState;
 class AMainPlayerController;
-class AAuraCharacter;
+class AAuraHero;
+class UCommonActivatableWidgetStack;
 /**
  * 
  */
@@ -20,26 +21,32 @@ class AURA_API UAuraUserWidget : public UCommonActivatableWidget
 public:
 	UFUNCTION(BlueprintCallable)
 	void SetWidgetController(UObject* InWidgetController);
+
+	// Common UI overrides
+	// End Common UI overrides
 	
 	UPROPERTY(BlueprintReadOnly)
 	TObjectPtr<UObject> WidgetController;
 
-	UFUNCTION(BlueprintCallable, BlueprintPure, meta = (HidePin = "Target", DefaultToSelf = "Target"))
-	AAuraCharacter* GetOwningAuraCharacter();
+	UFUNCTION(BlueprintPure, meta = (HidePin = "Target", DefaultToSelf = "Target"))
+	AAuraHero* GetOwningHero();
 
-	UFUNCTION(BlueprintCallable, BlueprintPure, meta = (HidePin = "Target", DefaultToSelf = "Target"))
+	UFUNCTION(BlueprintPure, meta = (HidePin = "Target", DefaultToSelf = "Target"))
 	AMainPlayerController* GetOwningMainPlayerController();
 
-	UFUNCTION(BlueprintCallable, BlueprintPure, meta = (HidePin = "Target", DefaultToSelf = "Target"))
+	UFUNCTION(BlueprintPure, meta = (HidePin = "Target", DefaultToSelf = "Target"))
 	AAuraPlayerState* GetOwningAuraPlayerState();
 
 protected:
 	UFUNCTION(BlueprintImplementableEvent)
 	void WidgetControllerSet();
 
+	UPROPERTY(BlueprintReadWrite)
+	UCommonActivatableWidgetStack* OwningStack;
+
 private:
 	UPROPERTY()
-	AAuraCharacter* AuraCharacter = nullptr;
+	AAuraHero* Hero = nullptr;
 	UPROPERTY()
 	AMainPlayerController* MainPlayerController = nullptr;
 	UPROPERTY()

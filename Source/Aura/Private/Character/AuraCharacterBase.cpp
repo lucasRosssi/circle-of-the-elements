@@ -143,6 +143,16 @@ void AAuraCharacterBase::InitSummon(int32 TeamID)
 	OnSummoned();
 }
 
+UAuraAbilitySystemComponent* AAuraCharacterBase::GetAuraASC()
+{
+	if (AuraASC == nullptr)
+	{
+		AuraASC = CastChecked<UAuraAbilitySystemComponent>(AbilitySystemComponent);
+	}
+
+	return AuraASC;
+}
+
 void AAuraCharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
@@ -296,21 +306,19 @@ void AAuraCharacterBase::AddCharacterAbilities()
 {
 	if (!HasAuthority()) return;
 
+	const FAuraGameplayTags& GameplayTags = FAuraGameplayTags::Get();
 	AbilitySystemComponent
 		->RegisterGameplayTagEvent(
-			FAuraGameplayTags::Get().StatusEffects_Incapacitation_HitReact,
+			GameplayTags.StatusEffects_Incapacitation_HitReact,
 			EGameplayTagEventType::NewOrRemoved
 		)
 		.AddUObject(
 			this,
 			&AAuraCharacterBase::HitReactTagChanged
 		);
-	
-	UAuraAbilitySystemComponent* AuraASC =
-		CastChecked<UAuraAbilitySystemComponent>(AbilitySystemComponent);
 
-	AuraASC->AddCharacterAbilities(BaseAbilities);
-	AuraASC->AddCharacterAbilities(CharacterAbilities);
+	GetAuraASC()->AddCharacterAbilities(NativeBaseAbilities, GameplayTags.Abilities_Status_Native);
+	GetAuraASC()->AddCharacterAbilities(NativeCharacterAbilities, GameplayTags.Abilities_Status_Native);
 }
 
 void AAuraCharacterBase::DissolveCharacter()
