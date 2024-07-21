@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/PlayerController.h"
+#include "UINavigation/Public/UINavController.h"
 #include "GameplayTagContainer.h"
 #include "InputActionValue.h"
 #include "Components/TimelineComponent.h"
@@ -31,7 +31,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnOcclusionChanged, bool, bShouldOc
  * 
  */
 UCLASS()
-class AURA_API AMainPlayerController : public APlayerController
+class AURA_API AMainPlayerController : public AUINavController
 {
 	GENERATED_BODY()
 public:
@@ -96,7 +96,7 @@ protected:
 	
 	UPROPERTY(EditAnywhere, Category="Camera|Occlusion")
 	bool bDebugCameraOcclusionTrace = false;
-	
+
 private:
 	void Move(const FInputActionValue& InputActionValue);
 	void MoveComplete(const FInputActionValue& InputActionValue);

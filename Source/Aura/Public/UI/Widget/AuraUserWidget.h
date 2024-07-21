@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Blueprint/UserWidget.h"
+#include "UINavigation/Public/UINavWidget.h"
 #include "AuraUserWidget.generated.h"
 
 class AAuraPlayerState;
@@ -13,7 +13,7 @@ class AAuraHero;
  * 
  */
 UCLASS()
-class AURA_API UAuraUserWidget : public UUserWidget
+class AURA_API UAuraUserWidget : public UUINavWidget
 {
 	GENERATED_BODY()
 public:
