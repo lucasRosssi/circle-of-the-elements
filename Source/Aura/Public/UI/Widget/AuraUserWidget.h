@@ -3,7 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Blueprint/UserWidget.h"
+#include "CommonUI/Public/CommonActivatableWidget.h"
+
 #include "AuraUserWidget.generated.h"
 
 class AAuraPlayerState;
@@ -13,7 +14,7 @@ class AAuraCharacter;
  * 
  */
 UCLASS()
-class AURA_API UAuraUserWidget : public UUserWidget
+class AURA_API UAuraUserWidget : public UCommonActivatableWidget
 {
 	GENERATED_BODY()
 public:
