@@ -13,7 +13,6 @@
 AAreaEffectActor::AAreaEffectActor()
 {
 	PrimaryActorTick.bCanEverTick = false;
-	bReplicates = true;
 	
 	SetRootComponent(CreateDefaultSubobject<USceneComponent>("SceneRoot"));
 	TeamComponent = CreateDefaultSubobject<UTeamComponent>("TeamComponent");
