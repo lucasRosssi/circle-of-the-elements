@@ -162,7 +162,7 @@ void UAuraAbilitySystemLibrary::GiveStartupAbilities(
 	AAuraCharacterBase* Character = Cast<AAuraCharacterBase>(ASC->GetAvatarActor());
 	if (Character)
 	{
-		for (const auto AbilityClass : Character->CharacterAbilities)
+		for (const auto AbilityClass : Character->NativeCharacterAbilities)
 		{
 			FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(AbilityClass, 1);
 			ASC->GiveAbility(AbilitySpec);
@@ -639,6 +639,15 @@ AActor* UAuraAbilitySystemLibrary::GetClosestActorToTarget(
 	}
 
 	return ClosestActor;
+}
+
+bool UAuraAbilitySystemLibrary::IsEnvironment(const AActor* Actor)
+{
+	if (!IsValid(Actor)) return false;
+	
+	const UTeamComponent* TeamComponent = Actor->GetComponentByClass<UTeamComponent>();
+
+	return !IsValid(TeamComponent);
 }
 
 bool UAuraAbilitySystemLibrary::AreActorsFriends(const AActor* FirstActor, const AActor* 

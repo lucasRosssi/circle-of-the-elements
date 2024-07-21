@@ -15,6 +15,7 @@
 UBaseAbility::UBaseAbility()
 {
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
+	bServerRespectsRemoteAbilityCancellation = false;
 }
 
 void UBaseAbility::OnGiveAbility(
