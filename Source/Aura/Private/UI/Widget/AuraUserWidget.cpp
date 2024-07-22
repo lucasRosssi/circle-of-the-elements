@@ -23,6 +23,8 @@ void UAuraUserWidget::SetWidgetController(UObject* InWidgetController)
 			}
 		}
 	);
+
+	
 }
 
 AAuraHero* UAuraUserWidget::GetOwningHero()
