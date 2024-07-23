@@ -72,6 +72,8 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, Category="Camera|Occlusion")
 	void OnOcclusionChange(bool bIsOccluding);
 
+	UUINavPCComponent* GetUINavComponent() const { return UINavPCComp; }
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void SetupInputComponent() override;

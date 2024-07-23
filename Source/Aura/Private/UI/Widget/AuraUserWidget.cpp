@@ -8,6 +8,19 @@
 #include "Player/AuraPlayerState.h"
 #include "Player/MainPlayerController.h"
 
+void UAuraUserWidget::NativeConstruct()
+{
+	Super::NativeConstruct();
+
+	if (GetOwningMainPlayerController())
+	{
+		GetOwningMainPlayerController()->GetUINavComponent()->InputTypeChangedDelegate.AddDynamic(
+			this,
+			&UAuraUserWidget::OnChangeInputDevice
+		);
+	}
+}
+
 void UAuraUserWidget::SetWidgetController(UObject* InWidgetController)
 {
 	WidgetController = InWidgetController;
@@ -55,4 +68,22 @@ AAuraPlayerState* UAuraUserWidget::GetOwningAuraPlayerState()
 	}
 
 	return AuraPlayerState;
+}
+
+UTexture2D* UAuraUserWidget::GetInputActionIcon(const UInputAction* Action)
+{
+	if (!GetOwningMainPlayerController()) return nullptr;
+	
+	const UUINavPCComponent* UINavComponent = GetOwningMainPlayerController()->GetUINavComponent();
+	
+	EInputRestriction InputRestriction;
+	if (UINavComponent->IsUsingGamepad()) InputRestriction = EInputRestriction::Gamepad;
+	else InputRestriction = EInputRestriction::Keyboard_Mouse;
+	
+	return UINavComponent->GetEnhancedInputIcon(
+		Action,
+		EInputAxis::X,
+		EAxisType::None,
+		InputRestriction
+		);
 }
