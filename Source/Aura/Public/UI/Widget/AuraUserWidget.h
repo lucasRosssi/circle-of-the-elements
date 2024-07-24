@@ -3,34 +3,44 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Blueprint/UserWidget.h"
+#include "UINavigation/Public/UINavWidget.h"
 #include "AuraUserWidget.generated.h"
 
+class UInputAction;
 class AAuraPlayerState;
 class AMainPlayerController;
 class AAuraHero;
+
 /**
  * 
  */
 UCLASS()
-class AURA_API UAuraUserWidget : public UUserWidget
+class AURA_API UAuraUserWidget : public UUINavWidget
 {
 	GENERATED_BODY()
 public:
+	virtual void NativeConstruct() override;
+	
 	UFUNCTION(BlueprintCallable)
 	void SetWidgetController(UObject* InWidgetController);
-	
-	UPROPERTY(BlueprintReadOnly)
-	TObjectPtr<UObject> WidgetController;
 
-	UFUNCTION(BlueprintCallable, BlueprintPure, meta = (HidePin = "Target", DefaultToSelf = "Target"))
+	UFUNCTION(BlueprintPure, meta = (HidePin = "Target", DefaultToSelf = "Target"))
 	AAuraHero* GetOwningHero();
 
-	UFUNCTION(BlueprintCallable, BlueprintPure, meta = (HidePin = "Target", DefaultToSelf = "Target"))
+	UFUNCTION(BlueprintPure, meta = (HidePin = "Target", DefaultToSelf = "Target"))
 	AMainPlayerController* GetOwningMainPlayerController();
 
-	UFUNCTION(BlueprintCallable, BlueprintPure, meta = (HidePin = "Target", DefaultToSelf = "Target"))
+	UFUNCTION(BlueprintPure, meta = (HidePin = "Target", DefaultToSelf = "Target"))
 	AAuraPlayerState* GetOwningAuraPlayerState();
+
+	UFUNCTION(BlueprintPure)
+	UTexture2D* GetInputActionIcon(const UInputAction* Action);
+
+	UFUNCTION(BlueprintImplementableEvent, Category="Input")
+	void OnChangeInputDevice(EInputType InputType);
+
+	UPROPERTY(BlueprintReadOnly)
+	TObjectPtr<UObject> WidgetController;
 
 protected:
 	UFUNCTION(BlueprintImplementableEvent)
