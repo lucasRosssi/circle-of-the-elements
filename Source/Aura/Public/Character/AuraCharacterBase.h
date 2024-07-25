@@ -44,8 +44,8 @@ public:
 	virtual void MulticastHandleDeath(const FVector& DeathImpulse);
 
 	/** Target Interface */
-	virtual void HighlightActor(AActor* InstigatorActor) override;
-	virtual void UnHighlightActor() override;
+	virtual void HighlightActor_Implementation(AActor* InstigatorActor = nullptr) override;
+	virtual void UnHighlightActor_Implementation() override;
 	/** end Target Interface */
 
 	/** Combat Interface */

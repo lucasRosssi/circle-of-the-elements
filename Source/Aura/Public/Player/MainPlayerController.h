@@ -105,8 +105,8 @@ private:
 	
 	void CursorTrace();
 	FHitResult CursorHit;
-	ITargetInterface* LastActor = nullptr;
-	ITargetInterface* ThisActor = nullptr;
+	AActor* LastActor = nullptr;
+	AActor* ThisActor = nullptr;
 
 	void AbilityInputTagPressed(FGameplayTag InputTag);
 	void AbilityInputTagReleased(FGameplayTag InputTag);

@@ -277,7 +277,7 @@ void AMainPlayerController::CursorTrace()
 	if (!CursorHit.bBlockingHit) return;
 
 	LastActor = ThisActor;
-	ThisActor = Cast<ITargetInterface>(CursorHit.GetActor());
+	ThisActor = CursorHit.GetActor();
 
 	/**
 	 * Line trace from cursor. There are several scenarios:
@@ -298,7 +298,7 @@ void AMainPlayerController::CursorTrace()
 		if (ThisActor != nullptr)
 		{
 			// Case B
-			ThisActor->HighlightActor(GetPawn());
+			ITargetInterface::SafeExec_HighlightActor(ThisActor, GetPawn());
 		}
 		else // ThisActor == nullptr
 		{
@@ -311,15 +311,15 @@ void AMainPlayerController::CursorTrace()
 		if (ThisActor == nullptr)
 		{
 			// Case C
-			LastActor->UnHighlightActor();
+			ITargetInterface::SafeExec_UnHighlightActor(LastActor);
 		}
 		else
 		{
 			if (LastActor != ThisActor)
 			{
 				// Case D
-				LastActor->UnHighlightActor();
-				ThisActor->HighlightActor(GetPawn());
+				ITargetInterface::SafeExec_UnHighlightActor(LastActor);
+				ITargetInterface::SafeExec_HighlightActor(ThisActor, GetPawn());
 			}
 			else
 			{

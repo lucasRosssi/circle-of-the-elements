@@ -155,14 +155,18 @@ void AAuraCharacterBase::HitReactTagChanged(const FGameplayTag CallbackTag, int3
 	GetCharacterMovement()->MaxWalkSpeed = bHitReacting ? 0.f : CurrentWalkSpeed;
 }
 
-void AAuraCharacterBase::HighlightActor(AActor* InstigatorActor)
+void AAuraCharacterBase::HighlightActor_Implementation(AActor* InstigatorActor)
 {
 	int32 CustomDepth = 0;
-	if (UAuraAbilitySystemLibrary::AreActorsEnemies(this, InstigatorActor))
+	if (InstigatorActor == nullptr)
+	{
+		CustomDepth = CUSTOM_DEPTH_WHITE;
+	}
+	else if (UAuraAbilitySystemLibrary::AreActorsEnemies(this, InstigatorActor))
 	{
 		CustomDepth = CUSTOM_DEPTH_RED;
 	}
-	if (UAuraAbilitySystemLibrary::AreActorsFriends(this, InstigatorActor))
+	else if (UAuraAbilitySystemLibrary::AreActorsFriends(this, InstigatorActor))
 	{
 		CustomDepth = CUSTOM_DEPTH_GREEN;
 	}
@@ -173,7 +177,7 @@ void AAuraCharacterBase::HighlightActor(AActor* InstigatorActor)
 	Weapon->SetCustomDepthStencilValue(CustomDepth);
 }
 
-void AAuraCharacterBase::UnHighlightActor()
+void AAuraCharacterBase::UnHighlightActor_Implementation()
 {
 	GetMesh()->SetRenderCustomDepth(false);
 	Weapon->SetRenderCustomDepth(false);

@@ -55,27 +55,27 @@ void ATargetingActor::OnTargetingBeginOverlap(
 	const FHitResult& SweepResult
 	)
 {
-	if (ITargetInterface* Target = Cast<ITargetInterface>(OtherActor))
+	if (
+		TargetTeam == ETargetTeam::Enemies &&
+		UAuraAbilitySystemLibrary::AreActorsEnemies(SourceActor, OtherActor)
+		)
 	{
-		if (TargetTeam == ETargetTeam::Enemies &&
-			UAuraAbilitySystemLibrary::AreActorsEnemies(SourceActor, OtherActor)
-			)
-		{
-			Target->HighlightActor(SourceActor);
-		}
-
-		if (TargetTeam == ETargetTeam::Friends &&
-			UAuraAbilitySystemLibrary::AreActorsFriends(SourceActor, OtherActor)
-			)
-		{
-			Target->HighlightActor(SourceActor);
-		}
-
-		if (TargetTeam == ETargetTeam::Both)
-		{
-			Target->HighlightActor(SourceActor);
-		}
+		ITargetInterface::SafeExec_HighlightActor(OtherActor, SourceActor);
 	}
+
+	if (
+		TargetTeam == ETargetTeam::Friends &&
+		UAuraAbilitySystemLibrary::AreActorsFriends(SourceActor, OtherActor)
+		)
+	{
+		ITargetInterface::SafeExec_HighlightActor(OtherActor, SourceActor);
+	}
+
+	if (TargetTeam == ETargetTeam::Both)
+	{
+		ITargetInterface::SafeExec_HighlightActor(OtherActor, SourceActor);
+	}
+	
 }
 
 void ATargetingActor::OnTargetingEndOverlap(
@@ -85,10 +85,7 @@ void ATargetingActor::OnTargetingEndOverlap(
 	int32 OtherBodyIndex
 	)
 {
-	if (ITargetInterface* Target = Cast<ITargetInterface>(OtherActor))
-	{
-		Target->UnHighlightActor();
-	}
+	ITargetInterface::SafeExec_UnHighlightActor(OtherActor);
 }
 
 void ATargetingActor::SetTargetingRadius(float Radius)
