@@ -8,7 +8,7 @@
 
 class UInputAction;
 class AAuraPlayerState;
-class AMainPlayerController;
+class AAuraPlayerController;
 class AAuraHero;
 
 /**
@@ -28,7 +28,7 @@ public:
 	AAuraHero* GetOwningHero();
 
 	UFUNCTION(BlueprintPure, meta = (HidePin = "Target", DefaultToSelf = "Target"))
-	AMainPlayerController* GetOwningMainPlayerController();
+	AAuraPlayerController* GetOwningMainPlayerController();
 
 	UFUNCTION(BlueprintPure, meta = (HidePin = "Target", DefaultToSelf = "Target"))
 	AAuraPlayerState* GetOwningAuraPlayerState();
@@ -50,7 +50,7 @@ private:
 	UPROPERTY()
 	AAuraHero* Hero = nullptr;
 	UPROPERTY()
-	AMainPlayerController* MainPlayerController = nullptr;
+	AAuraPlayerController* MainPlayerController = nullptr;
 	UPROPERTY()
 	AAuraPlayerState* AuraPlayerState = nullptr;
 };

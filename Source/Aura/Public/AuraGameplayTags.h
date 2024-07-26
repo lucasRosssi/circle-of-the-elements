@@ -37,8 +37,6 @@ public:
   FGameplayTag Attributes_Secondary_CriticalDamage;
   FGameplayTag Attributes_Secondary_HealthRegeneration;
   FGameplayTag Attributes_Secondary_ManaRegeneration;
-  FGameplayTag Attributes_Secondary_StaminaRegeneration;
-  FGameplayTag Attributes_Secondary_StaminaEfficiency;
 
 	FGameplayTag Attributes_Resistance;
 	FGameplayTag Attributes_Resistance_Physical;

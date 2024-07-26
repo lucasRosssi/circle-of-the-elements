@@ -6,7 +6,7 @@
 #include "Blueprint/WidgetTree.h"
 #include "Character/AuraHero.h"
 #include "Player/AuraPlayerState.h"
-#include "Player/MainPlayerController.h"
+#include "Player/AuraPlayerController.h"
 
 void UAuraUserWidget::NativeConstruct()
 {
@@ -50,11 +50,11 @@ AAuraHero* UAuraUserWidget::GetOwningHero()
 	return Hero;
 }
 
-AMainPlayerController* UAuraUserWidget::GetOwningMainPlayerController()
+AAuraPlayerController* UAuraUserWidget::GetOwningMainPlayerController()
 {
 	if (MainPlayerController == nullptr)
 	{
-		MainPlayerController = Cast<AMainPlayerController>(GetOwningPlayer());
+		MainPlayerController = Cast<AAuraPlayerController>(GetOwningPlayer());
 	}
 
 	return MainPlayerController;

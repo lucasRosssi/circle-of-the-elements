@@ -8,7 +8,7 @@
 #include "AuraHero.generated.h"
 
 enum class ETargetTeam : uint8;
-class AMainPlayerController;
+class AAuraPlayerController;
 class AAuraPlayerState;
 class UWidgetComponent;
 class USpringArmComponent;
@@ -65,7 +65,7 @@ protected:
 	TObjectPtr<UWidgetComponent> LevelUpWidgetComponent;
 
 	UPROPERTY(BlueprintReadOnly)
-	AMainPlayerController* MainPlayerController;
+	AAuraPlayerController* MainPlayerController;
 
 	UPROPERTY(VisibleAnywhere, Category="Camera")
 	TObjectPtr<UCameraComponent> Camera;

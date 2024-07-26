@@ -10,7 +10,7 @@ class UAbilityInfo;
 class UAuraAbilitySystemComponent;
 class UAuraAttributeSet;
 class AAuraPlayerState;
-class AMainPlayerController;
+class AAuraPlayerController;
 class UAttributeSet;
 class UAbilitySystemComponent;
 
@@ -91,7 +91,7 @@ protected:
 	TObjectPtr<UAttributeSet> AttributeSet;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Widget Controller")
-	TObjectPtr<AMainPlayerController> MainPlayerController;
+	TObjectPtr<AAuraPlayerController> MainPlayerController;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Widget Controller")
 	TObjectPtr<AAuraPlayerState> AuraPlayerState;
@@ -105,7 +105,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Data")
 	TObjectPtr<UAbilityInfo> AbilityInfo;
 
-	AMainPlayerController* GetMainPlayerController();
+	AAuraPlayerController* GetMainPlayerController();
 	AAuraPlayerState* GetAuraPlayerState();
 	UAuraAbilitySystemComponent* GetAuraAbilitySystemComponent();
 	UAuraAttributeSet* GetAuraAttributeSet();

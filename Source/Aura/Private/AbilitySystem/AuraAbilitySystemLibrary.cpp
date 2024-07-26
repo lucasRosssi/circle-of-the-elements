@@ -22,7 +22,7 @@
 #include "Interaction/CombatInterface.h"
 #include "Kismet/GameplayStatics.h"
 #include "Player/AuraPlayerState.h"
-#include "Player/MainPlayerController.h"
+#include "Player/AuraPlayerController.h"
 #include "UI/HUD/AuraHUD.h"
 
 FWidgetControllerParams UAuraAbilitySystemLibrary::MakeWidgetControllerParams(
@@ -769,7 +769,7 @@ bool UAuraAbilitySystemLibrary::IsPlayerUsingGamepad(const AActor* AvatarActor)
 {
 	AController* Controller = AvatarActor->GetInstigatorController();
 
-	if (AMainPlayerController* PlayerController = Cast<AMainPlayerController>(Controller))
+	if (AAuraPlayerController* PlayerController = Cast<AAuraPlayerController>(Controller))
 	{
 		return PlayerController->IsUsingGamepad();
 	}
