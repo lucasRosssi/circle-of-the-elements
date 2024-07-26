@@ -30,7 +30,6 @@ public:
 	/** end Combat Interface */
 
 	/* Attribute Set Interface */
-	virtual void SetMovementSpeed_Implementation(float InMovementSpeed) override;
 	virtual void SetActionSpeed_Implementation(float InActionSpeed) override;
 	virtual float GetDamageMultiplier_Implementation() override;
 	virtual void SetTimeDilation_Implementation(float InTimeDilation) override;

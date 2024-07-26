@@ -47,14 +47,6 @@ UAuraAbilitySystemComponent* AAuraPlayerState::GetAuraASC()
 	return AuraASC;
 }
 
-void AAuraPlayerState::SetMovementSpeed_Implementation(float InMovementSpeed)
-{
-	if (const auto Character = GetCharacterBase())
-	{
-		Character->ChangeMovementSpeed(InMovementSpeed);
-	}
-}
-
 void AAuraPlayerState::SetActionSpeed_Implementation(float InActionSpeed)
 {
 	if (const auto Character = GetCharacterBase())

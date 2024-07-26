@@ -74,7 +74,6 @@ public:
 
 	void InitSummon(int32 TeamID);
 
-	void ChangeMovementSpeed(float InMovementSpeed);
 	void ChangeActionSpeed(float InActionSpeed);
 
 	int32 GetTeamID() { return TeamComponent->TeamID; }

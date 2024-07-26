@@ -73,11 +73,6 @@ void AAuraEnemy::Die(const FVector& DeathImpulse)
 	Super::Die(DeathImpulse);
 }
 
-void AAuraEnemy::SetMovementSpeed_Implementation(float InMovementSpeed)
-{
-	ChangeMovementSpeed(InMovementSpeed);
-}
-
 void AAuraEnemy::SetActionSpeed_Implementation(float InActionSpeed)
 {
 	ChangeActionSpeed(InActionSpeed);
