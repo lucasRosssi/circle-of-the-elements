@@ -7,7 +7,7 @@
 #include "AbilitySystem/AuraAttributeSet.h"
 #include "AbilitySystem/Data/AbilityInfo.h"
 #include "Player/AuraPlayerState.h"
-#include "Player/MainPlayerController.h"
+#include "Player/AuraPlayerController.h"
 
 void UAuraWidgetController::SetWidgetControllerParams(const FWidgetControllerParams& WCParams)
 {
@@ -44,11 +44,11 @@ void UAuraWidgetController::BroadcastAbilityInfo()
 	AuraAbilitySystemComponent->ForEachAbility(BroadcastDelegate);
 }
 
-AMainPlayerController* UAuraWidgetController::GetMainPlayerController()
+AAuraPlayerController* UAuraWidgetController::GetMainPlayerController()
 {
 	if (MainPlayerController == nullptr)
 	{
-		MainPlayerController = Cast<AMainPlayerController>(PlayerController);
+		MainPlayerController = Cast<AAuraPlayerController>(PlayerController);
 	}
 	return MainPlayerController;
 }

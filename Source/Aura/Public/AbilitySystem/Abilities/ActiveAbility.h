@@ -8,7 +8,7 @@
 #include "ActiveAbility.generated.h"
 
 class ATargetingActor;
-class AMainPlayerController;
+class AAuraPlayerController;
 /**
  * 
  */

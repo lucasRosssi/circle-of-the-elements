@@ -16,7 +16,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Player/AuraPlayerState.h"
-#include "Player/MainPlayerController.h"
+#include "Player/AuraPlayerController.h"
 #include "UI/HUD/AuraHUD.h"
 
 AAuraHero::AAuraHero()
@@ -177,7 +177,7 @@ void AAuraHero::InitAbilityActorInfo()
 
 	if (IsLocallyControlled() || HasAuthority())
 	{
-		MainPlayerController = GetController<AMainPlayerController>();
+		MainPlayerController = GetController<AAuraPlayerController>();
 		check(MainPlayerController);
 		
 		MainPlayerController->SetPlayerCamera(Camera);

@@ -8,7 +8,7 @@
 #include "InputActionValue.h"
 #include "Components/TimelineComponent.h"
 
-#include "MainPlayerController.generated.h"
+#include "AuraPlayerController.generated.h"
 
 struct FTimeline;
 enum class ETargetTeam : uint8;
@@ -31,11 +31,11 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnOcclusionChanged, bool, bShouldOc
  * 
  */
 UCLASS()
-class AURA_API AMainPlayerController : public AUINavController
+class AURA_API AAuraPlayerController : public AUINavController
 {
 	GENERATED_BODY()
 public:
-	AMainPlayerController();
+	AAuraPlayerController();
 	virtual void PlayerTick(float DeltaTime) override;
 	
 	UFUNCTION(Client, Reliable)

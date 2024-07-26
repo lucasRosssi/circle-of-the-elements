@@ -1,7 +1,7 @@
 // Copyright Lucas Rossi
 
 
-#include "Player/MainPlayerController.h"
+#include "Player/AuraPlayerController.h"
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "EnhancedInputSubsystems.h"
@@ -16,12 +16,12 @@
 #include "Materials/MaterialParameterCollectionInstance.h"
 #include "UI/Widget/DamageTextComponent.h"
 
-AMainPlayerController::AMainPlayerController()
+AAuraPlayerController::AAuraPlayerController()
 {
 	bReplicates = true;
 }
 
-void AMainPlayerController::ShowTargetingActor(
+void AAuraPlayerController::ShowTargetingActor(
 	TSubclassOf<ATargetingActor> TargetingActorClass,
 	ETargetTeam TargetTeam,
 	float Radius
@@ -67,7 +67,7 @@ void AMainPlayerController::ShowTargetingActor(
 	}
 }
 
-void AMainPlayerController::HideTargetingActor()
+void AAuraPlayerController::HideTargetingActor()
 {
 	if (!bUsingGamepad)	bShowMouseCursor = true;
 	
@@ -78,7 +78,7 @@ void AMainPlayerController::HideTargetingActor()
 	}
 }
 
-void AMainPlayerController::SetShouldOccludeObjects(bool bInShouldOcclude)
+void AAuraPlayerController::SetShouldOccludeObjects(bool bInShouldOcclude)
 {
 	if (!OcclusionMaskParameterCollection) return;
 	
@@ -88,7 +88,7 @@ void AMainPlayerController::SetShouldOccludeObjects(bool bInShouldOcclude)
 		);
 }
 
-void AMainPlayerController::BeginPlay()
+void AAuraPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 	check(MainContext);
@@ -109,7 +109,7 @@ void AMainPlayerController::BeginPlay()
 	SetInputMode(InputModeData);
 }
 
-void AMainPlayerController::HandleEnvironmentOcclusion()
+void AAuraPlayerController::HandleEnvironmentOcclusion()
 {
 	if (!PlayerCamera) return;
 	
@@ -141,7 +141,7 @@ void AMainPlayerController::HandleEnvironmentOcclusion()
 	}
 }
 
-void AMainPlayerController::GamepadMoveTargetingActor(const FInputActionValue& InputActionValue)
+void AAuraPlayerController::GamepadMoveTargetingActor(const FInputActionValue& InputActionValue)
 {
 	if (!bTargeting || !IsValid(TargetingActor)) return;
 	
@@ -158,7 +158,7 @@ void AMainPlayerController::GamepadMoveTargetingActor(const FInputActionValue& I
 	TargetingActor->AddMovementInput(RightDirection, InputAxisVector.X);
 }
 
-void AMainPlayerController::PlayerTick(float DeltaTime)
+void AAuraPlayerController::PlayerTick(float DeltaTime)
 {
 	Super::PlayerTick(DeltaTime);
 
@@ -168,7 +168,7 @@ void AMainPlayerController::PlayerTick(float DeltaTime)
 	HandleEnvironmentOcclusion();
 }
 
-void AMainPlayerController::ShowDamageNumber_Implementation(
+void AAuraPlayerController::ShowDamageNumber_Implementation(
 		float DamageAmount,
 		ACharacter* TargetCharacter,
 		bool bParried,
@@ -192,14 +192,14 @@ void AMainPlayerController::ShowDamageNumber_Implementation(
 	}
 }
 
-void AMainPlayerController::ChangeUsingGamepad(bool bIsGamepad)
+void AAuraPlayerController::ChangeUsingGamepad(bool bIsGamepad)
 {
 	bUsingGamepad = bIsGamepad;
 	bShowMouseCursor = !bIsGamepad;
 	ControllerDeviceChangedDelegate.Broadcast(bIsGamepad);
 }
 
-void AMainPlayerController::SetupInputComponent()
+void AAuraPlayerController::SetupInputComponent()
 {
 	Super::SetupInputComponent();
 
@@ -210,31 +210,31 @@ void AMainPlayerController::SetupInputComponent()
 		MoveAction,
 		ETriggerEvent::Triggered,
 		this,
-		&AMainPlayerController::Move
+		&AAuraPlayerController::Move
 	);
 	AuraInputComponent->BindAction(
 		MoveAction,
 		ETriggerEvent::Completed,
 		this,
-		&AMainPlayerController::MoveComplete
+		&AAuraPlayerController::MoveComplete
 	);
 	AuraInputComponent->BindAction(
 		TargetingActorMoveAction,
 		ETriggerEvent::Triggered,
 		this,
-		&AMainPlayerController::GamepadMoveTargetingActor
+		&AAuraPlayerController::GamepadMoveTargetingActor
 	);
 	AuraInputComponent->BindAction(
 		ConfirmAction,
 		ETriggerEvent::Started,
 		this,
-		&AMainPlayerController::ConfirmPressed
+		&AAuraPlayerController::ConfirmPressed
 	);
 	AuraInputComponent->BindAction(
 		CancelAction,
 		ETriggerEvent::Started,
 		this,
-		&AMainPlayerController::CancelPressed
+		&AAuraPlayerController::CancelPressed
 	);
 
 	AuraInputComponent->BindAbilityActions(
@@ -246,7 +246,7 @@ void AMainPlayerController::SetupInputComponent()
 	);
 }
 
-void AMainPlayerController::Move(const FInputActionValue& InputActionValue)
+void AAuraPlayerController::Move(const FInputActionValue& InputActionValue)
 {
 	const FVector2D InputAxisVector = InputActionValue.Get<FVector2D>();
 	const FRotator Rotation = GetControlRotation();
@@ -264,12 +264,12 @@ void AMainPlayerController::Move(const FInputActionValue& InputActionValue)
 	}
 }
 
-void AMainPlayerController::MoveComplete(const FInputActionValue& InputActionValue)
+void AAuraPlayerController::MoveComplete(const FInputActionValue& InputActionValue)
 {
 	// InputDirection = FVector::Zero();
 }
 
-void AMainPlayerController::CursorTrace()
+void AAuraPlayerController::CursorTrace()
 {
 	const ECollisionChannel TraceChannel = bTargeting ? ECC_ExcludeCharacters : ECC_Visibility;
 	GetHitResultUnderCursor(TraceChannel, false, CursorHit);
@@ -330,32 +330,32 @@ void AMainPlayerController::CursorTrace()
 	}
 }
 
-void AMainPlayerController::AbilityInputTagPressed(FGameplayTag InputTag)
+void AAuraPlayerController::AbilityInputTagPressed(FGameplayTag InputTag)
 {
 	GetASC()->AbilityInputTagPressed(InputTag);
 }
 
-void AMainPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
+void AAuraPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 {
 	GetASC()->AbilityInputTagReleased(InputTag);
 }
 
-void AMainPlayerController::AbilityInputTagHeld(FGameplayTag InputTag)
+void AAuraPlayerController::AbilityInputTagHeld(FGameplayTag InputTag)
 {
 	GetASC()->AbilityInputTagHeld(InputTag);
 }
 
-void AMainPlayerController::ConfirmPressed()
+void AAuraPlayerController::ConfirmPressed()
 {
 	GetASC()->ConfirmPressed();
 }
 
-void AMainPlayerController::CancelPressed()
+void AAuraPlayerController::CancelPressed()
 {
 	GetASC()->CancelPressed();
 }
 
-UAuraAbilitySystemComponent* AMainPlayerController::GetASC()
+UAuraAbilitySystemComponent* AAuraPlayerController::GetASC()
 {
 	if (AuraAbilitySystemComponent == nullptr)
 	{
@@ -368,7 +368,7 @@ UAuraAbilitySystemComponent* AMainPlayerController::GetASC()
 	return AuraAbilitySystemComponent;
 }
 
-void AMainPlayerController::UpdateTargetingActorLocation()
+void AAuraPlayerController::UpdateTargetingActorLocation()
 {
 	if (!bUsingGamepad && IsValid(TargetingActor))
 	{
@@ -376,7 +376,7 @@ void AMainPlayerController::UpdateTargetingActorLocation()
 	}
 }
 
-UMaterialParameterCollectionInstance* AMainPlayerController::GetOcclusionMaskParameterCollectionInstance()
+UMaterialParameterCollectionInstance* AAuraPlayerController::GetOcclusionMaskParameterCollectionInstance()
 {
 	if (OcclusionMaskParameterCollectionInstance == nullptr)
 	{
@@ -387,7 +387,7 @@ UMaterialParameterCollectionInstance* AMainPlayerController::GetOcclusionMaskPar
 	return OcclusionMaskParameterCollectionInstance;
 }
 
-void AMainPlayerController::UpdatePlayerLocationParameterCollection()
+void AAuraPlayerController::UpdatePlayerLocationParameterCollection()
 {
 	if (!OcclusionMaskParameterCollection) return;
 

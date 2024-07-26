@@ -13,7 +13,7 @@
 #include "Interaction/AttributeSetInterface.h"
 #include "Interaction/CombatInterface.h"
 #include "Interaction/PlayerInterface.h"
-#include "Player/MainPlayerController.h"
+#include "Player/AuraPlayerController.h"
 
 UAuraAttributeSet::UAuraAttributeSet()
 {
@@ -331,13 +331,13 @@ void UAuraAttributeSet::ShowFloatingText(
 {
 	if (Props.SourceCharacter != Props.TargetCharacter)
 	{
-		AMainPlayerController* SourcePC = Cast<AMainPlayerController>(Props.SourceController);
+		AAuraPlayerController* SourcePC = Cast<AAuraPlayerController>(Props.SourceController);
 
 		if (SourcePC)
 		{
 			SourcePC->ShowDamageNumber(Damage, Props.TargetCharacter, bParried, bCriticalHit, false);
-		} else if (AMainPlayerController* TargetPC =
-			Cast<AMainPlayerController>(Props.TargetController)
+		} else if (AAuraPlayerController* TargetPC =
+			Cast<AAuraPlayerController>(Props.TargetController)
 			)
 		{
 			TargetPC->ShowDamageNumber(Damage, Props.TargetCharacter, bParried, bCriticalHit, true);

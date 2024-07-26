@@ -7,7 +7,7 @@
 #include "AbilitySystem/Abilities/ActiveAbility.h"
 #include "Actor/TargetingActor.h"
 #include "Aura/Aura.h"
-#include "Player/MainPlayerController.h"
+#include "Player/AuraPlayerController.h"
 
 UTargetData* UTargetData::
 	CreateTargetData(UGameplayAbility* OwningAbility)
@@ -49,8 +49,8 @@ void UTargetData::SendMouseOrGamepadData()
 {
 	FScopedPredictionWindow ScopedPrediction(AbilitySystemComponent.Get());
 	
-	AMainPlayerController* MainPC =
-		CastChecked<AMainPlayerController>(Ability->GetCurrentActorInfo()->PlayerController.Get());
+	AAuraPlayerController* MainPC =
+		CastChecked<AAuraPlayerController>(Ability->GetCurrentActorInfo()->PlayerController.Get());
 	UActiveAbility* AuraAbility = CastChecked<UActiveAbility>(Ability);
 	
 	FHitResult HitResult;
