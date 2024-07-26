@@ -109,17 +109,6 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FString("Amount of mana recovered over time")
 		);
 
-	GameplayTags.Attributes_Secondary_StaminaRegeneration = UGameplayTagsManager::Get()
-	.AddNativeGameplayTag(
-		FName("Attributes.Secondary.StaminaRegeneration"),
-		FString("Amount of stamina recovered over time")
-		);
-
-	GameplayTags.Attributes_Secondary_StaminaEfficiency = UGameplayTagsManager::Get().AddNativeGameplayTag(
-		FName("Attributes.Secondary.StaminaEfficiency"),
-		FString("Stamina cost reduction")
-		);
-
 	/*
 	 * SPECIAL ATTRIBUTES
 	 */
