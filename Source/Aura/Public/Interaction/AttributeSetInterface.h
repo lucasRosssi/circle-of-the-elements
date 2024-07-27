@@ -26,7 +26,7 @@ public:
 	void SetActionSpeed(float InActionSpeed);
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	float GetDamageMultiplier();
+	float GetPower();
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void SetTimeDilation(float InTimeDilation);

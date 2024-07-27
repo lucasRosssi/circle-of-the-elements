@@ -55,9 +55,9 @@ void AAuraPlayerState::SetActionSpeed_Implementation(float InActionSpeed)
 	}
 }
 
-float AAuraPlayerState::GetDamageMultiplier_Implementation()
+float AAuraPlayerState::GetPower_Implementation()
 {
-	return AttributeSet->GetDamageMultiplier();
+	return AttributeSet->GetPower();
 }
 
 void AAuraPlayerState::SetTimeDilation_Implementation(float InTimeDilation)

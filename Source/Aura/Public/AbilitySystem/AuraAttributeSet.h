@@ -60,10 +60,16 @@ public:
 	virtual void PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue) override;
 
 	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
+	
+	void AssignPrimeAttribute(const FGameplayTag& InAttributeTag);
 
 	/*
 	 * Primary attributes
 	 */
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Strength, Category = "Primary Attributes")
+	FGameplayAttributeData Prime;
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Prime);
 
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Strength, Category = "Primary Attributes")
 	FGameplayAttributeData Strength;
@@ -179,9 +185,9 @@ public:
 	FGameplayAttributeData CooldownReduction;
 	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, CooldownReduction);
 	
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_DamageMultiplier, Category = "Special Attributes")
-	FGameplayAttributeData DamageMultiplier;
-	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, DamageMultiplier);
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Power, Category = "Special Attributes")
+	FGameplayAttributeData Power;
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Power);
 
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_TimeDilation, Category = "Special Attributes")
 	FGameplayAttributeData TimeDilation;
@@ -220,6 +226,8 @@ public:
 	/*
 	 * Primary
 	 */
+	UFUNCTION()
+	void OnRep_Prime(const FGameplayAttributeData& OldPrime) const;
 
 	UFUNCTION()
 	void OnRep_Strength(const FGameplayAttributeData& OldStrength) const;
@@ -300,7 +308,7 @@ public:
 	void OnRep_CooldownReduction(const FGameplayAttributeData& OldCooldownReduction) const;
 
 	UFUNCTION()
-	void OnRep_DamageMultiplier(const FGameplayAttributeData& OldDamageMultiplier) const;
+	void OnRep_Power(const FGameplayAttributeData& OldDamageMultiplier) const;
 
 	UFUNCTION()
 	void OnRep_TimeDilation(const FGameplayAttributeData& OldTimeDilation) const;
@@ -325,4 +333,6 @@ private:
 	ICombatInterface* AvatarCombatInterface;
 
 	bool bAvatarDead = false;
+
+	FGameplayAttribute PrimeAttribute = FGameplayAttribute();
 };

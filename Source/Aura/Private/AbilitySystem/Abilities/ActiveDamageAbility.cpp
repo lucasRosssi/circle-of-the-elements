@@ -28,12 +28,8 @@ FAbilityParams UActiveDamageAbility::MakeAbilityParamsFromDefaults(AActor* Targe
 			CurrentDamage = CurrentDamage * (1.f + EffectChange * ComboIndex);
 		}
 	}
-
-	const float DamageMultiplier = IAttributeSetInterface::Execute_GetDamageMultiplier(
-		AbilityParams.SourceASC->GetOwnerActor()
-	);
 	
-	AbilityParams.DamageParams.BaseDamage = CurrentDamage * DamageMultiplier;
+	AbilityParams.DamageParams.BaseDamage = CurrentDamage;
 	
 	
 	return AbilityParams;

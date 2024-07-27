@@ -32,7 +32,7 @@ public:
 
 	/* Attribute Set Interface */
 	virtual void SetActionSpeed_Implementation(float InActionSpeed) override;
-	virtual float GetDamageMultiplier_Implementation() override;
+	virtual float GetPower_Implementation() override;
 	virtual void SetTimeDilation_Implementation(float InTimeDilation) override;
 	/* END Attribute Set Interface */
 

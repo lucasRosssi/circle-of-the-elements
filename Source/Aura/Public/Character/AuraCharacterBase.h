@@ -63,7 +63,6 @@ public:
 	virtual UNiagaraSystem* GetBloodEffect_Implementation() override;
 	virtual USoundBase* GetHitSound_Implementation() override;
 	virtual ECharacterType GetCharacterType_Implementation() override;
-	virtual ECharacterClass GetCharacterClass_Implementation() override;
 	virtual FOnASCRegistered& GetOnASCRegisteredDelegate() override;
 	virtual FOnDeath& GetOnDeathDelegate() override;
 	virtual void ApplyForce_Implementation(const FVector& InForce) override;
@@ -98,6 +97,14 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category="Character Defaults|Abilities|Startup")
 	TArray<TSubclassOf<UGameplayAbility>> NativeCharacterAbilities;
 
+	UPROPERTY(
+		EditDefaultsOnly,
+		BlueprintReadOnly,
+		Category="Character Defaults|Attributes",
+		meta=(Categories="Attributes.Primary")
+		)
+	FGameplayTag PrimeAttributeTag = FGameplayTag();
+
 protected:
 	virtual void BeginPlay() override;
 	
@@ -130,9 +137,6 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Defaults")
 	ECharacterType CharacterType = ECharacterType::Regular;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Defaults")
-	ECharacterClass CharacterClass = ECharacterClass::Warrior;
 	
 	UPROPERTY()
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
@@ -155,7 +159,7 @@ protected:
 	TSubclassOf<UGameplayEffect> DefaultRegenerationEffect;
 
 	void ApplyEffectToSelf(TSubclassOf<UGameplayEffect> GameplayEffectClass, float Level) const;
-	virtual void InitializeDefaultAttributes() const;
+	void InitializeDefaultAttributes() const;
 
 	virtual void AddCharacterAbilities();
 
