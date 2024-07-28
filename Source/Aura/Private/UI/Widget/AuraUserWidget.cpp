@@ -12,9 +12,9 @@ void UAuraUserWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	if (GetOwningMainPlayerController())
+	if (GetOwningAuraPlayerController())
 	{
-		GetOwningMainPlayerController()->GetUINavComponent()->InputTypeChangedDelegate.AddDynamic(
+		GetOwningAuraPlayerController()->GetUINavComponent()->InputTypeChangedDelegate.AddDynamic(
 			this,
 			&UAuraUserWidget::OnChangeInputDevice
 		);
@@ -50,7 +50,7 @@ AAuraHero* UAuraUserWidget::GetOwningHero()
 	return Hero;
 }
 
-AAuraPlayerController* UAuraUserWidget::GetOwningMainPlayerController()
+AAuraPlayerController* UAuraUserWidget::GetOwningAuraPlayerController()
 {
 	if (MainPlayerController == nullptr)
 	{
@@ -72,9 +72,9 @@ AAuraPlayerState* UAuraUserWidget::GetOwningAuraPlayerState()
 
 UTexture2D* UAuraUserWidget::GetInputActionIcon(const UInputAction* Action)
 {
-	if (!GetOwningMainPlayerController()) return nullptr;
+	if (!GetOwningAuraPlayerController()) return nullptr;
 	
-	const UUINavPCComponent* UINavComponent = GetOwningMainPlayerController()->GetUINavComponent();
+	const UUINavPCComponent* UINavComponent = GetOwningAuraPlayerController()->GetUINavComponent();
 	
 	EInputRestriction InputRestriction;
 	if (UINavComponent->IsUsingGamepad()) InputRestriction = EInputRestriction::Gamepad;
