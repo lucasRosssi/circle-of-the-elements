@@ -24,29 +24,53 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	
 	GameplayTags.Attributes_Primary_Strength = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Attributes.Primary.Strength"),
-		FString("Increases melee damage and maximum health")
+		FString("Increases Maximum Health and Stagger Resistance")
 		);
+	
+	GameplayTags.Attributes_Primary_Dexterity = UGameplayTagsManager::Get().AddNativeGameplayTag(
+			FName("Attributes.Primary.Dexterity"),
+			FString("Increases Action Speed and Parry Chance")
+			);
+	
+	GameplayTags.Attributes_Primary_Constitution = UGameplayTagsManager::Get().AddNativeGameplayTag(
+      		FName("Attributes.Primary.Constitution"),
+      		FString("Increases Armor and Recovery")
+      		);
 	
 	GameplayTags.Attributes_Primary_Intelligence = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Attributes.Primary.Intelligence"),
-		FString("Increases magic damage and maximum mana")
+		FString("Increases Maximum Mana")
 		);
 
-	GameplayTags.Attributes_Primary_Toughness = UGameplayTagsManager::Get().AddNativeGameplayTag(
-		FName("Attributes.Primary.Toughness"),
-		FString("Increases armor and maximum stamina")
+	GameplayTags.Attributes_Primary_Wisdom = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Attributes.Primary.Wisdom"),
+		FString("Increases Critical Rate and Critical Damage")
 		);
 
-	GameplayTags.Attributes_Primary_Agility = UGameplayTagsManager::Get().AddNativeGameplayTag(
-			FName("Attributes.Primary.Agility"),
-			FString("Increases movement speed and stamina efficiency")
+	GameplayTags.Attributes_Primary_Charisma = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Attributes.Primary.Charisma"),
+		FString("Increases Cooldown Reduction and Status Effects Duration")
+		);
+
+	/*
+	 * VITAL ATTRIBUTES
+	 */
+
+	GameplayTags.Attributes_Vital = UGameplayTagsManager::Get().AddNativeGameplayTag(
+			FName("Attributes.Vital"),
+			FString("Vital attributes")
 			);
 
-	GameplayTags.Attributes_Primary_Finesse = UGameplayTagsManager::Get().AddNativeGameplayTag(
-		FName("Attributes.Primary.Finesse"),
-		FString("Increases action speed and critical rate")
-		);
+	GameplayTags.Attributes_Vital_MaxHealth = UGameplayTagsManager::Get().AddNativeGameplayTag(
+			FName("Attributes.Vital.MaxHealth"),
+			FString("Maximum amount of health")
+			);
 
+	GameplayTags.Attributes_Vital_MaxMana = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Attributes.Vital.MaxMana"),
+		FString("Maximum amount of mana")
+		);
+	
 	/*
 	 * SECONDARY ATTRIBUTES
 	 */
@@ -54,21 +78,6 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	GameplayTags.Attributes_Secondary = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Attributes.Secondary"),
 		FString("Secondary attribute tags")
-		);
-
-	GameplayTags.Attributes_Secondary_MaxHealth = UGameplayTagsManager::Get().AddNativeGameplayTag(
-		FName("Attributes.Secondary.MaxHealth"),
-		FString("Maximum amount of health")
-		);
-
-	GameplayTags.Attributes_Secondary_MaxMana = UGameplayTagsManager::Get().AddNativeGameplayTag(
-		FName("Attributes.Secondary.MaxMana"),
-		FString("Maximum amount of mana")
-		);
-
-	GameplayTags.Attributes_Secondary_MaxStamina = UGameplayTagsManager::Get().AddNativeGameplayTag(
-		FName("Attributes.Secondary.MaxStamina"),
-		FString("Maximum amount of stamina")
 		);
 	
 	GameplayTags.Attributes_Secondary_Armor = UGameplayTagsManager::Get().AddNativeGameplayTag(
@@ -78,13 +87,12 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 
 	GameplayTags.Attributes_Secondary_ActionSpeed = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Attributes.Secondary.ActionSpeed"),
-		FString("Attack, cast and skill speed")
+		FString("Movement, attack, cast and skill speed")
 		);
-
-	GameplayTags.Attributes_Secondary_MovementSpeed = UGameplayTagsManager::Get()
-	.AddNativeGameplayTag(
-		FName("Attributes.Secondary.MovementSpeed"),
-		FString("Running speed and dodge range")
+	
+	GameplayTags.Attributes_Secondary_CooldownReduction = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Attributes.Secondary.CooldownReduction"),
+		FString("Percentage of cooldown time reduced")
 		);
 
 	GameplayTags.Attributes_Secondary_CriticalRate = UGameplayTagsManager::Get().AddNativeGameplayTag(
@@ -108,7 +116,12 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FName("Attributes.Secondary.ManaRegeneration"),
 		FString("Amount of mana recovered over time")
 		);
-
+	
+	GameplayTags.Attributes_Secondary_ParryChance = UGameplayTagsManager::Get().AddNativeGameplayTag(
+	FName("Attributes.Secondary.ParryChance"),
+	FString("Chance to parry an attack and negate damage")
+	);
+	
 	/*
 	 * SPECIAL ATTRIBUTES
 	 */
@@ -117,20 +130,10 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 			FName("Attributes.Special"),
 			FString("Special attribute tags")
 			);
-	
-	GameplayTags.Attributes_Special_ParryChance = UGameplayTagsManager::Get().AddNativeGameplayTag(
-		FName("Attributes.Special.ParryChance"),
-		FString("Chance to parry an attack and negate damage")
-		);
 
-	GameplayTags.Attributes_Special_CooldownReduction = UGameplayTagsManager::Get().AddNativeGameplayTag(
-		FName("Attributes.Special.CooldownReduction"),
-		FString("Percentage of cooldown time reduced")
-		);
-
-	GameplayTags.Attributes_Special_DamageMultiplier = UGameplayTagsManager::Get().AddNativeGameplayTag(
-		FName("Attributes.Special.DamageMultiplier"),
-		FString("How much of the base damage is dealt")
+	GameplayTags.Attributes_Special_Power = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Attributes.Special.Power"),
+		FString("Multiplies base damage dealt")
 		);
 
 	/*

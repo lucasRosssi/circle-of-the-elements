@@ -60,30 +60,40 @@ public:
 	virtual void PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue) override;
 
 	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
+	
+	void AssignPrimeAttribute(const FGameplayTag& InAttributeTag);
 
 	/*
 	 * Primary attributes
 	 */
 
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Strength, Category = "Primary Attributes")
+	FGameplayAttributeData Prime;
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Prime);
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Strength, Category = "Primary Attributes")
 	FGameplayAttributeData Strength;
 	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Strength);
 
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Dexterity, Category = "Primary Attributes")
+	FGameplayAttributeData Dexterity;
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Dexterity);
+	
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Constitution, Category = "Primary Attributes")
+	FGameplayAttributeData Constitution;
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Constitution);
+	
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Intelligence, Category = "Primary Attributes")
 	FGameplayAttributeData Intelligence;
 	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Intelligence);
 
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Toughness, Category = "Primary Attributes")
-	FGameplayAttributeData Toughness;
-	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Toughness);
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Wisdom, Category = "Primary Attributes")
+	FGameplayAttributeData Wisdom;
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Wisdom);
 
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Agility, Category = "Primary Attributes")
-	FGameplayAttributeData Agility;
-	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Agility);
-
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Finesse, Category = "Primary Attributes")
-	FGameplayAttributeData Finesse;
-	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Finesse);
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Charisma, Category = "Primary Attributes")
+	FGameplayAttributeData Charisma;
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Charisma);
 
 	/*
 	 * Secondary attributes
@@ -113,22 +123,6 @@ public:
 	FGameplayAttributeData ManaRegeneration;
 	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, ManaRegeneration);
 
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_MaxStamina, Category = "Secondary Attributes")
-	FGameplayAttributeData MaxStamina;
-	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, MaxStamina);
-	
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_MovementSpeed, Category = "Secondary Attributes")
-	FGameplayAttributeData MovementSpeed;
-	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, MovementSpeed);
-
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_StaminaEfficiency, Category = "Secondary Attributes")
-	FGameplayAttributeData StaminaEfficiency;
-	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, StaminaEfficiency);
-
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_StaminaRegeneration, Category = "Secondary Attributes")
-	FGameplayAttributeData StaminaRegeneration;
-	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, StaminaRegeneration);
-
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_MaxHealth, Category = "Vital Attributes")
 	FGameplayAttributeData MaxHealth;
 	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, MaxHealth);
@@ -147,11 +141,7 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Mana, Category = "Vital Attributes")
 	FGameplayAttributeData Mana;
-	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Mana);
-
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Stamina, Category = "Vital Attributes")
-	FGameplayAttributeData Stamina;
-	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Stamina);
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Mana)
 
 	/*
 	 * Resistance attributes
@@ -195,9 +185,9 @@ public:
 	FGameplayAttributeData CooldownReduction;
 	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, CooldownReduction);
 	
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_DamageMultiplier, Category = "Special Attributes")
-	FGameplayAttributeData DamageMultiplier;
-	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, DamageMultiplier);
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Power, Category = "Special Attributes")
+	FGameplayAttributeData Power;
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Power);
 
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_TimeDilation, Category = "Special Attributes")
 	FGameplayAttributeData TimeDilation;
@@ -232,28 +222,30 @@ public:
 
 	UFUNCTION()
 	void OnRep_Mana(const FGameplayAttributeData& OldMana) const;
-
-	UFUNCTION()
-	void OnRep_Stamina(const FGameplayAttributeData& OldStamina) const;
 	
 	/*
 	 * Primary
 	 */
+	UFUNCTION()
+	void OnRep_Prime(const FGameplayAttributeData& OldPrime) const;
 
 	UFUNCTION()
 	void OnRep_Strength(const FGameplayAttributeData& OldStrength) const;
 
 	UFUNCTION()
+	void OnRep_Dexterity(const FGameplayAttributeData& OldDexterity) const;
+	
+	UFUNCTION()
+	void OnRep_Constitution(const FGameplayAttributeData& OldConstitution) const;
+	
+	UFUNCTION()
 	void OnRep_Intelligence(const FGameplayAttributeData& OldIntelligence) const;
+	
+	UFUNCTION()
+	void OnRep_Wisdom(const FGameplayAttributeData& OldWisdom) const;
 
 	UFUNCTION()
-	void OnRep_Toughness(const FGameplayAttributeData& OldToughness) const;
-
-	UFUNCTION()
-	void OnRep_Agility(const FGameplayAttributeData& OldAgility) const;
-
-	UFUNCTION()
-	void OnRep_Finesse(const FGameplayAttributeData& OldFinesse) const;
+	void OnRep_Charisma(const FGameplayAttributeData& OldCharisma) const;
 
 	/*
 	 * Secondary
@@ -282,18 +274,6 @@ public:
 
 	UFUNCTION()
 	void OnRep_ManaRegeneration(const FGameplayAttributeData& OldManaRegeneration) const;
-
-	UFUNCTION()
-	void OnRep_MaxStamina(const FGameplayAttributeData& OldMaxStamina) const;
-
-	UFUNCTION()
-	void OnRep_MovementSpeed(const FGameplayAttributeData& OldMovementSpeed) const;
-
-	UFUNCTION()
-	void OnRep_StaminaEfficiency(const FGameplayAttributeData& OldStaminaEfficiency) const;
-
-	UFUNCTION()
-	void OnRep_StaminaRegeneration(const FGameplayAttributeData& OldStaminaRegeneration) const;
 
 	/*
 	 * Resistance
@@ -328,7 +308,7 @@ public:
 	void OnRep_CooldownReduction(const FGameplayAttributeData& OldCooldownReduction) const;
 
 	UFUNCTION()
-	void OnRep_DamageMultiplier(const FGameplayAttributeData& OldDamageMultiplier) const;
+	void OnRep_Power(const FGameplayAttributeData& OldDamageMultiplier) const;
 
 	UFUNCTION()
 	void OnRep_TimeDilation(const FGameplayAttributeData& OldTimeDilation) const;
@@ -353,4 +333,6 @@ private:
 	ICombatInterface* AvatarCombatInterface;
 
 	bool bAvatarDead = false;
+
+	FGameplayAttribute PrimeAttribute = FGameplayAttribute();
 };

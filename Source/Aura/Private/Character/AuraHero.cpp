@@ -168,6 +168,7 @@ void AAuraHero::InitAbilityActorInfo()
 	AbilitySystemComponent = AuraPlayerState->GetAbilitySystemComponent();
 	OnASCRegistered.Broadcast(AbilitySystemComponent);
 	AttributeSet = AuraPlayerState->GetAttributeSet();
+	AttributeSet->AssignPrimeAttribute(PrimeAttributeTag);
 	
 	AbilitySystemComponent->InitAbilityActorInfo(AuraPlayerState, this);
 

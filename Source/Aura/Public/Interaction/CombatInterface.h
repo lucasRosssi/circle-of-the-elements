@@ -81,9 +81,6 @@ public:
 	ECharacterType GetCharacterType();
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	ECharacterClass GetCharacterClass();
-
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void ApplyForce(const FVector& InForce);
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)

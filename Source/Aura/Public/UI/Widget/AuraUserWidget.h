@@ -28,7 +28,7 @@ public:
 	AAuraHero* GetOwningHero();
 
 	UFUNCTION(BlueprintPure, meta = (HidePin = "Target", DefaultToSelf = "Target"))
-	AAuraPlayerController* GetOwningMainPlayerController();
+	AAuraPlayerController* GetOwningAuraPlayerController();
 
 	UFUNCTION(BlueprintPure, meta = (HidePin = "Target", DefaultToSelf = "Target"))
 	AAuraPlayerState* GetOwningAuraPlayerState();

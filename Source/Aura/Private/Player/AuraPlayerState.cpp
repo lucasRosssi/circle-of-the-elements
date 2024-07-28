@@ -47,14 +47,6 @@ UAuraAbilitySystemComponent* AAuraPlayerState::GetAuraASC()
 	return AuraASC;
 }
 
-void AAuraPlayerState::SetMovementSpeed_Implementation(float InMovementSpeed)
-{
-	if (const auto Character = GetCharacterBase())
-	{
-		Character->ChangeMovementSpeed(InMovementSpeed);
-	}
-}
-
 void AAuraPlayerState::SetActionSpeed_Implementation(float InActionSpeed)
 {
 	if (const auto Character = GetCharacterBase())
@@ -63,9 +55,9 @@ void AAuraPlayerState::SetActionSpeed_Implementation(float InActionSpeed)
 	}
 }
 
-float AAuraPlayerState::GetDamageMultiplier_Implementation()
+float AAuraPlayerState::GetPower_Implementation()
 {
-	return AttributeSet->GetDamageMultiplier();
+	return AttributeSet->GetPower();
 }
 
 void AAuraPlayerState::SetTimeDilation_Implementation(float InTimeDilation)

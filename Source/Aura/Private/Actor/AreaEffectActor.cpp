@@ -61,7 +61,8 @@ void AAreaEffectActor::BeginDestroy()
 {
 	for (auto HandlePair = ActiveEffectHandles.CreateIterator(); HandlePair; ++HandlePair)
 	{
-		HandlePair->Value->RemoveActiveGameplayEffect(HandlePair->Key, -1);
+		if (!IsValid(HandlePair.Value())) continue;
+		HandlePair.Value()->RemoveActiveGameplayEffect(HandlePair->Key, -1);
 		HandlePair.RemoveCurrent();
 	}
 

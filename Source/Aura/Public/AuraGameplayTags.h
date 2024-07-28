@@ -20,23 +20,25 @@ public:
 	FGameplayTag Attributes;
 	FGameplayTag Attributes_Primary;
 	FGameplayTag Attributes_Primary_Strength;
+	FGameplayTag Attributes_Primary_Dexterity;
+	FGameplayTag Attributes_Primary_Constitution;
 	FGameplayTag Attributes_Primary_Intelligence;
-	FGameplayTag Attributes_Primary_Toughness;
-	FGameplayTag Attributes_Primary_Agility;
-	FGameplayTag Attributes_Primary_Finesse;
+	FGameplayTag Attributes_Primary_Wisdom;
+	FGameplayTag Attributes_Primary_Charisma;
 
-	FGameplayTag Attributes_Secondary;
-	FGameplayTag Attributes_Secondary_MaxHealth;
-	FGameplayTag Attributes_Secondary_MaxMana;
-	FGameplayTag Attributes_Secondary_MaxStamina;
+	FGameplayTag Attributes_Vital;
+	FGameplayTag Attributes_Vital_MaxHealth;
+	FGameplayTag Attributes_Vital_MaxMana;
 	
-  FGameplayTag Attributes_Secondary_Armor;
-  FGameplayTag Attributes_Secondary_ActionSpeed;
-  FGameplayTag Attributes_Secondary_MovementSpeed;
-  FGameplayTag Attributes_Secondary_CriticalRate;
-  FGameplayTag Attributes_Secondary_CriticalDamage;
-  FGameplayTag Attributes_Secondary_HealthRegeneration;
-  FGameplayTag Attributes_Secondary_ManaRegeneration;
+	FGameplayTag Attributes_Secondary;
+	FGameplayTag Attributes_Secondary_Armor;
+	FGameplayTag Attributes_Secondary_ActionSpeed;
+	FGameplayTag Attributes_Secondary_CooldownReduction;
+	FGameplayTag Attributes_Secondary_CriticalRate;
+	FGameplayTag Attributes_Secondary_CriticalDamage;
+	FGameplayTag Attributes_Secondary_HealthRegeneration;
+	FGameplayTag Attributes_Secondary_ManaRegeneration;
+	FGameplayTag Attributes_Secondary_ParryChance;
 
 	FGameplayTag Attributes_Resistance;
 	FGameplayTag Attributes_Resistance_Physical;
@@ -47,9 +49,7 @@ public:
 	FGameplayTag Attributes_Resistance_Necrotic;
 
 	FGameplayTag Attributes_Special;
-	FGameplayTag Attributes_Special_ParryChance;
-	FGameplayTag Attributes_Special_CooldownReduction;
-	FGameplayTag Attributes_Special_DamageMultiplier;
+	FGameplayTag Attributes_Special_Power;
 
 	FGameplayTag Attributes_Meta;
 	FGameplayTag Attributes_Meta_IncomingXP;

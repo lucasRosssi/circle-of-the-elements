@@ -25,8 +25,8 @@ float UMMC_Cooldown::CalculateBaseMagnitude_Implementation(const FGameplayEffect
 
 	float CooldownReduction = 0;
 	GetCapturedAttributeMagnitude(CooldownReductionDef, Spec, EvaluationParameters, CooldownReduction);
-	CooldownReduction = FMath::Min<float>(CooldownReduction, 100.f);
+	CooldownReduction = FMath::Min<float>(CooldownReduction, 1.f);
 	
-	return (100.f - CooldownReduction) / 100;
+	return 1.f - CooldownReduction;
 }
 

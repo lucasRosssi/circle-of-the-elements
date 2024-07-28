@@ -11,6 +11,7 @@
 
 struct AuraDamageStatics
 {
+	DECLARE_ATTRIBUTE_CAPTUREDEF(Power);
 	DECLARE_ATTRIBUTE_CAPTUREDEF(Armor);
 	DECLARE_ATTRIBUTE_CAPTUREDEF(ParryChance);
 	DECLARE_ATTRIBUTE_CAPTUREDEF(CriticalRate);
@@ -26,6 +27,12 @@ struct AuraDamageStatics
 	
 	AuraDamageStatics()
 	{
+		DEFINE_ATTRIBUTE_CAPTUREDEF(
+			UAuraAttributeSet,
+			Power,
+			Source,
+			false
+		);
 		DEFINE_ATTRIBUTE_CAPTUREDEF(
 			UAuraAttributeSet,
 			Armor,
@@ -88,8 +95,9 @@ struct AuraDamageStatics
 		);
 
 		const FAuraGameplayTags& Tags = FAuraGameplayTags::Get();
+		TagsToCaptureDefs.Add(Tags.Attributes_Special_Power, PowerDef);
 		TagsToCaptureDefs.Add(Tags.Attributes_Secondary_Armor, ArmorDef);
-		TagsToCaptureDefs.Add(Tags.Attributes_Special_ParryChance, ParryChanceDef);
+		TagsToCaptureDefs.Add(Tags.Attributes_Secondary_ParryChance, ParryChanceDef);
 		TagsToCaptureDefs.Add(Tags.Attributes_Secondary_CriticalRate, CriticalRateDef);
 		TagsToCaptureDefs.Add(Tags.Attributes_Secondary_CriticalDamage, CriticalDamageDef);
 		TagsToCaptureDefs.Add(Tags.Attributes_Resistance_Physical, PhysicalResistanceDef);
@@ -111,6 +119,7 @@ static const AuraDamageStatics& DamageStatics()
 UExecCalc_Damage::UExecCalc_Damage()
 {
 	RelevantAttributesToCapture.Add(DamageStatics().ArmorDef);
+	RelevantAttributesToCapture.Add(DamageStatics().PowerDef);
 	RelevantAttributesToCapture.Add(DamageStatics().ParryChanceDef);
 	RelevantAttributesToCapture.Add(DamageStatics().CriticalRateDef);
 	RelevantAttributesToCapture.Add(DamageStatics().CriticalDamageDef);
@@ -179,9 +188,9 @@ void UExecCalc_Damage::Execute_Implementation(
 			EvaluationParams,
 			Resistance
 		);
-		Resistance = FMath::Min(Resistance, 100.f);
+		Resistance = FMath::Min(Resistance, 1.f);
 
-		DamageTypeValue *= ( 100.f - Resistance ) / 100.f;
+		DamageTypeValue *= 1.f - Resistance;
 
 		if (UAuraAbilitySystemLibrary::IsRadialDamage(EffectContextHandle))
 		{
@@ -211,7 +220,7 @@ void UExecCalc_Damage::Execute_Implementation(
 		TargetParryChance
 	);
 	TargetParryChance = FMath::Max<float>(TargetParryChance, 0.f);
-	const bool bParried = FMath::RandRange(1, 100) <= TargetParryChance;
+	const bool bParried = FMath::FRandRange(0.f, 1.f) <= TargetParryChance;
 
 	UAuraAbilitySystemLibrary::SetIsParried(EffectContextHandle, bParried);
 
@@ -221,6 +230,15 @@ void UExecCalc_Damage::Execute_Implementation(
 	}
 	else
 	{
+		float SourcePower = 0.f;
+		ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(
+			DamageStatics().PowerDef,
+			EvaluationParams,
+			SourcePower
+		);
+
+		Damage *= SourcePower;
+		
 		float SourceCriticalRate = 0.f;
 		ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(
 			DamageStatics().CriticalRateDef,
@@ -228,7 +246,7 @@ void UExecCalc_Damage::Execute_Implementation(
 			SourceCriticalRate
 		);
 		SourceCriticalRate = FMath::Max<float>(SourceCriticalRate, 0.f);
-		const bool bCriticalHit = FMath::RandRange(1, 100) <= SourceCriticalRate;
+		const bool bCriticalHit = FMath::FRandRange(0.f, 1.f) <= SourceCriticalRate;
 
 		UAuraAbilitySystemLibrary::SetIsCriticalHit(EffectContextHandle, bCriticalHit);
 
@@ -240,9 +258,9 @@ void UExecCalc_Damage::Execute_Implementation(
 				EvaluationParams,
 				SourceCriticalDamage
 			);
-			SourceCriticalDamage = FMath::Max<float>(SourceCriticalDamage, 150.f);
+			SourceCriticalDamage = FMath::Max<float>(SourceCriticalDamage, 1.5f);
 
-			Damage *= SourceCriticalDamage / 100.f;
+			Damage *= SourceCriticalDamage;
 		}
 		
 		
@@ -253,7 +271,7 @@ void UExecCalc_Damage::Execute_Implementation(
 			TargetArmor
 		);
 
-		Damage *= (100 - TargetArmor) / 100.f;
+		Damage *= 1.f - TargetArmor;
 	}
 
 	const FGameplayModifierEvaluatedData EvaluatedData(

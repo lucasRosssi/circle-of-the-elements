@@ -73,19 +73,14 @@ void AAuraEnemy::Die(const FVector& DeathImpulse)
 	Super::Die(DeathImpulse);
 }
 
-void AAuraEnemy::SetMovementSpeed_Implementation(float InMovementSpeed)
-{
-	ChangeMovementSpeed(InMovementSpeed);
-}
-
 void AAuraEnemy::SetActionSpeed_Implementation(float InActionSpeed)
 {
 	ChangeActionSpeed(InActionSpeed);
 }
 
-float AAuraEnemy::GetDamageMultiplier_Implementation()
+float AAuraEnemy::GetPower_Implementation()
 {
-	return AttributeSet->GetDamageMultiplier();
+	return AttributeSet->GetPower();
 }
 
 void AAuraEnemy::SetTimeDilation_Implementation(float InTimeDilation)
@@ -143,14 +138,4 @@ void AAuraEnemy::InitAbilityActorInfo()
 		InitializeDefaultAttributes();
 	}
 	OnASCRegistered.Broadcast(AbilitySystemComponent);
-}
-
-void AAuraEnemy::InitializeDefaultAttributes() const
-{
-	UAuraAbilitySystemLibrary::InitializeDefaultAttributes(
-		this,
-		CharacterClass,
-		Level,
-		AbilitySystemComponent
-	);
 }

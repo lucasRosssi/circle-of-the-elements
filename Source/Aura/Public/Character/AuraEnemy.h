@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "Character/AuraCharacterBase.h"
 #include "Interaction/AttributeSetInterface.h"
-#include "Interaction/TargetInterface.h"
 #include "UI/WidgetController/OverlayWidgetController.h"
 #include "AuraEnemy.generated.h"
 
@@ -30,9 +29,8 @@ public:
 	/** end Combat Interface */
 
 	/* Attribute Set Interface */
-	virtual void SetMovementSpeed_Implementation(float InMovementSpeed) override;
 	virtual void SetActionSpeed_Implementation(float InActionSpeed) override;
-	virtual float GetDamageMultiplier_Implementation() override;
+	virtual float GetPower_Implementation() override;
 	virtual void SetTimeDilation_Implementation(float InTimeDilation) override;
 	/* END Attribute Set Interface */
 
@@ -46,7 +44,6 @@ protected:
 	virtual void BeginPlay() override;
 
 	virtual void InitAbilityActorInfo() override;
-	virtual void InitializeDefaultAttributes() const override;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Class Defaults")
 	int32 Level = 1;

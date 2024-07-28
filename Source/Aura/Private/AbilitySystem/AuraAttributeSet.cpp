@@ -27,29 +27,30 @@ void UAuraAttributeSet::GetLifetimeReplicatedProps(
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	// Primary
+	DOREPLIFETIME_CONDITION_NOTIFY(UAuraAttributeSet, Prime, COND_None, REPNOTIFY_Always);
+	
 	DOREPLIFETIME_CONDITION_NOTIFY(UAuraAttributeSet, Strength, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UAuraAttributeSet, Dexterity, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UAuraAttributeSet, Constitution, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UAuraAttributeSet, Intelligence, COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UAuraAttributeSet, Toughness, COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UAuraAttributeSet, Agility, COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UAuraAttributeSet, Finesse, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UAuraAttributeSet, Wisdom, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UAuraAttributeSet, Charisma, COND_None, REPNOTIFY_Always);
 
 	// Secondary
 	DOREPLIFETIME_CONDITION_NOTIFY(UAuraAttributeSet, ActionSpeed, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UAuraAttributeSet, Armor, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UAuraAttributeSet, CooldownReduction, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UAuraAttributeSet, CriticalDamage, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UAuraAttributeSet, CriticalRate, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UAuraAttributeSet, HealthRegeneration, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UAuraAttributeSet, ManaRegeneration, COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UAuraAttributeSet, MaxStamina, COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UAuraAttributeSet, MovementSpeed, COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UAuraAttributeSet, StaminaEfficiency, COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UAuraAttributeSet, StaminaRegeneration, COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UAuraAttributeSet, MaxHealth, COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UAuraAttributeSet, MaxMana, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UAuraAttributeSet, ParryChance, COND_None, REPNOTIFY_Always);
 	
 	// Vital
 	DOREPLIFETIME_CONDITION_NOTIFY(UAuraAttributeSet, Health, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UAuraAttributeSet, MaxHealth, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UAuraAttributeSet, Mana, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UAuraAttributeSet, MaxMana, COND_None, REPNOTIFY_Always);
 	
 	// Resistance
 	DOREPLIFETIME_CONDITION_NOTIFY(UAuraAttributeSet, PhysicalResistance, COND_None, REPNOTIFY_Always);
@@ -60,9 +61,7 @@ void UAuraAttributeSet::GetLifetimeReplicatedProps(
 	DOREPLIFETIME_CONDITION_NOTIFY(UAuraAttributeSet, NecroticResistance, COND_None, REPNOTIFY_Always);
 	
 	// Special
-	DOREPLIFETIME_CONDITION_NOTIFY(UAuraAttributeSet, ParryChance, COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UAuraAttributeSet, CooldownReduction, COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UAuraAttributeSet, DamageMultiplier, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UAuraAttributeSet, Power, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UAuraAttributeSet, TimeDilation, COND_None, REPNOTIFY_Always);
 }
 
@@ -133,6 +132,11 @@ void UAuraAttributeSet::PostAttributeChange(
 {
 	Super::PostAttributeChange(Attribute, OldValue, NewValue);
 
+	if (Attribute == PrimeAttribute)
+	{
+		SetPrime(NewValue);
+	}
+
 	if (Attribute == GetMaxHealthAttribute())
 	{
 		const float Amount = NewValue - OldValue;
@@ -157,11 +161,6 @@ void UAuraAttributeSet::PostAttributeChange(
 		{
 			SetMana(FMath::Min(GetMana(), GetMaxMana()));
 		}
-	}
-
-	if (Attribute == GetMovementSpeedAttribute())
-	{
-		IAttributeSetInterface::Execute_SetMovementSpeed(GetOwningActor(), NewValue);
 	}
 
 	if (Attribute == GetActionSpeedAttribute())
@@ -240,9 +239,7 @@ void UAuraAttributeSet::HandleIncomingDamage(
 	}
 	else
 	{
-		const float SourceDamageMultiplier = Props.SourceASC
-			->GetNumericAttribute(GetDamageMultiplierAttribute());
-		LocalIncomingDamage = GetIncomingDamage() * SourceDamageMultiplier;
+		LocalIncomingDamage = GetIncomingDamage();
 		SetIncomingDamage(0.f);
 		bParried = UAuraAbilitySystemLibrary::IsParried(Props.EffectContextHandle);
 		bCriticalHit = UAuraAbilitySystemLibrary::IsCriticalHit(Props.EffectContextHandle);
@@ -322,6 +319,36 @@ void UAuraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 	}
 }
 
+void UAuraAttributeSet::AssignPrimeAttribute(const FGameplayTag& InAttributeTag)
+{
+	const FAuraGameplayTags& GameplayTags = FAuraGameplayTags::Get();
+	
+	if (InAttributeTag.MatchesTagExact(GameplayTags.Attributes_Primary_Strength))
+	{
+		PrimeAttribute = GetStrengthAttribute();
+	}
+	else if (InAttributeTag.MatchesTagExact(GameplayTags.Attributes_Primary_Dexterity))
+	{
+		PrimeAttribute = GetDexterityAttribute();
+	}
+	else if (InAttributeTag.MatchesTagExact(GameplayTags.Attributes_Primary_Constitution))
+	{
+		PrimeAttribute = GetConstitutionAttribute();
+	}
+	else if (InAttributeTag.MatchesTagExact(GameplayTags.Attributes_Primary_Intelligence))
+	{
+		PrimeAttribute = GetIntelligenceAttribute();
+	}
+	else if (InAttributeTag.MatchesTagExact(GameplayTags.Attributes_Primary_Wisdom))
+	{
+		PrimeAttribute = GetWisdomAttribute();
+	}
+	else if (InAttributeTag.MatchesTagExact(GameplayTags.Attributes_Primary_Charisma))
+	{
+		PrimeAttribute = GetCharismaAttribute();
+	}
+}
+
 void UAuraAttributeSet::ShowFloatingText(
 	const FEffectProperties& Props,
 	float Damage,
@@ -389,11 +416,6 @@ void UAuraAttributeSet::OnRep_Mana(const FGameplayAttributeData& OldMana) const
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuraAttributeSet, Mana, OldMana);
 }
 
-void UAuraAttributeSet::OnRep_Stamina(const FGameplayAttributeData& OldStamina) const
-{
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuraAttributeSet, Stamina, OldStamina);
-}
-
 void UAuraAttributeSet::OnRep_MaxHealth(const FGameplayAttributeData& OldMaxHealth) const
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuraAttributeSet, MaxHealth, OldMaxHealth);
@@ -404,9 +426,24 @@ void UAuraAttributeSet::OnRep_MaxMana(const FGameplayAttributeData& OldMaxMana) 
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuraAttributeSet, MaxMana, OldMaxMana);
 }
 
+void UAuraAttributeSet::OnRep_Prime(const FGameplayAttributeData& OldPrime) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuraAttributeSet, Prime, OldPrime);
+}
+
 void UAuraAttributeSet::OnRep_Strength(const FGameplayAttributeData& OldStrength) const
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuraAttributeSet, Strength, OldStrength);
+}
+
+void UAuraAttributeSet::OnRep_Dexterity(const FGameplayAttributeData& OldDexterity) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuraAttributeSet, Dexterity, OldDexterity);
+}
+
+void UAuraAttributeSet::OnRep_Constitution(const FGameplayAttributeData& OldConstitution) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuraAttributeSet, Constitution, OldConstitution);
 }
 
 void UAuraAttributeSet::OnRep_Intelligence(const FGameplayAttributeData& OldIntelligence) const
@@ -414,19 +451,14 @@ void UAuraAttributeSet::OnRep_Intelligence(const FGameplayAttributeData& OldInte
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuraAttributeSet, Intelligence, OldIntelligence);
 }
 
-void UAuraAttributeSet::OnRep_Toughness(const FGameplayAttributeData& OldToughness) const
+void UAuraAttributeSet::OnRep_Wisdom(const FGameplayAttributeData& OldWisdom) const
 {
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuraAttributeSet, Toughness, OldToughness);
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuraAttributeSet, Wisdom, OldWisdom);
 }
 
-void UAuraAttributeSet::OnRep_Agility(const FGameplayAttributeData& OldAgility) const
+void UAuraAttributeSet::OnRep_Charisma(const FGameplayAttributeData& OldCharisma) const
 {
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuraAttributeSet, Agility, OldAgility);
-}
-
-void UAuraAttributeSet::OnRep_Finesse(const FGameplayAttributeData& OldFinesse) const
-{
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuraAttributeSet, Finesse, OldFinesse);
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuraAttributeSet, Charisma, OldCharisma);
 }
 
 void UAuraAttributeSet::OnRep_ActionSpeed(const FGameplayAttributeData& OldActionSpeed) const
@@ -459,28 +491,6 @@ void UAuraAttributeSet::OnRep_ManaRegeneration(const FGameplayAttributeData& Old
 const
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuraAttributeSet, ManaRegeneration, OldManaRegeneration);
-}
-
-void UAuraAttributeSet::OnRep_MaxStamina(const FGameplayAttributeData& OldMaxStamina) const
-{
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuraAttributeSet, MaxStamina, OldMaxStamina);
-}
-
-void UAuraAttributeSet::OnRep_MovementSpeed(const FGameplayAttributeData& OldMovementSpeed) const
-{
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuraAttributeSet, MovementSpeed, OldMovementSpeed);
-}
-
-void UAuraAttributeSet
-::OnRep_StaminaEfficiency(const FGameplayAttributeData& OldStaminaEfficiency) const
-{
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuraAttributeSet, StaminaEfficiency, OldStaminaEfficiency);
-}
-
-void UAuraAttributeSet
-::OnRep_StaminaRegeneration(const FGameplayAttributeData& OldStaminaRegeneration) const
-{
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuraAttributeSet, StaminaRegeneration, OldStaminaRegeneration);
 }
 
 void UAuraAttributeSet
@@ -530,10 +540,10 @@ void UAuraAttributeSet::OnRep_CooldownReduction(
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuraAttributeSet, CooldownReduction, OldCooldownReduction);
 }
 
-void UAuraAttributeSet::OnRep_DamageMultiplier(
+void UAuraAttributeSet::OnRep_Power(
 	const FGameplayAttributeData& OldDamageMultiplier) const
 {
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuraAttributeSet, DamageMultiplier, OldDamageMultiplier);
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAuraAttributeSet, Power, OldDamageMultiplier);
 }
 
 void UAuraAttributeSet::OnRep_TimeDilation(const FGameplayAttributeData& OldTimeDilation) const

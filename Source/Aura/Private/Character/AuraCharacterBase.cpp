@@ -218,11 +218,6 @@ ECharacterType AAuraCharacterBase::GetCharacterType_Implementation()
 	return CharacterType;
 }
 
-ECharacterClass AAuraCharacterBase::GetCharacterClass_Implementation()
-{
-	return CharacterClass;
-}
-
 FOnASCRegistered& AAuraCharacterBase::GetOnASCRegisteredDelegate()
 {
 	return OnASCRegistered;
@@ -336,24 +331,14 @@ void AAuraCharacterBase::DissolveCharacter()
 	}
 }
 
-void AAuraCharacterBase::ChangeMovementSpeed(float InMovementSpeed)
+void AAuraCharacterBase::ChangeActionSpeed(float InActionSpeed)
 {
-	GetCharacterMovement()->MaxWalkSpeed = DefaultWalkSpeed * InMovementSpeed / 100;
+	GetCharacterMovement()->MaxWalkSpeed = DefaultWalkSpeed * InActionSpeed;
 	
 	UCharacterAnimInstance* AnimInstance = Cast<UCharacterAnimInstance>(GetMesh()->GetAnimInstance());
 	if (AnimInstance)
 	{
-		const float AdditionalMoveSpeed = InMovementSpeed - 100;
-		AnimInstance->SetMovementPlayRate((100 + AdditionalMoveSpeed / 2) / 100); // Divides the additional by 2 as the full difference makes the animation weird
-	}
-}
-
-void AAuraCharacterBase::ChangeActionSpeed(float InActionSpeed)
-{
-	UCharacterAnimInstance* AnimInstance = Cast<UCharacterAnimInstance>(GetMesh()->GetAnimInstance());
-	if (AnimInstance)
-	{
-		AnimInstance->SetActionPlayRate(InActionSpeed / 100);
+		AnimInstance->SetActionPlayRate(InActionSpeed);
 	}
 }
 
