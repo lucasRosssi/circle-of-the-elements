@@ -61,6 +61,9 @@ public:
 	void ForEachAbility(const FForEachAbility& Delegate);
 
 	UFUNCTION(BlueprintCallable)
+	TArray<FGameplayTag> GetRandomizedAbilitiesFromLevel(int32 Level);
+
+	UFUNCTION(BlueprintCallable)
 	AAuraCharacterBase* GetAvatarCharacter();
 
 	static void SetExclusiveGameplayTagFromSpec(
@@ -131,6 +134,13 @@ protected:
 		const FGameplayTag& InputTag = FGameplayTag(),
 		int32 AbilityLevel = 1
 	);
+
+	UPROPERTY()
+	TArray<FGameplayTag> RandomizedAbilitiesTagsLevel_1;
+	UPROPERTY()
+	TArray<FGameplayTag> RandomizedAbilitiesTagsLevel_4;
+	UPROPERTY()
+	TArray<FGameplayTag> RandomizedAbilitiesTagsLevel_8;
 
 private:
 	UPROPERTY()
