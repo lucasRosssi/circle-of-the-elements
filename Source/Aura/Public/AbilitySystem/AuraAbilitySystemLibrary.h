@@ -10,6 +10,7 @@
 #include "UI/WidgetController/AuraWidgetController.h"
 #include "AuraAbilitySystemLibrary.generated.h"
 
+enum class ECharacterName : uint8;
 enum class ETargetTeam : uint8;
 class UStatusEffectInfo;
 struct FAbilityParams;
@@ -40,6 +41,13 @@ class AURA_API UAuraAbilitySystemLibrary : public UBlueprintFunctionLibrary
 	GENERATED_BODY()
 
 public:
+
+	UFUNCTION(
+		BlueprintPure,
+		Category = "AuraAbilitySystemLibrary"
+	)
+	static UAuraAbilitySystemComponent* GetAuraAbilitySystemComponent(AActor* Actor);
+	
 	/*
 	 * WIDGET CONTROLLER
 	 */
@@ -390,5 +398,19 @@ public:
 		FString& OutManaText,
 		FString& OutCooldownText
 		);
-	
+
+	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|UI", meta = (HidePin = "WorldContextObject", DefaultToSelf = "WorldContextObject"))
+	static TArray<FGameplayTag> GetAllAbilitiesFromLevel(
+		const UObject* WorldContextObject,
+		ECharacterName CharacterName,
+		int32 Level
+		);
+
+	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|UI", meta = (HidePin = "WorldContextObject", DefaultToSelf = "WorldContextObject"))
+	static TArray<FGameplayTag> GetRandomAbilitiesFromLevel(
+		const UObject* WorldContextObject,
+		ECharacterName CharacterName,
+		int32 Level,
+		int32 Amount
+		);
 };

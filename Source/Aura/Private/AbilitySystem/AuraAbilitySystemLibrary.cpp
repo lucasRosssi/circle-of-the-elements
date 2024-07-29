@@ -7,6 +7,7 @@
 #include "AuraAbilityTypes.h"
 #include "AuraGameplayTags.h"
 #include "AuraNamedArguments.h"
+#include "AbilitySystem/AuraAbilitySystemComponent.h"
 #include "AbilitySystem/AuraAttributeSet.h"
 #include "AbilitySystem/Abilities/ActiveDamageAbility.h"
 #include "AbilitySystem/Abilities/AreaEffectActorAbility.h"
@@ -24,6 +25,15 @@
 #include "Player/AuraPlayerState.h"
 #include "Player/AuraPlayerController.h"
 #include "UI/HUD/AuraHUD.h"
+
+UAuraAbilitySystemComponent* UAuraAbilitySystemLibrary::GetAuraAbilitySystemComponent(
+	AActor* Actor
+	)
+{
+	return Cast<UAuraAbilitySystemComponent>(
+		UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(Actor)
+		);
+}
 
 FWidgetControllerParams UAuraAbilitySystemLibrary::MakeWidgetControllerParams(
 	const UObject* WorldContextObject)
@@ -1013,6 +1023,55 @@ void UAuraAbilitySystemLibrary::MakeManaAndCooldownTextNextLevel(
 			NextCooldown
 		);
 	}
+}
+
+TArray<FGameplayTag> UAuraAbilitySystemLibrary::GetAllAbilitiesFromLevel(
+	const UObject* WorldContextObject,
+	ECharacterName CharacterName,
+	int32 Level
+	)
+{
+	TArray<FGameplayTag> AbilitiesTags;
+	const UAbilityInfo* AbilityInfo = GetAbilitiesInfo(WorldContextObject);
+
+	if (AbilityInfo == nullptr) return AbilitiesTags;
+
+	for (auto Info : AbilityInfo->FindAbilitiesFromCharacter(CharacterName))
+	{
+		if (Info.LevelRequirement == Level) AbilitiesTags.Add(Info.AbilityTag);
+	}
+
+	return AbilitiesTags;
+}
+
+TArray<FGameplayTag> UAuraAbilitySystemLibrary::GetRandomAbilitiesFromLevel(
+	const UObject* WorldContextObject,
+	ECharacterName CharacterName,
+	int32 Level,
+	int32 Amount
+	)
+{
+	TArray<FGameplayTag> RandomAbilitiesTags;
+	TArray<FGameplayTag> AllAbilitiesTags = GetAllAbilitiesFromLevel(
+		WorldContextObject, 
+		CharacterName,
+		Level
+		);
+
+	if (AllAbilitiesTags.IsEmpty()) return RandomAbilitiesTags;
+	
+	for (int32 i = 1; i <= Amount; i++)
+	{
+		const int32 index = FMath::RandRange(0, AllAbilitiesTags.Num() - 1);
+
+		if (AllAbilitiesTags.IsValidIndex(index))
+		{
+			RandomAbilitiesTags.Add(AllAbilitiesTags[index]);
+			AllAbilitiesTags.RemoveAt(index);
+		}
+	}
+
+	return RandomAbilitiesTags;
 }
 
 FGameplayEffectContextHandle UAuraAbilitySystemLibrary::ApplyAbilityEffect(

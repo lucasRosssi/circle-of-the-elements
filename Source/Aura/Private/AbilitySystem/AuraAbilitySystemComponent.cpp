@@ -8,6 +8,7 @@
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "AbilitySystem/Abilities/ActiveAbility.h"
 #include "AbilitySystem/Data/AbilityInfo.h"
+#include "Aura/Aura.h"
 #include "Aura/AuraLogChannels.h"
 #include "Character/AuraCharacterBase.h"
 #include "Interaction/PlayerInterface.h"
@@ -38,6 +39,26 @@ void UAuraAbilitySystemComponent::AddCharacterAbilities(
 
 	bStartupAbilitiesGiven = true;
 	AbilitiesGivenDelegate.Broadcast();
+	
+	const ECharacterName CharacterName = GetAvatarCharacter()->GetCharacterName();
+	RandomizedAbilitiesTagsLevel_1 = UAuraAbilitySystemLibrary::GetRandomAbilitiesFromLevel(
+		GetAvatarActor(),
+		CharacterName,
+		1,
+		MAX_AMOUNT_ABILITIES_PER_LEVEL
+		);
+	RandomizedAbilitiesTagsLevel_4 = UAuraAbilitySystemLibrary::GetRandomAbilitiesFromLevel(
+		GetAvatarActor(),
+		CharacterName,
+		4,
+		MAX_AMOUNT_ABILITIES_PER_LEVEL
+		);
+	RandomizedAbilitiesTagsLevel_8 = UAuraAbilitySystemLibrary::GetRandomAbilitiesFromLevel(
+		GetAvatarActor(),
+		CharacterName,
+		8,
+		MAX_AMOUNT_ABILITIES_PER_LEVEL
+		);
 }
 
 void UAuraAbilitySystemComponent::AbilityInputTagPressed(const FGameplayTag& InputTag)
@@ -140,6 +161,21 @@ void UAuraAbilitySystemComponent::ForEachAbility(const FForEachAbility& Delegate
 		{
 			UE_LOG(LogAura, Error, TEXT("Failed to execute delegate in %hs"), __FUNCTION__);
 		}
+	}
+}
+
+TArray<FGameplayTag> UAuraAbilitySystemComponent::GetRandomizedAbilitiesFromLevel(int32 Level)
+{
+	switch (Level)
+	{
+	case 1:
+		return RandomizedAbilitiesTagsLevel_1;
+	case 4:
+		return RandomizedAbilitiesTagsLevel_4;
+	case 8:
+		return RandomizedAbilitiesTagsLevel_8;
+	default:
+		return TArray<FGameplayTag>();
 	}
 }
 
