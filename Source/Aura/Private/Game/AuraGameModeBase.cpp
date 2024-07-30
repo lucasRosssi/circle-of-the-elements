@@ -6,6 +6,7 @@
 #include "Actor/Level/EnemySpawner.h"
 #include "Aura/AuraLogChannels.h"
 #include "Game/EncounterInfo.h"
+#include "Interaction/PlayerInterface.h"
 #include "Kismet/GameplayStatics.h"
 
 void AAuraGameModeBase::StartEncounter()
@@ -48,7 +49,7 @@ void AAuraGameModeBase::FinishEncounter()
 	GetWorld()->GetTimerManager().SetTimer(
 		SlowMotionTimerHandle,
 		this,
-		&AAuraGameModeBase::ResetTimeDilation,
+		&AAuraGameModeBase::PostFinishEncounter,
 		TimeDilationResetDelay * UGameplayStatics::GetGlobalTimeDilation(this),
 		false
 		);
@@ -75,9 +76,22 @@ void AAuraGameModeBase::OnEnemyKilled(AActor* Enemy)
 	}
 }
 
-void AAuraGameModeBase::ResetTimeDilation()
+void AAuraGameModeBase::PostFinishEncounter()
 {
 	UGameplayStatics::SetGlobalTimeDilation(this, 1.0f);
+
+	for (const auto Player : Players)
+	{
+		IPlayerInterface::SafeExec_AddToXP(Player, StackedXP);
+	}
+	StackedXP = 0.f;
+	
+	OnEncounterFinishedDelegate.Broadcast();
+}
+
+void AAuraGameModeBase::AddToXPStack(float InXP)
+{
+	StackedXP += InXP;
 }
 
 void AAuraGameModeBase::BeginPlay()

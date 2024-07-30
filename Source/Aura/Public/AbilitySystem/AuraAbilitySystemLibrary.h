@@ -10,6 +10,7 @@
 #include "UI/WidgetController/AuraWidgetController.h"
 #include "AuraAbilitySystemLibrary.generated.h"
 
+class UEncounterInfo;
 enum class ECharacterName : uint8;
 enum class ETargetTeam : uint8;
 class UStatusEffectInfo;
@@ -96,6 +97,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|StatusEffectsDefaults")
 	static UStatusEffectInfo* GetStatusEffectInfo(const UObject* WorldContextObject);
+
+	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|EncounterDefaults")
+	static UEncounterInfo* GetEncounterInfo(const UObject* WorldContextObject);
 
 	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|CharacterClassDefaults")
 	static void GiveStartupAbilities(
@@ -225,6 +229,9 @@ public:
 	/*
 	 * GAMEPLAY MECHANICS
 	 */
+
+	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|GameplayMechanics")
+	static void StackEncounterXP(const UObject* WorldContextObject, int32 InXP);
 
 	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|GameplayMechanics")
 	static FGameplayEffectContextHandle ApplyAbilityEffect(

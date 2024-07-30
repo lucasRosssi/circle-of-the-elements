@@ -16,6 +16,8 @@ class UStatusEffectInfo;
 class UAbilityInfo;
 class UCharacterInfo;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnEncounterFinished);
+
 /**
  * 
  */
@@ -25,6 +27,19 @@ class AURA_API AAuraGameModeBase : public AGameModeBase
 	GENERATED_BODY()
 
 public:
+	UFUNCTION(BlueprintCallable)
+	void StartEncounter();
+
+	void NextWave();
+
+	void FinishEncounter();
+
+	void PostFinishEncounter();
+
+	void AddToXPStack(float InXP);
+
+	FOnEncounterFinished OnEncounterFinishedDelegate;
+	
 	UPROPERTY(EditDefaultsOnly, Category="Game")
 	TObjectPtr<UCharacterInfo> CharacterClassInfo;
 
@@ -36,15 +51,6 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category="Game")
 	TObjectPtr<UEncounterInfo> EncounterInfo;
-
-	UFUNCTION(BlueprintCallable)
-	void StartEncounter();
-
-	void NextWave();
-
-	void FinishEncounter();
-
-	void ResetTimeDilation();
 
 protected:
 	virtual void BeginPlay() override;
@@ -90,8 +96,10 @@ protected:
 		meta=(EditCondition="bOverrideEnemyWaves")
 		)
 	TArray<FEnemyWave> EnemyWaves;
-
 	
+	UPROPERTY(BlueprintReadWrite,	Category="Player")
+	TArray<AActor*> Players;
+
 private:
 	UFUNCTION()
 	void OnEnemySpawned(AActor* Enemy);
@@ -106,4 +114,7 @@ private:
 
 	UPROPERTY()
 	TArray<AEnemySpawner*> EnemySpawners;
+
+	UPROPERTY()
+	float StackedXP = 0.f;
 };

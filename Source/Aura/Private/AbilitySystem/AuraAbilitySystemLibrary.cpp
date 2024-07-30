@@ -114,6 +114,15 @@ UStatusEffectInfo* UAuraAbilitySystemLibrary::GetStatusEffectInfo(const UObject*
 	return AuraGameMode->StatusEffectInfo;
 }
 
+UEncounterInfo* UAuraAbilitySystemLibrary::GetEncounterInfo(const UObject* WorldContextObject)
+{
+	const AAuraGameModeBase* AuraGameMode = CastChecked<AAuraGameModeBase>(
+		UGameplayStatics::GetGameMode(WorldContextObject)
+	);
+
+	return AuraGameMode->EncounterInfo;
+}
+
 void UAuraAbilitySystemLibrary::GiveStartupAbilities(
 		const UObject* WorldContextObject,
 		UAbilitySystemComponent* ASC
@@ -468,6 +477,15 @@ void UAuraAbilitySystemLibrary::SetAreaOrigin(
 	{
 		AuraEffectContext->SetAreaOrigin(InOrigin);
 	}
+}
+
+void UAuraAbilitySystemLibrary::StackEncounterXP(const UObject* WorldContextObject, int32 InXP)
+{
+	AAuraGameModeBase* AuraGameMode = CastChecked<AAuraGameModeBase>(
+		UGameplayStatics::GetGameMode(WorldContextObject)
+	);
+
+	AuraGameMode->AddToXPStack(InXP);
 }
 
 void UAuraAbilitySystemLibrary::GetAliveCharactersWithinRadius(
