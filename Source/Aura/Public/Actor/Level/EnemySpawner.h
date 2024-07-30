@@ -6,21 +6,46 @@
 #include "GameFramework/Actor.h"
 #include "EnemySpawner.generated.h"
 
+class UNiagaraSystem;
+class AAuraEnemy;
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEnemySpawned, AActor*, Enemy);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSpawnedEnemyDeath, AActor*, Enemy);
+
 UCLASS()
 class AURA_API AEnemySpawner : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
-	// Sets default values for this actor's properties
 	AEnemySpawner();
 
+	UFUNCTION(BlueprintCallable)
+	void AddEnemyClassToQueue(TSubclassOf<AAuraEnemy> EnemyClass);
+
+	UFUNCTION(BlueprintCallable)
+	void PreSpawn();
+
+	void SpawnNextEnemy();
+
+	FOnEnemySpawned EnemySpawnedDelegate;
+	FOnSpawnedEnemyDeath SpawnedEnemyDeathDelegate;
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Spawning")
+	TObjectPtr<UNiagaraSystem> SpawnEffect;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Spawning")
+	float SpawnDelay = 0.f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Spawning")
+	int32 EnemyLevel = 1;
+
+private:
+	UPROPERTY()
+	TArray<TSubclassOf<AAuraEnemy>> EnemyQueue;
+
+	UFUNCTION()
+	void OnSpawnedEnemyDeath(AActor* Enemy);
 };
