@@ -22,6 +22,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void AddEnemyClassToQueue(TSubclassOf<AAuraEnemy> EnemyClass);
+	void SpawnSystem();
 
 	UFUNCTION(BlueprintCallable)
 	void PreSpawn();
@@ -30,15 +31,17 @@ public:
 
 	FOnEnemySpawned EnemySpawnedDelegate;
 	FOnSpawnedEnemyDeath SpawnedEnemyDeathDelegate;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Spawning")
+	float PreSpawnDelayMax = 0.f;
 protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Spawning")
 	TObjectPtr<UNiagaraSystem> SpawnEffect;
-
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Spawning")
 	float SpawnDelay = 0.f;
-
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Spawning")
 	int32 EnemyLevel = 1;
 

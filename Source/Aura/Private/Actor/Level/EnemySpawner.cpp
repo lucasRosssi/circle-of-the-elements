@@ -18,14 +18,14 @@ void AEnemySpawner::AddEnemyClassToQueue(TSubclassOf<AAuraEnemy> EnemyClass)
 	EnemyQueue.Add(EnemyClass);
 }
 
-void AEnemySpawner::PreSpawn()
+void AEnemySpawner::SpawnSystem()
 {
 	UNiagaraFunctionLibrary::SpawnSystemAtLocation(
 		this,
 		SpawnEffect,
 		GetActorLocation(),
 		GetActorRotation()
-		);
+	);
 
 	if (SpawnDelay > 0.f)
 	{
@@ -44,10 +44,29 @@ void AEnemySpawner::PreSpawn()
 	}
 }
 
-void AEnemySpawner::SpawnNextEnemy()
+void AEnemySpawner::PreSpawn()
 {
 	if (EnemyQueue.IsEmpty()) return;
-	
+
+	if (PreSpawnDelayMax > 0.f)
+	{
+		FTimerHandle DelayHandle;
+		GetWorld()->GetTimerManager().SetTimer(
+			DelayHandle,
+			this,
+			&AEnemySpawner::SpawnSystem,
+			FMath::RandRange(0.f, PreSpawnDelayMax),
+			false
+			);
+	}
+	else
+	{
+		SpawnSystem();
+	}
+}
+
+void AEnemySpawner::SpawnNextEnemy()
+{
 	FTransform SpawnTransform;
 	SpawnTransform.SetRotation(GetActorRotation().Quaternion());
 	

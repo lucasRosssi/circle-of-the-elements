@@ -3,22 +3,18 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
+#include "Enums/Region.h"
 #include "GameFramework/GameModeBase.h"
 #include "AuraGameModeBase.generated.h"
 
+struct FEnemyWave;
+class UEncounterInfo;
 class AEnemySpawner;
 class AAuraEnemy;
 class UStatusEffectInfo;
 class UAbilityInfo;
 class UCharacterInfo;
-
-USTRUCT(BlueprintType)
-struct FEnemyWave
-{
-	GENERATED_BODY()
-
-	TArray<TSubclassOf<AAuraEnemy>> Enemies;
-};
 
 /**
  * 
@@ -29,29 +25,72 @@ class AURA_API AAuraGameModeBase : public AGameModeBase
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditDefaultsOnly, Category="Character Class Defaults")
+	UPROPERTY(EditDefaultsOnly, Category="Game")
 	TObjectPtr<UCharacterInfo> CharacterClassInfo;
 
-	UPROPERTY(EditDefaultsOnly, Category="Ability Info")
+	UPROPERTY(EditDefaultsOnly, Category="Game")
 	TObjectPtr<UAbilityInfo> AbilityInfo;
 
-	UPROPERTY(EditDefaultsOnly, Category="Status Effect Info")
+	UPROPERTY(EditDefaultsOnly, Category="Game")
 	TObjectPtr<UStatusEffectInfo> StatusEffectInfo;
+
+	UPROPERTY(EditDefaultsOnly, Category="Game")
+	TObjectPtr<UEncounterInfo> EncounterInfo;
 
 	UFUNCTION(BlueprintCallable)
 	void StartEncounter();
 
-	UFUNCTION(BlueprintCallable)
 	void NextWave();
 
-	UFUNCTION(BlueprintCallable)
 	void FinishEncounter();
+
+	void ResetTimeDilation();
 
 protected:
 	virtual void BeginPlay() override;
-
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Encounter")
-	TArray<FEnemyWave> EnemiesPerWave;
+	ERegion Region = ERegion::Undefined;
+	UPROPERTY(
+		EditDefaultsOnly,
+		BlueprintReadWrite,
+		Category="Encounter",
+		meta=(Categories="DifficultyClass")
+		)
+	FGameplayTag DifficultyClass = FGameplayTag();
+	UPROPERTY(
+		EditDefaultsOnly,
+		BlueprintReadWrite,
+		Category="Encounter",
+		meta=(ClampMin=1, UIMin=1)
+		)
+	int32 TotalWaves = 1;
+	UPROPERTY(
+		EditDefaultsOnly,
+		BlueprintReadWrite,
+		Category="Encounter",
+		meta=(Units="Seconds")
+		)
+	float WaveTransitionDelay = 0.f;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Encounter")
+	float TimeDilationOnFinishEncounter = 0.2f;
+	UPROPERTY(
+		EditDefaultsOnly,
+		BlueprintReadWrite,
+		Category="Encounter",
+		meta=(Units="Seconds")
+		)
+	float TimeDilationResetDelay = 1.f;
+	UPROPERTY(EditDefaultsOnly, Category="Encounter")
+	bool bOverrideEnemyWaves = false;
+	UPROPERTY(
+		EditDefaultsOnly,
+		BlueprintReadWrite,
+		Category="Encounter",
+		meta=(EditCondition="bOverrideEnemyWaves")
+		)
+	TArray<FEnemyWave> EnemyWaves;
+
 	
 private:
 	UFUNCTION()
@@ -64,8 +103,6 @@ private:
 
 	UPROPERTY()
 	int32 CurrentWave = 0;
-
-	int32 TotalWaves;
 
 	UPROPERTY()
 	TArray<AEnemySpawner*> EnemySpawners;

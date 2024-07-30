@@ -16,6 +16,13 @@ struct FAuraGameplayTags
 public:
   static const FAuraGameplayTags& Get() { return GameplayTags; }
   static void InitializeNativeGameplayTags();
+
+	FGameplayTag DifficultyClass;
+	FGameplayTag DifficultyClass_Easy;
+	FGameplayTag DifficultyClass_Normal;
+	FGameplayTag DifficultyClass_Hard;
+	FGameplayTag DifficultyClass_Extreme;
+	FGameplayTag DifficultyClass_Special;
 	
 	FGameplayTag Attributes;
 	FGameplayTag Attributes_Primary;
