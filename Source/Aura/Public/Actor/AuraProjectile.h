@@ -34,8 +34,8 @@ public:
 	void ActivateHomingMode();
 
 	void ScheduleHomingActivation(float Delay);
-	void HandleAreaAbility(AActor* OtherActor, const AActor* EffectCauser, bool bSuccess);
-	void HandleSingleTarget(AActor* OtherActor, bool bSuccess);
+	void HandleAreaAbility(const AActor* EffectCauser, bool& bSuccess);
+	void HandleSingleTarget(AActor* OtherActor, bool& bSuccess);
 	void HandleBounceHitMode(AActor* OtherActor);
 	void HandlePenetrationHitMode(AActor* OtherActor);
 

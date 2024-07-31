@@ -10,7 +10,6 @@
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "NiagaraFunctionLibrary.h"
-#include "AbilitySystem/AuraAbilitySystemComponent.h"
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "Actor/ProjectileEffect.h"
 #include "Aura/Aura.h"
@@ -144,13 +143,9 @@ void AAuraProjectile::ScheduleHomingActivation(float Delay)
 	);
 }
 
-void AAuraProjectile::HandleAreaAbility(AActor* OtherActor, const AActor* EffectCauser, bool bSuccess)
+void AAuraProjectile::HandleAreaAbility(const AActor* EffectCauser, bool& bSuccess)
 {
 	AbilityParams.AreaOrigin = GetActorLocation();
-	AbilityParams.ForwardVector = UKismetMathLibrary::GetDirectionUnitVector(
-		AbilityParams.AreaOrigin, 
-		OtherActor->GetActorLocation()
-	);
 
 	TArray<AActor*> TargetsInArea;
 	TArray<AActor*> IgnoreActors;
@@ -171,12 +166,16 @@ void AAuraProjectile::HandleAreaAbility(AActor* OtherActor, const AActor* Effect
 		)
 		{
 			AbilityParams.TargetASC = TargetASC;
+			AbilityParams.ForwardVector = UKismetMathLibrary::GetDirectionUnitVector(
+				AbilityParams.AreaOrigin, 
+				Target->GetActorLocation()
+				);
 			ApplyProjectileEffect(bSuccess);
 		}
 	}
 }
 
-void AAuraProjectile::HandleSingleTarget(AActor* OtherActor, bool bSuccess)
+void AAuraProjectile::HandleSingleTarget(AActor* OtherActor, bool& bSuccess)
 {
 	if (
 		UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary
@@ -265,9 +264,13 @@ void AAuraProjectile::OnSphereOverlap(
 	const AActor* EffectCauser = AbilityParams.SourceASC->GetAvatarActor();
 	
 	if (HitCount == 0 && EffectCauser == OtherActor) return;
+
+	bool bSuccess = false;
+	
 	if (UAuraAbilitySystemLibrary::IsEnvironment(OtherActor))
 	{
 		OnHit(true);
+		if (AbilityParams.bIsAreaAbility) HandleAreaAbility(EffectCauser, bSuccess);
 		if (HasAuthority()) Destroy();
 		return;
 	}
@@ -291,12 +294,11 @@ void AAuraProjectile::OnSphereOverlap(
 	
 	if (HasAuthority())
 	{
-		bool bSuccess = false;
 		/*
 		 * If the ability affects an area we should apply the effect in everyone
 		 * within radius
 		 */
-		if (AbilityParams.bIsAreaAbility) HandleAreaAbility(OtherActor, EffectCauser, bSuccess);
+		if (AbilityParams.bIsAreaAbility) HandleAreaAbility(EffectCauser, bSuccess);
 		/*
 		 * If it is a single target, we just have to apply the effect to the actor hit
 		 */
