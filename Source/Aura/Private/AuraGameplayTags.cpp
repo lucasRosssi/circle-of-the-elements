@@ -9,6 +9,37 @@ FAuraGameplayTags FAuraGameplayTags::GameplayTags;
 void FAuraGameplayTags::InitializeNativeGameplayTags()
 {
 	/*
+	 * DIFFICULTY CLASSES
+	 */
+
+	GameplayTags.DifficultyClass = UGameplayTagsManager::Get().AddNativeGameplayTag(
+			FName("DifficultyClass"),
+			FString("Difficulty Class tags")
+			);
+
+	GameplayTags.DifficultyClass_Easy = UGameplayTagsManager::Get().AddNativeGameplayTag(
+			FName("DifficultyClass.Easy"),
+			FString("Difficulty Class tags")
+			);
+
+	GameplayTags.DifficultyClass_Normal = UGameplayTagsManager::Get().AddNativeGameplayTag(
+			FName("DifficultyClass.Normal"),
+			FString("Difficulty Class tags")
+			);
+	GameplayTags.DifficultyClass_Hard = UGameplayTagsManager::Get().AddNativeGameplayTag(
+			FName("DifficultyClass.Hard"),
+			FString("Difficulty Class tags")
+			);
+	GameplayTags.DifficultyClass_Extreme = UGameplayTagsManager::Get().AddNativeGameplayTag(
+			FName("DifficultyClass.Extreme"),
+			FString("Difficulty Class tags")
+			);
+	GameplayTags.DifficultyClass_Special = UGameplayTagsManager::Get().AddNativeGameplayTag(
+			FName("DifficultyClass.Special"),
+			FString("Difficulty Class tags")
+			);
+	
+	/*
 	 * PRIMARY ATTRIBUTES
 	 */
 
@@ -657,6 +688,21 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	GameplayTags.Cooldown_Active_Aura_ChainLightning = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Cooldown.Active.Aura.ChainLightning"),
 		FString("ChainLightning ability cooldown")
+		);
+
+	GameplayTags.Abilities_Active_Aura_MagneticShot = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Active.Aura.MagneticShot"),
+		FString("MagneticShot ability")
+		);
+
+	GameplayTags.Cooldown_Active_Aura_MagneticShot = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Cooldown.Active.Aura.MagneticShot"),
+		FString("MagneticShot ability cooldown")
+		);
+
+	GameplayTags.Charges_Active_Aura_MagneticShot = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Charges.Active.Aura.MagneticShot"),
+		FString("MagneticShot ability charges")
 		);
 
 	GameplayTags.Abilities_Active_Aura_FrostRay = UGameplayTagsManager::Get().AddNativeGameplayTag(

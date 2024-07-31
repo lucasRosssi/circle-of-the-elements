@@ -23,7 +23,7 @@ struct FStatusEffectData
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TObjectPtr<UNiagaraSystem> NiagaraSystem;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(EditCondition="NiagaraSystem", EditConditionHides))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(EditCondition="NiagaraSystem != nullptr", EditConditionHides))
 	EStatusEffectPosition Position = EStatusEffectPosition::Center;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)

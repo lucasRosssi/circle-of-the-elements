@@ -16,6 +16,13 @@ struct FAuraGameplayTags
 public:
   static const FAuraGameplayTags& Get() { return GameplayTags; }
   static void InitializeNativeGameplayTags();
+
+	FGameplayTag DifficultyClass;
+	FGameplayTag DifficultyClass_Easy;
+	FGameplayTag DifficultyClass_Normal;
+	FGameplayTag DifficultyClass_Hard;
+	FGameplayTag DifficultyClass_Extreme;
+	FGameplayTag DifficultyClass_Special;
 	
 	FGameplayTag Attributes;
 	FGameplayTag Attributes_Primary;
@@ -155,6 +162,9 @@ public:
 	
 	FGameplayTag Abilities_Active_Aura_ChainLightning;
 	FGameplayTag Cooldown_Active_Aura_ChainLightning;
+	FGameplayTag Abilities_Active_Aura_MagneticShot;
+	FGameplayTag Cooldown_Active_Aura_MagneticShot;
+	FGameplayTag Charges_Active_Aura_MagneticShot;
 
 	FGameplayTag Abilities_Active_Aura_FrostRay;
 	FGameplayTag Cooldown_Active_Aura_FrostRay;

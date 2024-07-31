@@ -23,6 +23,9 @@ public:
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount) override;
 
+	void SetLevel(int32 InLevel) { Level = InLevel; }
+	int32 GetMyLevel() const { return Level; }
+
 	/** Combat Interface */
 	virtual int32 GetCharacterLevel_Implementation() override;
 	virtual void Die(const FVector& DeathImpulse = FVector::ZeroVector) override;

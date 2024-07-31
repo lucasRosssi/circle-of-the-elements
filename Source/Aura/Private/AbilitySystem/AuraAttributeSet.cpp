@@ -384,15 +384,21 @@ void UAuraAttributeSet::SendXPEvent(const FEffectProperties& Props)
 			TargetLevel
 		);
 
-		const FAuraGameplayTags& GameplayTags = FAuraGameplayTags::Get();
-		FGameplayEventData Payload;
-		Payload.EventTag = GameplayTags.Attributes_Meta_IncomingXP;
-		Payload.EventMagnitude = XPReward;
-		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(
-			Props.SourceCharacter,
-			GameplayTags.Attributes_Meta_IncomingXP,
-			Payload
-		);
+		// Stacks XP until the room is cleared
+		UAuraAbilitySystemLibrary::StackEncounterXP(Props.TargetCharacter, XPReward);
+
+		/*
+		 * Old logic. Gives XP instantly on enemy death, only to the killer
+		 */
+		// const FAuraGameplayTags& GameplayTags = FAuraGameplayTags::Get();
+		// FGameplayEventData Payload;
+		// Payload.EventTag = GameplayTags.Attributes_Meta_IncomingXP;
+		// Payload.EventMagnitude = XPReward;
+		// UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(
+		// 	Props.SourceCharacter,
+		// 	GameplayTags.Attributes_Meta_IncomingXP,
+		// 	Payload
+		// );
 	}
 }
 

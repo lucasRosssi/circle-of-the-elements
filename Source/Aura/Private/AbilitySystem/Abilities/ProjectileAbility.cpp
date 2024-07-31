@@ -64,10 +64,11 @@ void UProjectileAbility::SpawnProjectile(
 			Projectile->HitMode = HitMode;
 			Projectile->MaxHitCount = GetMaxHitCount();
 			Projectile->EffectChangePerHit = GetEffectChangePerHit();
+			Projectile->bCanRepeatTarget = bCanRepeatTarget;
 		}
 
 		Projectile->TargetTeam = AbilityTargetTeam;
 		Projectile->AbilityParams = MakeAbilityParamsFromDefaults();
-		Projectile->FinishSpawning(SpawnTransform);;
+		Projectile->FinishSpawning(SpawnTransform);
 	}
 }
