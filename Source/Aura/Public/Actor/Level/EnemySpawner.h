@@ -22,10 +22,10 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void AddEnemyClassToQueue(TSubclassOf<AAuraEnemy> EnemyClass);
-	void SpawnSystem();
+	void PreSpawn();
 
 	UFUNCTION(BlueprintCallable)
-	void PreSpawn();
+	void PrepareSpawn();
 
 	void SpawnNextEnemy();
 
@@ -42,8 +42,15 @@ protected:
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Spawning")
 	float SpawnDelay = 0.f;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Spawning")
-	int32 EnemyLevel = 1;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Spawning")
+	bool bOverrideEnemyLevel = false;
+	UPROPERTY(
+		EditAnywhere, 
+		BlueprintReadWrite,
+		Category="Spawning",
+		meta=(EditCondition="bOverrideEnemyLevel", EditConditionHides)
+		)
+	int32 LevelOverride = 1;
 
 private:
 	UPROPERTY()
@@ -51,4 +58,7 @@ private:
 
 	UFUNCTION()
 	void OnSpawnedEnemyDeath(AActor* Enemy);
+
+	UPROPERTY()
+	int32 EnemyLevel = 1;
 };

@@ -75,7 +75,7 @@ void AAuraHero::AddCharacterAbilities()
 		);
 }
 
-int32 AAuraHero::GetCharacterLevel_Implementation()
+int32 AAuraHero::GetCharacterLevel_Implementation() const
 {
 	return GetAuraPlayerState()->GetCharacterLevel();
 }

@@ -29,7 +29,7 @@ public:
 	virtual void AddCharacterAbilities() override;
 
 	/** Combat Interface */
-	virtual int32 GetCharacterLevel_Implementation() override;
+	virtual int32 GetCharacterLevel_Implementation() const override;
 	/** end Combat Interface */
 
 	/** Player Interface */

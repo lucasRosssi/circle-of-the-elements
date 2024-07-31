@@ -31,7 +31,7 @@ void AAuraGameModeBase::NextWave()
 		if (Spawners.IsValidIndex(SpawnerIndex))
 		{
 			Spawners[SpawnerIndex]->AddEnemyClassToQueue(Enemy);
-			Spawners[SpawnerIndex]->PreSpawn();
+			Spawners[SpawnerIndex]->PrepareSpawn();
 			Spawners.RemoveAt(SpawnerIndex);
 		}
 	}
@@ -41,8 +41,6 @@ void AAuraGameModeBase::NextWave()
 
 void AAuraGameModeBase::FinishEncounter()
 {
-	UE_LOG(LogAura, Warning, TEXT("Encounter finished!"));
-
 	UGameplayStatics::SetGlobalTimeDilation(this, TimeDilationOnFinishEncounter);
 	
 	FTimerHandle SlowMotionTimerHandle;
@@ -71,7 +69,21 @@ void AAuraGameModeBase::OnEnemyKilled(AActor* Enemy)
 		}
 		else
 		{
-			NextWave();
+			if (WaveTransitionDelay > 0.f)
+			{
+				FTimerHandle WaveTransitionTimerHandle;
+				GetWorld()->GetTimerManager().SetTimer(
+					WaveTransitionTimerHandle,
+					this,
+					&AAuraGameModeBase::NextWave,
+					WaveTransitionDelay,
+					false
+					);
+			}
+			else
+			{
+				NextWave();
+			}
 		}
 	}
 }
