@@ -281,14 +281,11 @@ void AAuraCharacterBase::ApplyEffectToSelf(
 
 void AAuraCharacterBase::InitializeDefaultAttributes() const
 {
-	ApplyEffectToSelf(DefaultPrimaryAttributes, 1.f);
-	ApplyEffectToSelf(DefaultSecondaryAttributes, 1.f);
-	ApplyEffectToSelf(DefaultVitalAttributes, 1.f);
-
-	if (DefaultRegenerationEffect)
-	{
-		ApplyEffectToSelf(DefaultRegenerationEffect, 1.f);
-	}
+	const int32 Level = Execute_GetCharacterLevel(this);
+	ApplyEffectToSelf(DefaultPrimaryAttributes, Level);
+	if (DefaultSecondaryAttributes) ApplyEffectToSelf(DefaultSecondaryAttributes, Level);
+	if (DefaultVitalAttributes) ApplyEffectToSelf(DefaultVitalAttributes, Level);
+	if (DefaultRegenerationEffect) ApplyEffectToSelf(DefaultRegenerationEffect, Level);
 }
 
 void AAuraCharacterBase::AddCharacterAbilities()

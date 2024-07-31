@@ -38,6 +38,8 @@ public:
 
 	void AddToXPStack(float InXP);
 
+	int32 GetEnemiesLevel() const { return EnemiesLevel; }
+
 	FOnEncounterFinished OnEncounterFinishedDelegate;
 	
 	UPROPERTY(EditDefaultsOnly, Category="Game")
@@ -64,6 +66,13 @@ protected:
 		meta=(Categories="DifficultyClass")
 		)
 	FGameplayTag DifficultyClass = FGameplayTag();
+	UPROPERTY(
+		EditDefaultsOnly,
+		BlueprintReadWrite,
+		Category="Encounter",
+		meta=(ClampMin=1, UIMin=1, ClampMax=20, UIMax=20)
+		)
+	int32 EnemiesLevel = 1;
 	UPROPERTY(
 		EditDefaultsOnly,
 		BlueprintReadWrite,

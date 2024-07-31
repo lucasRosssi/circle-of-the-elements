@@ -6,6 +6,8 @@
 #include "NiagaraFunctionLibrary.h"
 #include "Character/AuraEnemy.h"
 #include "Components/CapsuleComponent.h"
+#include "Game/AuraGameModeBase.h"
+#include "Kismet/GameplayStatics.h"
 
 AEnemySpawner::AEnemySpawner()
 {
@@ -18,7 +20,7 @@ void AEnemySpawner::AddEnemyClassToQueue(TSubclassOf<AAuraEnemy> EnemyClass)
 	EnemyQueue.Add(EnemyClass);
 }
 
-void AEnemySpawner::SpawnSystem()
+void AEnemySpawner::PreSpawn()
 {
 	UNiagaraFunctionLibrary::SpawnSystemAtLocation(
 		this,
@@ -44,7 +46,7 @@ void AEnemySpawner::SpawnSystem()
 	}
 }
 
-void AEnemySpawner::PreSpawn()
+void AEnemySpawner::PrepareSpawn()
 {
 	if (EnemyQueue.IsEmpty()) return;
 
@@ -54,14 +56,14 @@ void AEnemySpawner::PreSpawn()
 		GetWorld()->GetTimerManager().SetTimer(
 			DelayHandle,
 			this,
-			&AEnemySpawner::SpawnSystem,
+			&AEnemySpawner::PreSpawn,
 			FMath::RandRange(0.f, PreSpawnDelayMax),
 			false
 			);
 	}
 	else
 	{
-		SpawnSystem();
+		PreSpawn();
 	}
 }
 
@@ -100,6 +102,7 @@ void AEnemySpawner::SpawnNextEnemy()
 		SpawnTransform.GetLocation().Y,
 		SpawnTransform.GetLocation().Z + Enemy->GetCapsuleComponent()->GetScaledCapsuleHalfHeight()
 		));
+
 	Enemy->SetLevel(EnemyLevel);
 	Enemy->GetOnDeathDelegate().AddDynamic(this, &AEnemySpawner::OnSpawnedEnemyDeath);
 	Enemy->FinishSpawning(SpawnTransform);
@@ -111,7 +114,19 @@ void AEnemySpawner::SpawnNextEnemy()
 void AEnemySpawner::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	if (bOverrideEnemyLevel)
+	{
+		EnemyLevel = LevelOverride;
+	}
+	else
+	{
+		const AAuraGameModeBase* AuraGM = Cast<AAuraGameModeBase>(
+			UGameplayStatics::GetGameMode(this)
+			);
+		
+		EnemyLevel = AuraGM->GetEnemiesLevel();
+	}
 }
 
 void AEnemySpawner::OnSpawnedEnemyDeath(AActor* Enemy)
