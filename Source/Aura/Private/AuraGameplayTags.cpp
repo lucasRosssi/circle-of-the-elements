@@ -690,6 +690,21 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FString("ChainLightning ability cooldown")
 		);
 
+	GameplayTags.Abilities_Active_Aura_MagneticShot = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Active.Aura.MagneticShot"),
+		FString("MagneticShot ability")
+		);
+
+	GameplayTags.Cooldown_Active_Aura_MagneticShot = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Cooldown.Active.Aura.MagneticShot"),
+		FString("MagneticShot ability cooldown")
+		);
+
+	GameplayTags.Charges_Active_Aura_MagneticShot = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Charges.Active.Aura.MagneticShot"),
+		FString("MagneticShot ability charges")
+		);
+
 	GameplayTags.Abilities_Active_Aura_FrostRay = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Abilities.Active.Aura.FrostRay"),
 		FString("FrostRay ability")

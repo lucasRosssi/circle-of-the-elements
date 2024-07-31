@@ -44,9 +44,10 @@ public:
 
 	ETargetTeam TargetTeam = ETargetTeam::Enemies;
 	EAbilityHitMode HitMode = EAbilityHitMode::Default;
-	float BounceRadius = 500.f;
 	int32 MaxHitCount = 1;
 	float EffectChangePerHit = 0.f;
+	float BounceRadius = 500.f;
+	bool bCanRepeatTarget = false;
 
 protected:
 	virtual void BeginPlay() override;

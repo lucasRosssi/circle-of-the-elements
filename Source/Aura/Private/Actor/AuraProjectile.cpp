@@ -282,6 +282,8 @@ void AAuraProjectile::OnSphereOverlap(
 
 	if (UAuraAbilitySystemLibrary::IsTargetInvulnerable(OtherActor)) return;
 
+	if (bCanRepeatTarget && HitCount < MaxHitCount) ActorsHit.Empty();
+
 	OnHit(
 		HitMode == EAbilityHitMode::Default ||
 		HitCount >= MaxHitCount
@@ -401,6 +403,9 @@ void AAuraProjectile::MulticastHomingTarget_Implementation(AActor* Target)
 	if (!HasAuthority()) return;
 	if (ICombatInterface* CombatTarget = Cast<ICombatInterface>(Target))
 	{
+		if (
+			CombatTarget->GetOnDeathDelegate().IsAlreadyBound(this, &AAuraProjectile::OnHomingTargetDied)
+			) return;
 		CombatTarget->GetOnDeathDelegate().AddDynamic(this, &AAuraProjectile::OnHomingTargetDied);
 	}
 }

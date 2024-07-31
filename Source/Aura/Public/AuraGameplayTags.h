@@ -162,6 +162,9 @@ public:
 	
 	FGameplayTag Abilities_Active_Aura_ChainLightning;
 	FGameplayTag Cooldown_Active_Aura_ChainLightning;
+	FGameplayTag Abilities_Active_Aura_MagneticShot;
+	FGameplayTag Cooldown_Active_Aura_MagneticShot;
+	FGameplayTag Charges_Active_Aura_MagneticShot;
 
 	FGameplayTag Abilities_Active_Aura_FrostRay;
 	FGameplayTag Cooldown_Active_Aura_FrostRay;

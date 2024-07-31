@@ -103,6 +103,13 @@ protected:
 		meta=(EditCondition="HitMode == EAbilityHitMode::Bounce", EditConditionHides)
 		)
 	FScalableFloat BounceRadius = 500.f;
+	UPROPERTY(
+		EditDefaultsOnly,
+		BlueprintReadOnly,
+		Category="Ability Defaults|Mode",
+		meta=(EditCondition="HitMode == EAbilityHitMode::Bounce", EditConditionHides)
+		)
+	bool bCanRepeatTarget = false;
 
 private:
 	UPROPERTY()
