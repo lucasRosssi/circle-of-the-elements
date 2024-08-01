@@ -10,7 +10,7 @@
 #include "UI/WidgetController/AuraWidgetController.h"
 #include "AuraAbilitySystemLibrary.generated.h"
 
-class UEncounterInfo;
+class URegionInfo;
 enum class ECharacterName : uint8;
 enum class ETargetTeam : uint8;
 class UStatusEffectInfo;
@@ -99,7 +99,7 @@ public:
 	static UStatusEffectInfo* GetStatusEffectInfo(const UObject* WorldContextObject);
 
 	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|EncounterDefaults")
-	static UEncounterInfo* GetEncounterInfo(const UObject* WorldContextObject);
+	static URegionInfo* GetEncounterInfo(const UObject* WorldContextObject);
 
 	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|CharacterClassDefaults")
 	static void GiveStartupAbilities(

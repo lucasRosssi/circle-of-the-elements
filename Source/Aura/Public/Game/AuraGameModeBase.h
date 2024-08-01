@@ -8,9 +8,10 @@
 #include "GameFramework/GameModeBase.h"
 #include "AuraGameModeBase.generated.h"
 
+class UAuraGameInstance;
 class APostProcessVolume;
 struct FEnemyWave;
-class UEncounterInfo;
+class URegionInfo;
 class AEnemySpawner;
 class AAuraEnemy;
 class UStatusEffectInfo;
@@ -28,6 +29,9 @@ class AURA_API AAuraGameModeBase : public AGameModeBase
 	GENERATED_BODY()
 
 public:
+	UFUNCTION(BlueprintCallable)
+	void GoToLocation(TSoftObjectPtr<UWorld> Level);
+	
 	UFUNCTION(BlueprintCallable)
 	void StartEncounter();
 
@@ -53,7 +57,7 @@ public:
 	TObjectPtr<UStatusEffectInfo> StatusEffectInfo;
 
 	UPROPERTY(EditDefaultsOnly, Category="Game")
-	TObjectPtr<UEncounterInfo> EncounterInfo;
+	TObjectPtr<URegionInfo> EncounterInfo;
 
 protected:
 	virtual void BeginPlay() override;
@@ -115,6 +119,11 @@ private:
 	void OnEnemySpawned(AActor* Enemy);
 	UFUNCTION()
 	void OnEnemyKilled(AActor* Enemy);
+
+	UAuraGameInstance* GetAuraGameInstance();
+
+	UPROPERTY()
+	UAuraGameInstance* AuraGameInstance = nullptr;
 	
 	UPROPERTY()
 	int32 EnemyCount = 0;

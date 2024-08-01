@@ -5,9 +5,17 @@
 
 #include "Actor/Level/EnemySpawner.h"
 #include "Aura/AuraLogChannels.h"
-#include "Game/EncounterInfo.h"
+#include "Game/AuraGameInstance.h"
+#include "Level/RegionInfo.h"
 #include "Interaction/PlayerInterface.h"
 #include "Kismet/GameplayStatics.h"
+
+void AAuraGameModeBase::GoToLocation(TSoftObjectPtr<UWorld> Level)
+{
+	GetAuraGameInstance()->SaveHeroData();
+	
+	UGameplayStatics::OpenLevelBySoftObjectPtr(this, Level);
+}
 
 void AAuraGameModeBase::StartEncounter()
 {
@@ -86,6 +94,16 @@ void AAuraGameModeBase::OnEnemyKilled(AActor* Enemy)
 			}
 		}
 	}
+}
+
+UAuraGameInstance* AAuraGameModeBase::GetAuraGameInstance()
+{
+	if (AuraGameInstance == nullptr)
+	{
+		AuraGameInstance = Cast<UAuraGameInstance>(UGameplayStatics::GetGameInstance(this));
+	}
+
+	return AuraGameInstance;
 }
 
 void AAuraGameModeBase::PostFinishEncounter()

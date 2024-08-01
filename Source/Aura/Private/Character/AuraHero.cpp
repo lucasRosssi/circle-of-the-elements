@@ -168,15 +168,15 @@ void AAuraHero::StartDeath()
 	PPDeath->Settings.WeightedBlendables.Array[1].Weight = 1.f;
 	
 	GetMovementComponent()->Deactivate();
-	UGameplayStatics::SetGlobalTimeDilation(this, 0.5f);
-	PlayAnimMontage(HitReactMontage, 0.5);
+	UGameplayStatics::SetGlobalTimeDilation(this, 0.25f);
+	PlayAnimMontage(HitReactMontage, 0.66f);
 
 	FTimerHandle DeathTimer;
 	GetWorld()->GetTimerManager().SetTimer(
 		DeathTimer,
 		this,
 		&AAuraHero::EndDeath,
-		1.f,
+		0.3f,
 		false
 		);
 }
@@ -230,13 +230,11 @@ void AAuraHero::MulticastLevelUpParticles_Implementation() const
 	}
 	if (IsValid(LevelUpNiagaraSystem))
 	{
-		FRotator Rotation = GetActorRotation();
-		Rotation.Pitch = 90.f;
 		UNiagaraFunctionLibrary::SpawnSystemAtLocation(
 			this,
 			LevelUpNiagaraSystem,
 			GetActorLocation(),
-			Rotation
+			GetActorRotation()
 		);
 	}
 }
