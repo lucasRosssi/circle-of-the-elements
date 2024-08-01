@@ -7,6 +7,7 @@
 #include "Interaction/PlayerInterface.h"
 #include "AuraHero.generated.h"
 
+class APostProcessVolume;
 enum class ETargetTeam : uint8;
 class AAuraPlayerController;
 class AAuraPlayerState;
@@ -22,14 +23,16 @@ class AURA_API AAuraHero : public AAuraCharacterBase, public IPlayerInterface
 	GENERATED_BODY()
 public:
 	AAuraHero();
-	
+
+	virtual void Tick(float DeltaSeconds) override;
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void OnRep_PlayerState() override;
 
 	virtual void AddCharacterAbilities() override;
-
+	
 	/** Combat Interface */
 	virtual int32 GetCharacterLevel_Implementation() const override;
+	virtual void Die(const FVector& DeathImpulse) override;
 	/** end Combat Interface */
 
 	/** Player Interface */
@@ -47,6 +50,10 @@ public:
 		) override;
 	virtual void HideTargetingActor_Implementation() override;
 	/** end Player Interface */
+	
+	void StartDeath();
+
+	void EndDeath();
 
 	UFUNCTION(BlueprintCallable)
 	AAuraPlayerState* GetAuraPlayerState() const;
@@ -67,16 +74,24 @@ protected:
 	UPROPERTY(BlueprintReadOnly)
 	AAuraPlayerController* MainPlayerController;
 
-	UPROPERTY(VisibleAnywhere, Category="Camera")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Camera")
 	TObjectPtr<UCameraComponent> Camera;
 
-	UPROPERTY(VisibleAnywhere, Category="Camera")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Camera")
 	TObjectPtr<USpringArmComponent> CameraBoom;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Death")
+	TObjectPtr<UNiagaraSystem> DeathBloodEffect;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Death")
+	TObjectPtr<USoundBase> DeathSound1;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Death")
+	TObjectPtr<USoundBase> DeathSound2;
 
 private:
 	virtual void InitAbilityActorInfo() override;
 
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastLevelUpParticles() const;
-	
+
+	bool bDying = false;
 };

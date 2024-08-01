@@ -8,6 +8,7 @@
 #include "GameFramework/GameModeBase.h"
 #include "AuraGameModeBase.generated.h"
 
+class APostProcessVolume;
 struct FEnemyWave;
 class UEncounterInfo;
 class AEnemySpawner;

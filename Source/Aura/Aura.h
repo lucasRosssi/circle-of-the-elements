@@ -13,6 +13,8 @@
 #define CUSTOM_DEPTH_GREEN 251
 #define CUSTOM_DEPTH_WHITE 252
 
+#define CUSTOM_DEPTH_DEATH 255
+
 #define MAX_AMOUNT_ABILITIES_PER_LEVEL 3
 
 #define ECC_Projectile ECollisionChannel::ECC_GameTraceChannel1
