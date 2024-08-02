@@ -10,10 +10,16 @@
 #include "Interaction/PlayerInterface.h"
 #include "Kismet/GameplayStatics.h"
 
-void AAuraGameModeBase::GoToLocation(TSoftObjectPtr<UWorld> Level)
+void AAuraGameModeBase::GoToLocation(ERegion InRegion, EGatePosition EntrancePosition)
 {
 	GetAuraGameInstance()->SaveHeroData();
-	
+
+	const TArray<TSoftObjectPtr<UWorld>> LevelsToExclude;
+	const TSoftObjectPtr<UWorld> Level = RegionInfo->GetRandomizedRegionLevel(
+		InRegion,
+		EntrancePosition, 
+	LevelsToExclude
+		);
 	UGameplayStatics::OpenLevelBySoftObjectPtr(this, Level);
 }
 
@@ -115,7 +121,7 @@ void AAuraGameModeBase::PostFinishEncounter()
 		IPlayerInterface::SafeExec_AddToXP(Player, StackedXP);
 	}
 	StackedXP = 0.f;
-	
+
 	OnEncounterFinishedDelegate.Broadcast();
 }
 
@@ -130,7 +136,7 @@ void AAuraGameModeBase::BeginPlay()
 
 	if (!bOverrideEnemyWaves)
 	{
-		EnemyWaves = EncounterInfo->GetRandomizedEnemyWaves(
+		EnemyWaves = RegionInfo->GetRandomizedEnemyWaves(
 			Region, 
 			DifficultyClass,
 			TotalWaves

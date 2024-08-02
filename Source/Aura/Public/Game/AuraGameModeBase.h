@@ -8,6 +8,7 @@
 #include "GameFramework/GameModeBase.h"
 #include "AuraGameModeBase.generated.h"
 
+enum class EGatePosition : uint8;
 class UAuraGameInstance;
 class APostProcessVolume;
 struct FEnemyWave;
@@ -30,7 +31,7 @@ class AURA_API AAuraGameModeBase : public AGameModeBase
 
 public:
 	UFUNCTION(BlueprintCallable)
-	void GoToLocation(TSoftObjectPtr<UWorld> Level);
+	void GoToLocation(ERegion InRegion, EGatePosition EntrancePosition);
 	
 	UFUNCTION(BlueprintCallable)
 	void StartEncounter();
@@ -45,6 +46,7 @@ public:
 
 	int32 GetEnemiesLevel() const { return EnemiesLevel; }
 
+	UPROPERTY(BlueprintAssignable)
 	FOnEncounterFinished OnEncounterFinishedDelegate;
 	
 	UPROPERTY(EditDefaultsOnly, Category="Game")
@@ -57,7 +59,7 @@ public:
 	TObjectPtr<UStatusEffectInfo> StatusEffectInfo;
 
 	UPROPERTY(EditDefaultsOnly, Category="Game")
-	TObjectPtr<URegionInfo> EncounterInfo;
+	TObjectPtr<URegionInfo> RegionInfo;
 
 protected:
 	virtual void BeginPlay() override;

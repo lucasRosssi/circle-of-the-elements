@@ -49,6 +49,7 @@ public:
 		float Radius = 300.f
 		) override;
 	virtual void HideTargetingActor_Implementation() override;
+	virtual FOnInteract& GetOnInteractDelegate() override;
 	/** end Player Interface */
 	
 	void StartDeath();
@@ -57,6 +58,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	AAuraPlayerState* GetAuraPlayerState() const;
+	AAuraPlayerController* GetAuraPlayerController();
 
 	UPROPERTY(EditDefaultsOnly, Category="Character Defaults|Abilities|Startup")
 	TArray<TSubclassOf<UGameplayAbility>> EligibleAbilities;
@@ -72,7 +74,7 @@ protected:
 	TObjectPtr<UWidgetComponent> LevelUpWidgetComponent;
 
 	UPROPERTY(BlueprintReadOnly)
-	AAuraPlayerController* MainPlayerController;
+	AAuraPlayerController* AuraPlayerController;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Camera")
 	TObjectPtr<UCameraComponent> Camera;

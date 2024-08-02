@@ -120,7 +120,7 @@ URegionInfo* UAuraAbilitySystemLibrary::GetEncounterInfo(const UObject* WorldCon
 		UGameplayStatics::GetGameMode(WorldContextObject)
 	);
 
-	return AuraGameMode->EncounterInfo;
+	return AuraGameMode->RegionInfo;
 }
 
 void UAuraAbilitySystemLibrary::GiveStartupAbilities(

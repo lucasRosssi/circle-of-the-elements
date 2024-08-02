@@ -145,12 +145,17 @@ void AAuraHero::ShowTargetingActor_Implementation(
 	float Radius
 	)
 {
-	MainPlayerController->ShowTargetingActor(TargetingActorClass, TargetTeam, Radius);
+	AuraPlayerController->ShowTargetingActor(TargetingActorClass, TargetTeam, Radius);
 }
 
 void AAuraHero::HideTargetingActor_Implementation()
 {
-	MainPlayerController->HideTargetingActor();
+	AuraPlayerController->HideTargetingActor();
+}
+
+FOnInteract& AAuraHero::GetOnInteractDelegate()
+{
+	return GetAuraPlayerController()->InteractActionTriggered;
 }
 
 void AAuraHero::StartDeath()
@@ -218,6 +223,16 @@ AAuraPlayerState* AAuraHero::GetAuraPlayerState() const
 	return AuraPlayerState;
 }
 
+AAuraPlayerController* AAuraHero::GetAuraPlayerController()
+{
+	if (AuraPlayerController == nullptr)
+	{
+		AuraPlayerController = Cast<AAuraPlayerController>(GetController());
+	}
+
+	return AuraPlayerController;
+}
+
 void AAuraHero::MulticastLevelUpParticles_Implementation() const
 {
 	LevelUpWidgetComponent->GetWidget()->SetVisibility(ESlateVisibility::Visible);
@@ -257,15 +272,16 @@ void AAuraHero::InitAbilityActorInfo()
 
 	if (IsLocallyControlled() || HasAuthority())
 	{
-		MainPlayerController = GetController<AAuraPlayerController>();
-		check(MainPlayerController);
+		if (GetAuraPlayerController())
+		{
+			AuraPlayerController->SetPlayerCamera(Camera);
+		}
 		
-		MainPlayerController->SetPlayerCamera(Camera);
 	}
 	
-	if(AAuraHUD* AuraHUD = Cast<AAuraHUD>(MainPlayerController->GetHUD()))
+	if(AAuraHUD* AuraHUD = Cast<AAuraHUD>(AuraPlayerController->GetHUD()))
 	{
-		AuraHUD->InitOverlay(MainPlayerController, AuraPlayerState, AbilitySystemComponent, 
+		AuraHUD->InitOverlay(AuraPlayerController, AuraPlayerState, AbilitySystemComponent, 
 		AttributeSet);
 	}
 	

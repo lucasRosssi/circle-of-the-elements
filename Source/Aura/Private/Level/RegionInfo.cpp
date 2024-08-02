@@ -57,27 +57,27 @@ TArray<FEnemyWave> URegionInfo::GetRandomizedEnemyWaves(
 	return RandomWaves;
 }
 
-TArray<ULevel*> URegionInfo::GetRegionLevels(ERegion Region, EEntrancePosition EntrancePosition)
+TArray<TSoftObjectPtr<UWorld>> URegionInfo::GetRegionLevels(ERegion Region, EGatePosition EntrancePosition)
 {
 	const FRegionData* Data = GetRegionData(Region);
 
-	if (!Data) return TArray<ULevel*>();
+	if (!Data) return TArray<TSoftObjectPtr<UWorld>>();
 
 	if (const auto AvailableLevels = Data->Locations.Find(EntrancePosition))
 	{
 		return AvailableLevels->Levels;
 	}
 
-	return TArray<ULevel*>();
+	return TArray<TSoftObjectPtr<UWorld>>();
 }
 
-ULevel* URegionInfo::GetRandomizedRegionLevel(
+TSoftObjectPtr<UWorld> URegionInfo::GetRandomizedRegionLevel(
 	ERegion Region,
-	EEntrancePosition EntrancePosition,
-	TArray<ULevel*> LevelsToExclude
+	EGatePosition EntrancePosition,
+	TArray<TSoftObjectPtr<UWorld>> LevelsToExclude
 	)
 {
-	TArray<ULevel*> Levels = GetRegionLevels(Region, EntrancePosition);
+	TArray<TSoftObjectPtr<UWorld>> Levels = GetRegionLevels(Region, EntrancePosition);
 	if (Levels.IsEmpty()) return nullptr;
 
 	if (!LevelsToExclude.IsEmpty())

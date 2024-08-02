@@ -8,6 +8,9 @@
 
 class ATargetingActor;
 enum class ETargetTeam : uint8;
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnInteract);
+
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI, BlueprintType)
 class UPlayerInterface : public UInterface
@@ -56,4 +59,6 @@ public:
 		);
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void HideTargetingActor();
+
+	virtual FOnInteract& GetOnInteractDelegate() = 0;
 };
