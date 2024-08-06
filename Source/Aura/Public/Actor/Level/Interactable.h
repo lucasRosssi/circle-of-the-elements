@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "Interactable.generated.h"
 
+class AAuraGameModeBase;
 class USphereComponent;
 
 UCLASS()
@@ -15,9 +16,6 @@ class AURA_API AInteractable : public AActor
 	
 public:	
 	AInteractable();
-
-	UFUNCTION(BlueprintImplementableEvent)
-	void OnInteracted();
 
 	UFUNCTION()
 	void OnInteractAreaOverlap(
@@ -40,8 +38,27 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+	UFUNCTION()
+	void EnableInteraction();
+	UFUNCTION()
+	void DisableInteraction();
+
+	virtual void Interact();
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnInteracted();
+
+	UFUNCTION(BlueprintPure)
+	AAuraGameModeBase* GetAuraGameMode();
+	
+	UPROPERTY()
+	AAuraGameModeBase* AuraGameMode = nullptr;
+	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Interaction")
 	TObjectPtr<USphereComponent> InteractArea;
-private:
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Interaction")
+	bool bInteractionEnabled = false;
+private:
+	UFUNCTION()
+	void PreInteract();
 };

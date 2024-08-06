@@ -60,5 +60,8 @@ public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void HideTargetingActor();
 
+	UFUNCTION(BlueprintNativeEvent)
+	void SetInteractMessageVisible(bool bVisible);
+
 	virtual FOnInteract& GetOnInteractDelegate() = 0;
 };

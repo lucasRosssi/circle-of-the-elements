@@ -35,6 +35,9 @@ AAuraHero::AAuraHero()
 	
 	LevelUpWidgetComponent = CreateDefaultSubobject<UWidgetComponent>("LevelUpMessage");
 	LevelUpWidgetComponent->SetupAttachment(GetRootComponent());
+	InteractWidgetComponent = CreateDefaultSubobject<UWidgetComponent>("InteractMessage");
+	InteractWidgetComponent->SetupAttachment(GetRootComponent());
+	InteractWidgetComponent->SetVisibility(false);
 	
 	UCharacterMovementComponent* Movement = GetCharacterMovement();
 	Movement->bOrientRotationToMovement = true;
@@ -156,6 +159,11 @@ void AAuraHero::HideTargetingActor_Implementation()
 FOnInteract& AAuraHero::GetOnInteractDelegate()
 {
 	return GetAuraPlayerController()->InteractActionTriggered;
+}
+
+void AAuraHero::SetInteractMessageVisible_Implementation(bool bVisible)
+{
+	InteractWidgetComponent->SetVisibility(bVisible);
 }
 
 void AAuraHero::StartDeath()

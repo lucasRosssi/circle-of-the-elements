@@ -50,6 +50,7 @@ public:
 		) override;
 	virtual void HideTargetingActor_Implementation() override;
 	virtual FOnInteract& GetOnInteractDelegate() override;
+	virtual void SetInteractMessageVisible_Implementation(bool bVisible) override;
 	/** end Player Interface */
 	
 	void StartDeath();
@@ -88,6 +89,9 @@ protected:
 	TObjectPtr<USoundBase> DeathSound1;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Death")
 	TObjectPtr<USoundBase> DeathSound2;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TObjectPtr<UWidgetComponent> InteractWidgetComponent;
 
 private:
 	virtual void InitAbilityActorInfo() override;
