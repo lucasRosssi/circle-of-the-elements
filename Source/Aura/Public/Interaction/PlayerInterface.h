@@ -9,7 +9,7 @@
 class ATargetingActor;
 enum class ETargetTeam : uint8;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnInteract);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnInteract, AActor*, Instigator);
 
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI, BlueprintType)

@@ -3,6 +3,7 @@
 
 #include "Game/AuraGameModeBase.h"
 
+#include "AuraGameplayTags.h"
 #include "Actor/Level/EnemySpawner.h"
 #include "Aura/AuraLogChannels.h"
 #include "Game/AuraGameInstance.h"
@@ -13,18 +14,31 @@
 void AAuraGameModeBase::GoToLocation(ERegion InRegion, EGatePosition EntrancePosition)
 {
 	GetAuraGameInstance()->SaveHeroData();
-
-	const TArray<TSoftObjectPtr<UWorld>> LevelsToExclude;
+	
 	const TSoftObjectPtr<UWorld> Level = RegionInfo->GetRandomizedRegionLevel(
 		InRegion,
 		EntrancePosition, 
-	LevelsToExclude
+	SelectedLevels
 		);
-	UGameplayStatics::OpenLevelBySoftObjectPtr(this, Level);
+	
+	FLatentActionInfo LatentActionInfo;
+	LatentActionInfo.ExecutionFunction = FName("OnLoadStreamComplete");
+	UGameplayStatics::LoadStreamLevelBySoftObjectPtr(
+		this,
+		Level,
+		true,
+		false,
+		LatentActionInfo
+		);
+
+	PrevLevel = CurrentLevel;
+	CurrentLevel = Level;
 }
 
 void AAuraGameModeBase::StartEncounter()
 {
+	EncountersCount += 1;
+	
 	NextWave();
 }
 
@@ -102,6 +116,29 @@ void AAuraGameModeBase::OnEnemyKilled(AActor* Enemy)
 	}
 }
 
+void AAuraGameModeBase::SetCurrentLocationInfo()
+{
+	CurrentWave = 0;
+	EnemiesLevel = FMath::Floor(EncountersCount / 2);
+
+	const FAuraGameplayTags& GameplayTags = FAuraGameplayTags::Get();
+	if (EncountersCount < 4)
+	{
+		TotalWaves = FMath::RandRange(1, 3);
+		DifficultyClass = GameplayTags.DifficultyClass_Easy;
+	}
+	else if (EncountersCount < 7)
+	{
+		TotalWaves = FMath::RandRange(2, 4);
+		DifficultyClass = GameplayTags.DifficultyClass_Normal;
+	}
+	else
+	{
+		TotalWaves = FMath::RandRange(3, 5);
+		DifficultyClass = GameplayTags.DifficultyClass_Hard;
+	}
+}
+
 UAuraGameInstance* AAuraGameModeBase::GetAuraGameInstance()
 {
 	if (AuraGameInstance == nullptr)
@@ -130,18 +167,9 @@ void AAuraGameModeBase::AddToXPStack(float InXP)
 	StackedXP += InXP;
 }
 
-void AAuraGameModeBase::BeginPlay()
+void AAuraGameModeBase::GetAvailableSpawners()
 {
-	Super::BeginPlay();
-
-	if (!bOverrideEnemyWaves)
-	{
-		EnemyWaves = RegionInfo->GetRandomizedEnemyWaves(
-			Region, 
-			DifficultyClass,
-			TotalWaves
-			);
-	}
+	EnemySpawners.Empty();
 	
 	TArray<AActor*> Spawners;
 	UGameplayStatics::GetAllActorsOfClass(
@@ -159,4 +187,40 @@ void AAuraGameModeBase::BeginPlay()
 			EnemySpawner->SpawnedEnemyDeathDelegate.AddDynamic(this, &AAuraGameModeBase::OnEnemyKilled);
 		}
 	}
+}
+
+void AAuraGameModeBase::GetEnemySpawns()
+{
+	if (!bOverrideEnemyWaves)
+	{
+		EnemyWaves = RegionInfo->GetRandomizedEnemyWaves(
+			Region, 
+			DifficultyClass,
+			TotalWaves
+			);
+	}
+}
+
+void AAuraGameModeBase::OnLoadStreamComplete()
+{
+	SetCurrentLocationInfo();
+	GetEnemySpawns();
+	GetAvailableSpawners();
+
+	if (PrevLevel.IsValid())
+	{
+		UGameplayStatics::UnloadStreamLevelBySoftObjectPtr(
+			this,
+			PrevLevel,
+			FLatentActionInfo(),
+			false
+			);
+	}
+
+}
+
+void AAuraGameModeBase::BeginPlay()
+{
+	Super::BeginPlay();
+	
 }

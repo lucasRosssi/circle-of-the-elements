@@ -3,7 +3,6 @@
 
 #include "Actor/Level/Interactable.h"
 
-#include "Aura/AuraLogChannels.h"
 #include "Components/SphereComponent.h"
 #include "Game/AuraGameModeBase.h"
 #include "Interaction/PlayerInterface.h"
@@ -21,15 +20,22 @@ AInteractable::AInteractable()
 
 }
 
-void AInteractable::PreInteract()
+void AInteractable::PreInteract(AActor* InInstigator)
 {
 	if (!bInteractionEnabled) return;
 
-	Interact();
-	OnInteracted();
+	IPlayerInterface* PlayerInterface = Cast<IPlayerInterface>(InInstigator);
+	if (PlayerInterface)
+	{
+		PlayerInterface->GetOnInteractDelegate().RemoveAll(this);
+		IPlayerInterface::Execute_SetInteractMessageVisible(InInstigator, false);
+	}
+	
+	Interact(InInstigator);
+	OnInteracted(InInstigator);
 }
 
-void AInteractable::Interact()
+void AInteractable::Interact(AActor* InInstigator)
 {
 }
 
@@ -59,7 +65,7 @@ void AInteractable::OnInteractAreaEndOverlap(
 	IPlayerInterface* PlayerInterface = Cast<IPlayerInterface>(OtherActor);
 	if (!PlayerInterface) return;
 
-	PlayerInterface->GetOnInteractDelegate().RemoveDynamic(this, &AInteractable::PreInteract);
+	PlayerInterface->GetOnInteractDelegate().RemoveAll(this);
 	IPlayerInterface::Execute_SetInteractMessageVisible(OtherActor, false);
 }
 

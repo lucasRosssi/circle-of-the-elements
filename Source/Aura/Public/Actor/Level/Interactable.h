@@ -43,9 +43,9 @@ protected:
 	UFUNCTION()
 	void DisableInteraction();
 
-	virtual void Interact();
+	virtual void Interact(AActor* InInstigator);
 	UFUNCTION(BlueprintImplementableEvent)
-	void OnInteracted();
+	void OnInteracted(AActor* InInstigator);
 
 	UFUNCTION(BlueprintPure)
 	AAuraGameModeBase* GetAuraGameMode();
@@ -58,7 +58,10 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Interaction")
 	bool bInteractionEnabled = false;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Interaction")
+	TObjectPtr<USoundBase> InteractSound;
 private:
 	UFUNCTION()
-	void PreInteract();
+	void PreInteract(AActor* InInstigator);
 };

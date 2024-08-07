@@ -99,7 +99,7 @@ public:
 	static UStatusEffectInfo* GetStatusEffectInfo(const UObject* WorldContextObject);
 
 	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|EncounterDefaults")
-	static URegionInfo* GetEncounterInfo(const UObject* WorldContextObject);
+	static URegionInfo* GetRegionInfo(const UObject* WorldContextObject);
 
 	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|CharacterClassDefaults")
 	static void GiveStartupAbilities(

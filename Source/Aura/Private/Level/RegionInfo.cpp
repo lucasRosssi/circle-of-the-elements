@@ -92,3 +92,17 @@ TSoftObjectPtr<UWorld> URegionInfo::GetRandomizedRegionLevel(
 
 	return Levels[Index];
 }
+
+TSoftObjectPtr<UWorld> URegionInfo::GetRandomizedInitialLevel(ERegion Region)
+{
+	const FRegionData* Data = GetRegionData(Region);
+
+	if (!Data) return nullptr;
+
+	TArray<TSoftObjectPtr<UWorld>> InitialLevels = Data->InitialLevels;
+	if (InitialLevels.IsEmpty()) return nullptr;
+
+	const int32 Index = FMath::RandRange(0, InitialLevels.Num() - 1);
+
+	return InitialLevels[Index];
+}

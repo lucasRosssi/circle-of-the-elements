@@ -115,6 +115,11 @@ void UOverlayWidgetController::BindCallbacksToDependencies()
 	}
 }
 
+void UOverlayWidgetController::StartTransition()
+{
+	StartTransitionDelegate.Broadcast();
+}
+
 void UOverlayWidgetController::OnAbilityEquipped(
 	const FGameplayTag& AbilityTag,
 	const FGameplayTag& StatusTag,

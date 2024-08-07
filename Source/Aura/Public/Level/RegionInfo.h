@@ -55,6 +55,9 @@ struct FRegionData
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TMap<EGatePosition, FAvailableLevels> Locations;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TArray<TSoftObjectPtr<UWorld>> InitialLevels;
 };
 
 /**
@@ -67,26 +70,32 @@ class AURA_API URegionInfo : public UDataAsset
 public:
 	FRegionData* GetRegionData(ERegion Region);
 
+	UFUNCTION(BlueprintCallable)
 	TArray<FEnemyWave> GetEnemyWaves(
 		ERegion Region, 
 		FGameplayTag DifficultyClass
 		);
 
+	UFUNCTION(BlueprintCallable)
 	TArray<FEnemyWave> GetRandomizedEnemyWaves(
 		ERegion Region, 
 		FGameplayTag DifficultyClass,
 		int32 Amount
 		);
 
+	UFUNCTION(BlueprintCallable)
 	TArray<TSoftObjectPtr<UWorld>> GetRegionLevels(
 		ERegion Region,
 		EGatePosition EntrancePosition
 		);
+	UFUNCTION(BlueprintCallable)
 	TSoftObjectPtr<UWorld> GetRandomizedRegionLevel(
 		ERegion Region,
 		EGatePosition EntrancePosition,
 		TArray<TSoftObjectPtr<UWorld>> LevelsToExclude
 		);
+	UFUNCTION(BlueprintCallable)
+	TSoftObjectPtr<UWorld> GetRandomizedInitialLevel(ERegion Region);
 protected:
 	UPROPERTY(
 		EditDefaultsOnly,

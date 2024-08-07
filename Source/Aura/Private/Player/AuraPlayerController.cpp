@@ -363,7 +363,7 @@ void AAuraPlayerController::CancelPressed()
 
 void AAuraPlayerController::InteractPressed()
 {
-	InteractActionTriggered.Broadcast();
+	InteractActionTriggered.Broadcast(GetPawn());
 }
 
 UAuraAbilitySystemComponent* AAuraPlayerController::GetASC()
