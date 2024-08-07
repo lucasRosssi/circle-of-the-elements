@@ -32,6 +32,8 @@ class AURA_API AAuraGameModeBase : public AGameModeBase
 public:
 	UFUNCTION(BlueprintCallable)
 	void GoToLocation(ERegion InRegion, EGatePosition EntrancePosition);
+	UFUNCTION(BlueprintCallable)
+	void GoToInitialLocation(ERegion InRegion);
 	
 	UFUNCTION(BlueprintCallable)
 	void StartEncounter();

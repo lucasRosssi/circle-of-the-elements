@@ -35,6 +35,23 @@ void AAuraGameModeBase::GoToLocation(ERegion InRegion, EGatePosition EntrancePos
 	CurrentLevel = Level;
 }
 
+void AAuraGameModeBase::GoToInitialLocation(ERegion InRegion)
+{
+	const TSoftObjectPtr<UWorld> Level = RegionInfo->GetRandomizedInitialLevel(InRegion);
+	
+	FLatentActionInfo LatentActionInfo;
+	LatentActionInfo.ExecutionFunction = FName("OnLoadStreamComplete");
+	UGameplayStatics::LoadStreamLevelBySoftObjectPtr(
+		this,
+		Level,
+		true,
+		false,
+		LatentActionInfo
+		);
+	
+	CurrentLevel = Level;
+}
+
 void AAuraGameModeBase::StartEncounter()
 {
 	EncountersCount += 1;
