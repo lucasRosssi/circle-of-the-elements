@@ -31,7 +31,7 @@ struct FUIWidgetRow : public FTableRowBase
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttributeChangedSignature, float, NewValue);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMessageWidgetRowSignature, FUIWidgetRow, Row);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FStartTransition);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FTransitionChange, bool, bStarting);
 
 /**
  * 
@@ -63,10 +63,12 @@ public:
 	FOnPlayerStatChangedSignature OnPlayerLevelChangedDelegate;
 
 	UPROPERTY(BlueprintAssignable, Category = "Location")
-	FStartTransition StartTransitionDelegate;
+	FTransitionChange StartTransitionDelegate;
 
 	UFUNCTION(BlueprintCallable)
 	void StartTransition();
+	UFUNCTION(BlueprintCallable)
+	void EndTransition();
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Data")

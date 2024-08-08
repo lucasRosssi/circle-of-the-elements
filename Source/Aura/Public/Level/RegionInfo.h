@@ -105,4 +105,5 @@ protected:
 	TMap<ERegion, FRegionData> RegionData;
 
 private:
+
 };

@@ -23,7 +23,12 @@ void AGate::Interact(AActor* InInstigator)
 	// GoToRandomLocation();
 }
 
-void AGate::GoToRandomLocation()
+TSoftObjectPtr<UWorld> AGate::GetCurrentLocation()
 {
-	GetAuraGameMode()->GoToLocation(Region, NextGatePosition);
+	return GetAuraGameMode()->GetCurrentLevel();
+}
+
+TSoftObjectPtr<UWorld> AGate::GetRandomLocation()
+{
+	return GetAuraGameMode()->GetNextLocation(Region, NextGatePosition);
 }

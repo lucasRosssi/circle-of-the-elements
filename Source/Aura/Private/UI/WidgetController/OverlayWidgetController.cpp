@@ -117,7 +117,12 @@ void UOverlayWidgetController::BindCallbacksToDependencies()
 
 void UOverlayWidgetController::StartTransition()
 {
-	StartTransitionDelegate.Broadcast();
+	StartTransitionDelegate.Broadcast(true);
+}
+
+void UOverlayWidgetController::EndTransition()
+{
+	StartTransitionDelegate.Broadcast(false);
 }
 
 void UOverlayWidgetController::OnAbilityEquipped(

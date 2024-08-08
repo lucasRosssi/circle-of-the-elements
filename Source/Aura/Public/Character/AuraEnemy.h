@@ -8,6 +8,7 @@
 #include "UI/WidgetController/OverlayWidgetController.h"
 #include "AuraEnemy.generated.h"
 
+class UNavigationInvokerComponent;
 class UWidgetComponent;
 class UBehaviorTree;
 class AAuraAIController;
@@ -59,4 +60,6 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<AAuraAIController> AuraAIController;
+
+	TObjectPtr<UNavigationInvokerComponent> NavigationInvoker;
 };

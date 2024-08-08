@@ -5,7 +5,7 @@
 
 bool ITargetInterface::Implements(const UObject* Object)
 {
-	return Object != nullptr && Object->Implements<UTargetInterface>();
+	return IsValid(Object) && Object->Implements<UTargetInterface>();
 }
 
 void ITargetInterface::SafeExec_HighlightActor(UObject* Object, AActor* InstigatorActor)

@@ -26,8 +26,11 @@ protected:
 	virtual void Interact(AActor* InInstigator) override;
 	// END Interactable overrides
 
-	UFUNCTION(BlueprintCallable)
-	void GoToRandomLocation();
+	UFUNCTION(BlueprintPure)
+	TSoftObjectPtr<UWorld> GetCurrentLocation();
+	
+	UFUNCTION(BlueprintPure)
+	TSoftObjectPtr<UWorld> GetRandomLocation();
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<UStaticMeshComponent> GateMesh;

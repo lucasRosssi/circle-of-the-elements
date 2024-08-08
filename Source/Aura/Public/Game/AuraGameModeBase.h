@@ -30,18 +30,15 @@ class AURA_API AAuraGameModeBase : public AGameModeBase
 	GENERATED_BODY()
 
 public:
-	UFUNCTION(BlueprintCallable)
-	void GoToLocation(ERegion InRegion, EGatePosition EntrancePosition);
-	UFUNCTION(BlueprintCallable)
-	void GoToInitialLocation(ERegion InRegion);
+	UFUNCTION(BlueprintPure)
+	TSoftObjectPtr<UWorld> GetNextLocation(ERegion InRegion, EGatePosition EntrancePosition);
+	UFUNCTION(BlueprintPure)
+	TSoftObjectPtr<UWorld> GetInitialLocation(ERegion InRegion);
 	
 	UFUNCTION(BlueprintCallable)
 	void StartEncounter();
-
 	void NextWave();
-
 	void FinishEncounter();
-
 	void PostFinishEncounter();
 
 	void AddToXPStack(float InXP);
@@ -55,8 +52,19 @@ public:
 	void GetEnemySpawns();
 
 	UFUNCTION(BlueprintCallable)
-	void OnLoadStreamComplete();
+	void LoadLevelInfo();
 
+	UFUNCTION(BlueprintCallable)
+	void PlacePlayerInStartingPoint();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnExitLocation(EGatePosition NextGatePosition);
+	UFUNCTION(BlueprintCallable)
+	void ExitLocation(EGatePosition NextGatePosition);
+
+	UFUNCTION(BlueprintPure)
+	TSoftObjectPtr<UWorld> GetCurrentLevel() const { return CurrentLevel; }
+	
 	UPROPERTY(BlueprintAssignable)
 	FOnEncounterFinished OnEncounterFinishedDelegate;
 	
@@ -73,8 +81,6 @@ public:
 	TObjectPtr<URegionInfo> RegionInfo;
 
 protected:
-	virtual void BeginPlay() override;
-	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Location|Encounter")
 	ERegion Region = ERegion::Undefined;
 	UPROPERTY(
@@ -139,6 +145,8 @@ private:
 
 	UPROPERTY()
 	UAuraGameInstance* AuraGameInstance = nullptr;
+
+	FLatentActionInfo OnLoadStreamLatentActionInfo;
 	
 	UPROPERTY()
 	int32 EnemyCount = 0;

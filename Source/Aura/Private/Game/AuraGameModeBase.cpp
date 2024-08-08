@@ -7,11 +7,15 @@
 #include "Actor/Level/EnemySpawner.h"
 #include "Aura/AuraLogChannels.h"
 #include "Game/AuraGameInstance.h"
+#include "GameFramework/PlayerStart.h"
 #include "Level/RegionInfo.h"
 #include "Interaction/PlayerInterface.h"
 #include "Kismet/GameplayStatics.h"
 
-void AAuraGameModeBase::GoToLocation(ERegion InRegion, EGatePosition EntrancePosition)
+TSoftObjectPtr<UWorld> AAuraGameModeBase::GetNextLocation(
+	ERegion InRegion,
+	EGatePosition EntrancePosition
+	)
 {
 	GetAuraGameInstance()->SaveHeroData();
 	
@@ -21,35 +25,19 @@ void AAuraGameModeBase::GoToLocation(ERegion InRegion, EGatePosition EntrancePos
 	SelectedLevels
 		);
 	
-	FLatentActionInfo LatentActionInfo;
-	LatentActionInfo.ExecutionFunction = FName("OnLoadStreamComplete");
-	UGameplayStatics::LoadStreamLevelBySoftObjectPtr(
-		this,
-		Level,
-		true,
-		false,
-		LatentActionInfo
-		);
-
+	SelectedLevels.Add(Level);
 	PrevLevel = CurrentLevel;
 	CurrentLevel = Level;
+
+	return Level;
 }
 
-void AAuraGameModeBase::GoToInitialLocation(ERegion InRegion)
+TSoftObjectPtr<UWorld> AAuraGameModeBase::GetInitialLocation(ERegion InRegion)
 {
 	const TSoftObjectPtr<UWorld> Level = RegionInfo->GetRandomizedInitialLevel(InRegion);
 	
-	FLatentActionInfo LatentActionInfo;
-	LatentActionInfo.ExecutionFunction = FName("OnLoadStreamComplete");
-	UGameplayStatics::LoadStreamLevelBySoftObjectPtr(
-		this,
-		Level,
-		true,
-		false,
-		LatentActionInfo
-		);
-	
 	CurrentLevel = Level;
+	return Level;
 }
 
 void AAuraGameModeBase::StartEncounter()
@@ -218,26 +206,37 @@ void AAuraGameModeBase::GetEnemySpawns()
 	}
 }
 
-void AAuraGameModeBase::OnLoadStreamComplete()
+void AAuraGameModeBase::LoadLevelInfo()
 {
+	PlacePlayerInStartingPoint();
 	SetCurrentLocationInfo();
 	GetEnemySpawns();
 	GetAvailableSpawners();
-
-	if (PrevLevel.IsValid())
-	{
-		UGameplayStatics::UnloadStreamLevelBySoftObjectPtr(
-			this,
-			PrevLevel,
-			FLatentActionInfo(),
-			false
-			);
-	}
-
 }
 
-void AAuraGameModeBase::BeginPlay()
+void AAuraGameModeBase::PlacePlayerInStartingPoint()
 {
-	Super::BeginPlay();
-	
+	TArray<AActor*> PlayerStarts;
+	UGameplayStatics::GetAllActorsOfClass(
+		this,
+		APlayerStart::StaticClass(),
+		PlayerStarts
+		);
+
+	if (PlayerStarts.IsEmpty()) return;
+
+	const APlayerStart* PlayerStart = Cast<APlayerStart>(PlayerStarts[0]);
+
+	APawn* Player = UGameplayStatics::GetPlayerPawn(this, 0);
+	Player->SetActorTransform(
+		PlayerStart->GetActorTransform(),
+		false,
+		nullptr,
+		ETeleportType::ResetPhysics
+		);
+}
+
+void AAuraGameModeBase::ExitLocation(EGatePosition NextGatePosition)
+{
+	OnExitLocation(NextGatePosition);
 }
