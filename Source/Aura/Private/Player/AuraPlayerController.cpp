@@ -236,6 +236,12 @@ void AAuraPlayerController::SetupInputComponent()
 		this,
 		&AAuraPlayerController::CancelPressed
 	);
+	AuraInputComponent->BindAction(
+		InteractAction,
+		ETriggerEvent::Started,
+		this,
+		&AAuraPlayerController::InteractPressed
+	);
 
 	AuraInputComponent->BindAbilityActions(
 		InputConfig,
@@ -353,6 +359,11 @@ void AAuraPlayerController::ConfirmPressed()
 void AAuraPlayerController::CancelPressed()
 {
 	GetASC()->CancelPressed();
+}
+
+void AAuraPlayerController::InteractPressed()
+{
+	InteractActionTriggered.Broadcast(GetPawn());
 }
 
 UAuraAbilitySystemComponent* AAuraPlayerController::GetASC()

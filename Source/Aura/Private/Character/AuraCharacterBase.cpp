@@ -128,6 +128,7 @@ void AAuraCharacterBase::MulticastHandleDeath_Implementation(const FVector& Deat
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
 	GetMesh()->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
 	GetMesh()->AddImpulse(DeathImpulse, NAME_None, true);
+	GetMesh()->bPauseAnims = true;
 	
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	DissolveCharacter();

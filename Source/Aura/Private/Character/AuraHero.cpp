@@ -5,12 +5,14 @@
 
 #include "AbilitySystemComponent.h"
 #include "AuraGameplayTags.h"
+#include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
 #include "AbilitySystem/AuraAttributeSet.h"
 #include "Aura/Aura.h"
 #include "Camera/CameraComponent.h"
 #include "Components/WidgetComponent.h"
+#include "Engine/PostProcessVolume.h"
 #include "Game/TeamComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -33,6 +35,9 @@ AAuraHero::AAuraHero()
 	
 	LevelUpWidgetComponent = CreateDefaultSubobject<UWidgetComponent>("LevelUpMessage");
 	LevelUpWidgetComponent->SetupAttachment(GetRootComponent());
+	InteractWidgetComponent = CreateDefaultSubobject<UWidgetComponent>("InteractMessage");
+	InteractWidgetComponent->SetupAttachment(GetRootComponent());
+	InteractWidgetComponent->SetVisibility(false);
 	
 	UCharacterMovementComponent* Movement = GetCharacterMovement();
 	Movement->bOrientRotationToMovement = true;
@@ -46,6 +51,21 @@ AAuraHero::AAuraHero()
 
 	CharacterType = ECharacterType::Player;
 	TeamComponent->TeamID = PLAYER_TEAM;
+}
+
+void AAuraHero::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+	if (bDying)
+	{
+		Camera->SetFieldOfView(FMath::FInterpTo(
+			Camera->FieldOfView,
+			15.f,
+			DeltaSeconds,
+			10.f
+			));
+	}
 }
 
 void AAuraHero::PossessedBy(AController* NewController)
@@ -73,6 +93,13 @@ void AAuraHero::AddCharacterAbilities()
 		EligibleAbilities,
 		FAuraGameplayTags::Get().Abilities_Status_Eligible
 		);
+}
+
+void AAuraHero::Die(const FVector& DeathImpulse)
+{
+	bDying = true;
+
+	StartDeath();
 }
 
 int32 AAuraHero::GetCharacterLevel_Implementation() const
@@ -121,12 +148,79 @@ void AAuraHero::ShowTargetingActor_Implementation(
 	float Radius
 	)
 {
-	MainPlayerController->ShowTargetingActor(TargetingActorClass, TargetTeam, Radius);
+	AuraPlayerController->ShowTargetingActor(TargetingActorClass, TargetTeam, Radius);
 }
 
 void AAuraHero::HideTargetingActor_Implementation()
 {
-	MainPlayerController->HideTargetingActor();
+	AuraPlayerController->HideTargetingActor();
+}
+
+FOnInteract& AAuraHero::GetOnInteractDelegate()
+{
+	return GetAuraPlayerController()->InteractActionTriggered;
+}
+
+void AAuraHero::SetInteractMessageVisible_Implementation(bool bVisible)
+{
+	InteractWidgetComponent->SetVisibility(bVisible);
+}
+
+void AAuraHero::StartDeath()
+{
+	GetMesh()->SetRenderCustomDepth(true);
+	GetMesh()->SetCustomDepthStencilValue(CUSTOM_DEPTH_DEATH);
+	Weapon->SetRenderCustomDepth(true);
+	Weapon->SetCustomDepthStencilValue(CUSTOM_DEPTH_DEATH);
+	
+	APostProcessVolume* PPDeath = Cast<APostProcessVolume>(
+		UGameplayStatics::GetActorOfClass(this, APostProcessVolume::StaticClass())
+		);
+
+	PPDeath->Settings.WeightedBlendables.Array[0].Weight = 0.f;
+	PPDeath->Settings.WeightedBlendables.Array[1].Weight = 1.f;
+	
+	GetMovementComponent()->Deactivate();
+	UGameplayStatics::SetGlobalTimeDilation(this, 0.25f);
+	PlayAnimMontage(HitReactMontage, 0.66f);
+
+	FTimerHandle DeathTimer;
+	GetWorld()->GetTimerManager().SetTimer(
+		DeathTimer,
+		this,
+		&AAuraHero::EndDeath,
+		0.3f,
+		false
+		);
+}
+
+void AAuraHero::EndDeath()
+{
+	UNiagaraComponent* NiagaraComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(
+		this,
+		DeathBloodEffect,
+		GetActorLocation()
+		);
+	NiagaraComponent->SetRenderCustomDepth(true);
+	NiagaraComponent->SetCustomDepthStencilValue(CUSTOM_DEPTH_DEATH);
+
+	UGameplayStatics::PlaySound2D(
+		this,
+		DeathSound1,
+		1.2f,
+		0.8f
+		);
+
+	UGameplayStatics::PlaySound2D(
+		this,
+		DeathSound2,
+		1.2f,
+		0.8f
+		);
+
+	UGameplayStatics::SetGlobalTimeDilation(this, 1.f);
+
+	Super::Die();
 }
 
 AAuraPlayerState* AAuraHero::GetAuraPlayerState() const
@@ -135,6 +229,16 @@ AAuraPlayerState* AAuraHero::GetAuraPlayerState() const
 	check(AuraPlayerState);
 
 	return AuraPlayerState;
+}
+
+AAuraPlayerController* AAuraHero::GetAuraPlayerController()
+{
+	if (AuraPlayerController == nullptr)
+	{
+		AuraPlayerController = Cast<AAuraPlayerController>(GetController());
+	}
+
+	return AuraPlayerController;
 }
 
 void AAuraHero::MulticastLevelUpParticles_Implementation() const
@@ -149,13 +253,11 @@ void AAuraHero::MulticastLevelUpParticles_Implementation() const
 	}
 	if (IsValid(LevelUpNiagaraSystem))
 	{
-		FRotator Rotation = GetActorRotation();
-		Rotation.Pitch = 90.f;
 		UNiagaraFunctionLibrary::SpawnSystemAtLocation(
 			this,
 			LevelUpNiagaraSystem,
 			GetActorLocation(),
-			Rotation
+			GetActorRotation()
 		);
 	}
 }
@@ -178,15 +280,16 @@ void AAuraHero::InitAbilityActorInfo()
 
 	if (IsLocallyControlled() || HasAuthority())
 	{
-		MainPlayerController = GetController<AAuraPlayerController>();
-		check(MainPlayerController);
+		if (GetAuraPlayerController())
+		{
+			AuraPlayerController->SetPlayerCamera(Camera);
+		}
 		
-		MainPlayerController->SetPlayerCamera(Camera);
 	}
 	
-	if(AAuraHUD* AuraHUD = Cast<AAuraHUD>(MainPlayerController->GetHUD()))
+	if(AAuraHUD* AuraHUD = Cast<AAuraHUD>(AuraPlayerController->GetHUD()))
 	{
-		AuraHUD->InitOverlay(MainPlayerController, AuraPlayerState, AbilitySystemComponent, 
+		AuraHUD->InitOverlay(AuraPlayerController, AuraPlayerState, AbilitySystemComponent, 
 		AttributeSet);
 	}
 	

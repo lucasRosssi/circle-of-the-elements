@@ -8,8 +8,11 @@
 #include "GameFramework/GameModeBase.h"
 #include "AuraGameModeBase.generated.h"
 
+enum class EGatePosition : uint8;
+class UAuraGameInstance;
+class APostProcessVolume;
 struct FEnemyWave;
-class UEncounterInfo;
+class URegionInfo;
 class AEnemySpawner;
 class AAuraEnemy;
 class UStatusEffectInfo;
@@ -27,19 +30,42 @@ class AURA_API AAuraGameModeBase : public AGameModeBase
 	GENERATED_BODY()
 
 public:
+	UFUNCTION(BlueprintPure)
+	TSoftObjectPtr<UWorld> GetNextLocation(ERegion InRegion, EGatePosition EntrancePosition);
+	UFUNCTION(BlueprintPure)
+	TSoftObjectPtr<UWorld> GetInitialLocation(ERegion InRegion);
+	
 	UFUNCTION(BlueprintCallable)
 	void StartEncounter();
-
 	void NextWave();
-
 	void FinishEncounter();
-
 	void PostFinishEncounter();
 
 	void AddToXPStack(float InXP);
 
 	int32 GetEnemiesLevel() const { return EnemiesLevel; }
 
+	UFUNCTION(BlueprintCallable)
+	void GetAvailableSpawners();
+
+	UFUNCTION(BlueprintCallable)
+	void GetEnemySpawns();
+
+	UFUNCTION(BlueprintCallable)
+	void LoadLevelInfo();
+
+	UFUNCTION(BlueprintCallable)
+	void PlacePlayerInStartingPoint();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnExitLocation(EGatePosition NextGatePosition);
+	UFUNCTION(BlueprintCallable)
+	void ExitLocation(EGatePosition NextGatePosition);
+
+	UFUNCTION(BlueprintPure)
+	TSoftObjectPtr<UWorld> GetCurrentLevel() const { return CurrentLevel; }
+	
+	UPROPERTY(BlueprintAssignable)
 	FOnEncounterFinished OnEncounterFinishedDelegate;
 	
 	UPROPERTY(EditDefaultsOnly, Category="Game")
@@ -52,56 +78,54 @@ public:
 	TObjectPtr<UStatusEffectInfo> StatusEffectInfo;
 
 	UPROPERTY(EditDefaultsOnly, Category="Game")
-	TObjectPtr<UEncounterInfo> EncounterInfo;
+	TObjectPtr<URegionInfo> RegionInfo;
 
 protected:
-	virtual void BeginPlay() override;
-	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Encounter")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Location|Encounter")
 	ERegion Region = ERegion::Undefined;
 	UPROPERTY(
 		EditDefaultsOnly,
 		BlueprintReadWrite,
-		Category="Encounter",
+		Category="Location|Encounter",
 		meta=(Categories="DifficultyClass")
 		)
 	FGameplayTag DifficultyClass = FGameplayTag();
 	UPROPERTY(
 		EditDefaultsOnly,
 		BlueprintReadWrite,
-		Category="Encounter",
+		Category="Location|Encounter",
 		meta=(ClampMin=1, UIMin=1, ClampMax=20, UIMax=20)
 		)
 	int32 EnemiesLevel = 1;
 	UPROPERTY(
 		EditDefaultsOnly,
 		BlueprintReadWrite,
-		Category="Encounter",
+		Category="Location|Encounter",
 		meta=(ClampMin=1, UIMin=1)
 		)
 	int32 TotalWaves = 1;
 	UPROPERTY(
 		EditDefaultsOnly,
 		BlueprintReadWrite,
-		Category="Encounter",
+		Category="Location|Encounter",
 		meta=(Units="Seconds")
 		)
 	float WaveTransitionDelay = 0.f;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Encounter")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Location|Encounter")
 	float TimeDilationOnFinishEncounter = 0.2f;
 	UPROPERTY(
 		EditDefaultsOnly,
 		BlueprintReadWrite,
-		Category="Encounter",
+		Category="Location|Encounter",
 		meta=(Units="Seconds")
 		)
 	float TimeDilationResetDelay = 1.f;
-	UPROPERTY(EditDefaultsOnly, Category="Encounter")
+	UPROPERTY(EditDefaultsOnly, Category="Location|Encounter")
 	bool bOverrideEnemyWaves = false;
 	UPROPERTY(
 		EditDefaultsOnly,
 		BlueprintReadWrite,
-		Category="Encounter",
+		Category="Location|Encounter",
 		meta=(EditCondition="bOverrideEnemyWaves")
 		)
 	TArray<FEnemyWave> EnemyWaves;
@@ -114,6 +138,15 @@ private:
 	void OnEnemySpawned(AActor* Enemy);
 	UFUNCTION()
 	void OnEnemyKilled(AActor* Enemy);
+
+	void SetCurrentLocationInfo();
+
+	UAuraGameInstance* GetAuraGameInstance();
+
+	UPROPERTY()
+	UAuraGameInstance* AuraGameInstance = nullptr;
+
+	FLatentActionInfo OnLoadStreamLatentActionInfo;
 	
 	UPROPERTY()
 	int32 EnemyCount = 0;
@@ -126,4 +159,10 @@ private:
 
 	UPROPERTY()
 	float StackedXP = 0.f;
+
+	TArray<TSoftObjectPtr<UWorld>> SelectedLevels;
+	TSoftObjectPtr<UWorld> PrevLevel;
+	TSoftObjectPtr<UWorld> CurrentLevel;
+
+	int32 EncountersCount = 0;
 };

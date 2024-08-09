@@ -3,6 +3,7 @@
 
 #include "Character/AuraEnemy.h"
 
+#include "NavigationInvokerComponent.h"
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
 #include "AbilitySystem/AuraAttributeSet.h"
 #include "AI/AuraAIController.h"
@@ -19,6 +20,8 @@ AAuraEnemy::AAuraEnemy()
 	GetMesh()->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
 
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
+	NavigationInvoker = CreateDefaultSubobject<UNavigationInvokerComponent>("NavigationInvoker");
+	NavigationInvoker->SetGenerationRadii(1500.f, 1500.f);
 
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationRoll = false;

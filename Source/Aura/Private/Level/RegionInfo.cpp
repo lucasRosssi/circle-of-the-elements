@@ -1,0 +1,108 @@
+// Copyright Lucas Rossi
+
+
+#include "Level/RegionInfo.h"
+
+#include "Aura/AuraLogChannels.h"
+
+FRegionData* URegionInfo::GetRegionData(ERegion Region)
+{
+	return RegionData.Find(Region);
+}
+
+TArray<FEnemyWave> URegionInfo::GetEnemyWaves(
+	ERegion Region,
+	FGameplayTag DifficultyClass
+	)
+{
+	const FRegionData* Data = GetRegionData(Region);
+
+	if (!Data) return TArray<FEnemyWave>();
+
+	if (const auto Encounter = Data->Encounters.Find(DifficultyClass))
+	{
+		return Encounter->EnemyWaves;
+	}
+
+	return TArray<FEnemyWave>();
+}
+
+TArray<FEnemyWave> URegionInfo::GetRandomizedEnemyWaves(
+		ERegion Region, 
+		FGameplayTag DifficultyClass,
+		int32 Amount
+		)
+{
+	if (Amount < 1)
+	{
+		UE_LOG(LogAura, Error, TEXT("GetRandomizedEnemyWaves needs an amount greater than 0!"));
+		return TArray<FEnemyWave>();
+	}
+	
+	TArray<FEnemyWave> EnemyWaves = GetEnemyWaves(Region, DifficultyClass);
+	if (EnemyWaves.IsEmpty()) return EnemyWaves;
+
+	TArray<FEnemyWave> RandomWaves;
+	for (int32 i = 1; i <= Amount; i++)
+	{
+		const int32 Index = FMath::RandRange(0, EnemyWaves.Num() - 1);
+
+		if (EnemyWaves.IsValidIndex(Index))
+		{
+			RandomWaves.Add(EnemyWaves[Index]);
+			EnemyWaves.RemoveAt(Index);
+		}
+	}
+
+	return RandomWaves;
+}
+
+TArray<TSoftObjectPtr<UWorld>> URegionInfo::GetRegionLevels(ERegion Region, EGatePosition EntrancePosition)
+{
+	const FRegionData* Data = GetRegionData(Region);
+
+	if (!Data) return TArray<TSoftObjectPtr<UWorld>>();
+
+	if (const auto AvailableLevels = Data->Locations.Find(EntrancePosition))
+	{
+		return AvailableLevels->Levels;
+	}
+
+	return TArray<TSoftObjectPtr<UWorld>>();
+}
+
+TSoftObjectPtr<UWorld> URegionInfo::GetRandomizedRegionLevel(
+	ERegion Region,
+	EGatePosition EntrancePosition,
+	TArray<TSoftObjectPtr<UWorld>> LevelsToExclude
+	)
+{
+	TArray<TSoftObjectPtr<UWorld>> Levels = GetRegionLevels(Region, EntrancePosition);
+	if (Levels.IsEmpty()) return nullptr;
+
+	if (!LevelsToExclude.IsEmpty())
+	{
+		for (auto Level : LevelsToExclude)
+		{
+			Levels.RemoveSingle(Level);
+		}
+	}
+
+	const int32 Index = FMath::RandRange(0, Levels.Num() - 1);
+
+	return Levels[Index];
+}
+
+TSoftObjectPtr<UWorld> URegionInfo::GetRandomizedInitialLevel(ERegion Region)
+{
+	const FRegionData* Data = GetRegionData(Region);
+
+	if (!Data) return nullptr;
+
+	TArray<TSoftObjectPtr<UWorld>> InitialLevels = Data->InitialLevels;
+	if (InitialLevels.IsEmpty()) return nullptr;
+
+	const int32 Index = FMath::RandRange(0, InitialLevels.Num() - 1);
+
+	return InitialLevels[Index];
+}

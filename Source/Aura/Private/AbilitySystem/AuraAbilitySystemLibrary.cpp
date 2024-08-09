@@ -114,13 +114,13 @@ UStatusEffectInfo* UAuraAbilitySystemLibrary::GetStatusEffectInfo(const UObject*
 	return AuraGameMode->StatusEffectInfo;
 }
 
-UEncounterInfo* UAuraAbilitySystemLibrary::GetEncounterInfo(const UObject* WorldContextObject)
+URegionInfo* UAuraAbilitySystemLibrary::GetRegionInfo(const UObject* WorldContextObject)
 {
 	const AAuraGameModeBase* AuraGameMode = CastChecked<AAuraGameModeBase>(
 		UGameplayStatics::GetGameMode(WorldContextObject)
 	);
 
-	return AuraGameMode->EncounterInfo;
+	return AuraGameMode->RegionInfo;
 }
 
 void UAuraAbilitySystemLibrary::GiveStartupAbilities(

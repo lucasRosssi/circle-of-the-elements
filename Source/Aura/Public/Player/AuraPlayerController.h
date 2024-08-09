@@ -7,6 +7,7 @@
 #include "GameplayTagContainer.h"
 #include "InputActionValue.h"
 #include "Components/TimelineComponent.h"
+#include "Interaction/PlayerInterface.h"
 
 #include "AuraPlayerController.generated.h"
 
@@ -54,9 +55,6 @@ public:
 	bool IsTargeting() const { return bTargeting; }
 	ATargetingActor* GetTargetingActor() const { return TargetingActor; }
 
-	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category="ControllerDevice")
-	FOnControllerDeviceChanged ControllerDeviceChangedDelegate;
-
 	UFUNCTION(BlueprintCallable)
 	void ShowTargetingActor(
 		TSubclassOf<ATargetingActor> TargetingActorClass,
@@ -73,6 +71,12 @@ public:
 	void OnOcclusionChange(bool bIsOccluding);
 
 	UUINavPCComponent* GetUINavComponent() const { return UINavPCComp; }
+
+	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category="ControllerDevice")
+	FOnControllerDeviceChanged ControllerDeviceChangedDelegate;
+
+	UPROPERTY(BlueprintAssignable, Category="Interaction")
+	FOnInteract InteractActionTriggered;
 
 protected:
 	virtual void BeginPlay() override;
@@ -115,6 +119,8 @@ private:
 	void ConfirmPressed();
 	void CancelPressed();
 
+	void InteractPressed();
+
 	void UpdateTargetingActorLocation();
 	void UpdatePlayerLocationParameterCollection();
 	
@@ -129,6 +135,8 @@ private:
 	TObjectPtr<UInputAction> ConfirmAction;
 	UPROPERTY(EditAnywhere, Category="Input")
 	TObjectPtr<UInputAction> CancelAction;
+	UPROPERTY(EditAnywhere, Category="Input")
+	TObjectPtr<UInputAction> InteractAction;
 
 	UPROPERTY(EditAnywhere, Category="Input")
 	TObjectPtr<UInputAction> CheckInputSourceAction;
