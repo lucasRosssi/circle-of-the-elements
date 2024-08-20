@@ -18,7 +18,7 @@ void AGate::BeginPlay()
 	GetAuraGameMode()->OnEncounterFinishedDelegate.AddDynamic(this, &AGate::EnableInteraction);
 }
 
-void AGate::Interact(AActor* InInstigator)
+void AGate::Interact(AController* InstigatorController)
 {
 	// GoToRandomLocation();
 }

@@ -11,6 +11,7 @@
 #include "AbilitySystem/AuraAttributeSet.h"
 #include "Aura/Aura.h"
 #include "Camera/CameraComponent.h"
+#include "Components/SpotLightComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Engine/PostProcessVolume.h"
 #include "Game/TeamComponent.h"
@@ -27,11 +28,20 @@ AAuraHero::AAuraHero()
 	CameraBoom->SetupAttachment(GetRootComponent());
 	CameraBoom->SetUsingAbsoluteRotation(true);
 	CameraBoom->bDoCollisionTest = false;
-	CameraBoom->TargetArmLength = 4000.f;
+	CameraBoom->TargetArmLength = 5000.f;
 	Camera = CreateDefaultSubobject<UCameraComponent>("Camera");
 	Camera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 	Camera->bUsePawnControlRotation = false;
 	Camera->SetFieldOfView(30.f);
+
+	SpotLight = CreateDefaultSubobject<USpotLightComponent>("SpotLight");
+	SpotLight->SetupAttachment(GetRootComponent());
+	SpotLight->Intensity = 10000.f;
+	SpotLight->AttenuationRadius = 2000.f;
+	SpotLight->SetUseTemperature(true);
+	SpotLight->Temperature = 5000.f;
+	SpotLight->CastShadows = false;
+	SpotLight->bAffectsWorld = false;
 	
 	LevelUpWidgetComponent = CreateDefaultSubobject<UWidgetComponent>("LevelUpMessage");
 	LevelUpWidgetComponent->SetupAttachment(GetRootComponent());
@@ -102,6 +112,11 @@ void AAuraHero::Die(const FVector& DeathImpulse)
 	StartDeath();
 }
 
+void AAuraHero::DeathMontageEndRagdoll()
+{
+	RagdollMesh();
+}
+
 int32 AAuraHero::GetCharacterLevel_Implementation() const
 {
 	return GetAuraPlayerState()->GetCharacterLevel();
@@ -168,6 +183,33 @@ void AAuraHero::SetInteractMessageVisible_Implementation(bool bVisible)
 
 void AAuraHero::StartDeath()
 {
+	bDead = true;
+	OnDeath.Broadcast(this);
+	
+	FCollisionQueryParams SphereParams;
+	SphereParams.AddIgnoredActor(this);
+
+	TArray<FOverlapResult> Overlaps;
+	if (const UWorld* World = GetWorld())
+	{
+		World->OverlapMultiByObjectType(
+			Overlaps,
+			GetActorLocation(),
+			FQuat::Identity,
+			FCollisionObjectQueryParams(FCollisionObjectQueryParams::InitType::AllObjects),
+			FCollisionShape::MakeSphere(500.f),
+			SphereParams
+		);
+		for (auto& Overlap : Overlaps)
+		{
+			AActor* OverlappedActor = Overlap.GetActor();
+
+			if (!IsValid(OverlappedActor)) continue;
+
+			OverlappedActor->SetActorHiddenInGame(true);
+		}
+	}
+	
 	GetMesh()->SetRenderCustomDepth(true);
 	GetMesh()->SetCustomDepthStencilValue(CUSTOM_DEPTH_DEATH);
 	Weapon->SetRenderCustomDepth(true);
@@ -181,6 +223,8 @@ void AAuraHero::StartDeath()
 	PPDeath->Settings.WeightedBlendables.Array[1].Weight = 1.f;
 	
 	GetMovementComponent()->Deactivate();
+	SpotLight->bAffectsWorld = true;
+	
 	UGameplayStatics::SetGlobalTimeDilation(this, 0.25f);
 	PlayAnimMontage(HitReactMontage, 0.66f);
 
@@ -196,31 +240,59 @@ void AAuraHero::StartDeath()
 
 void AAuraHero::EndDeath()
 {
+	GetMesh()->SetCustomDepthStencilValue(CUSTOM_DEPTH_DEATH_DEFAULT);
+	Weapon->SetCustomDepthStencilValue(CUSTOM_DEPTH_DEATH_DEFAULT);
+	
 	UNiagaraComponent* NiagaraComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(
 		this,
 		DeathBloodEffect,
 		GetActorLocation()
 		);
 	NiagaraComponent->SetRenderCustomDepth(true);
-	NiagaraComponent->SetCustomDepthStencilValue(CUSTOM_DEPTH_DEATH);
+	NiagaraComponent->SetCustomDepthStencilValue(CUSTOM_DEPTH_DEATH_DEFAULT);
+	NiagaraComponent->MarkRenderStateDirty();
 
 	UGameplayStatics::PlaySound2D(
 		this,
 		DeathSound1,
-		1.2f,
-		0.8f
+		1.f,
+		0.7f
 		);
 
 	UGameplayStatics::PlaySound2D(
 		this,
 		DeathSound2,
-		1.2f,
-		0.8f
+		1.f,
+		0.7f
 		);
 
 	UGameplayStatics::SetGlobalTimeDilation(this, 1.f);
 
-	Super::Die();
+	if (DeathMontage != nullptr)
+	{
+		UGameplayStatics::PlaySoundAtLocation(
+		this,
+		DeathSound,
+		GetActorLocation(),
+		GetActorRotation()
+	);
+		
+		ReleaseWeapon();
+		const float MontageLength = PlayAnimMontage(DeathMontage);
+
+		FTimerHandle MontageTimer;
+		GetWorld()->GetTimerManager().SetTimer(
+			MontageTimer,
+			this,
+			&AAuraHero::DeathMontageEndRagdoll,
+			MontageLength,
+			false
+			);
+	}
+	else
+	{
+		Super::Die();
+	}
 }
 
 AAuraPlayerState* AAuraHero::GetAuraPlayerState() const

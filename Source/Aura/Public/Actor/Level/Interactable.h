@@ -43,9 +43,9 @@ protected:
 	UFUNCTION()
 	void DisableInteraction();
 
-	virtual void Interact(AActor* InInstigator);
+	virtual void Interact(AController* InstigatorController);
 	UFUNCTION(BlueprintImplementableEvent)
-	void OnInteracted(AActor* InInstigator);
+	void OnInteracted(AController* InstigatorController);
 
 	UFUNCTION(BlueprintPure)
 	AAuraGameModeBase* GetAuraGameMode();
@@ -63,5 +63,5 @@ protected:
 	TObjectPtr<USoundBase> InteractSound;
 private:
 	UFUNCTION()
-	void PreInteract(AActor* InInstigator);
+	void PreInteract(AController* InstigatorController);
 };

@@ -7,6 +7,7 @@
 #include "Interaction/PlayerInterface.h"
 #include "AuraHero.generated.h"
 
+class USpotLightComponent;
 class APostProcessVolume;
 enum class ETargetTeam : uint8;
 class AAuraPlayerController;
@@ -34,6 +35,7 @@ public:
 	virtual int32 GetCharacterLevel_Implementation() const override;
 	virtual void Die(const FVector& DeathImpulse) override;
 	/** end Combat Interface */
+	void DeathMontageEndRagdoll();
 
 	/** Player Interface */
 	virtual void AddToXP_Implementation(int32 InXP) override;
@@ -83,8 +85,13 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Camera")
 	TObjectPtr<USpringArmComponent> CameraBoom;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Camera")
+	TObjectPtr<USpotLightComponent> SpotLight;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Death")
 	TObjectPtr<UNiagaraSystem> DeathBloodEffect;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Death")
+	TObjectPtr<UAnimMontage> DeathMontage;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Death")
 	TObjectPtr<USoundBase> DeathSound1;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Death")

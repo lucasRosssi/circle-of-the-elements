@@ -14,10 +14,11 @@ void UAuraUserWidget::NativeConstruct()
 
 	if (GetOwningAuraPlayerController())
 	{
-		GetOwningAuraPlayerController()->GetUINavComponent()->InputTypeChangedDelegate.AddDynamic(
-			this,
-			&UAuraUserWidget::OnChangeInputDevice
-		);
+		GetOwningAuraPlayerController()->GetUINavComponent()
+			->InputTypeChangedDelegate.AddUniqueDynamic(
+				this,
+				&UAuraUserWidget::OnChangeInputDevice
+				);
 	}
 }
 

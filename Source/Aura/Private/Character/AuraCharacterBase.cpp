@@ -80,10 +80,6 @@ UAnimMontage* AAuraCharacterBase::GetDodgeMontage_Implementation()
 
 void AAuraCharacterBase::Die(const FVector& DeathImpulse)
 {
-	Weapon->DetachFromComponent(FDetachmentTransformRules(
-		EDetachmentRule::KeepWorld,
-		true
-	));
 	MulticastHandleDeath(DeathImpulse);
 }
 
@@ -119,16 +115,8 @@ void AAuraCharacterBase::MulticastHandleDeath_Implementation(const FVector& Deat
 	bDead = true;
 	OnDeath.Broadcast(this);
 	
-	Weapon->SetSimulatePhysics(true);
-	Weapon->SetEnableGravity(true);
-	Weapon->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
-
-	GetMesh()->SetSimulatePhysics(true);
-	GetMesh()->SetEnableGravity(true);
-	GetMesh()->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
-	GetMesh()->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
-	GetMesh()->AddImpulse(DeathImpulse, NAME_None, true);
-	GetMesh()->bPauseAnims = true;
+	ReleaseWeapon();
+	RagdollMesh(DeathImpulse);
 	
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	DissolveCharacter();
@@ -147,6 +135,27 @@ void AAuraCharacterBase::InitSummon(int32 TeamID)
 void AAuraCharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
+}
+
+void AAuraCharacterBase::ReleaseWeapon()
+{
+	Weapon->DetachFromComponent(FDetachmentTransformRules(
+			EDetachmentRule::KeepWorld,
+			true
+		));
+	Weapon->SetSimulatePhysics(true);
+	Weapon->SetEnableGravity(true);
+	Weapon->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+}
+
+void AAuraCharacterBase::RagdollMesh(const FVector& DeathImpulse)
+{
+	GetMesh()->SetSimulatePhysics(true);
+	GetMesh()->SetEnableGravity(true);
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+	GetMesh()->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
+	GetMesh()->AddImpulse(DeathImpulse, NAME_None, true);
+	GetMesh()->bPauseAnims = true;
 }
 
 void AAuraCharacterBase::HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount)

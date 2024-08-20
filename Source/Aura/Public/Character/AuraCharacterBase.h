@@ -111,6 +111,9 @@ protected:
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnSummoned();
 
+	void ReleaseWeapon();
+	void RagdollMesh(const FVector& DeathImpulse = FVector::ZeroVector);
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Character Defaults|Montages|Combat")
 	TObjectPtr<UAnimMontage> DodgeMontage;
 	

@@ -20,22 +20,22 @@ AInteractable::AInteractable()
 
 }
 
-void AInteractable::PreInteract(AActor* InInstigator)
+void AInteractable::PreInteract(AController* InstigatorController)
 {
 	if (!bInteractionEnabled) return;
 
-	IPlayerInterface* PlayerInterface = Cast<IPlayerInterface>(InInstigator);
+	IPlayerInterface* PlayerInterface = Cast<IPlayerInterface>(InstigatorController->GetPawn());
 	if (PlayerInterface)
 	{
 		PlayerInterface->GetOnInteractDelegate().RemoveAll(this);
-		IPlayerInterface::Execute_SetInteractMessageVisible(InInstigator, false);
+		IPlayerInterface::Execute_SetInteractMessageVisible(InstigatorController->GetPawn(), false);
 	}
 	
-	Interact(InInstigator);
-	OnInteracted(InInstigator);
+	Interact(InstigatorController);
+	OnInteracted(InstigatorController);
 }
 
-void AInteractable::Interact(AActor* InInstigator)
+void AInteractable::Interact(AController* InstigatorController)
 {
 }
 

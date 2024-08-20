@@ -23,7 +23,7 @@ protected:
 	virtual void BeginPlay() override;
 
 	// START Interactable overrides
-	virtual void Interact(AActor* InInstigator) override;
+	virtual void Interact(AController* InstigatorController) override;
 	// END Interactable overrides
 
 	UFUNCTION(BlueprintPure)
