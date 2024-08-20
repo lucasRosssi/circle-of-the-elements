@@ -10,6 +10,7 @@
 #include "AbilitySystem/Data/StatusEffectInfo.h"
 #include "AbilitySystem/GameplayEffects/StatusEffect.h"
 #include "Aura/AuraLogChannels.h"
+#include "Character/AuraCharacterBase.h"
 #include "Kismet/KismetMathLibrary.h"
 
 UBaseAbility::UBaseAbility()
@@ -122,9 +123,12 @@ void UBaseAbility::OnAbilityLevelUp(
 		const FGameplayAbilitySpec* Spec
 		)
 {
-	const FGameplayEffectQuery Query = FGameplayEffectQuery
-		::MakeQuery_MatchAnyOwningTags(*GetCooldownTags());
-	ActorInfo->AbilitySystemComponent->RemoveActiveEffects(Query);
+	if (const FGameplayTagContainer* CooldownTags = GetCooldownTags())
+	{
+		const FGameplayEffectQuery Query = FGameplayEffectQuery
+			::MakeQuery_MatchAnyOwningTags(*CooldownTags);
+		ActorInfo->AbilitySystemComponent->RemoveActiveEffects(Query);
+	}
 	
 	if (bUseCharges)
 	{
@@ -243,6 +247,16 @@ FAbilityParams UBaseAbility::MakeAbilityParamsFromDefaults(AActor* TargetActor) 
 	}
 	
 	return AbilityParams;
+}
+
+AAuraCharacterBase* UBaseAbility::GetAvatarCharacter()
+{
+	if (AvatarCharacter == nullptr)
+	{
+		AvatarCharacter = Cast<AAuraCharacterBase>(GetAvatarActorFromActorInfo());
+	}
+
+	return AvatarCharacter;
 }
 
 FGameplayTag UBaseAbility::GetAbilityTag()

@@ -111,7 +111,7 @@ void AAuraPlayerController::BeginPlay()
 
 void AAuraPlayerController::HandleEnvironmentOcclusion()
 {
-	if (!PlayerCamera) return;
+	if (!PlayerCamera || !bControllerEnabled) return;
 	
 	const TArray<AActor*> ActorsToIgnore;
 	FHitResult HitResult;
@@ -166,6 +166,20 @@ void AAuraPlayerController::PlayerTick(float DeltaTime)
 	UpdateTargetingActorLocation();
 	UpdatePlayerLocationParameterCollection();
 	HandleEnvironmentOcclusion();
+}
+
+void AAuraPlayerController::EnableController()
+{
+	bControllerEnabled = true;
+	EnableInput(this);
+}
+
+void AAuraPlayerController::DisableController()
+{
+	bControllerEnabled = false;
+	DisableInput(this);
+	LastActor = nullptr;
+	ThisActor = nullptr;
 }
 
 void AAuraPlayerController::ShowDamageNumber_Implementation(
@@ -277,6 +291,8 @@ void AAuraPlayerController::MoveComplete(const FInputActionValue& InputActionVal
 
 void AAuraPlayerController::CursorTrace()
 {
+	if (!bControllerEnabled) return;
+	
 	const ECollisionChannel TraceChannel = bTargeting ? ECC_ExcludeCharacters : ECC_Visibility;
 	GetHitResultUnderCursor(TraceChannel, false, CursorHit);
 
@@ -381,7 +397,7 @@ UAuraAbilitySystemComponent* AAuraPlayerController::GetASC()
 
 void AAuraPlayerController::UpdateTargetingActorLocation()
 {
-	if (!bUsingGamepad && IsValid(TargetingActor))
+	if (bControllerEnabled && !bUsingGamepad && IsValid(TargetingActor))
 	{
 		TargetingActor->SetActorLocation(CursorHit.ImpactPoint);
 	}
@@ -400,7 +416,7 @@ UMaterialParameterCollectionInstance* AAuraPlayerController::GetOcclusionMaskPar
 
 void AAuraPlayerController::UpdatePlayerLocationParameterCollection()
 {
-	if (!OcclusionMaskParameterCollection) return;
+	if (!OcclusionMaskParameterCollection || !bControllerEnabled) return;
 
 	const FVector PlayerLocation = GetPawn()->GetActorLocation();
 	const FLinearColor ColorPlayerLocation = FLinearColor(

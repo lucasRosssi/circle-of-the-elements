@@ -38,6 +38,11 @@ class AURA_API AAuraPlayerController : public AUINavController
 public:
 	AAuraPlayerController();
 	virtual void PlayerTick(float DeltaTime) override;
+
+	UFUNCTION(BlueprintCallable)
+	void EnableController();
+	UFUNCTION(BlueprintCallable)
+	void DisableController();
 	
 	UFUNCTION(Client, Reliable)
 	void ShowDamageNumber(
@@ -164,4 +169,6 @@ private:
 
 	UPROPERTY()
 	UCameraComponent* PlayerCamera = nullptr;
+
+	bool bControllerEnabled = true;
 };

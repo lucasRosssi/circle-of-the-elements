@@ -9,6 +9,7 @@
 #include "Enums/TargetTeam.h"
 #include "BaseAbility.generated.h"
 
+class AAuraCharacterBase;
 struct FAuraAbilityInfo;
 
 USTRUCT(BlueprintType)
@@ -69,6 +70,9 @@ public:
 	virtual FAbilityParams MakeAbilityParamsFromDefaults(AActor* TargetActor = nullptr) const;
 
 protected:
+	UFUNCTION(BlueprintPure, Category="Ability")
+	AAuraCharacterBase* GetAvatarCharacter();
+	
 	UFUNCTION(BlueprintPure, Category="Ability Info")
 	FGameplayTag GetAbilityTag();
 
@@ -168,5 +172,8 @@ private:
 
 	UPROPERTY()
 	UGameplayEffect* ChargesEffect = nullptr;
+
+	UPROPERTY()
+	AAuraCharacterBase* AvatarCharacter = nullptr;
 	
 };

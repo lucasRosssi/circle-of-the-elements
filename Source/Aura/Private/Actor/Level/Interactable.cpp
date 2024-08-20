@@ -51,7 +51,7 @@ void AInteractable::OnInteractAreaOverlap(
 	IPlayerInterface* PlayerInterface = Cast<IPlayerInterface>(OtherActor);
 	if (!PlayerInterface) return;
 
-	PlayerInterface->GetOnInteractDelegate().AddDynamic(this, &AInteractable::PreInteract);
+	PlayerInterface->GetOnInteractDelegate().AddUniqueDynamic(this, &AInteractable::PreInteract);
 	IPlayerInterface::Execute_SetInteractMessageVisible(OtherActor, true);
 }
 
