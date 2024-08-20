@@ -36,12 +36,12 @@ AAuraHero::AAuraHero()
 
 	SpotLight = CreateDefaultSubobject<USpotLightComponent>("SpotLight");
 	SpotLight->SetupAttachment(GetRootComponent());
-	SpotLight->Intensity = 10000.f;
-	SpotLight->AttenuationRadius = 2000.f;
+	SpotLight->Intensity = 50000.f;
+	SpotLight->AttenuationRadius = 3000.f;
 	SpotLight->SetUseTemperature(true);
 	SpotLight->Temperature = 5000.f;
 	SpotLight->CastShadows = false;
-	SpotLight->bAffectsWorld = false;
+	SpotLight->SetVisibility(false);
 	
 	LevelUpWidgetComponent = CreateDefaultSubobject<UWidgetComponent>("LevelUpMessage");
 	LevelUpWidgetComponent->SetupAttachment(GetRootComponent());
@@ -186,6 +186,9 @@ void AAuraHero::StartDeath()
 	bDead = true;
 	OnDeath.Broadcast(this);
 	
+	GetMovementComponent()->Deactivate();
+	GetAuraPlayerController()->DisableController();
+	
 	FCollisionQueryParams SphereParams;
 	SphereParams.AddIgnoredActor(this);
 
@@ -222,8 +225,7 @@ void AAuraHero::StartDeath()
 	PPDeath->Settings.WeightedBlendables.Array[0].Weight = 0.f;
 	PPDeath->Settings.WeightedBlendables.Array[1].Weight = 1.f;
 	
-	GetMovementComponent()->Deactivate();
-	SpotLight->bAffectsWorld = true;
+	SpotLight->SetVisibility(true);
 	
 	UGameplayStatics::SetGlobalTimeDilation(this, 0.25f);
 	PlayAnimMontage(HitReactMontage, 0.66f);

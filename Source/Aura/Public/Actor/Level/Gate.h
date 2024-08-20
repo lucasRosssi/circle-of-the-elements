@@ -37,7 +37,7 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Location")
 	ERegion Region = ERegion::Undefined;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Location")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Location")
 	EGatePosition NextGatePosition = EGatePosition::BottomLeft;
 private:
 };
