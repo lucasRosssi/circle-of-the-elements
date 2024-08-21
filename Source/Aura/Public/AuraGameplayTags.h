@@ -100,11 +100,17 @@ public:
 	FGameplayTag StatusEffects_Condition_Possessed;
 
 	FGameplayTag Immunities;
+
+	FGameplayTag Immunities_Debuff;
+	FGameplayTag Immunities_Debuff_Burning;
+	FGameplayTag Immunities_Debuff_Chill;
+	FGameplayTag Immunities_Debuff_Charm;
 	
 	FGameplayTag Immunities_Incapacitation;
 	FGameplayTag Immunities_Incapacitation_Stun;
 	FGameplayTag Immunities_Incapacitation_HitReact;
 	FGameplayTag Immunities_Incapacitation_Knockback;
+	FGameplayTag Immunities_Incapacitation_Freeze;
 
 	FGameplayTag InputTag;
 	FGameplayTag InputTag_Primary;

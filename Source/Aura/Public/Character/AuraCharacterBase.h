@@ -96,6 +96,8 @@ public:
 	TArray<TSubclassOf<UGameplayAbility>> NativeBaseAbilities;
 	UPROPERTY(EditDefaultsOnly, Category="Character Defaults|Abilities|Startup")
 	TArray<TSubclassOf<UGameplayAbility>> NativeCharacterAbilities;
+	UPROPERTY(EditDefaultsOnly, Category="Character Defaults|Effects|Startup")
+	TArray<TSubclassOf<UGameplayEffect>> NativeEffects;
 
 	UPROPERTY(
 		EditDefaultsOnly,

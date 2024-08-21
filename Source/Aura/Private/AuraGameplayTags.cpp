@@ -489,6 +489,26 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FString("Immunity tags")
 		);
 
+	GameplayTags.Immunities_Debuff = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Immunities.Debuff"),
+		FString("Immunity to debuff effects")
+		);
+
+	GameplayTags.Immunities_Debuff_Burning = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Immunities.Debuff.Burning"),
+		FString("Immunity to burning effect")
+		);
+
+	GameplayTags.Immunities_Debuff_Chill = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Immunities.Debuff.Chill"),
+		FString("Immunity to chill effect")
+		);
+
+	GameplayTags.Immunities_Debuff_Charm = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Immunities.Debuff.Charm"),
+		FString("Immunity to charm effect")
+		);
+
 	GameplayTags.Immunities_Incapacitation = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Immunities.Incapacitation"),
 		FString("Immunity to incapacitation effects")
@@ -507,6 +527,11 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	GameplayTags.Immunities_Incapacitation_Knockback = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Immunities.Incapacitation.Knockback"),
 		FString("Immunity to knockback effect")
+		);
+
+	GameplayTags.Immunities_Incapacitation_Freeze = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Immunities.Incapacitation.Freeze"),
+		FString("Immunity to freeze effect")
 		);
 	
 	/*

@@ -296,6 +296,14 @@ void AAuraCharacterBase::InitializeDefaultAttributes() const
 	if (DefaultSecondaryAttributes) ApplyEffectToSelf(DefaultSecondaryAttributes, Level);
 	if (DefaultVitalAttributes) ApplyEffectToSelf(DefaultVitalAttributes, Level);
 	if (DefaultRegenerationEffect) ApplyEffectToSelf(DefaultRegenerationEffect, Level);
+
+	if (!NativeEffects.IsEmpty())
+	{
+		for (const auto Effect : NativeEffects)
+		{
+			ApplyEffectToSelf(Effect, 1.f);
+		}
+	}
 }
 
 void AAuraCharacterBase::AddCharacterAbilities()
