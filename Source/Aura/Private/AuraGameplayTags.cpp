@@ -683,6 +683,26 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FString("Secondary attack ability")
 		);
 
+	GameplayTags.Abilities_Active_3th = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Active.3th"),
+		FString("3th attack ability")
+		);
+
+	GameplayTags.Abilities_Active_4th = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Active.4th"),
+		FString("4th attack ability")
+		);
+
+	GameplayTags.Abilities_Active_5th = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Active.5th"),
+		FString("5th attack ability")
+		);
+
+	GameplayTags.Abilities_Active_6th = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Active.6th"),
+		FString("6th attack ability")
+		);
+
 	// Aura active abilities
 	
 	GameplayTags.Abilities_Active_Aura = UGameplayTagsManager::Get().AddNativeGameplayTag(

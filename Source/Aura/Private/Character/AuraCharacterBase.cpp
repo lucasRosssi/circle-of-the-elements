@@ -193,8 +193,10 @@ void AAuraCharacterBase::UnHighlightActor_Implementation()
 	Weapon->SetRenderCustomDepth(false);
 }
 
-FVector AAuraCharacterBase::GetAbilitySocketLocation_Implementation(const FName SocketName, bool 
-                                                                    bSocketInWeapon)
+FVector AAuraCharacterBase::GetAbilitySocketLocation_Implementation(
+	const FName SocketName,
+	bool bSocketInWeapon
+	)
 {
 	if (bSocketInWeapon && IsValid(Weapon))
 	{

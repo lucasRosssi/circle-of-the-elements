@@ -35,4 +35,7 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Ability Defaults|Area Effect")
 	FScalableFloat Period = 1.f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Ability Defaults|Area Effect")
+	FScalableFloat DelayImpact = 0.f;
 };

@@ -55,6 +55,19 @@ void AAreaEffectActor::BeginPlay()
 			true
 		);
 	}
+
+	if (DelayImpact > 0.f)
+	{
+		FTimerHandle ImpactTimer;
+		GetWorld()->GetTimerManager().SetTimer(
+			ImpactTimer,
+			this,
+			&AAreaEffectActor::ApplyAbilityEffectToActorsInArea,
+			DelayImpact,
+			false
+		);
+	}
+
 }
 
 void AAreaEffectActor::BeginDestroy()
@@ -142,14 +155,15 @@ void AAreaEffectActor::OnOverlap(AActor* TargetActor)
 	if (!IsValid(TargetASC)) return;
 	
 	ASCsInArea.Add(TargetASC);
-	
-	if (AbilityParams.IsValid())
+
+	// When the ability has a delayed impact it'll apply effects when impact happens
+	if (AbilityParams.IsValid() && DelayImpact == 0.f)
 	{
 		bool bSuccess;
 		ApplyAbilityEffect(TargetASC, bSuccess);
 	}
 
-	if (GameplayEffectClass != nullptr)
+	if (GameplayEffectClass != nullptr && DelayImpact == 0.f)
 	{
 		ApplyEffectToTarget(TargetASC);
 	}

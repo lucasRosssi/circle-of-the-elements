@@ -159,6 +159,10 @@ public:
 	FGameplayTag Abilities_Active;
 	FGameplayTag Abilities_Active_Primary;
 	FGameplayTag Abilities_Active_Secondary;
+	FGameplayTag Abilities_Active_3th;
+	FGameplayTag Abilities_Active_4th;
+	FGameplayTag Abilities_Active_5th;
+	FGameplayTag Abilities_Active_6th;
 
 	FGameplayTag Abilities_Active_Aura;
 	
