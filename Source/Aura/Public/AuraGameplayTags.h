@@ -112,6 +112,13 @@ public:
 	FGameplayTag Immunities_Incapacitation_Knockback;
 	FGameplayTag Immunities_Incapacitation_Freeze;
 
+	FGameplayTag Boss;
+	FGameplayTag Boss_State;
+	FGameplayTag Boss_State_1st;
+	FGameplayTag Boss_State_2nd;
+	FGameplayTag Boss_State_3rd;
+	FGameplayTag Boss_State_4th;
+
 	FGameplayTag InputTag;
 	FGameplayTag InputTag_Primary;
 	FGameplayTag InputTag_Secondary;

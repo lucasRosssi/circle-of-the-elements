@@ -23,11 +23,17 @@ class AURA_API IAttributeSetInterface
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	void SetActionSpeed(float InActionSpeed);
-
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	float GetPower();
 
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	float GetMaxHealth();
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	float GetHealth();
+	
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void SetActionSpeed(float InActionSpeed);
+	
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void SetTimeDilation(float InTimeDilation);
 };

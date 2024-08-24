@@ -533,6 +533,40 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FName("Immunities.Incapacitation.Freeze"),
 		FString("Immunity to freeze effect")
 		);
+
+	/*
+	 * Boss Tags
+	 */
+
+	GameplayTags.Boss = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Boss"),
+		FString("Boss tags")
+		);
+
+	GameplayTags.Boss_State = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Boss.State"),
+		FString("Boss states tags")
+		);
+
+	GameplayTags.Boss_State_1st = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Boss.State.1st"),
+		FString("Boss 1st state tag")
+		);
+
+	GameplayTags.Boss_State_2nd = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Boss.State.2nd"),
+		FString("Boss 2nd state tag")
+		);
+
+	GameplayTags.Boss_State_3rd = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Boss.State.3rd"),
+		FString("Boss 3rd state tag")
+		);
+
+	GameplayTags.Boss_State_4th = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Boss.State.4th"),
+		FString("Boss 4th state tag")
+		);
 	
 	/*
 	 * Abilities Tags

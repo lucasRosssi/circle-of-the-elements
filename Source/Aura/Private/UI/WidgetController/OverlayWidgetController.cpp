@@ -125,6 +125,16 @@ void UOverlayWidgetController::EndTransition()
 	StartTransitionDelegate.Broadcast(false);
 }
 
+void UOverlayWidgetController::ShowBossHealthBar(ABossEnemy* Boss)
+{
+	ShowBossHealthBarDelegate.Broadcast(Boss);
+}
+
+void UOverlayWidgetController::HideBossHealthBar()
+{
+	HideBossHealthBarDelegate.Broadcast();
+}
+
 void UOverlayWidgetController::OnAbilityEquipped(
 	const FGameplayTag& AbilityTag,
 	const FGameplayTag& StatusTag,

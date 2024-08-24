@@ -6,6 +6,7 @@
 #include "UI/WidgetController/AuraWidgetController.h"
 #include "OverlayWidgetController.generated.h"
 
+class ABossEnemy;
 struct FAuraAbilityInfo;
 class UAuraAbilitySystemComponent;
 class UAbilityInfo;
@@ -32,6 +33,8 @@ struct FUIWidgetRow : public FTableRowBase
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttributeChangedSignature, float, NewValue);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMessageWidgetRowSignature, FUIWidgetRow, Row);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FTransitionChange, bool, bStarting);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FShowBossHealthBar, ABossEnemy*, Boss);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FHideBossHealthBar);
 
 /**
  * 
@@ -65,10 +68,21 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "Location")
 	FTransitionChange StartTransitionDelegate;
 
+	UPROPERTY(BlueprintAssignable, Category = "Location")
+	FShowBossHealthBar ShowBossHealthBarDelegate;
+
+	UPROPERTY(BlueprintAssignable, Category = "Location")
+	FHideBossHealthBar HideBossHealthBarDelegate;
+	
 	UFUNCTION(BlueprintCallable)
 	void StartTransition();
 	UFUNCTION(BlueprintCallable)
 	void EndTransition();
+
+	UFUNCTION(BlueprintCallable)
+	void ShowBossHealthBar(ABossEnemy* Boss);
+	UFUNCTION(BlueprintCallable)
+	void HideBossHealthBar();
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Data")
