@@ -567,6 +567,11 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FName("Boss.State.4th"),
 		FString("Boss 4th state tag")
 		);
+
+	GameplayTags.Boss_State_Ability = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Boss.State.Ability"),
+		FString("Boss state change ability tag")
+		);
 	
 	/*
 	 * Abilities Tags
@@ -717,9 +722,9 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FString("Secondary attack ability")
 		);
 
-	GameplayTags.Abilities_Active_3th = UGameplayTagsManager::Get().AddNativeGameplayTag(
-		FName("Abilities.Active.3th"),
-		FString("3th attack ability")
+	GameplayTags.Abilities_Active_3rd = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Active.3rd"),
+		FString("3rd attack ability")
 		);
 
 	GameplayTags.Abilities_Active_4th = UGameplayTagsManager::Get().AddNativeGameplayTag(

@@ -118,6 +118,7 @@ public:
 	FGameplayTag Boss_State_2nd;
 	FGameplayTag Boss_State_3rd;
 	FGameplayTag Boss_State_4th;
+	FGameplayTag Boss_State_Ability;
 
 	FGameplayTag InputTag;
 	FGameplayTag InputTag_Primary;
@@ -166,7 +167,7 @@ public:
 	FGameplayTag Abilities_Active;
 	FGameplayTag Abilities_Active_Primary;
 	FGameplayTag Abilities_Active_Secondary;
-	FGameplayTag Abilities_Active_3th;
+	FGameplayTag Abilities_Active_3rd;
 	FGameplayTag Abilities_Active_4th;
 	FGameplayTag Abilities_Active_5th;
 	FGameplayTag Abilities_Active_6th;

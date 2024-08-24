@@ -42,6 +42,13 @@ void ABossEnemy::BeginPlay()
 	if (!BossStateHealthThresholds.IsEmpty()) OnHealthChanged.AddDynamic(this, &ABossEnemy::CheckHealth);
 }
 
+void ABossEnemy::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	AuraAIController->GetBlackboardComponent()->SetValueAsInt(FName("BossState"), BossState);
+}
+
 void ABossEnemy::CheckHealth(float NewHealth)
 {
 	const float MaxHealth = AttributeSet->GetMaxHealth();

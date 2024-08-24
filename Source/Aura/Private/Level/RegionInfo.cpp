@@ -57,7 +57,7 @@ TArray<FEnemyWave> URegionInfo::GetRandomizedEnemyWaves(
 	return RandomWaves;
 }
 
-TArray<TSoftObjectPtr<UWorld>> URegionInfo::GetRegionLevels(ERegion Region, EGatePosition EntrancePosition)
+TArray<TSoftObjectPtr<UWorld>> URegionInfo::GetRegionLocations(ERegion Region, EGatePosition EntrancePosition)
 {
 	const FRegionData* Data = GetRegionData(Region);
 
@@ -71,13 +71,13 @@ TArray<TSoftObjectPtr<UWorld>> URegionInfo::GetRegionLevels(ERegion Region, EGat
 	return TArray<TSoftObjectPtr<UWorld>>();
 }
 
-TSoftObjectPtr<UWorld> URegionInfo::GetRandomizedRegionLevel(
+TSoftObjectPtr<UWorld> URegionInfo::GetRandomizedRegionLocation(
 	ERegion Region,
 	EGatePosition EntrancePosition,
 	TArray<TSoftObjectPtr<UWorld>> LevelsToExclude
 	)
 {
-	TArray<TSoftObjectPtr<UWorld>> Levels = GetRegionLevels(Region, EntrancePosition);
+	TArray<TSoftObjectPtr<UWorld>> Levels = GetRegionLocations(Region, EntrancePosition);
 	if (Levels.IsEmpty()) return nullptr;
 
 	if (!LevelsToExclude.IsEmpty())
@@ -93,16 +93,25 @@ TSoftObjectPtr<UWorld> URegionInfo::GetRandomizedRegionLevel(
 	return Levels[Index];
 }
 
-TSoftObjectPtr<UWorld> URegionInfo::GetRandomizedInitialLevel(ERegion Region)
+TSoftObjectPtr<UWorld> URegionInfo::GetRandomizedInitialLocation(ERegion Region)
 {
 	const FRegionData* Data = GetRegionData(Region);
 
 	if (!Data) return nullptr;
 
-	TArray<TSoftObjectPtr<UWorld>> InitialLevels = Data->InitialLevels;
+	TArray<TSoftObjectPtr<UWorld>> InitialLevels = Data->InitialLocations;
 	if (InitialLevels.IsEmpty()) return nullptr;
 
 	const int32 Index = FMath::RandRange(0, InitialLevels.Num() - 1);
 
 	return InitialLevels[Index];
+}
+
+TSoftObjectPtr<UWorld> URegionInfo::GetBossArena(ERegion Region)
+{
+	const FRegionData* Data = GetRegionData(Region);
+
+	if (!Data) return nullptr;
+
+	return Data->BossArena;
 }

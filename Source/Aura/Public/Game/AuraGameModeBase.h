@@ -165,4 +165,6 @@ private:
 	TSoftObjectPtr<UWorld> CurrentLevel;
 
 	int32 EncountersCount = 0;
+
+	bool bWillExitRegion = false;
 };

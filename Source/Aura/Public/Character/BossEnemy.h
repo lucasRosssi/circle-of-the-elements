@@ -21,6 +21,7 @@ public:
 	void NextBossState();
 protected:
 	virtual void BeginPlay() override;
+	virtual void PossessedBy(AController* NewController) override;
 	
 	UFUNCTION()
 	void CheckHealth(float NewHealth);
