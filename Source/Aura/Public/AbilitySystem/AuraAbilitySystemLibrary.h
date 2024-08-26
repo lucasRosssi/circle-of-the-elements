@@ -267,6 +267,15 @@ public:
 		UPARAM(ref) TArray<AActor*>& ActorsToIgnore
 	);
 
+	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|GameplayMechanics")
+	static AActor* GetClosestTargetToPoint(
+		AActor* Instigator,
+		FVector Point,
+		float Radius,
+		ETargetTeam TargetTeam,
+		UPARAM(ref) TArray<AActor*>& ActorsToIgnore
+	);
+
 	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|GameplayMechanics")
 	static bool IsEnvironment(const AActor* Actor);
 
