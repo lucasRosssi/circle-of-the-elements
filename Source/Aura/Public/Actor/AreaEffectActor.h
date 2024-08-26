@@ -41,6 +41,14 @@ public:
 		)
 	float Period = 0.f;
 
+	UPROPERTY(
+		EditDefaultsOnly,
+		BlueprintReadOnly,
+		Category = "Applied Effects|Mode",
+		meta=(Units="Seconds", ClampMin=0.f, UIMin=0.f)
+		)
+	float DelayImpact = 0.f;
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void BeginDestroy() override;
@@ -61,13 +69,13 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UTeamComponent> TeamComponent;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Applied Effects")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Applied Effects")
 	TSubclassOf<UGameplayEffect> GameplayEffectClass;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Applied Effects")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Applied Effects")
 	TSubclassOf<UGameplayEffect> EndOverlapGameplayEffectClass;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Applied Effects")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Applied Effects")
 	float ActorLevel = 1.f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Lifetime")

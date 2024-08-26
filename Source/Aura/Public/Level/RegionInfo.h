@@ -57,7 +57,10 @@ struct FRegionData
 	TMap<EGatePosition, FAvailableLevels> Locations;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	TArray<TSoftObjectPtr<UWorld>> InitialLevels;
+	TArray<TSoftObjectPtr<UWorld>> InitialLocations;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TSoftObjectPtr<UWorld> BossArena;
 };
 
 /**
@@ -84,18 +87,22 @@ public:
 		);
 
 	UFUNCTION(BlueprintCallable)
-	TArray<TSoftObjectPtr<UWorld>> GetRegionLevels(
+	TArray<TSoftObjectPtr<UWorld>> GetRegionLocations(
 		ERegion Region,
 		EGatePosition EntrancePosition
 		);
 	UFUNCTION(BlueprintCallable)
-	TSoftObjectPtr<UWorld> GetRandomizedRegionLevel(
+	TSoftObjectPtr<UWorld> GetRandomizedRegionLocation(
 		ERegion Region,
 		EGatePosition EntrancePosition,
 		TArray<TSoftObjectPtr<UWorld>> LevelsToExclude
 		);
 	UFUNCTION(BlueprintCallable)
-	TSoftObjectPtr<UWorld> GetRandomizedInitialLevel(ERegion Region);
+	TSoftObjectPtr<UWorld> GetRandomizedInitialLocation(ERegion Region);
+
+	UFUNCTION(BlueprintCallable)
+	TSoftObjectPtr<UWorld> GetBossArena(ERegion Region);
+	
 protected:
 	UPROPERTY(
 		EditDefaultsOnly,

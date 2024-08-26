@@ -193,8 +193,10 @@ void AAuraCharacterBase::UnHighlightActor_Implementation()
 	Weapon->SetRenderCustomDepth(false);
 }
 
-FVector AAuraCharacterBase::GetAbilitySocketLocation_Implementation(const FName SocketName, bool 
-                                                                    bSocketInWeapon)
+FVector AAuraCharacterBase::GetAbilitySocketLocation_Implementation(
+	const FName SocketName,
+	bool bSocketInWeapon
+	)
 {
 	if (bSocketInWeapon && IsValid(Weapon))
 	{
@@ -296,6 +298,14 @@ void AAuraCharacterBase::InitializeDefaultAttributes() const
 	if (DefaultSecondaryAttributes) ApplyEffectToSelf(DefaultSecondaryAttributes, Level);
 	if (DefaultVitalAttributes) ApplyEffectToSelf(DefaultVitalAttributes, Level);
 	if (DefaultRegenerationEffect) ApplyEffectToSelf(DefaultRegenerationEffect, Level);
+
+	if (!NativeEffects.IsEmpty())
+	{
+		for (const auto Effect : NativeEffects)
+		{
+			ApplyEffectToSelf(Effect, 1.f);
+		}
+	}
 }
 
 void AAuraCharacterBase::AddCharacterAbilities()

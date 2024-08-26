@@ -65,6 +65,7 @@ AAreaEffectActor* UAreaEffectActorAbility::SpawnEffectActor(const FVector& Targe
 	AreaEffectActor->SetActorDuration(AreaEffectDuration.GetValueAtLevel(GetAbilityLevel()));
 	AreaEffectActor->bInstant = bInstant;
 	AreaEffectActor->Period = Period.GetValueAtLevel(GetAbilityLevel());
+	AreaEffectActor->DelayImpact = DelayImpact.GetValueAtLevel(GetAbilityLevel());
  	AreaEffectActor->FinishSpawning(SpawnTransform);
 
 	return AreaEffectActor;

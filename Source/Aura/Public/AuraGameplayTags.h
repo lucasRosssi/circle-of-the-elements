@@ -100,11 +100,25 @@ public:
 	FGameplayTag StatusEffects_Condition_Possessed;
 
 	FGameplayTag Immunities;
+
+	FGameplayTag Immunities_Debuff;
+	FGameplayTag Immunities_Debuff_Burning;
+	FGameplayTag Immunities_Debuff_Chill;
+	FGameplayTag Immunities_Debuff_Charm;
 	
 	FGameplayTag Immunities_Incapacitation;
 	FGameplayTag Immunities_Incapacitation_Stun;
 	FGameplayTag Immunities_Incapacitation_HitReact;
 	FGameplayTag Immunities_Incapacitation_Knockback;
+	FGameplayTag Immunities_Incapacitation_Freeze;
+
+	FGameplayTag Boss;
+	FGameplayTag Boss_State;
+	FGameplayTag Boss_State_1st;
+	FGameplayTag Boss_State_2nd;
+	FGameplayTag Boss_State_3rd;
+	FGameplayTag Boss_State_4th;
+	FGameplayTag Boss_State_Ability;
 
 	FGameplayTag InputTag;
 	FGameplayTag InputTag_Primary;
@@ -153,6 +167,10 @@ public:
 	FGameplayTag Abilities_Active;
 	FGameplayTag Abilities_Active_Primary;
 	FGameplayTag Abilities_Active_Secondary;
+	FGameplayTag Abilities_Active_3rd;
+	FGameplayTag Abilities_Active_4th;
+	FGameplayTag Abilities_Active_5th;
+	FGameplayTag Abilities_Active_6th;
 
 	FGameplayTag Abilities_Active_Aura;
 	

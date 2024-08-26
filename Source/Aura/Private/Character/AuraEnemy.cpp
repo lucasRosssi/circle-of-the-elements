@@ -87,6 +87,16 @@ float AAuraEnemy::GetPower_Implementation()
 	return AttributeSet->GetPower();
 }
 
+float AAuraEnemy::GetMaxHealth_Implementation()
+{
+	return AttributeSet->GetMaxHealth();
+}
+
+float AAuraEnemy::GetHealth_Implementation()
+{
+	return AttributeSet->GetHealth();
+}
+
 void AAuraEnemy::SetTimeDilation_Implementation(float InTimeDilation)
 {
 	CustomTimeDilation = InTimeDilation;
@@ -107,10 +117,10 @@ void AAuraEnemy::BeginPlay()
 		AuraUserWidget->SetWidgetController(this);
 	}
 	
-	if (const UAuraAttributeSet* AuraAS = CastChecked<UAuraAttributeSet>(AttributeSet))
+	if (AttributeSet)
 	{
 		AbilitySystemComponent
-			->GetGameplayAttributeValueChangeDelegate(AuraAS->GetHealthAttribute())
+			->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetHealthAttribute())
 			.AddLambda(
 				[this](const FOnAttributeChangeData& Data)
 				{
@@ -118,7 +128,7 @@ void AAuraEnemy::BeginPlay()
 				}
 			);
 		AbilitySystemComponent
-			->GetGameplayAttributeValueChangeDelegate(AuraAS->GetMaxHealthAttribute())
+			->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetMaxHealthAttribute())
 			.AddLambda(
 				[this](const FOnAttributeChangeData& Data)
 				{
@@ -126,8 +136,8 @@ void AAuraEnemy::BeginPlay()
 				}
 			);
 
-		OnHealthChanged.Broadcast(AuraAS->GetHealth());
-		OnMaxHealthChanged.Broadcast(AuraAS->GetMaxHealth());
+		OnHealthChanged.Broadcast(AttributeSet->GetHealth());
+		OnMaxHealthChanged.Broadcast(AttributeSet->GetMaxHealth());
 	}
 }
 

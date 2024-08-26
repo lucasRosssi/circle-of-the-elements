@@ -489,6 +489,26 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FString("Immunity tags")
 		);
 
+	GameplayTags.Immunities_Debuff = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Immunities.Debuff"),
+		FString("Immunity to debuff effects")
+		);
+
+	GameplayTags.Immunities_Debuff_Burning = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Immunities.Debuff.Burning"),
+		FString("Immunity to burning effect")
+		);
+
+	GameplayTags.Immunities_Debuff_Chill = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Immunities.Debuff.Chill"),
+		FString("Immunity to chill effect")
+		);
+
+	GameplayTags.Immunities_Debuff_Charm = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Immunities.Debuff.Charm"),
+		FString("Immunity to charm effect")
+		);
+
 	GameplayTags.Immunities_Incapacitation = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Immunities.Incapacitation"),
 		FString("Immunity to incapacitation effects")
@@ -507,6 +527,50 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	GameplayTags.Immunities_Incapacitation_Knockback = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Immunities.Incapacitation.Knockback"),
 		FString("Immunity to knockback effect")
+		);
+
+	GameplayTags.Immunities_Incapacitation_Freeze = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Immunities.Incapacitation.Freeze"),
+		FString("Immunity to freeze effect")
+		);
+
+	/*
+	 * Boss Tags
+	 */
+
+	GameplayTags.Boss = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Boss"),
+		FString("Boss tags")
+		);
+
+	GameplayTags.Boss_State = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Boss.State"),
+		FString("Boss states tags")
+		);
+
+	GameplayTags.Boss_State_1st = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Boss.State.1st"),
+		FString("Boss 1st state tag")
+		);
+
+	GameplayTags.Boss_State_2nd = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Boss.State.2nd"),
+		FString("Boss 2nd state tag")
+		);
+
+	GameplayTags.Boss_State_3rd = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Boss.State.3rd"),
+		FString("Boss 3rd state tag")
+		);
+
+	GameplayTags.Boss_State_4th = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Boss.State.4th"),
+		FString("Boss 4th state tag")
+		);
+
+	GameplayTags.Boss_State_Ability = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Boss.State.Ability"),
+		FString("Boss state change ability tag")
 		);
 	
 	/*
@@ -656,6 +720,26 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	GameplayTags.Abilities_Active_Secondary = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Abilities.Active.Secondary"),
 		FString("Secondary attack ability")
+		);
+
+	GameplayTags.Abilities_Active_3rd = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Active.3rd"),
+		FString("3rd attack ability")
+		);
+
+	GameplayTags.Abilities_Active_4th = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Active.4th"),
+		FString("4th attack ability")
+		);
+
+	GameplayTags.Abilities_Active_5th = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Active.5th"),
+		FString("5th attack ability")
+		);
+
+	GameplayTags.Abilities_Active_6th = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Active.6th"),
+		FString("6th attack ability")
 		);
 
 	// Aura active abilities

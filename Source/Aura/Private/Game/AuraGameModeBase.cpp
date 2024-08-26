@@ -18,12 +18,26 @@ TSoftObjectPtr<UWorld> AAuraGameModeBase::GetNextLocation(
 	)
 {
 	GetAuraGameInstance()->SaveHeroData();
+
+	if (bWillExitRegion)
+	{
+		return nullptr;
+	}
 	
-	const TSoftObjectPtr<UWorld> Level = RegionInfo->GetRandomizedRegionLevel(
+	TSoftObjectPtr<UWorld> Level;
+	if (EncountersCount < RegionInfo->GetRegionData(InRegion)->MaxEncounters)
+	{
+		Level = RegionInfo->GetRandomizedRegionLocation(
 		InRegion,
 		EntrancePosition, 
 	SelectedLevels
 		);
+	}
+	else
+	{
+		Level = RegionInfo->GetBossArena(InRegion);
+		bWillExitRegion = true;
+	}
 	
 	SelectedLevels.Add(Level);
 	PrevLevel = CurrentLevel;
@@ -34,7 +48,7 @@ TSoftObjectPtr<UWorld> AAuraGameModeBase::GetNextLocation(
 
 TSoftObjectPtr<UWorld> AAuraGameModeBase::GetInitialLocation(ERegion InRegion)
 {
-	const TSoftObjectPtr<UWorld> Level = RegionInfo->GetRandomizedInitialLevel(InRegion);
+	const TSoftObjectPtr<UWorld> Level = RegionInfo->GetRandomizedInitialLocation(InRegion);
 	
 	CurrentLevel = Level;
 	return Level;

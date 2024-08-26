@@ -17,7 +17,6 @@ class UStatusEffectInfo;
 struct FAbilityParams;
 class UActiveDamageAbility;
 class UBaseAbility;
-class AAuraHUD;
 class USkillMenuWidgetController;
 struct FGameplayEffectContextHandle;
 class UAbilitySystemComponent;
