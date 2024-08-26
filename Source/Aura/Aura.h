@@ -25,3 +25,4 @@
 #define ETT_SingleHitTrace ETraceTypeQuery::TraceTypeQuery3
 #define ETT_MultiHitTrace ETraceTypeQuery::TraceTypeQuery4
 #define ETT_CameraToPlayer ETraceTypeQuery::TraceTypeQuery5
+#define ETT_AimAssist ETraceTypeQuery::TraceTypeQuery6

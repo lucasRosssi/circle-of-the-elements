@@ -22,6 +22,7 @@
 #include "Game/TeamComponent.h"
 #include "Interaction/CombatInterface.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "Player/AuraPlayerState.h"
 #include "Player/AuraPlayerController.h"
 #include "UI/HUD/AuraHUD.h"
@@ -596,6 +597,74 @@ AActor* UAuraAbilitySystemLibrary::GetClosestActorToTarget(
 		if (
 			TargetTeam == ETargetTeam::Friends &&
 			AreActorsFriends(TargetActor, OverlappedActor)
+			)
+		{
+			ClosestDistance = Distance;
+			ClosestActor = OverlappedActor;
+			continue;
+		}
+
+		if (TargetTeam == ETargetTeam::Both)
+		{
+			ClosestDistance = Distance;
+			ClosestActor = OverlappedActor;
+		}
+	}
+
+	return ClosestActor;
+}
+
+AActor* UAuraAbilitySystemLibrary::GetClosestTargetToPoint(
+	AActor* Instigator,
+	FVector Point,
+	float Radius,
+	ETargetTeam TargetTeam,
+	TArray<AActor*>& ActorsToIgnore
+	)
+{
+	const UWorld* World = GEngine->GetWorldFromContextObject(Instigator, EGetWorldErrorMode::LogAndReturnNull);
+	if (!World) return nullptr;
+	
+	if (TargetTeam == ETargetTeam::Enemies) ActorsToIgnore.AddUnique(Instigator);
+	
+	FCollisionQueryParams SphereParams;
+	SphereParams.AddIgnoredActors(ActorsToIgnore);
+
+	TArray<FOverlapResult> Overlaps;
+	World->OverlapMultiByObjectType(
+		Overlaps,
+		Point,
+		FQuat::Identity,
+		FCollisionObjectQueryParams(FCollisionObjectQueryParams::InitType::AllDynamicObjects),
+		FCollisionShape::MakeSphere(Radius),
+		SphereParams
+	);
+
+	if (Overlaps.IsEmpty()) return nullptr;
+	
+	float ClosestDistance = Radius;
+	AActor* ClosestActor = nullptr;
+	for (auto& Overlap : Overlaps)
+	{
+		AActor* OverlappedActor = Overlap.GetActor();
+
+		if (!OverlappedActor->Implements<UCombatInterface>()) continue;
+		if (ICombatInterface::Execute_IsDead(OverlappedActor)) continue;
+		const float Distance = FVector::Distance(Point, OverlappedActor->GetActorLocation());
+		if (ClosestDistance < Distance) continue;
+
+		if (TargetTeam == ETargetTeam::Enemies &&
+			AreActorsEnemies(Instigator, OverlappedActor)
+			)
+		{
+			ClosestDistance = Distance;
+			ClosestActor = OverlappedActor;
+			continue;
+		}
+
+		if (
+			TargetTeam == ETargetTeam::Friends &&
+			AreActorsFriends(Instigator, OverlappedActor)
 			)
 		{
 			ClosestDistance = Distance;

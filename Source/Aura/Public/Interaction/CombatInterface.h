@@ -90,6 +90,11 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	UBoxComponent* EnableWeaponCollision(bool bEnable);
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	bool IsFriend(AActor* Actor);
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	bool IsEnemy(AActor* Actor);
 	
 	virtual FOnASCRegistered& GetOnASCRegisteredDelegate() = 0;
 	virtual FOnDeath& GetOnDeathDelegate() = 0;

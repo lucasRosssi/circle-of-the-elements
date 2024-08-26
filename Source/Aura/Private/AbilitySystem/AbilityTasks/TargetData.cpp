@@ -4,9 +4,13 @@
 #include "AbilitySystem/AbilityTasks/TargetData.h"
 
 #include "AbilitySystemComponent.h"
+#include "AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "AbilitySystem/Abilities/ActiveAbility.h"
 #include "Actor/TargetingActor.h"
 #include "Aura/Aura.h"
+#include "Interaction/CombatInterface.h"
+#include "Kismet/KismetMathLibrary.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "Player/AuraPlayerController.h"
 
 UTargetData* UTargetData::
@@ -49,39 +53,45 @@ void UTargetData::SendMouseOrGamepadData()
 {
 	FScopedPredictionWindow ScopedPrediction(AbilitySystemComponent.Get());
 	
-	AAuraPlayerController* MainPC =
+	AAuraPlayerController* AuraPC =
 		CastChecked<AAuraPlayerController>(Ability->GetCurrentActorInfo()->PlayerController.Get());
 	UActiveAbility* AuraAbility = CastChecked<UActiveAbility>(Ability);
 	
+	FVector AvatarLocation = GetAvatarActor()->GetActorLocation();
 	FHitResult HitResult;
 	if (AuraAbility->bUsesMovementInputDirection)
 	{
-		FVector AvatarLocation = Ability->GetAvatarActorFromActorInfo()->GetActorLocation();
-		HitResult.Location = AvatarLocation + MainPC->GetInputDirection() * 10000;
+		HitResult.Location = AvatarLocation + AuraPC->GetInputDirection() * 10000;
 		HitResult.ImpactPoint = HitResult.Location;
 	}
 	else
 	{
-		if (MainPC->IsUsingGamepad())
+		if (AuraPC->IsUsingGamepad())
 		{
-			if (MainPC->IsTargeting())
+			if (AuraPC->IsTargeting())
 			{
-				HitResult.Location = MainPC->GetTargetingActor()->GetActorLocation();
+				HitResult.Location = AuraPC->GetTargetingActor()->GetActorLocation();
 			}
 			else
 			{
-				FVector AvatarLocation = Ability->GetAvatarActorFromActorInfo()->GetActorLocation();
-				HitResult.Location = AvatarLocation + MainPC->GetInputDirection() * 10000;
+				HitResult.Location = AvatarLocation + AuraPC->GetInputDirection() * 2000;
+				AuraPC->AimAbilityGamepad(GetAvatarActor(), HitResult);
+				
 			}
 			HitResult.ImpactPoint = HitResult.Location;
 		}
 		else
 		{
-			MainPC->GetHitResultUnderCursor(
+			AuraPC->GetHitResultUnderCursor(
 				ECC_Target,
 				false,
 				HitResult
 			);
+
+			if (HitResult.bBlockingHit)
+			{
+				AuraPC->AimAbilityMouse(GetAvatarActor(), HitResult);
+			}
 		}
 	}
 

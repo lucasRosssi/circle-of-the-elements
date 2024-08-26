@@ -77,11 +77,31 @@ public:
 
 	UUINavPCComponent* GetUINavComponent() const { return UINavPCComp; }
 
+	void AimAbilityGamepad(AActor* AvatarActor, FHitResult& OutHitResult);
+	void AimAbilityMouse(AActor* AvatarActor, FHitResult& OutHitResult);
+
 	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category="ControllerDevice")
 	FOnControllerDeviceChanged ControllerDeviceChangedDelegate;
 
 	UPROPERTY(BlueprintAssignable, Category="Interaction")
 	FOnInteract InteractActionTriggered;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Aim Assist")
+	bool bAimAssistOn = true;
+	UPROPERTY(
+		EditDefaultsOnly,
+		BlueprintReadWrite,
+		Category="Aim Assist",
+		meta=(EditCondition="bAimAssistOn", EditConditionHides)
+		)
+	bool bDebugAimAssist = false;
+	UPROPERTY(
+		EditDefaultsOnly,
+		BlueprintReadWrite,
+		Category="Aim Assist",
+		meta=(EditCondition="bAimAssistOn", EditConditionHides)
+		)
+	float AimAssistStrength = 100.f;
 
 protected:
 	virtual void BeginPlay() override;

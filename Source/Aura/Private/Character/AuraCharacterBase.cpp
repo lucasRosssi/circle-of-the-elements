@@ -269,6 +269,16 @@ UBoxComponent* AAuraCharacterBase::EnableWeaponCollision_Implementation(bool bEn
 	return WeaponHitBox;
 }
 
+bool AAuraCharacterBase::IsFriend_Implementation(AActor* Actor)
+{
+	return UAuraAbilitySystemLibrary::AreActorsFriends(this, Actor);
+}
+
+bool AAuraCharacterBase::IsEnemy_Implementation(AActor* Actor)
+{
+	return UAuraAbilitySystemLibrary::AreActorsEnemies(this, Actor);
+}
+
 void AAuraCharacterBase::InitAbilityActorInfo()
 {
 }

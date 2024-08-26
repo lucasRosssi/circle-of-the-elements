@@ -6,12 +6,15 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "EnhancedInputSubsystems.h"
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
+#include "AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "Actor/TargetingActor.h"
 #include "Aura/Aura.h"
 #include "Camera/CameraComponent.h"
 #include "Input/AuraInputComponent.h"
 #include "Interaction/TargetInterface.h"
 #include "GameFramework/Character.h"
+#include "Interaction/CombatInterface.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Materials/MaterialParameterCollectionInstance.h"
 #include "UI/Widget/DamageTextComponent.h"
@@ -86,6 +89,98 @@ void AAuraPlayerController::SetShouldOccludeObjects(bool bInShouldOcclude)
 		FName("OcclusionSize"),
 		OcclusionSize
 		);
+}
+
+void AAuraPlayerController::AimAbilityGamepad(AActor* AvatarActor, FHitResult& OutHitResult)
+{
+	if (!bAimAssistOn || IsTargeting()) return;
+	
+	FHitResult AimAssistHitResult;
+	const TArray ActorsToIgnore({ AvatarActor });
+	FVector End = OutHitResult.Location;
+	End.Z = AvatarActor->GetActorLocation().Z;
+	UKismetSystemLibrary::BoxTraceSingle(
+		AvatarActor,
+		AvatarActor->GetActorLocation(),
+		End,
+		FVector(0.f, AimAssistStrength, 15.f),
+		UKismetMathLibrary::FindLookAtRotation(
+			AvatarActor->GetActorLocation(),
+			End
+			),
+		ETT_AimAssist,
+		false,
+		ActorsToIgnore,
+		bDebugAimAssist ? EDrawDebugTrace::ForDuration : EDrawDebugTrace::None,
+		AimAssistHitResult,
+		true,
+		FLinearColor::Red,
+		FLinearColor::Green,
+		2.f
+		);
+
+	if (AimAssistHitResult.bBlockingHit)
+	{
+		AActor* HitActor = AimAssistHitResult.HitObjectHandle.FetchActor();
+		if (HitActor->Implements<UCombatInterface>())
+		{
+			if (ICombatInterface::Execute_IsEnemy(HitActor, AvatarActor))
+			{
+				OutHitResult.Location = AimAssistHitResult.HitObjectHandle.FetchActor()->GetActorLocation();
+				OutHitResult.ImpactPoint = AimAssistHitResult.HitObjectHandle.FetchActor()->GetActorLocation();
+			}
+		}
+	}
+}
+
+void AAuraPlayerController::AimAbilityMouse(AActor* AvatarActor, FHitResult& OutHitResult)
+{
+	if (!bAimAssistOn || IsTargeting()) return;
+	
+	const AActor* MouseHitActor = OutHitResult.HitObjectHandle.FetchActor();
+	if (!MouseHitActor->Implements<UCombatInterface>())
+	{
+		const float AimAssistStrengthShapeCompensation = AimAssistStrength * 2.f;
+		TArray<AActor*> ActorsToIgnore;
+		const AActor* Target = UAuraAbilitySystemLibrary::GetClosestTargetToPoint(
+			AvatarActor,
+			OutHitResult.Location,
+			AimAssistStrengthShapeCompensation,
+			ETargetTeam::Enemies,
+			ActorsToIgnore
+			);
+		
+		if (bDebugAimAssist)
+		{
+			UKismetSystemLibrary::DrawDebugSphere(
+				AvatarActor,
+				OutHitResult.Location,
+				AimAssistStrengthShapeCompensation,
+				12,
+				FLinearColor::Red,
+				2.f,
+				1.f
+				);
+			if (Target)
+			{
+				UKismetSystemLibrary::DrawDebugSphere(
+					Target,
+					Target->GetActorLocation(),
+					50.f,
+					12,
+					FLinearColor::Green,
+					2.f,
+					2.f
+					);
+			}
+		}
+
+		if (Target)
+		{
+			OutHitResult.Location = Target->GetActorLocation();
+			OutHitResult.ImpactPoint = Target->GetActorLocation();
+		}
+	}
 }
 
 void AAuraPlayerController::BeginPlay()

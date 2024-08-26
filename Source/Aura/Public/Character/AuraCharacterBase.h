@@ -69,6 +69,8 @@ public:
 	virtual USceneComponent* GetTopStatusEffectSceneComponent_Implementation() override;
 	virtual USceneComponent* GetBottomStatusEffectSceneComponent_Implementation() override;
 	virtual UBoxComponent* EnableWeaponCollision_Implementation(bool bEnable) override;
+	virtual bool IsFriend_Implementation(AActor* Actor) override;
+	virtual bool IsEnemy_Implementation(AActor* Actor) override;
 	/** end Combat Interface */
 
 	void InitSummon(int32 TeamID);
