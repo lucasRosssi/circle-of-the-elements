@@ -5,6 +5,7 @@
 
 #include "Components/SphereComponent.h"
 #include "Game/AuraGameModeBase.h"
+#include "GameFramework/Character.h"
 #include "Interaction/PlayerInterface.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -37,6 +38,24 @@ void AInteractable::PreInteract(AController* InstigatorController)
 
 void AInteractable::Interact(AController* InstigatorController)
 {
+	if (InteractMontages.Num() > 0 && InstigatorController->GetCharacter()->Implements<UPlayerInterface>())
+	{
+		const ECharacterName HeroName = IPlayerInterface::Execute_GetHeroName(InstigatorController->GetCharacter());
+		if (const auto Montage = InteractMontages.Find(HeroName))
+		{
+			InstigatorController->GetCharacter()->PlayAnimMontage(*Montage);
+		}
+	}
+
+	if (InteractSound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(
+			this,
+			InteractSound,
+			GetActorLocation(),
+			GetActorRotation()
+			);
+	}
 }
 
 void AInteractable::OnInteractAreaOverlap(

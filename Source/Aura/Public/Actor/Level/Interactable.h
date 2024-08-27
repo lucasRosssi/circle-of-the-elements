@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "Interactable.generated.h"
 
+enum class ECharacterName : uint8;
 class AAuraGameModeBase;
 class USphereComponent;
 
@@ -56,11 +57,14 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Interaction")
 	TObjectPtr<USphereComponent> InteractArea;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Interaction")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Interaction")
 	bool bInteractionEnabled = false;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Interaction")
 	TObjectPtr<USoundBase> InteractSound;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Interaction")
+	TMap<ECharacterName, TObjectPtr<UAnimMontage>> InteractMontages;
 private:
 	UFUNCTION()
 	void PreInteract(AController* InstigatorController);

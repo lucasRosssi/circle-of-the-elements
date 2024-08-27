@@ -8,6 +8,7 @@
 #include "GameFramework/GameModeBase.h"
 #include "AuraGameModeBase.generated.h"
 
+class URewardsInfo;
 enum class EGatePosition : uint8;
 class UAuraGameInstance;
 class APostProcessVolume;
@@ -80,6 +81,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category="Game")
 	TObjectPtr<URegionInfo> RegionInfo;
 
+	UPROPERTY(EditDefaultsOnly, Category="Game")
+	TObjectPtr<URewardsInfo> RewardsInfo;
+
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Location|Encounter")
 	ERegion Region = ERegion::Undefined;
@@ -98,7 +102,7 @@ protected:
 		)
 	int32 EnemiesLevel = 1;
 	UPROPERTY(
-		EditDefaultsOnly,
+		VisibleAnywhere,
 		BlueprintReadWrite,
 		Category="Location|Encounter",
 		meta=(ClampMin=1, UIMin=1)

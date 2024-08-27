@@ -5,12 +5,14 @@
 
 #include "AuraGameplayTags.h"
 #include "Actor/Level/EnemySpawner.h"
+#include "Actor/Level/LocationReward.h"
 #include "Aura/AuraLogChannels.h"
 #include "Game/AuraGameInstance.h"
 #include "GameFramework/PlayerStart.h"
 #include "Level/RegionInfo.h"
 #include "Interaction/PlayerInterface.h"
 #include "Kismet/GameplayStatics.h"
+#include "Level/RewardsInfo.h"
 
 TSoftObjectPtr<UWorld> AAuraGameModeBase::GetNextLocation(
 	ERegion InRegion,
@@ -140,21 +142,28 @@ void AAuraGameModeBase::SetCurrentLocationInfo()
 	CurrentWave = 0;
 	EnemiesLevel = FMath::Floor(EncountersCount / 2);
 
-	const FAuraGameplayTags& GameplayTags = FAuraGameplayTags::Get();
-	if (EncountersCount < 4)
+	if (bOverrideEnemyWaves)
 	{
-		TotalWaves = FMath::RandRange(1, 3);
-		DifficultyClass = GameplayTags.DifficultyClass_Easy;
-	}
-	else if (EncountersCount < 7)
-	{
-		TotalWaves = FMath::RandRange(2, 4);
-		DifficultyClass = GameplayTags.DifficultyClass_Normal;
+		TotalWaves = EnemyWaves.Num();
 	}
 	else
 	{
-		TotalWaves = FMath::RandRange(3, 5);
-		DifficultyClass = GameplayTags.DifficultyClass_Hard;
+		const FAuraGameplayTags& GameplayTags = FAuraGameplayTags::Get();
+		if (EncountersCount < 4)
+		{
+			TotalWaves = FMath::RandRange(1, 3);
+			DifficultyClass = GameplayTags.DifficultyClass_Easy;
+		}
+		else if (EncountersCount < 7)
+		{
+			TotalWaves = FMath::RandRange(2, 4);
+			DifficultyClass = GameplayTags.DifficultyClass_Normal;
+		}
+		else
+		{
+			TotalWaves = FMath::RandRange(3, 5);
+			DifficultyClass = GameplayTags.DifficultyClass_Hard;
+		}
 	}
 }
 
@@ -177,6 +186,21 @@ void AAuraGameModeBase::PostFinishEncounter()
 		IPlayerInterface::SafeExec_AddToXP(Player, StackedXP);
 	}
 	StackedXP = 0.f;
+
+	FActorSpawnParameters SpawnParameters;
+	FTransform Transform;
+	Transform.SetLocation(Players[0]->GetActorLocation());
+	
+	const FRewardInfo& Info = RewardsInfo->GetRandomizedReward();
+	
+	ALocationReward* Reward = GetWorld()->SpawnActorDeferred<ALocationReward>(
+		Info.RewardClass,
+		Transform,
+		nullptr,
+		nullptr,
+		ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn
+		);
+	if (Reward)	Reward->FinishSpawning(Transform);
 
 	OnEncounterFinishedDelegate.Broadcast();
 }
