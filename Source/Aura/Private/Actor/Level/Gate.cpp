@@ -18,6 +18,13 @@ void AGate::BeginPlay()
 	GetAuraGameMode()->OnEncounterFinishedDelegate.AddDynamic(this, &AGate::EnableInteraction);
 }
 
+void AGate::Interact(AController* InstigatorController)
+{
+	Super::Interact(InstigatorController);
+
+	GetAuraGameMode()->SetNextReward(RewardTag);
+}
+
 TSoftObjectPtr<UWorld> AGate::GetCurrentLocation()
 {
 	return GetAuraGameMode()->GetCurrentLevel();

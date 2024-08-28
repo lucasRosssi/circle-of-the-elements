@@ -7,7 +7,7 @@ URewardsInfo::URewardsInfo()
 {
 		for (const auto Reward : Rewards)
 		{
-			DropSum += Reward.Value.DropWeight;
+			DropSum += Reward.Value.DropRateWeight;
 		}
 }
 
@@ -21,12 +21,12 @@ void URewardsInfo::PostEditChangeProperty(FPropertyChangedEvent& PropertyChanged
 		PropertyChangedEvent.Property->GetFName() : NAME_None;
 
 	// Check if the changed property is DropWeight within the DropMap objects
-	if (PropertyName == GET_MEMBER_NAME_CHECKED(FRewardInfo, DropWeight))
+	if (PropertyName == GET_MEMBER_NAME_CHECKED(FRewardInfo, DropRateWeight))
 	{
 		DropSum = 0.f;
 		for (const auto& Pair : Rewards)
 		{
-			DropSum += Pair.Value.DropWeight;
+			DropSum += Pair.Value.DropRateWeight;
 		}
 	}
 }
@@ -39,21 +39,26 @@ FRewardInfo URewardsInfo::GetRewardInfo(const FGameplayTag& RewardTag)
 
 FRewardInfo URewardsInfo::GetRandomizedReward()
 {
-	// float DropSum = 0.f;
-	// for (const auto Reward : Rewards)
-	// {
-	// 	DropSum += Reward.Value.DropWeight;
-	// }
-
 	float TotalDropSum = DropSum;
 	for (const auto Reward : Rewards)
 	{
 		const float RandomPick = FMath::FRandRange(0.f, TotalDropSum);
 
-		if (RandomPick < Reward.Value.DropWeight) return Reward.Value;
+		if (RandomPick < Reward.Value.DropRateWeight) return Reward.Value;
 
 		TotalDropSum -= RandomPick;
 	}
 
 	return FRewardInfo();
+}
+
+void URewardsInfo::FillRewardBag(TArray<FGameplayTag>& OutBag)
+{
+	for (const auto& Reward : Rewards)
+	{
+		for (int32 i = 0; i < Reward.Value.DropRateWeight; i++)
+		{
+			OutBag.Add(Reward.Key);
+		}
+	}
 }

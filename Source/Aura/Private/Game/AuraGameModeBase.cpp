@@ -5,12 +5,13 @@
 
 #include "AuraGameplayTags.h"
 #include "Actor/Level/EnemySpawner.h"
+#include "Actor/Level/Gate.h"
 #include "Actor/Level/LocationReward.h"
+#include "Algo/RandomShuffle.h"
 #include "Aura/AuraLogChannels.h"
 #include "Game/AuraGameInstance.h"
 #include "GameFramework/PlayerStart.h"
 #include "Level/RegionInfo.h"
-#include "Interaction/PlayerInterface.h"
 #include "Kismet/GameplayStatics.h"
 #include "Level/RewardsInfo.h"
 
@@ -85,7 +86,7 @@ void AAuraGameModeBase::NextWave()
 		}
 	}
 
-	EnemyWaves.RemoveAt(0);
+	if (!bOverrideEnemyWaves) EnemyWaves.RemoveAt(0);
 }
 
 void AAuraGameModeBase::FinishEncounter()
@@ -167,6 +168,48 @@ void AAuraGameModeBase::SetCurrentLocationInfo()
 	}
 }
 
+FRewardInfo AAuraGameModeBase::GetNextRewardInfo()
+{
+	if (NextReward.IsValid())
+	{
+		return RewardsInfo->GetRewardInfo(NextReward);
+	}
+
+	return RewardsInfo->GetRandomizedReward();
+}
+
+void AAuraGameModeBase::FillAndShuffleRewardBag()
+{
+	RewardsInfo->FillRewardBag(RewardBag);
+	Algo::RandomShuffle(RewardBag);
+}
+
+void AAuraGameModeBase::SetGatesRewards()
+{
+	TArray<AActor*> GateActors;
+	UGameplayStatics::GetAllActorsOfClass(
+		Players[0],
+		AGate::StaticClass(),
+		GateActors
+		);
+	
+	for (const auto GateActor : GateActors)
+	{
+		if (AGate* Gate = Cast<AGate>(GateActor))
+		{
+			if (Gate->bActive)
+			{
+				if (RewardBag.IsEmpty())
+				{
+					FillAndShuffleRewardBag();
+				}
+
+				Gate->SetGateReward(RewardBag.Pop());
+			}
+		}
+	}
+}
+
 UAuraGameInstance* AAuraGameModeBase::GetAuraGameInstance()
 {
 	if (AuraGameInstance == nullptr)
@@ -181,17 +224,17 @@ void AAuraGameModeBase::PostFinishEncounter()
 {
 	UGameplayStatics::SetGlobalTimeDilation(this, 1.0f);
 
-	for (const auto Player : Players)
-	{
-		IPlayerInterface::SafeExec_AddToXP(Player, StackedXP);
-	}
-	StackedXP = 0.f;
+	// for (const auto Player : Players)
+	// {
+	// 	IPlayerInterface::SafeExec_AddToXP(Player, StackedXP);
+	// }
+	// StackedXP = 0.f;
 
 	FActorSpawnParameters SpawnParameters;
 	FTransform Transform;
 	Transform.SetLocation(Players[0]->GetActorLocation());
 	
-	const FRewardInfo& Info = RewardsInfo->GetRandomizedReward();
+	const FRewardInfo& Info = GetNextRewardInfo();
 	
 	ALocationReward* Reward = GetWorld()->SpawnActorDeferred<ALocationReward>(
 		Info.RewardClass,
@@ -200,7 +243,9 @@ void AAuraGameModeBase::PostFinishEncounter()
 		nullptr,
 		ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn
 		);
+	
 	if (Reward)	Reward->FinishSpawning(Transform);
+	else UE_LOG(LogAura, Error, TEXT("Failed to spawn Location Reward: %s"), *NextReward.ToString());
 
 	OnEncounterFinishedDelegate.Broadcast();
 }
@@ -250,6 +295,7 @@ void AAuraGameModeBase::LoadLevelInfo()
 	SetCurrentLocationInfo();
 	GetEnemySpawns();
 	GetAvailableSpawners();
+	SetGatesRewards();
 }
 
 void AAuraGameModeBase::PlacePlayerInStartingPoint()

@@ -24,10 +24,7 @@ struct FRewardInfo
 	int32 Limit = MAX_int32;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	float DropWeight = 1.f;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	int32 MinPerRegion = 1;
+	int32 DropRateWeight = 1;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(MultiLine))
 	FText Description = FText();
@@ -49,6 +46,8 @@ public:
 	FRewardInfo GetRewardInfo(const FGameplayTag& RewardTag);
 
 	FRewardInfo GetRandomizedReward();
+
+	void FillRewardBag(TArray<FGameplayTag>& OutBag);
 	
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(Categories="Resources", ForceInlineRow))

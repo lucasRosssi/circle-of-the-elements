@@ -6,8 +6,10 @@
 #include "GameplayTagContainer.h"
 #include "Enums/Region.h"
 #include "GameFramework/GameModeBase.h"
+#include "Level/RewardsInfo.h"
 #include "AuraGameModeBase.generated.h"
 
+class ALocationReward;
 class URewardsInfo;
 enum class EGatePosition : uint8;
 class UAuraGameInstance;
@@ -65,6 +67,8 @@ public:
 
 	UFUNCTION(BlueprintPure)
 	TSoftObjectPtr<UWorld> GetCurrentLevel() const { return CurrentLevel; }
+
+	void SetNextReward(const FGameplayTag& InRewardTag) { NextReward = InRewardTag; }
 	
 	UPROPERTY(BlueprintAssignable)
 	FOnEncounterFinished OnEncounterFinishedDelegate;
@@ -133,6 +137,23 @@ protected:
 		meta=(EditCondition="bOverrideEnemyWaves")
 		)
 	TArray<FEnemyWave> EnemyWaves;
+
+	UPROPERTY(EditDefaultsOnly, Category="Location|Reward")
+	bool bOverrideReward = false;
+	UPROPERTY(
+		EditDefaultsOnly,
+		BlueprintReadWrite,
+		Category="Location|Reward",
+		meta=(EditCondition="bOverrideReward", Categories="Resources")
+		)
+	FGameplayTag NextReward = FGameplayTag();
+	UPROPERTY(
+		EditDefaultsOnly,
+		BlueprintReadWrite,
+		Category="Location|Reward",
+		meta=(EditCondition="bOverrideReward", Categories="Resources")
+		)
+	TArray<FGameplayTag> RewardBag;
 	
 	UPROPERTY(BlueprintReadWrite,	Category="Player")
 	TArray<AActor*> Players;
@@ -144,6 +165,12 @@ private:
 	void OnEnemyKilled(AActor* Enemy);
 
 	void SetCurrentLocationInfo();
+
+	FRewardInfo GetNextRewardInfo();
+
+	void FillAndShuffleRewardBag();
+
+	void SetGatesRewards();
 
 	UAuraGameInstance* GetAuraGameInstance();
 
