@@ -7,7 +7,6 @@
 #include "Actor/Level/EnemySpawner.h"
 #include "Actor/Level/Gate.h"
 #include "Actor/Level/LocationReward.h"
-#include "Algo/RandomShuffle.h"
 #include "Aura/AuraLogChannels.h"
 #include "Game/AuraGameInstance.h"
 #include "Game/Components/RewardManagerComponent.h"
