@@ -3,20 +3,53 @@
 
 #include "Game/Components/EncounterManagerComponent.h"
 
+#include "AuraGameplayTags.h"
 #include "Actor/Level/EnemySpawner.h"
 #include "Aura/AuraLogChannels.h"
 #include "Kismet/GameplayStatics.h"
 #include "Level/RegionInfo.h"
 
-UEncounterManagerComponent::UEncounterManagerComponent()
+void UEncounterManagerComponent::SetEncounterDifficulty()
 {
-	PrimaryComponentTick.bCanEverTick = false;
-	
+	const int32 EncountersCount = GetAuraGameMode()->EncountersCount;
+	EnemiesLevel = FMath::Floor(EncountersCount / 2);
+
+	if (bOverrideEnemyWaves)
+	{
+		TotalWaves = EnemyWaves.Num();
+	}
+	else
+	{
+		const FAuraGameplayTags& GameplayTags = FAuraGameplayTags::Get();
+		if (EncountersCount < 4)
+		{
+			TotalWaves = FMath::RandRange(1, 3);
+			DifficultyClass = GameplayTags.DifficultyClass_Easy;
+		}
+		else if (EncountersCount < 7)
+		{
+			TotalWaves = FMath::RandRange(2, 4);
+			DifficultyClass = GameplayTags.DifficultyClass_Normal;
+		}
+		else
+		{
+			TotalWaves = FMath::RandRange(3, 5);
+			DifficultyClass = GameplayTags.DifficultyClass_Hard;
+		}
+	}
+}
+
+void UEncounterManagerComponent::SetCurrentEncounterData()
+{
+	CurrentWave = 0;
+	SetEncounterDifficulty();
+	GetEnemySpawns();
+	GetAvailableSpawners();
 }
 
 void UEncounterManagerComponent::StartEncounter()
 {
-	EncountersCount += 1;
+	GetAuraGameMode()->EncountersCount += 1;
 	
 	NextWave();
 }
@@ -62,37 +95,43 @@ void UEncounterManagerComponent::FinishEncounter()
 
 void UEncounterManagerComponent::PostFinishEncounter()
 {
-	UGameplayStatics::SetGlobalTimeDilation(this, 1.0f);
+	UGameplayStatics::SetGlobalTimeDilation(GetOwner(), 1.0f);
 
-	// for (const auto Player : Players)
-	// {
-	// 	IPlayerInterface::SafeExec_AddToXP(Player, StackedXP);
-	// }
-	// StackedXP = 0.f;
+	OnEncounterFinishedDelegate.Broadcast();
+}
 
-	// FActorSpawnParameters SpawnParameters;
-	// FTransform Transform;
-	// Transform.SetLocation(PlayerActor->GetActorLocation());
-	//
-	// const FRewardInfo& Info = RewardManager->GetNextRewardInfo();
-	//
-	// ALocationReward* Reward = GetWorld()->SpawnActorDeferred<ALocationReward>(
-	// 	Info.RewardClass,
-	// 	Transform,
-	// 	nullptr,
-	// 	nullptr,
-	// 	ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn
-	// 	);
-	//
-	// if (Reward)	Reward->FinishSpawning(Transform);
-	// else UE_LOG(
-	// 	LogAura,
-	// 	Error,
-	// 	TEXT("Failed to spawn Location Reward: %s"),
-	// 	*Info.RewardClass->GetName()
-	// 	);
+void UEncounterManagerComponent::GetAvailableSpawners()
+{
+	EnemySpawners.Empty();
+	
+	TArray<AActor*> Spawners;
+	UGameplayStatics::GetAllActorsOfClass(
+		this,
+		AEnemySpawner::StaticClass(),
+		Spawners
+		);
+	
+	for (const auto Spawner : Spawners)
+	{
+		if (AEnemySpawner* EnemySpawner = Cast<AEnemySpawner>(Spawner))
+		{
+			EnemySpawners.Add(EnemySpawner);
+			EnemySpawner->EnemySpawnedDelegate.AddDynamic(this, &UEncounterManagerComponent::OnEnemySpawned);
+			EnemySpawner->SpawnedEnemyDeathDelegate.AddDynamic(this, &UEncounterManagerComponent::OnEnemyKilled);
+		}
+	}
+}
 
-	// OnEncounterFinishedDelegate.Broadcast();
+void UEncounterManagerComponent::GetEnemySpawns()
+{
+	if (!bOverrideEnemyWaves)
+	{
+		EnemyWaves = GetAuraGameMode()->RegionInfo->GetRandomizedEnemyWaves(
+			Region, 
+			DifficultyClass,
+			TotalWaves
+			);
+	}
 }
 
 void UEncounterManagerComponent::OnEnemySpawned(AActor* Enemy)
@@ -128,14 +167,4 @@ void UEncounterManagerComponent::OnEnemyKilled(AActor* Enemy)
 			}
 		}
 	}
-}
-
-AAuraGameModeBase* UEncounterManagerComponent::GetAuraGameMode()
-{
-	if (AuraGameMode == nullptr)
-	{
-		UGameplayStatics::GetGameMode(GetOwner());
-	}
-
-	return AuraGameMode;
 }

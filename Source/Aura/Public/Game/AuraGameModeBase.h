@@ -9,6 +9,7 @@
 #include "Level/RewardsInfo.h"
 #include "AuraGameModeBase.generated.h"
 
+class ULocationManagerComponent;
 class UEncounterManagerComponent;
 class URewardManagerComponent;
 class ALocationReward;
@@ -36,27 +37,17 @@ class AURA_API AAuraGameModeBase : public AGameModeBase
 
 public:
 	AAuraGameModeBase();
+
+	ULocationManagerComponent* GetLocationManager() const { return LocationManager; }
+	UEncounterManagerComponent* GetEncounterManager() const { return EncounterManager; }
+	URewardManagerComponent* GetRewardManager() const { return RewardManager; }
 	
 	UFUNCTION(BlueprintPure)
 	TSoftObjectPtr<UWorld> GetNextLocation(ERegion InRegion, EGatePosition EntrancePosition);
 	UFUNCTION(BlueprintPure)
 	TSoftObjectPtr<UWorld> GetInitialLocation(ERegion InRegion);
-	
-	UFUNCTION(BlueprintCallable)
-	void StartEncounter();
-	void NextWave();
-	void FinishEncounter();
-	void PostFinishEncounter();
 
 	void AddToXPStack(float InXP);
-
-	int32 GetEnemiesLevel() const { return EnemiesLevel; }
-
-	UFUNCTION(BlueprintCallable)
-	void GetAvailableSpawners();
-
-	UFUNCTION(BlueprintCallable)
-	void GetEnemySpawns();
 
 	UFUNCTION(BlueprintCallable)
 	void LoadLevelInfo();
@@ -73,9 +64,10 @@ public:
 	TSoftObjectPtr<UWorld> GetCurrentLevel() const { return CurrentLevel; }
 
 	void SetNextReward(const FGameplayTag& InRewardTag);
-	
-	UPROPERTY(BlueprintAssignable)
-	FOnEncounterFinished OnEncounterFinishedDelegate;
+
+	int32 GetEnemiesLevel() const;
+
+	FOnEncounterFinished& GetOnEncounterFinishedDelegate();
 	
 	UPROPERTY(EditDefaultsOnly, Category="Game")
 	TObjectPtr<UCharacterInfo> CharacterClassInfo;
@@ -92,96 +84,29 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category="Game")
 	TObjectPtr<URewardsInfo> RewardsInfo;
 
+	int32 EncountersCount = 0;
+
 protected:
+	virtual void BeginPlay() override;
+	
+	UPROPERTY(VisibleAnywhere, Category="Location")
+	TObjectPtr<ULocationManagerComponent> LocationManager;
 	UPROPERTY(VisibleAnywhere, Category="Location|Encounter")
 	TObjectPtr<UEncounterManagerComponent> EncounterManager;
 	UPROPERTY(VisibleAnywhere, Category="Location|Reward")
 	TObjectPtr<URewardManagerComponent> RewardManager;
-	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Location|Encounter")
-	ERegion Region = ERegion::Undefined;
-	UPROPERTY(
-		EditDefaultsOnly,
-		BlueprintReadWrite,
-		Category="Location|Encounter",
-		meta=(Categories="DifficultyClass")
-		)
-	FGameplayTag DifficultyClass = FGameplayTag();
-	UPROPERTY(
-		EditDefaultsOnly,
-		BlueprintReadWrite,
-		Category="Location|Encounter",
-		meta=(ClampMin=1, UIMin=1, ClampMax=20, UIMax=20)
-		)
-	int32 EnemiesLevel = 1;
-	UPROPERTY(
-		VisibleAnywhere,
-		BlueprintReadWrite,
-		Category="Location|Encounter",
-		meta=(ClampMin=1, UIMin=1)
-		)
-	int32 TotalWaves = 1;
-	UPROPERTY(
-		EditDefaultsOnly,
-		BlueprintReadWrite,
-		Category="Location|Encounter",
-		meta=(Units="Seconds")
-		)
-	float WaveTransitionDelay = 0.f;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Location|Encounter")
-	float TimeDilationOnFinishEncounter = 0.2f;
-	UPROPERTY(
-		EditDefaultsOnly,
-		BlueprintReadWrite,
-		Category="Location|Encounter",
-		meta=(Units="Seconds")
-		)
-	float TimeDilationResetDelay = 1.f;
-	UPROPERTY(EditDefaultsOnly, Category="Location|Encounter")
-	bool bOverrideEnemyWaves = false;
-	UPROPERTY(
-		EditDefaultsOnly,
-		BlueprintReadWrite,
-		Category="Location|Encounter",
-		meta=(EditCondition="bOverrideEnemyWaves")
-		)
-	TArray<FEnemyWave> EnemyWaves;
-	
-	UPROPERTY(BlueprintReadWrite,	Category="Player")
-	TArray<AActor*> Players;
 
 private:
-	UFUNCTION()
-	void OnEnemySpawned(AActor* Enemy);
-	UFUNCTION()
-	void OnEnemyKilled(AActor* Enemy);
-
-	void SetCurrentLocationInfo();
-	
 	UAuraGameInstance* GetAuraGameInstance();
 
 	UPROPERTY()
 	UAuraGameInstance* AuraGameInstance = nullptr;
 
 	FLatentActionInfo OnLoadStreamLatentActionInfo;
-	
-	UPROPERTY()
-	int32 EnemyCount = 0;
-
-	UPROPERTY()
-	int32 CurrentWave = 0;
-
-	UPROPERTY()
-	TArray<AEnemySpawner*> EnemySpawners;
-
-	UPROPERTY()
-	float StackedXP = 0.f;
 
 	TArray<TSoftObjectPtr<UWorld>> SelectedLevels;
 	TSoftObjectPtr<UWorld> PrevLevel;
 	TSoftObjectPtr<UWorld> CurrentLevel;
-
-	int32 EncountersCount = 0;
 
 	bool bWillExitRegion = false;
 };

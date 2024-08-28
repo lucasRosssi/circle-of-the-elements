@@ -3,42 +3,34 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AuraSystemComponent.h"
 #include "GameplayTagContainer.h"
-#include "Components/ActorComponent.h"
 #include "Enums/Region.h"
+#include "Game/AuraGameModeBase.h"
 #include "EncounterManagerComponent.generated.h"
 
 
-class AAuraGameModeBase;
 class AEnemySpawner;
 struct FEnemyWave;
 
-// DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnEncounterFinished);
-
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class AURA_API UEncounterManagerComponent : public UActorComponent
+class AURA_API UEncounterManagerComponent : public UAuraSystemComponent
 {
 	GENERATED_BODY()
 
 public:	
-	UEncounterManagerComponent();
-
 	int32 GetEnemiesLevel() const { return EnemiesLevel; }
-	
-	UFUNCTION(BlueprintPure)
-	TSoftObjectPtr<UWorld> GetCurrentLocation() const { return CurrentLocation; }
+
+	void SetCurrentEncounterData();
 	
 	UFUNCTION(BlueprintCallable)
 	void StartEncounter();
-	void NextWave();
-	void FinishEncounter();
-	void PostFinishEncounter();
 
-	// UPROPERTY(BlueprintAssignable)
-	// FOnEncounterFinished OnEncounterFinishedDelegate;
+	UPROPERTY(BlueprintAssignable)
+	FOnEncounterFinished OnEncounterFinishedDelegate;
 
 protected:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Location|Encounter")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Location")
 	ERegion Region = ERegion::Undefined;
 	UPROPERTY(
 		EditDefaultsOnly,
@@ -67,7 +59,7 @@ protected:
 		Category="Location|Encounter",
 		meta=(Units="Seconds")
 		)
-	float WaveTransitionDelay = 0.f;
+	float WaveTransitionDelay = 1.f;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Location|Encounter")
 	float TimeDilationOnFinishEncounter = 0.2f;
 	UPROPERTY(
@@ -88,6 +80,14 @@ protected:
 	TArray<FEnemyWave> EnemyWaves;
 
 private:
+	void SetEncounterDifficulty();
+	void GetAvailableSpawners();
+	void GetEnemySpawns();
+
+	void NextWave();
+	void FinishEncounter();
+	void PostFinishEncounter();
+	
 	UFUNCTION()
 	void OnEnemySpawned(AActor* Enemy);
 	UFUNCTION()
@@ -97,18 +97,4 @@ private:
 	int32 CurrentWave = 0;
 	UPROPERTY()
 	TArray<AEnemySpawner*> EnemySpawners;
-
-	UPROPERTY()
-	float StackedXP = 0.f;
-	
-	TSoftObjectPtr<UWorld> CurrentLocation;
-
-	int32 EncountersCount = 0;
-
-	AAuraGameModeBase* GetAuraGameMode();
-	UPROPERTY()
-	AAuraGameModeBase* AuraGameMode = nullptr;
-
-	UPROPERTY()
-	AActor* PlayerActor = nullptr;
 };

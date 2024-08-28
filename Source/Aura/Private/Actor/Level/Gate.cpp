@@ -15,7 +15,7 @@ void AGate::BeginPlay()
 {
 	Super::BeginPlay();
 
-	GetAuraGameMode()->OnEncounterFinishedDelegate.AddDynamic(this, &AGate::EnableInteraction);
+	GetAuraGameMode()->GetOnEncounterFinishedDelegate().AddDynamic(this, &AGate::EnableInteraction);
 }
 
 void AGate::Interact(AController* InstigatorController)

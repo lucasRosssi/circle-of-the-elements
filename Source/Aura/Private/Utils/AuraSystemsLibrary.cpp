@@ -40,3 +40,20 @@ URewardManagerComponent* UAuraSystemsLibrary::GetRewardManager(const UObject* Wo
 
 	return nullptr;
 }
+
+ULocationManagerComponent* UAuraSystemsLibrary::GetLocationManager(const UObject* WorldContextObject)
+{
+	AGameModeBase* GameMode = UGameplayStatics::GetGameMode(WorldContextObject);
+	if (const AAuraGameModeBase* AuraGameMode = Cast<AAuraGameModeBase>(GameMode))
+	{
+		return AuraGameMode->GetLocationManager();
+	}
+
+	UE_LOG(LogAura, Warning, TEXT(
+		"Current world doesn't have a Location Manager. "
+		"Trying to access from object: %s"),
+		*WorldContextObject->GetName()
+		);
+
+	return nullptr;
+}

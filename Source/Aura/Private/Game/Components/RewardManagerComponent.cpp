@@ -4,15 +4,12 @@
 #include "Game/Components/RewardManagerComponent.h"
 
 #include "Actor/Level/Gate.h"
+#include "Actor/Level/LocationReward.h"
 #include "Algo/RandomShuffle.h"
+#include "Aura/AuraLogChannels.h"
 #include "Game/AuraGameModeBase.h"
 #include "Kismet/GameplayStatics.h"
-
-URewardManagerComponent::URewardManagerComponent()
-{
-	PrimaryComponentTick.bCanEverTick = false;
-
-}
+#include "Kismet/KismetMathLibrary.h"
 
 FRewardInfo URewardManagerComponent::GetNextRewardInfo()
 {
@@ -56,12 +53,29 @@ void URewardManagerComponent::SetGatesRewards()
 	}
 }
 
-AAuraGameModeBase* URewardManagerComponent::GetAuraGameMode()
+void URewardManagerComponent::SpawnReward()
 {
-	if (AuraGameMode == nullptr)
-	{
-		UGameplayStatics::GetGameMode(GetOwner());
-	}
-
-	return AuraGameMode;
+	const APawn* PlayerPawn = UGameplayStatics::GetPlayerPawn(GetOwner(), 0);
+	FTransform Transform;
+	FVector RandomDirection = UKismetMathLibrary::RandomUnitVector();
+	RandomDirection.Z = 0.f;
+	Transform.SetLocation(PlayerPawn->GetActorLocation() + RandomDirection * 200.f);
+	
+	const FRewardInfo& Info = GetNextRewardInfo();
+	
+	ALocationReward* Reward = GetWorld()->SpawnActorDeferred<ALocationReward>(
+		Info.RewardClass,
+		Transform,
+		nullptr,
+		nullptr,
+		ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn
+		);
+	
+	if (Reward)	Reward->FinishSpawning(Transform);
+	else UE_LOG(
+		LogAura,
+		Error,
+		TEXT("Failed to spawn Location Reward: %s"),
+		*Info.RewardClass->GetName()
+		);
 }
