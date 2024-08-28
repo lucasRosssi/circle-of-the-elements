@@ -1,0 +1,42 @@
+// Copyright Lucas Rossi
+
+
+#include "Utils/AuraSystemsLibrary.h"
+
+#include "Aura/AuraLogChannels.h"
+#include "Game/AuraGameModeBase.h"
+#include "Kismet/GameplayStatics.h"
+
+UEncounterManagerComponent* UAuraSystemsLibrary::GetEncounterManager(const UObject* WorldContextObject)
+{
+	AGameModeBase* GameMode = UGameplayStatics::GetGameMode(WorldContextObject);
+	if (const AAuraGameModeBase* AuraGameMode = Cast<AAuraGameModeBase>(GameMode))
+	{
+		return AuraGameMode->GetEncounterManager();
+	}
+
+	UE_LOG(LogAura, Warning, TEXT(
+		"Current world doesn't have an Encounter Manager. "
+		"Trying to access from object: %s"),
+		*WorldContextObject->GetName()
+		);
+
+	return nullptr;
+}
+
+URewardManagerComponent* UAuraSystemsLibrary::GetRewardManager(const UObject* WorldContextObject)
+{
+	AGameModeBase* GameMode = UGameplayStatics::GetGameMode(WorldContextObject);
+	if (const AAuraGameModeBase* AuraGameMode = Cast<AAuraGameModeBase>(GameMode))
+	{
+		return AuraGameMode->GetRewardManager();
+	}
+
+	UE_LOG(LogAura, Warning, TEXT(
+		"Current world doesn't have a Reward Manager. "
+		"Trying to access from object: %s"),
+		*WorldContextObject->GetName()
+		);
+
+	return nullptr;
+}
