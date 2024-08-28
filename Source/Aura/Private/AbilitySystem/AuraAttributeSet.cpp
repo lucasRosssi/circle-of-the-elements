@@ -262,7 +262,7 @@ void UAuraAttributeSet::HandleIncomingDamage(
 			FAuraGameplayTags::Get().Abilities_Reaction_HitReact
 		 });
 		Props.TargetASC->TryActivateAbilitiesByTag(TagContainer);
-		if (Props.TargetCharacter->IsLocallyControlled())
+		if (Props.TargetCharacter->IsPlayerControlled() && Props.TargetCharacter->IsLocallyControlled())
 		{
 			UGameplayStatics::GetPlayerCameraManager(
 				Props.TargetAvatarActor,
@@ -271,9 +271,6 @@ void UAuraAttributeSet::HandleIncomingDamage(
 	}
 	
 	ShowFloatingText(Props, LocalIncomingDamage, bParried, bCriticalHit);
-	UGameplayStatics::GetPlayerCameraManager(
-		Props.TargetAvatarActor,
-		0)->StartCameraShake(UDamageCameraShake::StaticClass());
 }
 
 void UAuraAttributeSet::HandleIncomingXP(const FEffectProperties& Props)
