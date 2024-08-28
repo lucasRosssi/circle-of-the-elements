@@ -6,8 +6,13 @@
 #include "GameplayTagContainer.h"
 #include "Enums/Region.h"
 #include "GameFramework/GameModeBase.h"
+#include "Level/RewardsInfo.h"
 #include "AuraGameModeBase.generated.h"
 
+class UEncounterManagerComponent;
+class URewardManagerComponent;
+class ALocationReward;
+class URewardsInfo;
 enum class EGatePosition : uint8;
 class UAuraGameInstance;
 class APostProcessVolume;
@@ -30,6 +35,8 @@ class AURA_API AAuraGameModeBase : public AGameModeBase
 	GENERATED_BODY()
 
 public:
+	AAuraGameModeBase();
+	
 	UFUNCTION(BlueprintPure)
 	TSoftObjectPtr<UWorld> GetNextLocation(ERegion InRegion, EGatePosition EntrancePosition);
 	UFUNCTION(BlueprintPure)
@@ -64,6 +71,8 @@ public:
 
 	UFUNCTION(BlueprintPure)
 	TSoftObjectPtr<UWorld> GetCurrentLevel() const { return CurrentLevel; }
+
+	void SetNextReward(const FGameplayTag& InRewardTag);
 	
 	UPROPERTY(BlueprintAssignable)
 	FOnEncounterFinished OnEncounterFinishedDelegate;
@@ -80,7 +89,15 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category="Game")
 	TObjectPtr<URegionInfo> RegionInfo;
 
+	UPROPERTY(EditDefaultsOnly, Category="Game")
+	TObjectPtr<URewardsInfo> RewardsInfo;
+
 protected:
+	UPROPERTY(VisibleAnywhere, Category="Location|Encounter")
+	TObjectPtr<UEncounterManagerComponent> EncounterManager;
+	UPROPERTY(VisibleAnywhere, Category="Location|Reward")
+	TObjectPtr<URewardManagerComponent> RewardManager;
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Location|Encounter")
 	ERegion Region = ERegion::Undefined;
 	UPROPERTY(
@@ -98,7 +115,7 @@ protected:
 		)
 	int32 EnemiesLevel = 1;
 	UPROPERTY(
-		EditDefaultsOnly,
+		VisibleAnywhere,
 		BlueprintReadWrite,
 		Category="Location|Encounter",
 		meta=(ClampMin=1, UIMin=1)
@@ -140,7 +157,7 @@ private:
 	void OnEnemyKilled(AActor* Enemy);
 
 	void SetCurrentLocationInfo();
-
+	
 	UAuraGameInstance* GetAuraGameInstance();
 
 	UPROPERTY()

@@ -5,12 +5,21 @@
 
 #include "AuraGameplayTags.h"
 #include "Actor/Level/EnemySpawner.h"
+#include "Actor/Level/Gate.h"
+#include "Actor/Level/LocationReward.h"
 #include "Aura/AuraLogChannels.h"
 #include "Game/AuraGameInstance.h"
+#include "Game/Components/RewardManagerComponent.h"
 #include "GameFramework/PlayerStart.h"
 #include "Level/RegionInfo.h"
-#include "Interaction/PlayerInterface.h"
 #include "Kismet/GameplayStatics.h"
+#include "Level/RewardsInfo.h"
+
+AAuraGameModeBase::AAuraGameModeBase()
+{
+	RewardManager = CreateDefaultSubobject<URewardManagerComponent>("RewardManager");
+	RewardManager->SetGameMode(this);
+}
 
 TSoftObjectPtr<UWorld> AAuraGameModeBase::GetNextLocation(
 	ERegion InRegion,
@@ -83,7 +92,7 @@ void AAuraGameModeBase::NextWave()
 		}
 	}
 
-	EnemyWaves.RemoveAt(0);
+	if (!bOverrideEnemyWaves) EnemyWaves.RemoveAt(0);
 }
 
 void AAuraGameModeBase::FinishEncounter()
@@ -140,21 +149,28 @@ void AAuraGameModeBase::SetCurrentLocationInfo()
 	CurrentWave = 0;
 	EnemiesLevel = FMath::Floor(EncountersCount / 2);
 
-	const FAuraGameplayTags& GameplayTags = FAuraGameplayTags::Get();
-	if (EncountersCount < 4)
+	if (bOverrideEnemyWaves)
 	{
-		TotalWaves = FMath::RandRange(1, 3);
-		DifficultyClass = GameplayTags.DifficultyClass_Easy;
-	}
-	else if (EncountersCount < 7)
-	{
-		TotalWaves = FMath::RandRange(2, 4);
-		DifficultyClass = GameplayTags.DifficultyClass_Normal;
+		TotalWaves = EnemyWaves.Num();
 	}
 	else
 	{
-		TotalWaves = FMath::RandRange(3, 5);
-		DifficultyClass = GameplayTags.DifficultyClass_Hard;
+		const FAuraGameplayTags& GameplayTags = FAuraGameplayTags::Get();
+		if (EncountersCount < 4)
+		{
+			TotalWaves = FMath::RandRange(1, 3);
+			DifficultyClass = GameplayTags.DifficultyClass_Easy;
+		}
+		else if (EncountersCount < 7)
+		{
+			TotalWaves = FMath::RandRange(2, 4);
+			DifficultyClass = GameplayTags.DifficultyClass_Normal;
+		}
+		else
+		{
+			TotalWaves = FMath::RandRange(3, 5);
+			DifficultyClass = GameplayTags.DifficultyClass_Hard;
+		}
 	}
 }
 
@@ -172,11 +188,33 @@ void AAuraGameModeBase::PostFinishEncounter()
 {
 	UGameplayStatics::SetGlobalTimeDilation(this, 1.0f);
 
-	for (const auto Player : Players)
-	{
-		IPlayerInterface::SafeExec_AddToXP(Player, StackedXP);
-	}
-	StackedXP = 0.f;
+	// for (const auto Player : Players)
+	// {
+	// 	IPlayerInterface::SafeExec_AddToXP(Player, StackedXP);
+	// }
+	// StackedXP = 0.f;
+
+	FActorSpawnParameters SpawnParameters;
+	FTransform Transform;
+	Transform.SetLocation(Players[0]->GetActorLocation());
+	
+	const FRewardInfo& Info = RewardManager->GetNextRewardInfo();
+	
+	ALocationReward* Reward = GetWorld()->SpawnActorDeferred<ALocationReward>(
+		Info.RewardClass,
+		Transform,
+		nullptr,
+		nullptr,
+		ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn
+		);
+	
+	if (Reward)	Reward->FinishSpawning(Transform);
+	else UE_LOG(
+		LogAura,
+		Error,
+		TEXT("Failed to spawn Location Reward: %s"),
+		*Info.RewardClass->GetName()
+		);
 
 	OnEncounterFinishedDelegate.Broadcast();
 }
@@ -226,6 +264,7 @@ void AAuraGameModeBase::LoadLevelInfo()
 	SetCurrentLocationInfo();
 	GetEnemySpawns();
 	GetAvailableSpawners();
+	RewardManager->SetGatesRewards();
 }
 
 void AAuraGameModeBase::PlacePlayerInStartingPoint()
@@ -253,4 +292,9 @@ void AAuraGameModeBase::PlacePlayerInStartingPoint()
 void AAuraGameModeBase::ExitLocation(EGatePosition NextGatePosition)
 {
 	OnExitLocation(NextGatePosition);
+}
+
+void AAuraGameModeBase::SetNextReward(const FGameplayTag& InRewardTag)
+{
+	RewardManager->SetNextReward(InRewardTag);
 }

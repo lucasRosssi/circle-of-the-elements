@@ -63,5 +63,8 @@ public:
 	UFUNCTION(BlueprintNativeEvent)
 	void SetInteractMessageVisible(bool bVisible);
 
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	ECharacterName GetHeroName();
+
 	virtual FOnInteract& GetOnInteractDelegate() = 0;
 };

@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
 #include "Actor/Level/Interactable.h"
 #include "Enums/GatePosition.h"
 #include "Enums/Region.h"
@@ -18,7 +19,12 @@ class AURA_API AGate : public AInteractable
 
 public:
 	AGate();
-	
+
+	void SetGateReward(const FGameplayTag& InRewardTag) { RewardTag = InRewardTag; }
+	FGameplayTag GetGateReward() { return RewardTag; }
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Location|Gate")
+	bool bActive = true;
 protected:
 	virtual void BeginPlay() override;
 
@@ -35,9 +41,11 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<UStaticMeshComponent> GateMesh;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Location")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Location|Gate")
 	ERegion Region = ERegion::Undefined;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Location")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Location|Gate")
 	EGatePosition NextGatePosition = EGatePosition::BottomLeft;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Location|Gate")
+	FGameplayTag RewardTag = FGameplayTag();
 private:
 };

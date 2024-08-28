@@ -897,6 +897,75 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		);
 
 	/*
+	 * Player Resources
+	 */
+
+	GameplayTags.Resources = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Resources"),
+		FString("Resources")
+		);
+
+	GameplayTags.Resources_Point = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Resources.Point"),
+		FString("Spendable points resources")
+		);
+
+	GameplayTags.Resources_Point_Attribute = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Resources.Point.Attribute"),
+		FString("Attribute point resource")
+		);
+
+	GameplayTags.Resources_Point_Skill = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Resources.Point.Skill"),
+		FString("Skill point resource")
+		);
+
+	GameplayTags.Resources_Point_Perk = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Resources.Point.Perk"),
+		FString("Perk point resource")
+		);
+
+	GameplayTags.Resources_Arcanite = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Resources.Arcanite"),
+		FString("Arcanite crystal resource")
+		);
+
+	GameplayTags.Resources_Essence = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Resources.Essence"),
+		FString("Essences resources")
+		);
+
+	GameplayTags.Resources_Essence_Physical = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Resources.Essence.Physical"),
+		FString("Physical essence resource")
+		);
+
+	GameplayTags.Resources_Essence_Energy = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Resources.Essence.Energy"),
+		FString("Energy essence resource")
+		);
+
+	GameplayTags.Resources_Essence_Fire = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Resources.Essence.Fire"),
+		FString("Fire essence resource")
+		);
+
+	GameplayTags.Resources_Essence_Ice = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Resources.Essence.Ice"),
+		FString("Ice essence resource")
+		);
+
+	GameplayTags.Resources_Essence_Lightning = UGameplayTagsManager::Get().AddNativeGameplayTag(
+  	FName("Resources.Essence.Lightning"),
+  	FString("Lightning essence resource")
+  	);
+  		
+	GameplayTags.Resources_Essence_Necrotic = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Resources.Essence.Necrotic"),
+		FString("Necrotic essence resource")
+		);
+
+	/*
 	 * Map of Tags to their children
 	 */
 

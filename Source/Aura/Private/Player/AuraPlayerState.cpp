@@ -30,6 +30,7 @@ void AAuraPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	DOREPLIFETIME(AAuraPlayerState, XP);
 	DOREPLIFETIME(AAuraPlayerState, AttributePoints);
 	DOREPLIFETIME(AAuraPlayerState, SkillPoints);
+	DOREPLIFETIME(AAuraPlayerState, PerkPoints);
 }
 
 UAbilitySystemComponent* AAuraPlayerState::GetAbilitySystemComponent() const
@@ -146,6 +147,22 @@ void AAuraPlayerState::AddSkillPoints(int32 InSkillPoints)
 	OnSkillPointsChangedDelegate.Broadcast(SkillPoints);
 }
 
+void AAuraPlayerState::SetPerkPoints(int32 InPerkPoints)
+{
+	if (PerkPoints == InPerkPoints) return;
+	
+	PerkPoints = InPerkPoints;
+	OnPerkPointsChangedDelegate.Broadcast(PerkPoints);
+}
+
+void AAuraPlayerState::AddPerkPoints(int32 InPerkPoints)
+{
+	if (InPerkPoints == 0) return;
+	
+	PerkPoints += InPerkPoints;
+	OnPerkPointsChangedDelegate.Broadcast(PerkPoints);
+}
+
 AAuraCharacterBase* AAuraPlayerState::GetCharacterBase()
 {
 	if (CharacterBase == nullptr)
@@ -174,4 +191,9 @@ void AAuraPlayerState::OnRep_AttributePoints(int32 OldAttributePoints)
 void AAuraPlayerState::OnRep_SkillPoints(int32 OldSkillPoints)
 {
 	OnSkillPointsChangedDelegate.Broadcast(SkillPoints);
+}
+
+void AAuraPlayerState::OnRep_PerkPoints(int32 OldPerkPoints)
+{
+	OnPerkPointsChangedDelegate.Broadcast(PerkPoints);
 }

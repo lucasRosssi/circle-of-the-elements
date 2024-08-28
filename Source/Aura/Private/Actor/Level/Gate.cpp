@@ -20,7 +20,9 @@ void AGate::BeginPlay()
 
 void AGate::Interact(AController* InstigatorController)
 {
-	// GoToRandomLocation();
+	Super::Interact(InstigatorController);
+
+	GetAuraGameMode()->SetNextReward(RewardTag);
 }
 
 TSoftObjectPtr<UWorld> AGate::GetCurrentLocation()

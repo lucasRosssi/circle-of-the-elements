@@ -43,6 +43,7 @@ public:
 	FOnPlayerStatChanged OnLevelChangedDelegate;
 	FOnPlayerStatChanged OnAttributePointsChangedDelegate;
 	FOnPlayerStatChanged OnSkillPointsChangedDelegate;
+	FOnPlayerStatChanged OnPerkPointsChangedDelegate;
 	
 	FORCEINLINE int32 GetCharacterLevel() const { return Level; }
 	void SetLevel(int32 InLevel);
@@ -56,6 +57,9 @@ public:
 	FORCEINLINE int32 GetSkillPoints() const { return SkillPoints; }
 	void SetSkillPoints(int32 InSkillPoints);
 	void AddSkillPoints(int32 InSkillPoints);
+	FORCEINLINE int32 GetPerkPoints() const { return PerkPoints; }
+	void SetPerkPoints(int32 InPerkPoints);
+	void AddPerkPoints(int32 InPerkPoints);
 
 protected:
 	UPROPERTY(VisibleAnywhere)
@@ -86,6 +90,11 @@ private:
 	int32 SkillPoints = 0;
 	UFUNCTION()
 	void OnRep_SkillPoints(int32 OldSkillPoints);
+
+	UPROPERTY(VisibleAnywhere, ReplicatedUsing=OnRep_PerkPoints)
+	int32 PerkPoints = 0;
+	UFUNCTION()
+	void OnRep_PerkPoints(int32 OldPerkPoints);
 
 	UPROPERTY()
 	UAuraAbilitySystemComponent* AuraASC;

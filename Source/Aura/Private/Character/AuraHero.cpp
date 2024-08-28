@@ -181,6 +181,11 @@ void AAuraHero::SetInteractMessageVisible_Implementation(bool bVisible)
 	InteractWidgetComponent->SetVisibility(bVisible);
 }
 
+ECharacterName AAuraHero::GetHeroName_Implementation()
+{
+	return GetCharacterName();
+}
+
 void AAuraHero::StartDeath()
 {
 	bDead = true;

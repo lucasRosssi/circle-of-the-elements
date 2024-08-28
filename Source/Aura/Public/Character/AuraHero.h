@@ -53,6 +53,7 @@ public:
 	virtual void HideTargetingActor_Implementation() override;
 	virtual FOnInteract& GetOnInteractDelegate() override;
 	virtual void SetInteractMessageVisible_Implementation(bool bVisible) override;
+	virtual ECharacterName GetHeroName_Implementation() override;
 	/** end Player Interface */
 	
 	void StartDeath();
