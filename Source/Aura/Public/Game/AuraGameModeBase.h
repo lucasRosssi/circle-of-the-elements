@@ -9,6 +9,8 @@
 #include "Level/RewardsInfo.h"
 #include "AuraGameModeBase.generated.h"
 
+class UEncounterManagerComponent;
+class URewardManagerComponent;
 class ALocationReward;
 class URewardsInfo;
 enum class EGatePosition : uint8;
@@ -33,6 +35,8 @@ class AURA_API AAuraGameModeBase : public AGameModeBase
 	GENERATED_BODY()
 
 public:
+	AAuraGameModeBase();
+	
 	UFUNCTION(BlueprintPure)
 	TSoftObjectPtr<UWorld> GetNextLocation(ERegion InRegion, EGatePosition EntrancePosition);
 	UFUNCTION(BlueprintPure)
@@ -68,7 +72,7 @@ public:
 	UFUNCTION(BlueprintPure)
 	TSoftObjectPtr<UWorld> GetCurrentLevel() const { return CurrentLevel; }
 
-	void SetNextReward(const FGameplayTag& InRewardTag) { NextReward = InRewardTag; }
+	void SetNextReward(const FGameplayTag& InRewardTag);
 	
 	UPROPERTY(BlueprintAssignable)
 	FOnEncounterFinished OnEncounterFinishedDelegate;
@@ -89,6 +93,11 @@ public:
 	TObjectPtr<URewardsInfo> RewardsInfo;
 
 protected:
+	UPROPERTY(VisibleAnywhere, Category="Location|Encounter")
+	TObjectPtr<UEncounterManagerComponent> EncounterManager;
+	UPROPERTY(VisibleAnywhere, Category="Location|Reward")
+	TObjectPtr<URewardManagerComponent> RewardManager;
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Location|Encounter")
 	ERegion Region = ERegion::Undefined;
 	UPROPERTY(
@@ -137,23 +146,6 @@ protected:
 		meta=(EditCondition="bOverrideEnemyWaves")
 		)
 	TArray<FEnemyWave> EnemyWaves;
-
-	UPROPERTY(EditDefaultsOnly, Category="Location|Reward")
-	bool bOverrideReward = false;
-	UPROPERTY(
-		EditDefaultsOnly,
-		BlueprintReadWrite,
-		Category="Location|Reward",
-		meta=(EditCondition="bOverrideReward", Categories="Resources")
-		)
-	FGameplayTag NextReward = FGameplayTag();
-	UPROPERTY(
-		EditDefaultsOnly,
-		BlueprintReadWrite,
-		Category="Location|Reward",
-		meta=(EditCondition="bOverrideReward", Categories="Resources")
-		)
-	TArray<FGameplayTag> RewardBag;
 	
 	UPROPERTY(BlueprintReadWrite,	Category="Player")
 	TArray<AActor*> Players;
@@ -165,13 +157,7 @@ private:
 	void OnEnemyKilled(AActor* Enemy);
 
 	void SetCurrentLocationInfo();
-
-	FRewardInfo GetNextRewardInfo();
-
-	void FillAndShuffleRewardBag();
-
-	void SetGatesRewards();
-
+	
 	UAuraGameInstance* GetAuraGameInstance();
 
 	UPROPERTY()

@@ -10,10 +10,17 @@
 #include "Algo/RandomShuffle.h"
 #include "Aura/AuraLogChannels.h"
 #include "Game/AuraGameInstance.h"
+#include "Game/Components/RewardManagerComponent.h"
 #include "GameFramework/PlayerStart.h"
 #include "Level/RegionInfo.h"
 #include "Kismet/GameplayStatics.h"
 #include "Level/RewardsInfo.h"
+
+AAuraGameModeBase::AAuraGameModeBase()
+{
+	RewardManager = CreateDefaultSubobject<URewardManagerComponent>("RewardManager");
+	RewardManager->SetGameMode(this);
+}
 
 TSoftObjectPtr<UWorld> AAuraGameModeBase::GetNextLocation(
 	ERegion InRegion,
@@ -168,48 +175,6 @@ void AAuraGameModeBase::SetCurrentLocationInfo()
 	}
 }
 
-FRewardInfo AAuraGameModeBase::GetNextRewardInfo()
-{
-	if (NextReward.IsValid())
-	{
-		return RewardsInfo->GetRewardInfo(NextReward);
-	}
-
-	return RewardsInfo->GetRandomizedReward();
-}
-
-void AAuraGameModeBase::FillAndShuffleRewardBag()
-{
-	RewardsInfo->FillRewardBag(RewardBag);
-	Algo::RandomShuffle(RewardBag);
-}
-
-void AAuraGameModeBase::SetGatesRewards()
-{
-	TArray<AActor*> GateActors;
-	UGameplayStatics::GetAllActorsOfClass(
-		Players[0],
-		AGate::StaticClass(),
-		GateActors
-		);
-	
-	for (const auto GateActor : GateActors)
-	{
-		if (AGate* Gate = Cast<AGate>(GateActor))
-		{
-			if (Gate->bActive)
-			{
-				if (RewardBag.IsEmpty())
-				{
-					FillAndShuffleRewardBag();
-				}
-
-				Gate->SetGateReward(RewardBag.Pop());
-			}
-		}
-	}
-}
-
 UAuraGameInstance* AAuraGameModeBase::GetAuraGameInstance()
 {
 	if (AuraGameInstance == nullptr)
@@ -234,7 +199,7 @@ void AAuraGameModeBase::PostFinishEncounter()
 	FTransform Transform;
 	Transform.SetLocation(Players[0]->GetActorLocation());
 	
-	const FRewardInfo& Info = GetNextRewardInfo();
+	const FRewardInfo& Info = RewardManager->GetNextRewardInfo();
 	
 	ALocationReward* Reward = GetWorld()->SpawnActorDeferred<ALocationReward>(
 		Info.RewardClass,
@@ -245,7 +210,12 @@ void AAuraGameModeBase::PostFinishEncounter()
 		);
 	
 	if (Reward)	Reward->FinishSpawning(Transform);
-	else UE_LOG(LogAura, Error, TEXT("Failed to spawn Location Reward: %s"), *NextReward.ToString());
+	else UE_LOG(
+		LogAura,
+		Error,
+		TEXT("Failed to spawn Location Reward: %s"),
+		*Info.RewardClass->GetName()
+		);
 
 	OnEncounterFinishedDelegate.Broadcast();
 }
@@ -295,7 +265,7 @@ void AAuraGameModeBase::LoadLevelInfo()
 	SetCurrentLocationInfo();
 	GetEnemySpawns();
 	GetAvailableSpawners();
-	SetGatesRewards();
+	RewardManager->SetGatesRewards();
 }
 
 void AAuraGameModeBase::PlacePlayerInStartingPoint()
@@ -323,4 +293,9 @@ void AAuraGameModeBase::PlacePlayerInStartingPoint()
 void AAuraGameModeBase::ExitLocation(EGatePosition NextGatePosition)
 {
 	OnExitLocation(NextGatePosition);
+}
+
+void AAuraGameModeBase::SetNextReward(const FGameplayTag& InRewardTag)
+{
+	RewardManager->SetNextReward(InRewardTag);
 }
