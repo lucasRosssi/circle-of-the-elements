@@ -55,7 +55,7 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	
 	GameplayTags.Attributes_Primary_Strength = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Attributes.Primary.Strength"),
-		FString("Increases Armor")
+		FString("Increases Armor and Incapacitation Resistance")
 		);
 	
 	GameplayTags.Attributes_Primary_Dexterity = UGameplayTagsManager::Get().AddNativeGameplayTag(
@@ -65,12 +65,12 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	
 	GameplayTags.Attributes_Primary_Constitution = UGameplayTagsManager::Get().AddNativeGameplayTag(
       		FName("Attributes.Primary.Constitution"),
-      		FString("Increases Maximum Health")
+      		FString("Increases Maximum Health and Health Recovery")
       		);
 	
 	GameplayTags.Attributes_Primary_Intelligence = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Attributes.Primary.Intelligence"),
-		FString("Increases Maximum Mana")
+		FString("Increases Maximum Mana and Mana Regeneration")
 		);
 
 	GameplayTags.Attributes_Primary_Wisdom = UGameplayTagsManager::Get().AddNativeGameplayTag(
