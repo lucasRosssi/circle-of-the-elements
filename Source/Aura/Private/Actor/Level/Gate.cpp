@@ -4,6 +4,7 @@
 #include "Actor/Level/Gate.h"
 
 #include "Game/AuraGameModeBase.h"
+#include "Game/Components/LocationManagerComponent.h"
 
 AGate::AGate()
 {
@@ -15,7 +16,7 @@ void AGate::BeginPlay()
 {
 	Super::BeginPlay();
 
-	GetAuraGameMode()->OnEncounterFinishedDelegate.AddDynamic(this, &AGate::EnableInteraction);
+	GetAuraGameMode()->GetOnRewardTakenDelegate().AddDynamic(this, &AGate::EnableInteraction);
 }
 
 void AGate::Interact(AController* InstigatorController)
@@ -27,10 +28,10 @@ void AGate::Interact(AController* InstigatorController)
 
 TSoftObjectPtr<UWorld> AGate::GetCurrentLocation()
 {
-	return GetAuraGameMode()->GetCurrentLevel();
+	return GetAuraGameMode()->GetLocationManager()->GetCurrentLocation();
 }
 
 TSoftObjectPtr<UWorld> AGate::GetRandomLocation()
 {
-	return GetAuraGameMode()->GetNextLocation(Region, NextGatePosition);
+	return GetAuraGameMode()->GetLocationManager()->GetNextLocation(Region, NextGatePosition);
 }

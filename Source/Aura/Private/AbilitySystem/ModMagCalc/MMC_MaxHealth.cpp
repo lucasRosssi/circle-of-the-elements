@@ -8,11 +8,11 @@
 
 UMMC_MaxHealth::UMMC_MaxHealth()
 {
-	StrengthDef.AttributeToCapture = UAuraAttributeSet::GetStrengthAttribute();
-	StrengthDef.AttributeSource = EGameplayEffectAttributeCaptureSource::Target;
-	StrengthDef.bSnapshot = false;
+	ConstitutionDef.AttributeToCapture = UAuraAttributeSet::GetConstitutionAttribute();
+	ConstitutionDef.AttributeSource = EGameplayEffectAttributeCaptureSource::Target;
+	ConstitutionDef.bSnapshot = false;
 
-	RelevantAttributesToCapture.Add(StrengthDef);
+	RelevantAttributesToCapture.Add(ConstitutionDef);
 }
 
 float UMMC_MaxHealth::CalculateBaseMagnitude_Implementation(const FGameplayEffectSpec& Spec) const
@@ -25,13 +25,13 @@ float UMMC_MaxHealth::CalculateBaseMagnitude_Implementation(const FGameplayEffec
 	EvaluationParameters.SourceTags = SourceTags;
 	EvaluationParameters.TargetTags = TargetTags;
 
-	float Strength = 0;
-	GetCapturedAttributeMagnitude(StrengthDef, Spec, EvaluationParameters, Strength);
-	Strength = FMath::Max<float>(Strength, 0.f);
+	float Constitution = 0;
+	GetCapturedAttributeMagnitude(ConstitutionDef, Spec, EvaluationParameters, Constitution);
+	Constitution = FMath::Max<float>(Constitution, 0.f);
 
 	const int32	CharacterLevel = ICombatInterface::Execute_GetCharacterLevel(
 		Spec.GetContext().GetSourceObject()
 	);
 
-	return 40.f + 5.f * (Strength - 10.f) + 10.f * (CharacterLevel - 1);
+	return 40.f + 5.f * (Constitution - 10.f) + 10.f * (CharacterLevel - 1);
 }

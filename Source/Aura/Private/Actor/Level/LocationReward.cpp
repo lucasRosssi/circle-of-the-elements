@@ -4,10 +4,13 @@
 #include "Actor/Level/LocationReward.h"
 
 #include "AuraGameplayTags.h"
+#include "NiagaraFunctionLibrary.h"
 #include "Game/AuraGameInstance.h"
 #include "Game/AuraGameModeBase.h"
+#include "Game/Components/RewardManagerComponent.h"
 #include "Level/RewardsInfo.h"
 #include "Player/AuraPlayerState.h"
+#include "Utils/AuraSystemsLibrary.h"
 
 ALocationReward::ALocationReward()
 {
@@ -21,27 +24,20 @@ void ALocationReward::Interact(AController* InstigatorController)
 	const FRewardInfo& RewardInfo = GetAuraGameMode()->RewardsInfo->GetRewardInfo(RewardTag);
 
 	const FAuraGameplayTags& GameplayTags = FAuraGameplayTags::Get();
-	if (RewardTag.MatchesTag(GameplayTags.Resources_Point))
+	if (RewardTag.MatchesTag(GameplayTags.Resources_Essence))
 	{
 		AAuraPlayerState* AuraPS = InstigatorController->GetPlayerState<AAuraPlayerState>();
 
-		if (RewardTag.MatchesTagExact(GameplayTags.Resources_Point_Attribute))
+		if (RewardTag.MatchesTagExact(GameplayTags.Resources_Essence_Soul))
 		{
 			AuraPS->AddAttributePoints(RewardInfo.Amount);
 		}
-		else if (RewardTag.MatchesTagExact(GameplayTags.Resources_Point_Skill))
-		{
-			AuraPS->AddSkillPoints(RewardInfo.Amount);
-		}
-		else
-		{
-			AuraPS->AddPerkPoints(RewardInfo.Amount);
-		}
-	}
-	else
-	{
+		
 		GetAuraGameInstance()->AddPlayerResource(RewardTag, RewardInfo.Amount);
 	}
+
+	const URewardManagerComponent* RewardManager = UAuraSystemsLibrary::GetRewardManager(this);
+	RewardManager->OnRewardTakenDelegate.Broadcast();
 
 	Destroy();
 }

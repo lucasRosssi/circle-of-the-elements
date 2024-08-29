@@ -55,7 +55,7 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	
 	GameplayTags.Attributes_Primary_Strength = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Attributes.Primary.Strength"),
-		FString("Increases Maximum Health and Stagger Resistance")
+		FString("Increases Armor and Incapacitation Resistance")
 		);
 	
 	GameplayTags.Attributes_Primary_Dexterity = UGameplayTagsManager::Get().AddNativeGameplayTag(
@@ -65,12 +65,12 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	
 	GameplayTags.Attributes_Primary_Constitution = UGameplayTagsManager::Get().AddNativeGameplayTag(
       		FName("Attributes.Primary.Constitution"),
-      		FString("Increases Armor and Recovery")
+      		FString("Increases Maximum Health and Health Recovery")
       		);
 	
 	GameplayTags.Attributes_Primary_Intelligence = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Attributes.Primary.Intelligence"),
-		FString("Increases Maximum Mana")
+		FString("Increases Maximum Mana and Mana Regeneration")
 		);
 
 	GameplayTags.Attributes_Primary_Wisdom = UGameplayTagsManager::Get().AddNativeGameplayTag(
@@ -80,7 +80,7 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 
 	GameplayTags.Attributes_Primary_Charisma = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Attributes.Primary.Charisma"),
-		FString("Increases Cooldown Reduction and Status Effects Duration")
+		FString("Increases Cooldown Reduction")
 		);
 
 	/*
@@ -910,16 +910,6 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FString("Spendable points resources")
 		);
 
-	GameplayTags.Resources_Point_Attribute = UGameplayTagsManager::Get().AddNativeGameplayTag(
-		FName("Resources.Point.Attribute"),
-		FString("Attribute point resource")
-		);
-
-	GameplayTags.Resources_Point_Skill = UGameplayTagsManager::Get().AddNativeGameplayTag(
-		FName("Resources.Point.Skill"),
-		FString("Skill point resource")
-		);
-
 	GameplayTags.Resources_Point_Perk = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Resources.Point.Perk"),
 		FString("Perk point resource")
@@ -935,14 +925,19 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FString("Essences resources")
 		);
 
+	GameplayTags.Resources_Essence_Soul = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Resources.Essence.Soul"),
+		FString("Soul essence resource")
+		);
+
 	GameplayTags.Resources_Essence_Physical = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Resources.Essence.Physical"),
 		FString("Physical essence resource")
 		);
 
-	GameplayTags.Resources_Essence_Energy = UGameplayTagsManager::Get().AddNativeGameplayTag(
-		FName("Resources.Essence.Energy"),
-		FString("Energy essence resource")
+	GameplayTags.Resources_Essence_Arcane = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Resources.Essence.Arcane"),
+		FString("Arcane essence resource")
 		);
 
 	GameplayTags.Resources_Essence_Fire = UGameplayTagsManager::Get().AddNativeGameplayTag(

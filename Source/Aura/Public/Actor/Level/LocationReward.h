@@ -7,6 +7,7 @@
 #include "Actor/Level/Interactable.h"
 #include "LocationReward.generated.h"
 
+class UAuraUserWidget;
 class UAuraGameInstance;
 /**
  * 
@@ -32,9 +33,17 @@ protected:
 		)
 	FGameplayTag RewardTag = FGameplayTag();
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Reward|UI")
+	bool bShowMenuOnPickup = false;
+	UPROPERTY(
+		EditDefaultsOnly,
+		BlueprintReadOnly,
+		Category="Reward|UI",
+		meta=(EditCondition="bShowMenuOnPickup"))
+	TSubclassOf<UAuraUserWidget> MenuWidgetClass;
+
 private:
 	UAuraGameInstance* GetAuraGameInstance();
-
 	UPROPERTY()
 	UAuraGameInstance* AuraGameInstance = nullptr;
 };

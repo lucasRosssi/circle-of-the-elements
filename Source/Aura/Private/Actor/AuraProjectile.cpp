@@ -405,10 +405,7 @@ void AAuraProjectile::MulticastHomingTarget_Implementation(AActor* Target)
 	if (!HasAuthority()) return;
 	if (ICombatInterface* CombatTarget = Cast<ICombatInterface>(Target))
 	{
-		if (
-			CombatTarget->GetOnDeathDelegate().IsAlreadyBound(this, &AAuraProjectile::OnHomingTargetDied)
-			) return;
-		CombatTarget->GetOnDeathDelegate().AddDynamic(this, &AAuraProjectile::OnHomingTargetDied);
+		CombatTarget->GetOnDeathDelegate().AddUniqueDynamic(this, &AAuraProjectile::OnHomingTargetDied);
 	}
 }
 

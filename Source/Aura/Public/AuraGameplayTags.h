@@ -213,15 +213,14 @@ public:
 	FGameplayTag Resources;
 
 	FGameplayTag Resources_Point;
-	FGameplayTag Resources_Point_Attribute;
-	FGameplayTag Resources_Point_Skill;
 	FGameplayTag Resources_Point_Perk;
 	
 	FGameplayTag Resources_Arcanite;
 	
 	FGameplayTag Resources_Essence;
+	FGameplayTag Resources_Essence_Soul;
 	FGameplayTag Resources_Essence_Physical;
-	FGameplayTag Resources_Essence_Energy;
+	FGameplayTag Resources_Essence_Arcane;
 	FGameplayTag Resources_Essence_Fire;
 	FGameplayTag Resources_Essence_Ice;
 	FGameplayTag Resources_Essence_Lightning;
