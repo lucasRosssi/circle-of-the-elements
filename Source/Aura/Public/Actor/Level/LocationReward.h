@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
+#include "NiagaraSystem.h"
 #include "Actor/Level/Interactable.h"
 #include "LocationReward.generated.h"
 
@@ -34,7 +35,6 @@ protected:
 
 private:
 	UAuraGameInstance* GetAuraGameInstance();
-
 	UPROPERTY()
 	UAuraGameInstance* AuraGameInstance = nullptr;
 };

@@ -3,9 +3,12 @@
 
 #include "Actor/Level/Interactable.h"
 
+#include "NiagaraComponent.h"
+#include "NiagaraFunctionLibrary.h"
 #include "Components/SphereComponent.h"
 #include "Game/AuraGameModeBase.h"
 #include "GameFramework/Character.h"
+#include "Interaction/CombatInterface.h"
 #include "Interaction/PlayerInterface.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -19,43 +22,6 @@ AInteractable::AInteractable()
 	InteractArea->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
 	InteractArea->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
-}
-
-void AInteractable::PreInteract(AController* InstigatorController)
-{
-	if (!bInteractionEnabled) return;
-
-	IPlayerInterface* PlayerInterface = Cast<IPlayerInterface>(InstigatorController->GetPawn());
-	if (PlayerInterface)
-	{
-		PlayerInterface->GetOnInteractDelegate().RemoveAll(this);
-		IPlayerInterface::Execute_SetInteractMessageVisible(InstigatorController->GetPawn(), false);
-	}
-	
-	Interact(InstigatorController);
-	OnInteracted(InstigatorController);
-}
-
-void AInteractable::Interact(AController* InstigatorController)
-{
-	if (InteractMontages.Num() > 0 && InstigatorController->GetCharacter()->Implements<UPlayerInterface>())
-	{
-		const ECharacterName HeroName = IPlayerInterface::Execute_GetHeroName(InstigatorController->GetCharacter());
-		if (const auto Montage = InteractMontages.Find(HeroName))
-		{
-			InstigatorController->GetCharacter()->PlayAnimMontage(*Montage);
-		}
-	}
-
-	if (InteractSound)
-	{
-		UGameplayStatics::PlaySoundAtLocation(
-			this,
-			InteractSound,
-			GetActorLocation(),
-			GetActorRotation()
-			);
-	}
 }
 
 void AInteractable::OnInteractAreaOverlap(
@@ -88,12 +54,96 @@ void AInteractable::OnInteractAreaEndOverlap(
 	IPlayerInterface::Execute_SetInteractMessageVisible(OtherActor, false);
 }
 
+float AInteractable::GetInteractAreaRadius()
+{
+	return InteractArea->GetScaledSphereRadius();
+}
+
+void AInteractable::PreInteract(AController* InstigatorController)
+{
+	if (!bInteractionEnabled) return;
+
+	IPlayerInterface* PlayerInterface = Cast<IPlayerInterface>(InstigatorController->GetPawn());
+	if (PlayerInterface)
+	{
+		PlayerInterface->GetOnInteractDelegate().RemoveAll(this);
+		IPlayerInterface::Execute_SetInteractMessageVisible(InstigatorController->GetPawn(), false);
+	}
+	
+	Interact(InstigatorController);
+	OnInteracted(InstigatorController);
+
+	DisableInteraction();
+}
+
+void AInteractable::Interact(AController* InstigatorController)
+{
+	if (InstigatorController->GetPawn()->Implements<UCombatInterface>())
+	{
+		ICombatInterface::Execute_UpdateFacingTarget(InstigatorController->GetPawn(), GetActorLocation());
+	}
+	
+	if (InteractMontages.Num() > 0 && InstigatorController->GetCharacter()->Implements<UPlayerInterface>())
+	{
+		const ECharacterName HeroName = IPlayerInterface::Execute_GetHeroName(InstigatorController->GetCharacter());
+		if (const auto Montage = InteractMontages.Find(HeroName))
+		{
+			InstigatorController->GetCharacter()->PlayAnimMontage(*Montage);
+		}
+	}
+
+	if (InteractSound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(
+			this,
+			InteractSound,
+			GetActorLocation(),
+			GetActorRotation()
+			);
+	}
+	if (InteractNiagaraSystem)
+	{
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation(
+			this,
+			InteractNiagaraSystem,
+			GetActorLocation() + InteractNiagaraOffset
+			);
+	}
+}
+
 void AInteractable::BeginPlay()
 {
 	Super::BeginPlay();
 
 	InteractArea->OnComponentBeginOverlap.AddDynamic(this, &AInteractable::OnInteractAreaOverlap);
 	InteractArea->OnComponentEndOverlap.AddDynamic(this, &AInteractable::OnInteractAreaEndOverlap);
+
+	if (SpawnNiagaraSystem)
+	{
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation(
+			this,
+			SpawnNiagaraSystem,
+			GetActorLocation() + SpawnNiagaraOffset
+			);
+	}
+	if (IdleNiagaraSystem)
+	{
+		IdleNiagaraComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(
+			this,
+			IdleNiagaraSystem,
+			GetActorLocation() + IdleNiagaraOffset
+			);
+	}
+}
+
+void AInteractable::Destroyed()
+{
+	if (IdleNiagaraComponent)
+	{
+		IdleNiagaraComponent->Deactivate();
+	}
+	
+	Super::Destroyed();
 }
 
 void AInteractable::EnableInteraction()

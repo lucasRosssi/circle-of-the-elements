@@ -25,7 +25,9 @@ class UStatusEffectInfo;
 class UAbilityInfo;
 class UCharacterInfo;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnExitLocation, EGatePosition, NextGatePosition);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnEncounterFinished);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnRewardTaken);
 
 /**
  * 
@@ -41,33 +43,19 @@ public:
 	ULocationManagerComponent* GetLocationManager() const { return LocationManager; }
 	UEncounterManagerComponent* GetEncounterManager() const { return EncounterManager; }
 	URewardManagerComponent* GetRewardManager() const { return RewardManager; }
-	
-	UFUNCTION(BlueprintPure)
-	TSoftObjectPtr<UWorld> GetNextLocation(ERegion InRegion, EGatePosition EntrancePosition);
-	UFUNCTION(BlueprintPure)
-	TSoftObjectPtr<UWorld> GetInitialLocation(ERegion InRegion);
 
 	void AddToXPStack(float InXP);
 
 	UFUNCTION(BlueprintCallable)
 	void LoadLevelInfo();
 
-	UFUNCTION(BlueprintCallable)
-	void PlacePlayerInStartingPoint();
-
-	UFUNCTION(BlueprintImplementableEvent)
-	void OnExitLocation(EGatePosition NextGatePosition);
-	UFUNCTION(BlueprintCallable)
-	void ExitLocation(EGatePosition NextGatePosition);
-
-	UFUNCTION(BlueprintPure)
-	TSoftObjectPtr<UWorld> GetCurrentLevel() const { return CurrentLevel; }
-
 	void SetNextReward(const FGameplayTag& InRewardTag);
 
 	int32 GetEnemiesLevel() const;
 
 	FOnEncounterFinished& GetOnEncounterFinishedDelegate();
+	FOnExitLocation& GetOnExitLocationDelegate();
+	FOnRewardTaken& GetOnRewardTakenDelegate();
 	
 	UPROPERTY(EditDefaultsOnly, Category="Game")
 	TObjectPtr<UCharacterInfo> CharacterClassInfo;
@@ -89,24 +77,13 @@ public:
 protected:
 	virtual void BeginPlay() override;
 	
-	UPROPERTY(VisibleAnywhere, Category="Location")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Location")
 	TObjectPtr<ULocationManagerComponent> LocationManager;
-	UPROPERTY(VisibleAnywhere, Category="Location|Encounter")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Location|Encounter")
 	TObjectPtr<UEncounterManagerComponent> EncounterManager;
-	UPROPERTY(VisibleAnywhere, Category="Location|Reward")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Location|Reward")
 	TObjectPtr<URewardManagerComponent> RewardManager;
 
 private:
-	UAuraGameInstance* GetAuraGameInstance();
 
-	UPROPERTY()
-	UAuraGameInstance* AuraGameInstance = nullptr;
-
-	FLatentActionInfo OnLoadStreamLatentActionInfo;
-
-	TArray<TSoftObjectPtr<UWorld>> SelectedLevels;
-	TSoftObjectPtr<UWorld> PrevLevel;
-	TSoftObjectPtr<UWorld> CurrentLevel;
-
-	bool bWillExitRegion = false;
 };

@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "Interactable.generated.h"
 
+class UNiagaraSystem;
+class UNiagaraComponent;
 enum class ECharacterName : uint8;
 class AAuraGameModeBase;
 class USphereComponent;
@@ -36,14 +38,19 @@ public:
 		int32 OtherBodyIndex
 		);
 
+	float GetInteractAreaRadius();
+
 protected:
 	virtual void BeginPlay() override;
+	virtual void Destroyed() override;
 
 	UFUNCTION()
 	void EnableInteraction();
 	UFUNCTION()
 	void DisableInteraction();
 
+	UFUNCTION()
+	void PreInteract(AController* InstigatorController);
 	virtual void Interact(AController* InstigatorController);
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnInteracted(AController* InstigatorController);
@@ -65,7 +72,22 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Interaction")
 	TMap<ECharacterName, TObjectPtr<UAnimMontage>> InteractMontages;
+
+	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly, Category="Niagara|Spawn")
+	TObjectPtr<UNiagaraSystem> SpawnNiagaraSystem;
+	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly, Category="Niagara|Idle")
+	TObjectPtr<UNiagaraSystem> IdleNiagaraSystem;
+	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly, Category="Niagara|Interact")
+	TObjectPtr<UNiagaraSystem> InteractNiagaraSystem;
+	UPROPERTY()
+	UNiagaraComponent* IdleNiagaraComponent = nullptr;
+
+	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly, Category="Niagara|Spawn")
+	FVector SpawnNiagaraOffset = FVector::ZeroVector;
+	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly, Category="Niagara|Idle")
+	FVector IdleNiagaraOffset = FVector::ZeroVector;
+	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly, Category="Niagara|Interact")
+	FVector InteractNiagaraOffset = FVector::ZeroVector;
 private:
-	UFUNCTION()
-	void PreInteract(AController* InstigatorController);
+
 };

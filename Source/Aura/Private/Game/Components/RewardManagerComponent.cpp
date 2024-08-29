@@ -7,24 +7,18 @@
 #include "Actor/Level/LocationReward.h"
 #include "Algo/RandomShuffle.h"
 #include "Aura/AuraLogChannels.h"
+#include "Components/CapsuleComponent.h"
 #include "Game/AuraGameModeBase.h"
+#include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 
-FRewardInfo URewardManagerComponent::GetNextRewardInfo()
+URewardManagerComponent::URewardManagerComponent()
 {
-	if (NextRewardTag.IsValid())
+	if (bOverrideReward)
 	{
-		return GetAuraGameMode()->RewardsInfo->GetRewardInfo(NextRewardTag);
+		OverridenRewardBag = RewardBag;
 	}
-
-	return GetAuraGameMode()->RewardsInfo->GetRandomizedReward();
-}
-
-void URewardManagerComponent::FillAndShuffleRewardBag()
-{
-	GetAuraGameMode()->RewardsInfo->FillRewardBag(RewardBag);
-	Algo::RandomShuffle(RewardBag);
 }
 
 void URewardManagerComponent::SetGatesRewards()
@@ -42,12 +36,7 @@ void URewardManagerComponent::SetGatesRewards()
 		{
 			if (Gate->bActive)
 			{
-				if (RewardBag.IsEmpty())
-				{
-					FillAndShuffleRewardBag();
-				}
-
-				Gate->SetGateReward(RewardBag.Pop());
+				Gate->SetGateReward(GetNextRewardInBag());
 			}
 		}
 	}
@@ -55,11 +44,14 @@ void URewardManagerComponent::SetGatesRewards()
 
 void URewardManagerComponent::SpawnReward()
 {
-	const APawn* PlayerPawn = UGameplayStatics::GetPlayerPawn(GetOwner(), 0);
+	const ACharacter* PlayerCharacter = UGameplayStatics::GetPlayerCharacter(GetOwner(), 0);
 	FTransform Transform;
 	FVector RandomDirection = UKismetMathLibrary::RandomUnitVector();
 	RandomDirection.Z = 0.f;
-	Transform.SetLocation(PlayerPawn->GetActorLocation() + RandomDirection * 200.f);
+	FVector PlayerLocation = PlayerCharacter->GetActorLocation();
+	PlayerLocation.Z -= PlayerCharacter->GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
+	const FVector SpawnLocation = PlayerLocation + RandomDirection * 200.f;
+	Transform.SetLocation(SpawnLocation);
 	
 	const FRewardInfo& Info = GetNextRewardInfo();
 	
@@ -71,11 +63,54 @@ void URewardManagerComponent::SpawnReward()
 		ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn
 		);
 	
-	if (Reward)	Reward->FinishSpawning(Transform);
-	else UE_LOG(
-		LogAura,
-		Error,
-		TEXT("Failed to spawn Location Reward: %s"),
-		*Info.RewardClass->GetName()
-		);
+	if (Reward)
+	{
+		Transform.SetLocation(FVector(
+			SpawnLocation.X,
+			SpawnLocation.Y,
+			PlayerLocation.Z + Reward->GetInteractAreaRadius()));
+		Reward->FinishSpawning(Transform);
+	}
+	else
+	{
+		UE_LOG(
+			LogAura,
+			Error,
+			TEXT("Failed to spawn Location Reward: %s"),
+			*Info.RewardClass->GetName()
+			);
+	}
+}
+
+FGameplayTag URewardManagerComponent::GetNextRewardInBag()
+{
+	if (RewardBag.IsEmpty())
+	{
+		FillAndShuffleRewardBag();
+	}
+
+	return RewardBag.Pop();
+}
+
+void URewardManagerComponent::FillAndShuffleRewardBag()
+{
+	if (bOverrideReward)
+	{
+		RewardBag = OverridenRewardBag;
+	}
+	else
+	{
+		GetAuraGameMode()->RewardsInfo->FillRewardBag(RewardBag);
+		Algo::RandomShuffle(RewardBag);
+	}
+}
+
+FRewardInfo URewardManagerComponent::GetNextRewardInfo()
+{
+	if (!NextRewardTag.IsValid())
+	{
+		NextRewardTag = GetNextRewardInBag();
+	}
+	
+	return GetAuraGameMode()->RewardsInfo->GetRewardInfo(NextRewardTag);
 }
