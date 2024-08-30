@@ -10,13 +10,14 @@ FAuraAbilityInfo UAbilityInfo::FindAbilityInfoByTag(
 	bool bLogNotFound
 ) const
 {
-	for (const auto Info : CharacterAbilities)
+	for (const auto Data : Abilities)
 	{
-		for (auto AbilityInfo : Info.Value.AbilityInformation)
+		for (auto Element : Data.Value.Elements)
 		{
-			if (AbilityInfo.AbilityTag == AbilityTag)
+			FAuraAbilityInfo* Info = Element.Value.AbilityList.Find(AbilityTag);
+			if (Info != nullptr)
 			{
-				return AbilityInfo;
+				return *Info;
 			}
 		}
 	}
@@ -34,14 +35,12 @@ FAuraAbilityInfo UAbilityInfo::FindAbilityInfoByTag(
 	return FAuraAbilityInfo();
 }
 
-TArray<FAuraAbilityInfo> UAbilityInfo::FindAbilitiesFromCharacter(
-	ECharacterName CharacterName,
-	bool bLogNotFound
-) const
+FElementsMapStruct UAbilityInfo::FindCharacterAbilities(ECharacterName CharacterName, bool bLogNotFound) const
 {
-	if (CharacterAbilities.Contains(CharacterName))
+	const FElementsMapStruct* CharAbilities = Abilities.Find(CharacterName);
+	if (CharAbilities != nullptr)
 	{
-		return CharacterAbilities.Find(CharacterName)->AbilityInformation;
+		return *CharAbilities;
 	}
 
 	if (bLogNotFound)
@@ -54,5 +53,62 @@ TArray<FAuraAbilityInfo> UAbilityInfo::FindAbilitiesFromCharacter(
 		);
 	}
 
-	return TArray<FAuraAbilityInfo>();
+	return FElementsMapStruct();
+}
+
+TMap<FGameplayTag, FAuraAbilityInfo> UAbilityInfo::FindCharacterAbilitiesOfElement(
+	ECharacterName CharacterName,
+	const FGameplayTag& ElementTag,
+	bool bLogNotFound
+	) const
+{
+	const FElementsMapStruct& CharacterAbilities = FindCharacterAbilities(CharacterName, bLogNotFound);
+	const FAbilityListMapStruct* List = CharacterAbilities.Elements.Find(ElementTag);
+
+	if (List != nullptr)
+	{
+		return List->AbilityList;
+	}
+
+	if (bLogNotFound)
+	{
+		UE_LOG(
+			LogAura,
+			Error,
+			TEXT("Can't find Abilities of Element [%s] for Character [%hhd] on AbilityInfo [%s]"),
+			*ElementTag.ToString(),
+			CharacterName,
+			*GetNameSafe(this)
+		);
+	}
+
+	return TMap<FGameplayTag, FAuraAbilityInfo>();
+}
+
+FAuraAbilityInfo UAbilityInfo::FindAbilityInfoWithParams(const FAbilityInfoParams& Params, bool bLogNotFound) const
+{
+	TMap<FGameplayTag, FAuraAbilityInfo> AbilityInfos = FindCharacterAbilitiesOfElement(
+		Params.CharacterName,
+		Params.ElementTag,
+		bLogNotFound
+		);
+
+	const FAuraAbilityInfo* Info = AbilityInfos.Find(Params.AbilityTag);
+	if (Info != nullptr)
+	{
+		return *Info;
+	}
+
+	if (bLogNotFound)
+	{
+		UE_LOG(
+			LogAura,
+			Error,
+			TEXT("Can't find Info for AbilityTag [%s] on AbilityInfo [%s]"), 
+			*Params.AbilityTag.ToString(),
+			*GetNameSafe(this)
+		);
+	}
+
+	return FAuraAbilityInfo();
 }

@@ -5,11 +5,13 @@
 
 #include "AuraGameplayTags.h"
 #include "NiagaraFunctionLibrary.h"
+#include "AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "Game/AuraGameInstance.h"
 #include "Game/AuraGameModeBase.h"
-#include "Game/Components/RewardManagerComponent.h"
+#include "Game/Components/RewardManager.h"
 #include "Level/RewardsInfo.h"
 #include "Player/AuraPlayerState.h"
+#include "UI/WidgetController/OverlayWidgetController.h"
 #include "Utils/AuraSystemsLibrary.h"
 
 ALocationReward::ALocationReward()
@@ -32,11 +34,17 @@ void ALocationReward::Interact(AController* InstigatorController)
 		{
 			AuraPS->AddAttributePoints(RewardInfo.Amount);
 		}
+		else
+		{
+			UAuraAbilitySystemLibrary
+				::GetOverlayWidgetController(this)
+				->OnElementalEssenceTaken(RewardTag);
+		}
 		
 		GetAuraGameInstance()->AddPlayerResource(RewardTag, RewardInfo.Amount);
 	}
 
-	const URewardManagerComponent* RewardManager = UAuraSystemsLibrary::GetRewardManager(this);
+	const URewardManager* RewardManager = UAuraSystemsLibrary::GetRewardManager(this);
 	RewardManager->OnRewardTakenDelegate.Broadcast();
 
 	Destroy();

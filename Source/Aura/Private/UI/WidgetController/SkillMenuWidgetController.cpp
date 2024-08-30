@@ -62,12 +62,7 @@ void USkillMenuWidgetController::SkillGlobeSelected(const FGameplayTag& AbilityT
 	}
 
 	FString Description;
-	if (AbilityStatus.MatchesTagExact(GameplayTags.Abilities_Status_Locked))
-	{
-		Description = GetAuraAbilitySystemComponent()
-			->GetLockedDescriptionByAbilityTag(AbilityTag);
-	}
-	else if (
+	if (
 		AbilityStatus.MatchesTagExact(GameplayTags.Abilities_Status_Eligible) ||
 		SkillPoints == 0
 		)
@@ -118,12 +113,7 @@ FString USkillMenuWidgetController::GetSkillDescription(FGameplayTag AbilityTag)
 	}
 
 	FString Description;
-	if (AbilityStatus.MatchesTagExact(GameplayTags.Abilities_Status_Locked))
-	{
-		Description = GetAuraAbilitySystemComponent()
-			->GetLockedDescriptionByAbilityTag(AbilityTag);
-	}
-	else if (
+	if (
 		AbilityStatus.MatchesTagExact(GameplayTags.Abilities_Status_Eligible) ||
 		SkillPoints == 0 // Unlocked or equipped, but can't level up
 		)

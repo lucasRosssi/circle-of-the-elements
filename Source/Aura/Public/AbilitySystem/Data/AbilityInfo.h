@@ -17,9 +17,12 @@ struct FAuraAbilityInfo
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TSubclassOf<UBaseAbility> Ability;
-	
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(Categories="Abilities"))
 	FGameplayTag AbilityTag = FGameplayTag();
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(Categories="Abilities.Tier"))
+	FGameplayTag TierTag = FGameplayTag();
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(Categories="Cooldown"))
 	FGameplayTag CooldownTag = FGameplayTag();
@@ -39,37 +42,67 @@ struct FAuraAbilityInfo
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TObjectPtr<const UMaterialInterface> BackgroundMaterial = nullptr;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	int32 LevelRequirement = 1;
-
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(Categories="Abilities"))
 	FGameplayTagContainer AbilitiesRequirement;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	FText Name = FText();
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=( MultiLine=true ))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(MultiLine=true))
 	FText Description = FText();
 	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=( MultiLine=true ))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(MultiLine=true))
 	FText NextLevelDescription = FText();
 };
 
 USTRUCT(BlueprintType)
-struct FAbilities
+struct FAbilityInfoParams
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite)
+	FGameplayTag AbilityTag = FGameplayTag();
+
+	UPROPERTY(BlueprintReadWrite)
+	FGameplayTag ElementTag = FGameplayTag();
+
+	UPROPERTY(BlueprintReadWrite)
+	ECharacterName CharacterName = ECharacterName::Undefined;
+};
+
+USTRUCT(BlueprintType)
+struct FAbilityListMapStruct
+{
+	GENERATED_BODY()
+
+	UPROPERTY(
+		EditDefaultsOnly,
+		BlueprintReadOnly,
+		meta=(
+			ShowOnlyInnerProperties,
+			NoResetToDefault,
+			TitleProperty="Name",
+			ForceInlineRow,
+			Categories="Abilities"
+			))
+	TMap<FGameplayTag, FAuraAbilityInfo> AbilityList;
+};
+
+USTRUCT(BlueprintType)
+struct FElementsMapStruct
 {
 	GENERATED_BODY()
 	
 	UPROPERTY(
 		EditDefaultsOnly,
 		BlueprintReadOnly,
-		Category="AbilityInformation",
 		meta=(
-			ShowOnlyInnerProperties,
 			NoResetToDefault,
-			TitleProperty="Name"
+			ForceInlineRow,
+			Categories="Abilities.Element"
 			))
-	TArray<FAuraAbilityInfo> AbilityInformation;
+	TMap<FGameplayTag, FAbilityListMapStruct> Elements;
+	
 };
 
 /**
@@ -81,21 +114,40 @@ class AURA_API UAbilityInfo : public UDataAsset
 	GENERATED_BODY()
 
 public:
+	FAuraAbilityInfo FindAbilityInfoByTag(
+		const FGameplayTag& AbilityTag,
+		bool bLogNotFound = true
+	) const;
+
+	FElementsMapStruct FindCharacterAbilities(
+		ECharacterName CharacterName,
+		bool bLogNotFound = true
+	) const;
+
+	TMap<FGameplayTag, FAuraAbilityInfo> FindCharacterAbilitiesOfElement(
+		ECharacterName CharacterName,
+		const FGameplayTag& ElementTag,
+		bool bLogNotFound = true
+	) const;
+
+	FAuraAbilityInfo FindAbilityInfoWithParams(
+		const FAbilityInfoParams& Params,
+		bool bLogNotFound = true
+		) const;
+	
 	UPROPERTY(
 		EditDefaultsOnly,
 		BlueprintReadOnly,
 		Category="AbilityInformation",
 		meta=(NoResetToDefault)
 		)
-	TMap<ECharacterName, FAbilities> CharacterAbilities;
+	TMap<ECharacterName, FElementsMapStruct> Abilities;
 
-	FAuraAbilityInfo FindAbilityInfoByTag(
-		const FGameplayTag& AbilityTag,
-		bool bLogNotFound = false
-	) const;
-
-	TArray<FAuraAbilityInfo> FindAbilitiesFromCharacter(
-		ECharacterName CharacterName,
-		bool bLogNotFound = false
-	) const;
+	UPROPERTY(
+		EditDefaultsOnly,
+		BlueprintReadOnly,
+		Category="AbilityInformation",
+		meta=(NoResetToDefault, Categories="Abilities.Tier", ForceInlineRow)
+		)
+	TMap<FGameplayTag, int32> TierDropProbability;
 };

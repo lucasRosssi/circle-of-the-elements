@@ -4,14 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
-#include "Enums/Region.h"
 #include "GameFramework/GameModeBase.h"
 #include "Level/RewardsInfo.h"
 #include "AuraGameModeBase.generated.h"
 
-class ULocationManagerComponent;
-class UEncounterManagerComponent;
-class URewardManagerComponent;
+class UAbilityManager;
+class ULocationManager;
+class UEncounterManager;
+class URewardManager;
 class ALocationReward;
 class URewardsInfo;
 enum class EGatePosition : uint8;
@@ -40,9 +40,10 @@ class AURA_API AAuraGameModeBase : public AGameModeBase
 public:
 	AAuraGameModeBase();
 
-	ULocationManagerComponent* GetLocationManager() const { return LocationManager; }
-	UEncounterManagerComponent* GetEncounterManager() const { return EncounterManager; }
-	URewardManagerComponent* GetRewardManager() const { return RewardManager; }
+	UAbilityManager* GetAbilityManager() const { return AbilityManager; }
+	ULocationManager* GetLocationManager() const { return LocationManager; }
+	UEncounterManager* GetEncounterManager() const { return EncounterManager; }
+	URewardManager* GetRewardManager() const { return RewardManager; }
 
 	void AddToXPStack(float InXP);
 
@@ -76,13 +77,15 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
-	
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Location")
-	TObjectPtr<ULocationManagerComponent> LocationManager;
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Location|Encounter")
-	TObjectPtr<UEncounterManagerComponent> EncounterManager;
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Location|Reward")
-	TObjectPtr<URewardManagerComponent> RewardManager;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Managers|Ability")
+	TObjectPtr<UAbilityManager> AbilityManager;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Managers|Location")
+	TObjectPtr<ULocationManager> LocationManager;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Managers|Location|Encounter")
+	TObjectPtr<UEncounterManager> EncounterManager;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Managers|Location|Reward")
+	TObjectPtr<URewardManager> RewardManager;
 
 private:
 

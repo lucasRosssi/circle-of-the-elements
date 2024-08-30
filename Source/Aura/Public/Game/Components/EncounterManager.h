@@ -7,14 +7,14 @@
 #include "GameplayTagContainer.h"
 #include "Enums/Region.h"
 #include "Game/AuraGameModeBase.h"
-#include "EncounterManagerComponent.generated.h"
+#include "EncounterManager.generated.h"
 
 
 class AEnemySpawner;
 struct FEnemyWave;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class AURA_API UEncounterManagerComponent : public UAuraSystemComponent
+class AURA_API UEncounterManager : public UAuraSystemComponent
 {
 	GENERATED_BODY()
 

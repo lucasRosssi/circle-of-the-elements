@@ -7,6 +7,7 @@
 #include "Abilities/GameplayAbility.h"
 #include "Enums/AbilityRechargeMode.h"
 #include "Enums/TargetTeam.h"
+#include "Interaction/AbilityInterface.h"
 #include "BaseAbility.generated.h"
 
 class AAuraCharacterBase;
@@ -32,7 +33,7 @@ struct FStatusEffectApplicationData
  * 
  */
 UCLASS()
-class AURA_API UBaseAbility : public UGameplayAbility
+class AURA_API UBaseAbility : public UGameplayAbility, public IAbilityInterface
 {
 	GENERATED_BODY()
 

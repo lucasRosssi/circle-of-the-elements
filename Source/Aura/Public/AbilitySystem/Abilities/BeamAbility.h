@@ -24,7 +24,7 @@ public:
 	UFUNCTION(BlueprintCallable, meta=(DefaultToSelf="Target", HidePin="Target"))
 	void TraceFirstTarget(const FVector& BeamTargetLocation);
 
-	float GetBeamTickPeriod() const { return BeamTickPeriod; }
+	virtual float GetBeamTickPeriod_Implementation() const override { return BeamTickPeriod; }
 
 protected:
 	UPROPERTY(BlueprintReadWrite, Category="Ability Defaults|Beam")

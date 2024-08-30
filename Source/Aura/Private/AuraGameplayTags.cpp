@@ -624,6 +624,38 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FString("No type ability.")
 		);
 
+	// Tiers
+
+	GameplayTags.Abilities_Tier = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Tier"),
+		FString("Ability tier tags.")
+		);
+
+	GameplayTags.Abilities_Tier_I = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Tier.I"),
+		FString("Tier I abilities tag.")
+		);
+
+	GameplayTags.Abilities_Tier_II = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Tier.II"),
+		FString("Tier II abilities tag.")
+		);
+
+	GameplayTags.Abilities_Tier_III = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Tier.III"),
+		FString("Tier III abilities tag.")
+		);
+
+	GameplayTags.Abilities_Tier_IV = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Tier.IV"),
+		FString("Tier IV abilities tag.")
+		);
+
+	GameplayTags.Abilities_Tier_V = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Tier.V"),
+		FString("Tier V abilities tag.")
+		);
+
 	// Status
 
 	GameplayTags.Abilities_Status= UGameplayTagsManager::Get().AddNativeGameplayTag(
@@ -654,6 +686,53 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	GameplayTags.Abilities_Status_Native = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Abilities.Status.Native"),
 		FString("Ability is native and can always be used. This status is not supposed to change.")
+		);
+
+	// Elements
+
+	GameplayTags.Abilities_Element = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Element"),
+		FString("Ability element tags.")
+		);
+
+	GameplayTags.Abilities_Element_None = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Element.None"),
+		FString("Non-elemental ability tag.")
+		);
+	
+	GameplayTags.Abilities_Element_Physical = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Element.Physical"),
+		FString("Physical element ability tag.")
+		);
+
+	GameplayTags.Abilities_Element_Arcane = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Element.Arcane"),
+		FString("Arcane element ability tag.")
+		);
+
+	GameplayTags.Abilities_Element_Fire = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Element.Fire"),
+		FString("Fire element ability tag.")
+		);
+	
+	GameplayTags.Abilities_Element_Ice = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Element.Ice"),
+		FString("Ice element ability tag.")
+		);
+
+	GameplayTags.Abilities_Element_Lightning = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Element.Lightning"),
+		FString("Lightning element ability tag.")
+		);
+
+	GameplayTags.Abilities_Element_Necrotic = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Element.Necrotic"),
+		FString("Necrotic element ability tag.")
+		);
+
+	GameplayTags.Abilities_Element_Duo = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Element.Duo"),
+		FString("Two elements ability tag.")
 		);
 	
 	// Reactions

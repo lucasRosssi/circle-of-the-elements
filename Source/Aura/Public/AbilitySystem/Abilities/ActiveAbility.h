@@ -30,9 +30,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category="Input", meta=(EditCondition="bIsPlayerAbility", DisplayPriority=3))
 	bool bUsesMovementInputDirection = false;
 
-	EAbilityHitMode GetHitMode() const { return HitMode; }
-	int32 GetMaxHitCountAtLevel(int32 Level) const;
-	float GetEffectChangePerHitAtLevel(int32 Level) const;
+	virtual EAbilityHitMode GetHitMode_Implementation() const override { return HitMode; }
+	virtual int32 GetMaxHitCountAtLevel_Implementation (int32 Level) const override;
+	virtual float GetEffectChangePerHitAtLevel_Implementation(int32 Level) const override;
 
 protected:
 	UFUNCTION(BlueprintPure, Category="Ability Defaults")

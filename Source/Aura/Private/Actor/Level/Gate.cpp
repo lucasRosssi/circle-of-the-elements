@@ -4,7 +4,7 @@
 #include "Actor/Level/Gate.h"
 
 #include "Game/AuraGameModeBase.h"
-#include "Game/Components/LocationManagerComponent.h"
+#include "Game/Components/LocationManager.h"
 
 AGate::AGate()
 {
