@@ -14,7 +14,8 @@
 struct FAuraGameplayTags
 {
 public:
-  static const FAuraGameplayTags& Get() { return GameplayTags; }
+	bool IsValid() const { return bIsValid; }
+  static const FAuraGameplayTags& Get();
   static void InitializeNativeGameplayTags();
 
 	FGameplayTag DifficultyClass;
@@ -243,8 +244,12 @@ public:
 	FGameplayTag Resources_Essence_Lightning;
 	FGameplayTag Resources_Essence_Necrotic;
 
+	TMap<FGameplayTag, FGameplayTag> EssenceToAbility;
+
 	TMap<FGameplayTag, TArray<FGameplayTag>> ParentsToChildren;
 
 private:
 	static FAuraGameplayTags GameplayTags;
+
+	bool bIsValid = false;
 };

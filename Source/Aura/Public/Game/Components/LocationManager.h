@@ -43,10 +43,6 @@ protected:
 	ERegion NextRegion = ERegion::Undefined;
 
 private:
-	UAuraGameInstance* GetAuraGameInstance();
-	UPROPERTY()
-	UAuraGameInstance* AuraGameInstance = nullptr;
-	
 	TArray<TSoftObjectPtr<UWorld>> SelectedLocations;
 	TSoftObjectPtr<UWorld> PrevLocation;
 	TSoftObjectPtr<UWorld> CurrentLocation;

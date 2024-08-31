@@ -8,6 +8,7 @@
 #include "Level/RewardsInfo.h"
 #include "AuraGameModeBase.generated.h"
 
+enum class ECharacterName : uint8;
 class UAbilityManager;
 class ULocationManager;
 class UEncounterManager;
@@ -53,6 +54,8 @@ public:
 	void SetNextReward(const FGameplayTag& InRewardTag);
 
 	int32 GetEnemiesLevel() const;
+	
+	UAuraGameInstance* GetAuraGameInstance();
 
 	FOnEncounterFinished& GetOnEncounterFinishedDelegate();
 	FOnExitLocation& GetOnExitLocationDelegate();
@@ -75,6 +78,9 @@ public:
 
 	int32 EncountersCount = 0;
 
+	UPROPERTY(EditDefaultsOnly, Category="Player")
+	ECharacterName CurrentCharacterName;
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -88,5 +94,6 @@ protected:
 	TObjectPtr<URewardManager> RewardManager;
 
 private:
-
+	UPROPERTY()
+	UAuraGameInstance* AuraGameInstance = nullptr;
 };

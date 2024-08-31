@@ -14,7 +14,7 @@ TSoftObjectPtr<UWorld> ULocationManager::GetNextLocation(
 	EGatePosition EntrancePosition
 	)
 {
-	GetAuraGameInstance()->SaveHeroData();
+	GetAuraGameMode()->GetAuraGameInstance()->SaveHeroData();
 
 	if (bWillExitRegion)
 	{
@@ -78,14 +78,4 @@ void ULocationManager::PlacePlayerInStartingPoint()
 void ULocationManager::ExitLocation(EGatePosition NextGatePosition)
 {
 	OnExitLocationDelegate.Broadcast(NextGatePosition);
-}
-
-UAuraGameInstance* ULocationManager::GetAuraGameInstance()
-{
-	if (AuraGameInstance == nullptr)
-	{
-		AuraGameInstance = Cast<UAuraGameInstance>(UGameplayStatics::GetGameInstance(this));
-	}
-
-	return AuraGameInstance;
 }

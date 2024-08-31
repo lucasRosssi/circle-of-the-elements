@@ -4,10 +4,12 @@
 #include "Game/AuraGameModeBase.h"
 
 #include "AuraGameplayTags.h"
+#include "Game/AuraGameInstance.h"
 #include "Game/Components/AbilityManager.h"
 #include "Game/Components/EncounterManager.h"
 #include "Game/Components/LocationManager.h"
 #include "Game/Components/RewardManager.h"
+#include "Kismet/GameplayStatics.h"
 
 AAuraGameModeBase::AAuraGameModeBase()
 {
@@ -33,6 +35,16 @@ void AAuraGameModeBase::BeginPlay()
 	Super::BeginPlay();
 
 	GetOnEncounterFinishedDelegate().AddDynamic(RewardManager, &URewardManager::SpawnReward);
+}
+
+UAuraGameInstance* AAuraGameModeBase::GetAuraGameInstance()
+{
+	if (AuraGameInstance == nullptr)
+	{
+		AuraGameInstance = Cast<UAuraGameInstance>(UGameplayStatics::GetGameInstance(this));
+	}
+
+	return AuraGameInstance;
 }
 
 void AAuraGameModeBase::LoadLevelInfo()

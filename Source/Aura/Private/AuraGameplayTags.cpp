@@ -6,8 +6,17 @@
 
 FAuraGameplayTags FAuraGameplayTags::GameplayTags;
 
+const FAuraGameplayTags& FAuraGameplayTags::Get()
+{
+	if (GameplayTags.IsValid()) return GameplayTags;
+
+	InitializeNativeGameplayTags();
+	return GameplayTags;
+}
+
 void FAuraGameplayTags::InitializeNativeGameplayTags()
 {
+	if (GameplayTags.IsValid()) return;
 	/*
 	 * DIFFICULTY CLASSES
 	 */
@@ -1039,6 +1048,31 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FString("Necrotic essence resource")
 		);
 
+	GameplayTags.EssenceToAbility.Add(
+		GameplayTags.Resources_Essence_Physical,
+		GameplayTags.Abilities_Element_Physical
+		);
+	GameplayTags.EssenceToAbility.Add(
+		GameplayTags.Resources_Essence_Arcane,
+		GameplayTags.Abilities_Element_Arcane
+		);
+	GameplayTags.EssenceToAbility.Add(
+		GameplayTags.Resources_Essence_Fire,
+		GameplayTags.Abilities_Element_Fire
+		);
+	GameplayTags.EssenceToAbility.Add(
+		GameplayTags.Resources_Essence_Ice,
+		GameplayTags.Abilities_Element_Ice
+		);
+	GameplayTags.EssenceToAbility.Add(
+	GameplayTags.Resources_Essence_Lightning,
+	GameplayTags.Abilities_Element_Lightning
+	);
+	GameplayTags.EssenceToAbility.Add(
+		GameplayTags.Resources_Essence_Necrotic,
+		GameplayTags.Abilities_Element_Necrotic
+		);
+
 	/*
 	 * Map of Tags to their children
 	 */
@@ -1075,4 +1109,29 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	GameplayTags.ParentsToChildren.Add(GameplayTags.StatusEffects_Debuff, DebuffTags);
 	GameplayTags.ParentsToChildren.Add(GameplayTags.StatusEffects_Incapacitation, IncapacitationTags);
 	GameplayTags.ParentsToChildren.Add(GameplayTags.StatusEffects_Condition, ConditionTags);
+
+	const TArray ElementTags({
+		GameplayTags.Abilities_Element_None,
+		GameplayTags.Abilities_Element_Duo,
+		GameplayTags.Abilities_Element_Physical,
+		GameplayTags.Abilities_Element_Arcane,
+		GameplayTags.Abilities_Element_Fire,
+		GameplayTags.Abilities_Element_Ice,
+		GameplayTags.Abilities_Element_Lightning,
+		GameplayTags.Abilities_Element_Necrotic,
+	});
+
+	GameplayTags.ParentsToChildren.Add(GameplayTags.Abilities_Element, ElementTags);
+
+	const TArray TierTags({
+		GameplayTags.Abilities_Tier_I,
+		GameplayTags.Abilities_Tier_II,
+		GameplayTags.Abilities_Tier_III,
+		GameplayTags.Abilities_Tier_IV,
+		GameplayTags.Abilities_Tier_V,
+	});
+
+	GameplayTags.ParentsToChildren.Add(GameplayTags.Abilities_Tier, TierTags);
+
+	GameplayTags.bIsValid = true;
 }

@@ -4,43 +4,34 @@
 #include "Game/Components/AbilityManager.h"
 
 #include "AuraGameplayTags.h"
+#include "AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "Aura/AuraLogChannels.h"
 #include "Enums/CharacterName.h"
 #include "Game/AuraGameModeBase.h"
+#include "AbilitySystem/Abilities/BaseAbility.h"
 
 UAbilityManager::UAbilityManager()
 {
 	const FAuraGameplayTags& Tags = FAuraGameplayTags::Get();
+	
 	FGameplayTagContainer TierTags;
-	TierTags.AddTagFast(Tags.Abilities_Tier_I);
-	TierTags.AddTagFast(Tags.Abilities_Tier_II);
-	TierTags.AddTagFast(Tags.Abilities_Tier_III);
-	TierTags.AddTagFast(Tags.Abilities_Tier_IV);
-	TierTags.AddTagFast(Tags.Abilities_Tier_V);
-	ElementalTierPool.Add(
-		Tags.Abilities_Element_Physical,
-		TierTags
-		);
-	ElementalTierPool.Add(
-		Tags.Abilities_Element_Arcane,
-		TierTags
-		);
-	ElementalTierPool.Add(
-		Tags.Abilities_Element_Fire,
-		TierTags
-		);
-	ElementalTierPool.Add(
-		Tags.Abilities_Element_Ice,
-		TierTags
-		);
-	ElementalTierPool.Add(
-		Tags.Abilities_Element_Lightning,
-		TierTags
-		);
-	ElementalTierPool.Add(
-		Tags.Abilities_Element_Necrotic,
-		TierTags
-		);
+ 	for (const FGameplayTag& TierTag : *Tags.ParentsToChildren.Find(Tags.Abilities_Tier))
+	{
+		TierTags.AddTagFast(TierTag);
+	}
+
+	for (const FGameplayTag& ElementTag : *Tags.ParentsToChildren.Find(Tags.Abilities_Element))
+	{
+		ElementalTierPool.Add(ElementTag, TierTags);
+		AbilitiesBag.Add(ElementTag);
+	}
+}
+
+void UAbilityManager::BeginPlay()
+{
+	Super::BeginPlay();
+
+	AssignNextAbilities();
 }
 
 TMap<FGameplayTag, FAuraAbilityInfo> UAbilityManager::GetElementAbilities(
@@ -54,6 +45,17 @@ TMap<FGameplayTag, FAuraAbilityInfo> UAbilityManager::GetElementAbilities(
 FAuraAbilityInfo UAbilityManager::GetAbilityInfo(const FAbilityInfoParams& Params)
 {
 	return GetAuraGameMode()->AbilityInfo->FindAbilityInfoWithParams(Params);
+}
+
+void UAbilityManager::AssignNextAbilities()
+{
+	const ECharacterName CharacterName = GetAuraGameMode()->CurrentCharacterName;
+	
+	const FAuraGameplayTags& Tags = FAuraGameplayTags::Get();
+	for (const FGameplayTag& ElementTag : *Tags.ParentsToChildren.Find(Tags.Abilities_Element))
+	{
+		RandomizeElementAbilities(CharacterName, ElementTag);
+	}
 }
 
 FGameplayTag UAbilityManager::RandomizeTier(const TMap<FGameplayTag, int32>& TierMap)
@@ -77,19 +79,31 @@ FGameplayTag UAbilityManager::RandomizeTier(const TMap<FGameplayTag, int32>& Tie
 	return FGameplayTag();
 }
 
+TMap<FGameplayTag, FAuraAbilityInfo> UAbilityManager::GetRemainingElementAbilities(
+	ECharacterName CharacterName,
+	const FGameplayTag ElementTag
+	)
+{
+	return GetElementAbilities(CharacterName, ElementTag).FilterByPredicate(
+		[this](const TTuple<FGameplayTag, FAuraAbilityInfo>& 
+	AbilityInfo)
+	{
+		return !AcquiredAbilities.HasTagExact(AbilityInfo.Key) ||
+			!BlockedAbilities.HasTagExact(AbilityInfo.Key);
+	});
+}
+
 TArray<FAuraAbilityInfo> UAbilityManager::GetRemainingTierAbilities(
 	const FGameplayTag& TierTag,
 	const TMap<FGameplayTag, FAuraAbilityInfo>& ElementAbilities
 	)
 {
 	TArray<FAuraAbilityInfo> Abilities;
-	ElementAbilities
-		.FilterByPredicate([this, TierTag](const TTuple<FGameplayTag, FAuraAbilityInfo>& Ability)
+	ElementAbilities.GenerateValueArray(Abilities);
+	Abilities.FilterByPredicate([this, TierTag](const FAuraAbilityInfo& Ability)
 		{
-			return TierTag.MatchesTagExact(Ability.Value.TierTag)
-				&& !Ability.Key.MatchesAnyExact(AcquiredAbilities)
-				&& !Ability.Key.MatchesAnyExact(BlockedAbilities);
-		}).GenerateValueArray(Abilities);
+			return TierTag.MatchesTagExact(Ability.TierTag);
+		});
 	
 	if (Abilities.IsEmpty())
 	{
@@ -104,8 +118,12 @@ TArray<FAuraAbilityInfo> UAbilityManager::GetRemainingTierAbilities(
 	return Abilities;
 }
 
-TMap<FGameplayTag, int32> UAbilityManager::GetAvailableTiers(const FGameplayTagContainer* TierPool)
+TMap<FGameplayTag, int32> UAbilityManager::GetAvailableTiers(const FGameplayTag& ElementTag)
 {
+	const FGameplayTagContainer* TierPool = ElementalTierPool.Find(ElementTag);
+
+	if (TierPool == nullptr) return TMap<FGameplayTag, int32>();
+	
 	return GetAuraGameMode()->AbilityInfo->TierDropProbability
 	  .FilterByPredicate([TierPool](const TTuple<FGameplayTag, int32>& TierInfo)
 	  {
@@ -120,15 +138,12 @@ TArray<FAuraAbilityInfo> UAbilityManager::RandomizeElementAbilities(
 	)
 {
 	check(Amount > 0);
-
-	const FGameplayTagContainer* TierPool = ElementalTierPool.Find(ElementTag);
-	if (TierPool == nullptr) return TArray<FAuraAbilityInfo>();
 	
-	TMap<FGameplayTag, int32> AvailableTiers = GetAvailableTiers(TierPool);
+	TMap<FGameplayTag, int32> AvailableTiers = GetAvailableTiers(ElementTag);
 
 	if (AvailableTiers.IsEmpty()) return TArray<FAuraAbilityInfo>();
 
-	TMap<FGameplayTag, FAuraAbilityInfo> ElementAbilities =	GetElementAbilities(CharacterName, ElementTag);
+	TMap<FGameplayTag, FAuraAbilityInfo> ElementAbilities =	GetRemainingElementAbilities(CharacterName, ElementTag);
 	TArray<FAuraAbilityInfo> SelectedAbilities;
 	for (int32 i = 0; i < Amount; i++)
 	{
@@ -147,7 +162,65 @@ TArray<FAuraAbilityInfo> UAbilityManager::RandomizeElementAbilities(
 		
 		SelectedAbilities.Add(RemainingAbilities[RandomAbilityIndex]);
 		ElementAbilities.Remove(RemainingAbilities[RandomAbilityIndex].AbilityTag);
+		
+		AbilitiesBag.Find(ElementTag)->AddTag(RemainingAbilities[RandomAbilityIndex].AbilityTag);
+	}
+	
+	return SelectedAbilities;
+}
+
+TArray<FAuraAbilityInfo> UAbilityManager::GetAbilitiesFromBag(const FGameplayTag& ElementTag)
+{
+	TArray<FAuraAbilityInfo> AbilitiesInfos;
+	if (const FGameplayTagContainer* AbilitiesTags = AbilitiesBag.Find(ElementTag))
+	{
+		for (auto AbilityTagIterator = AbilitiesTags->CreateConstIterator(); AbilityTagIterator; ++AbilityTagIterator)
+		{
+			FAbilityInfoParams Params;
+			Params.ElementTag = ElementTag;
+			Params.CharacterName = GetAuraGameMode()->CurrentCharacterName;
+			Params.AbilityTag = *AbilityTagIterator;
+			AbilitiesInfos.Add(GetAbilityInfo(Params));
+		}
 	}
 
-	return SelectedAbilities;
+	return AbilitiesInfos;
+}
+
+void UAbilityManager::GetAbilityFormattedTexts(
+		const FAuraAbilityInfo& AbilityInfo,
+		FText& AbilityName,
+		FText& AbilityDescription,
+		FText& AbilityDetails
+		)
+{
+	const UBaseAbility* BaseAbility = AbilityInfo.Ability.GetDefaultObject();
+
+	AbilityName = FText::FromString(FString::Printf(
+		TEXT("<Title>%s</>"),
+		*AbilityInfo.Name.ToString()
+		));
+
+	AbilityDescription = AbilityInfo.Description;
+	UAuraAbilitySystemLibrary::FormatAbilityDescriptionAtLevel(
+		BaseAbility,
+		1,
+		AbilityDescription
+		);
+
+	FString ManaCostText;
+	FString CooldownText;
+	UAuraAbilitySystemLibrary::MakeManaAndCooldownText(
+		BaseAbility,
+		1,
+		ManaCostText,
+		CooldownText
+		);
+	AbilityDetails = FText::FromString(FString::Printf(TEXT(
+			"%s"
+			"%s"
+			),
+		*ManaCostText,
+		*CooldownText
+	));
 }

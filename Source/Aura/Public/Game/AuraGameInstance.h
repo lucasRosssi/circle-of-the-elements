@@ -21,10 +21,12 @@ class AURA_API UAuraGameInstance : public UGameInstance
 public:
 	void SaveHeroData();
 
+	ECharacterName GetCurrentCharacterName() const { return CurrentCharacterName; };
+
 	void AddPlayerResource(const FGameplayTag& ResourceTag, int32 Amount);
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Player")
-	ECharacterName CurrentCharacter = ECharacterName::Aura;
+	ECharacterName CurrentCharacterName = ECharacterName::Aura;
 	UPROPERTY(
 		EditDefaultsOnly,
 		BlueprintReadWrite,
