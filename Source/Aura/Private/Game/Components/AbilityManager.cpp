@@ -128,17 +128,21 @@ void UAbilityManager::GetAbilityFormattedTexts(
 
 	FString ManaCostText;
 	FString CooldownText;
-	UAuraAbilitySystemLibrary::MakeManaAndCooldownText(
+	FString ChargesText;
+	UAuraAbilitySystemLibrary::MakeAbilityDetailsText(
 		BaseAbility,
 		1,
 		ManaCostText,
-		CooldownText
+		CooldownText,
+		ChargesText
 		);
 	AbilityDetails = FText::FromString(FString::Printf(TEXT(
 			"%s"
 			"%s"
+			"%s"
 			),
 		*ManaCostText,
+		*ChargesText,
 		*CooldownText
 	));
 }

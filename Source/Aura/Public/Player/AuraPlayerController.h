@@ -79,7 +79,6 @@ public:
 
 	UUINavPCComponent* GetUINavComponent() const { return UINavPCComp; }
 	UUIManager* GetUIManager() const { return UIManager; }
-	AAuraHUD* GetAuraHUD();
 
 	void AimAbilityGamepad(AActor* AvatarActor, FHitResult& OutHitResult);
 	void AimAbilityMouse(AActor* AvatarActor, FHitResult& OutHitResult);
@@ -198,7 +197,4 @@ private:
 	UCameraComponent* PlayerCamera = nullptr;
 
 	bool bControllerEnabled = true;
-
-	UPROPERTY()
-	AAuraHUD* AuraHUD = nullptr;
 };

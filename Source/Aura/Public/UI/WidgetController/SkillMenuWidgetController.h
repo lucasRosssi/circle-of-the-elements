@@ -47,6 +47,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void EquipToInputPressed(const FGameplayTag& AbilityTag, const FGameplayTag& InputTag);
 
+	UFUNCTION(BlueprintPure)
 	TArray<FAuraAbilityInfo> GetAcquiredAbilities() const { return AcquiredAbilityInfos; }
 
 private:

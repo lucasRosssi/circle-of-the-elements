@@ -7,6 +7,7 @@
 #include "Game/AuraGameModeBase.h"
 #include "Kismet/GameplayStatics.h"
 #include "Player/AuraPlayerController.h"
+#include "UI/HUD/AuraHUD.h"
 
 
 UAbilityManager* UAuraSystemsLibrary::GetAbilityManager(const UObject* WorldContextObject)

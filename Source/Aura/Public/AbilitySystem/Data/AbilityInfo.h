@@ -116,23 +116,23 @@ class AURA_API UAbilityInfo : public UDataAsset
 public:
 	FAuraAbilityInfo FindAbilityInfoByTag(
 		const FGameplayTag& AbilityTag,
-		bool bLogNotFound = true
+		bool bLogNotFound = false
 	) const;
 
 	FElementsMapStruct FindCharacterAbilities(
 		ECharacterName CharacterName,
-		bool bLogNotFound = true
+		bool bLogNotFound = false
 	) const;
 
 	TMap<FGameplayTag, FAuraAbilityInfo> FindCharacterAbilitiesOfElement(
 		ECharacterName CharacterName,
 		const FGameplayTag& ElementTag,
-		bool bLogNotFound = true
+		bool bLogNotFound = false
 	) const;
 
 	FAuraAbilityInfo FindAbilityInfoWithParams(
 		const FAbilityInfoParams& Params,
-		bool bLogNotFound = true
+		bool bLogNotFound = false
 		) const;
 	
 	UPROPERTY(

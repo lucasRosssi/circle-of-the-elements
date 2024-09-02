@@ -836,7 +836,8 @@ FString UAuraAbilitySystemLibrary::GetAbilityDescription(
 
 	FString ManaCostText;
 	FString CooldownText;
-	MakeManaAndCooldownText(Ability, Level, ManaCostText, CooldownText);
+	FString ChargesText;
+	MakeAbilityDetailsText(Ability, Level, ManaCostText, CooldownText, ChargesText);
 	
 	return FString::Printf(
 		TEXT(
@@ -846,11 +847,13 @@ FString UAuraAbilitySystemLibrary::GetAbilityDescription(
 			"%s\n"
 			"%s"
 			"%s"
+			"%s"
 			),
 		*Info.Name.ToString(),
 		Level,
 		*Info.Description.ToString(),
 		*ManaCostText,
+		*ChargesText,
 		*CooldownText
 	);
 }
@@ -987,15 +990,17 @@ FString UAuraAbilitySystemLibrary::GetAbilityLockedDescription(
 	return RequirementText;
 }
 
-void UAuraAbilitySystemLibrary::MakeManaAndCooldownText(
+void UAuraAbilitySystemLibrary::MakeAbilityDetailsText(
 	const UBaseAbility* Ability,
 	int32 Level,
 	FString& OutManaText,
-	FString& OutCooldownText
+	FString& OutCooldownText,
+	FString& OutChargesText
 	)
 {
 	const int32 ManaCost = Ability->GetRoundedManaCostAtLevel(Level);
 	const int32 Cooldown = Ability->GetRoundedCooldownAtLevel(Level);
+	const int32 Charges = Ability->GetMaxChargesAtLevel(Level);
 
 	if (ManaCost == 0)
 	{
@@ -1018,6 +1023,18 @@ void UAuraAbilitySystemLibrary::MakeManaAndCooldownText(
 		OutCooldownText = FString::Printf(
 			TEXT("\n<Info>Cooldown - </>%ds"),
 			Cooldown
+		);
+	}
+
+	if (Charges <= 1)
+	{
+		OutChargesText = FString::Printf(TEXT(""));
+	}
+	else
+	{
+		OutChargesText = FString::Printf(
+			TEXT("\n<Info>Charges - </>%d"),
+			Charges
 		);
 	}
 }

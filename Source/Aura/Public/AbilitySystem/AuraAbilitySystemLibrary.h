@@ -400,11 +400,12 @@ public:
 		const FGameplayTagContainer& AbilitiesRequirement
 	);
 	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|UI", meta = (HidePin = "WorldContextObject", DefaultToSelf = "WorldContextObject"))
-	static void MakeManaAndCooldownText(
+	static void MakeAbilityDetailsText(
 		const UBaseAbility* Ability,
 		int32 Level,
 		FString& OutManaText,
-		FString& OutCooldownText
+		FString& OutCooldownText,
+		FString& OutChargesText
 		);
 	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|UI", meta = (HidePin = "WorldContextObject", DefaultToSelf = "WorldContextObject"))
 	static void MakeManaAndCooldownTextNextLevel(

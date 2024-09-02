@@ -6,6 +6,7 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "AuraSystemsLibrary.generated.h"
 
+class AAuraHUD;
 class UUIManager;
 class UAbilityManager;
 class ULocationManager;

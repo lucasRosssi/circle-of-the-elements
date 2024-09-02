@@ -18,13 +18,12 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Materials/MaterialParameterCollectionInstance.h"
-#include "UI/HUD/AuraHUD.h"
 #include "UI/Widget/DamageTextComponent.h"
 
 AAuraPlayerController::AAuraPlayerController()
 {
 	bReplicates = true;
-
+	
 	UIManager = CreateDefaultSubobject<UUIManager>("UIManager");
 	UIManager->SetAuraPlayerController(this);
 }
@@ -493,16 +492,6 @@ UAuraAbilitySystemComponent* AAuraPlayerController::GetASC()
 	}
 	
 	return AuraAbilitySystemComponent;
-}
-
-AAuraHUD* AAuraPlayerController::GetAuraHUD()
-{
-	if (AuraHUD == nullptr)
-	{
-		AuraHUD = Cast<AAuraHUD>(GetHUD());
-	}
-
-	return AuraHUD;
 }
 
 void AAuraPlayerController::UpdateTargetingActorLocation()

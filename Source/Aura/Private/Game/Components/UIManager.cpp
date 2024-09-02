@@ -13,25 +13,17 @@ UUIManager::UUIManager()
 
 }
 
-UAuraUserWidget* UUIManager::GetOverlayWidget()
-{
-	if (OverlayWidget == nullptr)
-	{
-		OverlayWidget = GetAuraPlayerController()->GetAuraHUD()->GetOverlayWidget();
-	}
-
-	return OverlayWidget;
-}
-
 UAuraUserWidget* UUIManager::BuildWidget(TSubclassOf<UAuraUserWidget> WidgetClass)
 {
 	return CreateWidget<UAuraUserWidget>(AuraPlayerController, WidgetClass);
 }
 
-void UUIManager::OpenWidget(UAuraUserWidget* Widget)
+UAuraUserWidget* UUIManager::OpenWidget(UAuraUserWidget* Widget)
 {
 	OverlayWidget->GoToBuiltWidget(Widget, false);
 	OnNewMenuOpenedDelegate.Broadcast(Widget);
+
+	return Widget;
 }
 
 UAuraUserWidget* UUIManager::BuildAndOpenWidget(TSubclassOf<UAuraUserWidget> WidgetClass)
