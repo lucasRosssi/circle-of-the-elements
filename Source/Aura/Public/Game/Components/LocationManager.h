@@ -6,7 +6,7 @@
 #include "AuraSystemComponent.h"
 #include "Enums/Region.h"
 #include "Game/AuraGameModeBase.h"
-#include "LocationManagerComponent.generated.h"
+#include "LocationManager.generated.h"
 
 
 class UAuraGameInstance;
@@ -14,7 +14,7 @@ enum class EGatePosition : uint8;
 class AAuraGameModeBase;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class AURA_API ULocationManagerComponent : public UAuraSystemComponent
+class AURA_API ULocationManager : public UAuraSystemComponent
 {
 	GENERATED_BODY()
 
@@ -43,10 +43,6 @@ protected:
 	ERegion NextRegion = ERegion::Undefined;
 
 private:
-	UAuraGameInstance* GetAuraGameInstance();
-	UPROPERTY()
-	UAuraGameInstance* AuraGameInstance = nullptr;
-	
 	TArray<TSoftObjectPtr<UWorld>> SelectedLocations;
 	TSoftObjectPtr<UWorld> PrevLocation;
 	TSoftObjectPtr<UWorld> CurrentLocation;

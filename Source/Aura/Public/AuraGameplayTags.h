@@ -14,7 +14,8 @@
 struct FAuraGameplayTags
 {
 public:
-  static const FAuraGameplayTags& Get() { return GameplayTags; }
+	bool IsValid() const { return bIsValid; }
+  static const FAuraGameplayTags& Get();
   static void InitializeNativeGameplayTags();
 
 	FGameplayTag DifficultyClass;
@@ -146,12 +147,29 @@ public:
 	FGameplayTag Abilities_Type_Triggered;
 	FGameplayTag Abilities_Type_None;
 
+	FGameplayTag Abilities_Tier;
+	FGameplayTag Abilities_Tier_I;
+	FGameplayTag Abilities_Tier_II;
+	FGameplayTag Abilities_Tier_III;
+	FGameplayTag Abilities_Tier_IV;
+	FGameplayTag Abilities_Tier_V;
+
 	FGameplayTag Abilities_Status;
 	FGameplayTag Abilities_Status_Locked;
 	FGameplayTag Abilities_Status_Eligible;
 	FGameplayTag Abilities_Status_Unlocked;
 	FGameplayTag Abilities_Status_Equipped;
 	FGameplayTag Abilities_Status_Native;
+
+	FGameplayTag Abilities_Element;
+	FGameplayTag Abilities_Element_None;
+	FGameplayTag Abilities_Element_Physical;
+	FGameplayTag Abilities_Element_Arcane;
+	FGameplayTag Abilities_Element_Fire;
+	FGameplayTag Abilities_Element_Ice;
+	FGameplayTag Abilities_Element_Lightning;
+	FGameplayTag Abilities_Element_Necrotic;
+	FGameplayTag Abilities_Element_Duo;
 	
 	FGameplayTag Abilities_Reaction;
 	FGameplayTag Abilities_Reaction_HitReact;
@@ -209,7 +227,7 @@ public:
 	FGameplayTag Abilities_Passive_Aura_SpiritSiphon;
 
 	FGameplayTag Abilities_Passive_Vilkar;
-
+	
 	FGameplayTag Resources;
 
 	FGameplayTag Resources_Point;
@@ -226,8 +244,12 @@ public:
 	FGameplayTag Resources_Essence_Lightning;
 	FGameplayTag Resources_Essence_Necrotic;
 
+	TMap<FGameplayTag, FGameplayTag> EssenceToAbility;
+
 	TMap<FGameplayTag, TArray<FGameplayTag>> ParentsToChildren;
 
 private:
 	static FAuraGameplayTags GameplayTags;
+
+	bool bIsValid = false;
 };

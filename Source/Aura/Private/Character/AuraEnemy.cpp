@@ -57,7 +57,7 @@ void AAuraEnemy::HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCou
 {
 	Super::HitReactTagChanged(CallbackTag, NewCount);
 
-	if (!HasAuthority()) return;
+	if (!HasAuthority() || !AuraAIController) return;
 	AuraAIController->GetBlackboardComponent()->SetValueAsBool(FName("HitReacting"), bHitReacting);
 }
 

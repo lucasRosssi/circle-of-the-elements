@@ -12,12 +12,12 @@ UAreaEffectActorAbility::UAreaEffectActorAbility()
 	bIsAreaAbility = true;
 }
 
-int32 UAreaEffectActorAbility::GetAreaEffectDurationAtLevel(int32 Level) const
+int32 UAreaEffectActorAbility::GetAreaEffectDurationAtLevel_Implementation(int32 Level) const
 {
 	return FMath::RoundToInt32(AreaEffectDuration.GetValueAtLevel(Level));
 }
 
-float UAreaEffectActorAbility::GetPeriodAtLevel(int32 Level) const
+float UAreaEffectActorAbility::GetPeriodAtLevel_Implementation(int32 Level) const
 {
 	return Period.GetValueAtLevel(Level);
 }

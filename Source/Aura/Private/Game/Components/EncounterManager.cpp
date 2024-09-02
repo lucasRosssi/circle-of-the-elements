@@ -1,7 +1,7 @@
 // Copyright Lucas Rossi
 
 
-#include "Game/Components/EncounterManagerComponent.h"
+#include "Game/Components/EncounterManager.h"
 
 #include "AuraGameplayTags.h"
 #include "Actor/Level/EnemySpawner.h"
@@ -9,7 +9,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Level/RegionInfo.h"
 
-void UEncounterManagerComponent::SetEncounterDifficulty()
+void UEncounterManager::SetEncounterDifficulty()
 {
 	const int32 EncountersCount = GetAuraGameMode()->EncountersCount;
 	EnemiesLevel = FMath::Floor(EncountersCount / 2);
@@ -39,7 +39,7 @@ void UEncounterManagerComponent::SetEncounterDifficulty()
 	}
 }
 
-void UEncounterManagerComponent::SetCurrentEncounterData()
+void UEncounterManager::SetCurrentEncounterData()
 {
 	CurrentWave = 0;
 	SetEncounterDifficulty();
@@ -47,14 +47,14 @@ void UEncounterManagerComponent::SetCurrentEncounterData()
 	GetAvailableSpawners();
 }
 
-void UEncounterManagerComponent::StartEncounter()
+void UEncounterManager::StartEncounter()
 {
 	GetAuraGameMode()->EncountersCount += 1;
 	
 	NextWave();
 }
 
-void UEncounterManagerComponent::NextWave()
+void UEncounterManager::NextWave()
 {
 	if (EnemySpawners.Num() < EnemyWaves.Num())
 	{
@@ -79,7 +79,7 @@ void UEncounterManagerComponent::NextWave()
 	if (!bOverrideEnemyWaves) EnemyWaves.RemoveAt(0);
 }
 
-void UEncounterManagerComponent::FinishEncounter()
+void UEncounterManager::FinishEncounter()
 {
 	UGameplayStatics::SetGlobalTimeDilation(this, TimeDilationOnFinishEncounter);
 	
@@ -87,20 +87,20 @@ void UEncounterManagerComponent::FinishEncounter()
 	GetWorld()->GetTimerManager().SetTimer(
 		SlowMotionTimerHandle,
 		this,
-		&UEncounterManagerComponent::PostFinishEncounter,
+		&UEncounterManager::PostFinishEncounter,
 		TimeDilationResetDelay * UGameplayStatics::GetGlobalTimeDilation(this),
 		false
 		);
 }
 
-void UEncounterManagerComponent::PostFinishEncounter()
+void UEncounterManager::PostFinishEncounter()
 {
 	UGameplayStatics::SetGlobalTimeDilation(GetOwner(), 1.0f);
 
 	OnEncounterFinishedDelegate.Broadcast();
 }
 
-void UEncounterManagerComponent::GetAvailableSpawners()
+void UEncounterManager::GetAvailableSpawners()
 {
 	EnemySpawners.Empty();
 	
@@ -116,13 +116,13 @@ void UEncounterManagerComponent::GetAvailableSpawners()
 		if (AEnemySpawner* EnemySpawner = Cast<AEnemySpawner>(Spawner))
 		{
 			EnemySpawners.Add(EnemySpawner);
-			EnemySpawner->EnemySpawnedDelegate.AddDynamic(this, &UEncounterManagerComponent::OnEnemySpawned);
-			EnemySpawner->SpawnedEnemyDeathDelegate.AddDynamic(this, &UEncounterManagerComponent::OnEnemyKilled);
+			EnemySpawner->EnemySpawnedDelegate.AddDynamic(this, &UEncounterManager::OnEnemySpawned);
+			EnemySpawner->SpawnedEnemyDeathDelegate.AddDynamic(this, &UEncounterManager::OnEnemyKilled);
 		}
 	}
 }
 
-void UEncounterManagerComponent::GetEnemySpawns()
+void UEncounterManager::GetEnemySpawns()
 {
 	if (!bOverrideEnemyWaves)
 	{
@@ -134,12 +134,12 @@ void UEncounterManagerComponent::GetEnemySpawns()
 	}
 }
 
-void UEncounterManagerComponent::OnEnemySpawned(AActor* Enemy)
+void UEncounterManager::OnEnemySpawned(AActor* Enemy)
 {
 	EnemyCount += 1;
 }
 
-void UEncounterManagerComponent::OnEnemyKilled(AActor* Enemy)
+void UEncounterManager::OnEnemyKilled(AActor* Enemy)
 {
 	EnemyCount -= 1;
 	if (EnemyCount <= 0)
@@ -156,7 +156,7 @@ void UEncounterManagerComponent::OnEnemyKilled(AActor* Enemy)
 				GetWorld()->GetTimerManager().SetTimer(
 					WaveTransitionTimerHandle,
 					this,
-					&UEncounterManagerComponent::NextWave,
+					&UEncounterManager::NextWave,
 					WaveTransitionDelay,
 					false
 					);

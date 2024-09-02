@@ -4,7 +4,7 @@
 #include "Actor/Level/Gate.h"
 
 #include "Game/AuraGameModeBase.h"
-#include "Game/Components/LocationManagerComponent.h"
+#include "Game/Components/LocationManager.h"
 
 AGate::AGate()
 {
@@ -19,7 +19,7 @@ void AGate::BeginPlay()
 	GetAuraGameMode()->GetOnRewardTakenDelegate().AddDynamic(this, &AGate::EnableInteraction);
 }
 
-void AGate::Interact(AController* InstigatorController)
+void AGate::Interact(AAuraPlayerController* InstigatorController)
 {
 	Super::Interact(InstigatorController);
 

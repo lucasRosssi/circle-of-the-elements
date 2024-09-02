@@ -144,6 +144,11 @@ void UBaseAbility::OnAbilityLevelUp(
 	}
 }
 
+bool UBaseAbility::IsActiveAbility_Implementation() const
+{
+	return false;
+}
+
 float UBaseAbility::GetManaCostAtLevel(int32 Level) const
 {
 	float ManaCost = 0.f;

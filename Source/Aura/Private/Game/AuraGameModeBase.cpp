@@ -4,19 +4,26 @@
 #include "Game/AuraGameModeBase.h"
 
 #include "AuraGameplayTags.h"
-#include "Game/Components/EncounterManagerComponent.h"
-#include "Game/Components/LocationManagerComponent.h"
-#include "Game/Components/RewardManagerComponent.h"
+#include "Game/AuraGameInstance.h"
+#include "Game/Components/AbilityManager.h"
+#include "Game/Components/EncounterManager.h"
+#include "Game/Components/LocationManager.h"
+#include "Game/Components/RewardManager.h"
+#include "Kismet/GameplayStatics.h"
+#include "UI/HUD/AuraHUD.h"
 
 AAuraGameModeBase::AAuraGameModeBase()
 {
-	LocationManager = CreateDefaultSubobject<ULocationManagerComponent>("LocationManager");
+	AbilityManager = CreateDefaultSubobject<UAbilityManager>("Ability Manager");
+	AbilityManager->SetGameMode(this);
+	
+	LocationManager = CreateDefaultSubobject<ULocationManager>("LocationManager");
 	LocationManager->SetGameMode(this);
 	
-	EncounterManager = CreateDefaultSubobject<UEncounterManagerComponent>("EncounterManager");
+	EncounterManager = CreateDefaultSubobject<UEncounterManager>("EncounterManager");
 	EncounterManager->SetGameMode(this);
 	
-	RewardManager = CreateDefaultSubobject<URewardManagerComponent>("RewardManager");
+	RewardManager = CreateDefaultSubobject<URewardManager>("RewardManager");
 	RewardManager->SetGameMode(this);
 }
 
@@ -28,7 +35,31 @@ void AAuraGameModeBase::BeginPlay()
 {
 	Super::BeginPlay();
 
-	GetOnEncounterFinishedDelegate().AddDynamic(RewardManager, &URewardManagerComponent::SpawnReward);
+	GetOnEncounterFinishedDelegate().AddDynamic(RewardManager, &URewardManager::SpawnReward);
+}
+
+UAuraGameInstance* AAuraGameModeBase::GetAuraGameInstance()
+{
+	if (AuraGameInstance == nullptr)
+	{
+		AuraGameInstance = Cast<UAuraGameInstance>(UGameplayStatics::GetGameInstance(this));
+	}
+
+	return AuraGameInstance;
+}
+
+AAuraHUD* AAuraGameModeBase::GetAuraHUD(int32 PlayerIndex)
+{
+	if (!AuraHUDs.Contains(PlayerIndex))
+	{
+		AAuraHUD* AuraHUD = Cast<AAuraHUD>(
+			UGameplayStatics::GetPlayerController(this, PlayerIndex)->GetHUD()
+			);
+	
+		AuraHUDs.Add(PlayerIndex, AuraHUD);
+	}
+
+	return AuraHUDs[PlayerIndex];
 }
 
 void AAuraGameModeBase::LoadLevelInfo()

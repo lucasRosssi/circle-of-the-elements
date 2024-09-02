@@ -6,6 +6,7 @@
 #include "AbilitySystemComponent.h"
 #include "AuraAbilitySystemComponent.generated.h"
 
+class UBaseAbility;
 class UAbilityInfo;
 class AAuraCharacterBase;
 struct FAuraGameplayTags;
@@ -61,9 +62,6 @@ public:
 	void ForEachAbility(const FForEachAbility& Delegate);
 
 	UFUNCTION(BlueprintCallable)
-	TArray<FGameplayTag> GetRandomizedAbilitiesFromLevel(int32 Level);
-
-	UFUNCTION(BlueprintCallable)
 	AAuraCharacterBase* GetAvatarCharacter();
 
 	static void SetExclusiveGameplayTagFromSpec(
@@ -94,7 +92,7 @@ public:
 	UFUNCTION(Server, Reliable)
 	void ServerUpgradeAttribute(const FGameplayTag& AttributeTag);
 
-	void UpdateAbilityStatuses(int32 Level);
+	// void UpdateAbilityStatuses(int32 Level);
 
 	UFUNCTION(Server, Reliable)
 	void ServerSpendSkillPoint(const FGameplayTag& AbilityTag, const FGameplayTag& InputTag);
@@ -108,6 +106,7 @@ public:
 		const FGameplayTag& InputTag,
 		const FGameplayTag& PreviousInputTag
 		);
+	void UnlockAbility(FGameplayAbilitySpec& AbilitySpec);
 
 	FString GetDescriptionByAbilityTag(
 		const UAbilityInfo* AbilityInfo,
@@ -117,7 +116,9 @@ public:
 		const UAbilityInfo* AbilityInfo,
 		const FGameplayTag& AbilityTag
 		);
-	FString GetLockedDescriptionByAbilityTag(const FGameplayTag& AbilityTag);
+
+	bool IsInputTagAssigned(const FGameplayTag& InputTag);
+	
 protected:
 	virtual void OnRep_ActivateAbilities() override;
 	
@@ -134,13 +135,6 @@ protected:
 		const FGameplayTag& InputTag = FGameplayTag(),
 		int32 AbilityLevel = 1
 	);
-
-	UPROPERTY()
-	TArray<FGameplayTag> RandomizedAbilitiesTagsLevel_1;
-	UPROPERTY()
-	TArray<FGameplayTag> RandomizedAbilitiesTagsLevel_4;
-	UPROPERTY()
-	TArray<FGameplayTag> RandomizedAbilitiesTagsLevel_8;
 
 private:
 	UPROPERTY()

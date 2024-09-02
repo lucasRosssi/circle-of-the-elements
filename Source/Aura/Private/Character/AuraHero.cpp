@@ -354,9 +354,7 @@ void AAuraHero::InitAbilityActorInfo()
 	AbilitySystemComponent->InitAbilityActorInfo(AuraPlayerState, this);
 
 	GetAuraASC()->AbilityActorInfoSet();
-
-	AuraPlayerState->AddSkillPoints(1);
-
+	
 	if (IsLocallyControlled() || HasAuthority())
 	{
 		if (GetAuraPlayerController())
@@ -366,7 +364,7 @@ void AAuraHero::InitAbilityActorInfo()
 		
 	}
 	
-	if(AAuraHUD* AuraHUD = Cast<AAuraHUD>(AuraPlayerController->GetHUD()))
+	if(AAuraHUD* AuraHUD = GetAuraPlayerController()->GetHUD<AAuraHUD>())
 	{
 		AuraHUD->InitOverlay(AuraPlayerController, AuraPlayerState, AbilitySystemComponent, 
 		AttributeSet);

@@ -4,11 +4,13 @@
 #include "Actor/Level/LocationReward.h"
 
 #include "AuraGameplayTags.h"
-#include "NiagaraFunctionLibrary.h"
+#include "Aura/AuraLogChannels.h"
 #include "Game/AuraGameInstance.h"
 #include "Game/AuraGameModeBase.h"
-#include "Game/Components/RewardManagerComponent.h"
+#include "Game/Components/RewardManager.h"
+#include "Game/Components/UIManager.h"
 #include "Level/RewardsInfo.h"
+#include "Player/AuraPlayerController.h"
 #include "Player/AuraPlayerState.h"
 #include "Utils/AuraSystemsLibrary.h"
 
@@ -17,7 +19,7 @@ ALocationReward::ALocationReward()
 	EnableInteraction();
 }
 
-void ALocationReward::Interact(AController* InstigatorController)
+void ALocationReward::Interact(AAuraPlayerController* InstigatorController)
 {
 	Super::Interact(InstigatorController);
 	
@@ -32,14 +34,36 @@ void ALocationReward::Interact(AController* InstigatorController)
 		{
 			AuraPS->AddAttributePoints(RewardInfo.Amount);
 		}
+		else
+		{
+			InstigatorController->GetUIManager()->OpenSkillSelectionMenu.Broadcast(GetAbilityElement());
+		}
 		
 		GetAuraGameInstance()->AddPlayerResource(RewardTag, RewardInfo.Amount);
 	}
 
-	const URewardManagerComponent* RewardManager = UAuraSystemsLibrary::GetRewardManager(this);
+	const URewardManager* RewardManager = UAuraSystemsLibrary::GetRewardManager(this);
 	RewardManager->OnRewardTakenDelegate.Broadcast();
+}
 
-	Destroy();
+FGameplayTag ALocationReward::GetAbilityElement() const
+{
+	const FAuraGameplayTags& AuraTags = FAuraGameplayTags::Get();
+	if (!RewardTag.MatchesTag(AuraTags.Resources_Essence))
+	{
+		UE_LOG(
+			LogAura,
+			Error,
+			TEXT(
+				"Reward must be an Essence to get its corresponding Ability Element."
+				"RewardTag is: %s"
+				),
+				*RewardTag.ToString()
+			);
+		return FGameplayTag();
+	}
+
+	return AuraTags.EssenceToAbility[RewardTag];
 }
 
 UAuraGameInstance* ALocationReward::GetAuraGameInstance()

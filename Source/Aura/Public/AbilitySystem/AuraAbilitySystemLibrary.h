@@ -390,7 +390,7 @@ public:
 		);
 	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|UI")
 	static void FormatAbilityDescriptionAtLevel(
-		UBaseAbility* Ability,
+		const UBaseAbility* Ability,
 		int32 Level,
 		FText& OutDescription
 		);
@@ -400,11 +400,12 @@ public:
 		const FGameplayTagContainer& AbilitiesRequirement
 	);
 	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|UI", meta = (HidePin = "WorldContextObject", DefaultToSelf = "WorldContextObject"))
-	static void MakeManaAndCooldownText(
+	static void MakeAbilityDetailsText(
 		const UBaseAbility* Ability,
 		int32 Level,
 		FString& OutManaText,
-		FString& OutCooldownText
+		FString& OutCooldownText,
+		FString& OutChargesText
 		);
 	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|UI", meta = (HidePin = "WorldContextObject", DefaultToSelf = "WorldContextObject"))
 	static void MakeManaAndCooldownTextNextLevel(
@@ -414,18 +415,18 @@ public:
 		FString& OutCooldownText
 		);
 
-	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|UI", meta = (HidePin = "WorldContextObject", DefaultToSelf = "WorldContextObject"))
-	static TArray<FGameplayTag> GetAllAbilitiesFromLevel(
-		const UObject* WorldContextObject,
-		ECharacterName CharacterName,
-		int32 Level
-		);
-
-	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|UI", meta = (HidePin = "WorldContextObject", DefaultToSelf = "WorldContextObject"))
-	static TArray<FGameplayTag> GetRandomAbilitiesFromLevel(
-		const UObject* WorldContextObject,
-		ECharacterName CharacterName,
-		int32 Level,
-		int32 Amount
-		);
+	// UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|UI", meta = (HidePin = "WorldContextObject", DefaultToSelf = "WorldContextObject"))
+	// static TArray<FGameplayTag> GetAllAbilitiesFromLevel(
+	// 	const UObject* WorldContextObject,
+	// 	ECharacterName CharacterName,
+	// 	int32 Level
+	// 	);
+	//
+	// UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|UI", meta = (HidePin = "WorldContextObject", DefaultToSelf = "WorldContextObject"))
+	// static TArray<FGameplayTag> GetRandomAbilitiesFromLevel(
+	// 	const UObject* WorldContextObject,
+	// 	ECharacterName CharacterName,
+	// 	int32 Level,
+	// 	int32 Amount
+	// 	);
 };

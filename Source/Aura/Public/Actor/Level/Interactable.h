@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "Interactable.generated.h"
 
+class AAuraPlayerController;
 class UNiagaraSystem;
 class UNiagaraComponent;
 enum class ECharacterName : uint8;
@@ -50,10 +51,10 @@ protected:
 	void DisableInteraction();
 
 	UFUNCTION()
-	void PreInteract(AController* InstigatorController);
-	virtual void Interact(AController* InstigatorController);
+	void PreInteract(AAuraPlayerController* InstigatorController);
+	virtual void Interact(AAuraPlayerController* InstigatorController);
 	UFUNCTION(BlueprintImplementableEvent)
-	void OnInteracted(AController* InstigatorController);
+	void OnInteracted(AAuraPlayerController* InstigatorController);
 
 	UFUNCTION(BlueprintPure)
 	AAuraGameModeBase* GetAuraGameMode();

@@ -6,8 +6,17 @@
 
 FAuraGameplayTags FAuraGameplayTags::GameplayTags;
 
+const FAuraGameplayTags& FAuraGameplayTags::Get()
+{
+	if (GameplayTags.IsValid()) return GameplayTags;
+
+	InitializeNativeGameplayTags();
+	return GameplayTags;
+}
+
 void FAuraGameplayTags::InitializeNativeGameplayTags()
 {
+	if (GameplayTags.IsValid()) return;
 	/*
 	 * DIFFICULTY CLASSES
 	 */
@@ -624,6 +633,38 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FString("No type ability.")
 		);
 
+	// Tiers
+
+	GameplayTags.Abilities_Tier = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Tier"),
+		FString("Ability tier tags.")
+		);
+
+	GameplayTags.Abilities_Tier_I = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Tier.I"),
+		FString("Tier I abilities tag.")
+		);
+
+	GameplayTags.Abilities_Tier_II = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Tier.II"),
+		FString("Tier II abilities tag.")
+		);
+
+	GameplayTags.Abilities_Tier_III = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Tier.III"),
+		FString("Tier III abilities tag.")
+		);
+
+	GameplayTags.Abilities_Tier_IV = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Tier.IV"),
+		FString("Tier IV abilities tag.")
+		);
+
+	GameplayTags.Abilities_Tier_V = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Tier.V"),
+		FString("Tier V abilities tag.")
+		);
+
 	// Status
 
 	GameplayTags.Abilities_Status= UGameplayTagsManager::Get().AddNativeGameplayTag(
@@ -654,6 +695,53 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	GameplayTags.Abilities_Status_Native = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Abilities.Status.Native"),
 		FString("Ability is native and can always be used. This status is not supposed to change.")
+		);
+
+	// Elements
+
+	GameplayTags.Abilities_Element = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Element"),
+		FString("Ability element tags.")
+		);
+
+	GameplayTags.Abilities_Element_None = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Element.None"),
+		FString("Non-elemental ability tag.")
+		);
+	
+	GameplayTags.Abilities_Element_Physical = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Element.Physical"),
+		FString("Physical element ability tag.")
+		);
+
+	GameplayTags.Abilities_Element_Arcane = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Element.Arcane"),
+		FString("Arcane element ability tag.")
+		);
+
+	GameplayTags.Abilities_Element_Fire = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Element.Fire"),
+		FString("Fire element ability tag.")
+		);
+	
+	GameplayTags.Abilities_Element_Ice = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Element.Ice"),
+		FString("Ice element ability tag.")
+		);
+
+	GameplayTags.Abilities_Element_Lightning = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Element.Lightning"),
+		FString("Lightning element ability tag.")
+		);
+
+	GameplayTags.Abilities_Element_Necrotic = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Element.Necrotic"),
+		FString("Necrotic element ability tag.")
+		);
+
+	GameplayTags.Abilities_Element_Duo = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Element.Duo"),
+		FString("Two elements ability tag.")
 		);
 	
 	// Reactions
@@ -960,9 +1048,43 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FString("Necrotic essence resource")
 		);
 
+	GameplayTags.EssenceToAbility.Add(
+		GameplayTags.Resources_Essence_Physical,
+		GameplayTags.Abilities_Element_Physical
+		);
+	GameplayTags.EssenceToAbility.Add(
+		GameplayTags.Resources_Essence_Arcane,
+		GameplayTags.Abilities_Element_Arcane
+		);
+	GameplayTags.EssenceToAbility.Add(
+		GameplayTags.Resources_Essence_Fire,
+		GameplayTags.Abilities_Element_Fire
+		);
+	GameplayTags.EssenceToAbility.Add(
+		GameplayTags.Resources_Essence_Ice,
+		GameplayTags.Abilities_Element_Ice
+		);
+	GameplayTags.EssenceToAbility.Add(
+	GameplayTags.Resources_Essence_Lightning,
+	GameplayTags.Abilities_Element_Lightning
+	);
+	GameplayTags.EssenceToAbility.Add(
+		GameplayTags.Resources_Essence_Necrotic,
+		GameplayTags.Abilities_Element_Necrotic
+		);
+
 	/*
 	 * Map of Tags to their children
 	 */
+
+	const TArray SkillsInputTags({
+		GameplayTags.InputTag_1,
+		GameplayTags.InputTag_2,
+		GameplayTags.InputTag_3,
+		GameplayTags.InputTag_4
+	});
+
+	GameplayTags.ParentsToChildren.Add(GameplayTags.InputTag, SkillsInputTags);
 
 	const TArray BuffTags({
 		GameplayTags.StatusEffects_Buff_Shield
@@ -996,4 +1118,29 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	GameplayTags.ParentsToChildren.Add(GameplayTags.StatusEffects_Debuff, DebuffTags);
 	GameplayTags.ParentsToChildren.Add(GameplayTags.StatusEffects_Incapacitation, IncapacitationTags);
 	GameplayTags.ParentsToChildren.Add(GameplayTags.StatusEffects_Condition, ConditionTags);
+
+	const TArray ElementTags({
+		GameplayTags.Abilities_Element_None,
+		GameplayTags.Abilities_Element_Duo,
+		GameplayTags.Abilities_Element_Physical,
+		GameplayTags.Abilities_Element_Arcane,
+		GameplayTags.Abilities_Element_Fire,
+		GameplayTags.Abilities_Element_Ice,
+		GameplayTags.Abilities_Element_Lightning,
+		GameplayTags.Abilities_Element_Necrotic,
+	});
+
+	GameplayTags.ParentsToChildren.Add(GameplayTags.Abilities_Element, ElementTags);
+
+	const TArray TierTags({
+		GameplayTags.Abilities_Tier_I,
+		GameplayTags.Abilities_Tier_II,
+		GameplayTags.Abilities_Tier_III,
+		GameplayTags.Abilities_Tier_IV,
+		GameplayTags.Abilities_Tier_V,
+	});
+
+	GameplayTags.ParentsToChildren.Add(GameplayTags.Abilities_Tier, TierTags);
+
+	GameplayTags.bIsValid = true;
 }

@@ -7,8 +7,6 @@
 #include "AuraGameplayTags.h"
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "AbilitySystem/Abilities/ActiveAbility.h"
-#include "AbilitySystem/Data/AbilityInfo.h"
-#include "Aura/Aura.h"
 #include "Aura/AuraLogChannels.h"
 #include "Character/AuraCharacterBase.h"
 #include "Interaction/PlayerInterface.h"
@@ -39,26 +37,6 @@ void UAuraAbilitySystemComponent::AddCharacterAbilities(
 
 	bStartupAbilitiesGiven = true;
 	AbilitiesGivenDelegate.Broadcast();
-	
-	const ECharacterName CharacterName = GetAvatarCharacter()->GetCharacterName();
-	RandomizedAbilitiesTagsLevel_1 = UAuraAbilitySystemLibrary::GetRandomAbilitiesFromLevel(
-		GetAvatarActor(),
-		CharacterName,
-		1,
-		MAX_AMOUNT_ABILITIES_PER_LEVEL
-		);
-	RandomizedAbilitiesTagsLevel_4 = UAuraAbilitySystemLibrary::GetRandomAbilitiesFromLevel(
-		GetAvatarActor(),
-		CharacterName,
-		4,
-		MAX_AMOUNT_ABILITIES_PER_LEVEL
-		);
-	RandomizedAbilitiesTagsLevel_8 = UAuraAbilitySystemLibrary::GetRandomAbilitiesFromLevel(
-		GetAvatarActor(),
-		CharacterName,
-		8,
-		MAX_AMOUNT_ABILITIES_PER_LEVEL
-		);
 }
 
 void UAuraAbilitySystemComponent::AbilityInputTagPressed(const FGameplayTag& InputTag)
@@ -161,21 +139,6 @@ void UAuraAbilitySystemComponent::ForEachAbility(const FForEachAbility& Delegate
 		{
 			UE_LOG(LogAura, Error, TEXT("Failed to execute delegate in %hs"), __FUNCTION__);
 		}
-	}
-}
-
-TArray<FGameplayTag> UAuraAbilitySystemComponent::GetRandomizedAbilitiesFromLevel(int32 Level)
-{
-	switch (Level)
-	{
-	case 1:
-		return RandomizedAbilitiesTagsLevel_1;
-	case 4:
-		return RandomizedAbilitiesTagsLevel_4;
-	case 8:
-		return RandomizedAbilitiesTagsLevel_8;
-	default:
-		return TArray<FGameplayTag>();
 	}
 }
 
@@ -346,28 +309,28 @@ void UAuraAbilitySystemComponent::ServerUpgradeAttribute_Implementation(
 	IPlayerInterface::Execute_SpendAttributePoints(GetAvatarActor(), 1);
 }
 
-void UAuraAbilitySystemComponent::UpdateAbilityStatuses(int32 Level)
-{
-	const UAbilityInfo* AbilityInfo = UAuraAbilitySystemLibrary::GetAbilitiesInfo(GetAvatarActor());
-
-	for (
-		const auto& Info :
-		AbilityInfo->FindAbilitiesFromCharacter(GetAvatarCharacter()->GetCharacterName()))
-	{
-		if (!Info.AbilityTag.IsValid()) continue;
-		if (Level < Info.LevelRequirement) continue;
-		
-		if (GetSpecFromAbilityTag(Info.AbilityTag) == nullptr)
-		{
-			const FAuraGameplayTags& Tags = FAuraGameplayTags::Get();
-			FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(Info.Ability, 1);
-			SetAbilityStatusFromSpec(AbilitySpec, Tags.Abilities_Status_Eligible);
-			GiveAbility(AbilitySpec);
-			MarkAbilitySpecDirty(AbilitySpec);
-			ClientUpdateAbilityState(Info.AbilityTag, Tags.Abilities_Status_Eligible);
-		}
-	}
-}
+// void UAuraAbilitySystemComponent::UpdateAbilityStatuses(int32 Level)
+// {
+// 	const UAbilityInfo* AbilityInfo = UAuraAbilitySystemLibrary::GetAbilitiesInfo(GetAvatarActor());
+//
+// 	for (
+// 		const auto& Info :
+// 		AbilityInfo->FindAbilitiesFromCharacter(GetAvatarCharacter()->GetCharacterName()))
+// 	{
+// 		if (!Info.AbilityTag.IsValid()) continue;
+// 		if (Level < Info.LevelRequirement) continue;
+// 		
+// 		if (GetSpecFromAbilityTag(Info.AbilityTag) == nullptr)
+// 		{
+// 			const FAuraGameplayTags& Tags = FAuraGameplayTags::Get();
+// 			FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(Info.Ability, 1);
+// 			SetAbilityStatusFromSpec(AbilitySpec, Tags.Abilities_Status_Eligible);
+// 			GiveAbility(AbilitySpec);
+// 			MarkAbilitySpecDirty(AbilitySpec);
+// 			ClientUpdateAbilityState(Info.AbilityTag, Tags.Abilities_Status_Eligible);
+// 		}
+// 	}
+// }
 
 void UAuraAbilitySystemComponent::ServerEquipAbility_Implementation(
 	const FGameplayTag& AbilityTag,
@@ -405,6 +368,14 @@ void UAuraAbilitySystemComponent::ClientEquipAbility_Implementation(
 	AbilityEquipped.Broadcast(AbilityTag, StatusTag, InputTag, PreviousInputTag);
 }
 
+void UAuraAbilitySystemComponent::UnlockAbility(FGameplayAbilitySpec& AbilitySpec)
+{
+	if (!GetAvatarActor()->HasAuthority()) return;
+	SetAbilityStatusFromSpec(AbilitySpec, FAuraGameplayTags::Get().Abilities_Status_Unlocked);
+	GiveAbility(AbilitySpec);
+	MarkAbilitySpecDirty(AbilitySpec);
+}
+
 FString UAuraAbilitySystemComponent::GetDescriptionByAbilityTag(
 	const UAbilityInfo* AbilityInfo,
 	const FGameplayTag& AbilityTag
@@ -439,16 +410,16 @@ FString UAuraAbilitySystemComponent::GetNextLevelDescriptionByAbilityTag(
 	return FString();
 }
 
-FString UAuraAbilitySystemComponent::GetLockedDescriptionByAbilityTag(
-	const FGameplayTag& AbilityTag)
+bool UAuraAbilitySystemComponent::IsInputTagAssigned(const FGameplayTag& InputTag)
 {
-	const UAbilityInfo* AbilityInfo = UAuraAbilitySystemLibrary::GetAbilitiesInfo(GetAvatarActor());
-	const FAuraAbilityInfo& AuraAbilityInfo = AbilityInfo->FindAbilityInfoByTag(AbilityTag);
-	
-	return UAuraAbilitySystemLibrary::GetAbilityLockedDescription(
-		AuraAbilityInfo.LevelRequirement,
-		AuraAbilityInfo.AbilitiesRequirement
-	);
+	if (!InputTag.IsValid()) return false;
+
+	for (const auto& AbilitySpec : GetActivatableAbilities())
+	{
+		if (AbilitySpec.DynamicAbilityTags.HasTagExact(InputTag)) return true;
+	}
+
+	return false;
 }
 
 void UAuraAbilitySystemComponent::SetInputTagFromSpec(

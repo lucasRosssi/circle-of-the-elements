@@ -20,14 +20,19 @@ AActor* UActiveAbility::GetNextBounceTarget(AActor* HitTarget)
 	return NextTarget;
 }
 
-int32 UActiveAbility::GetMaxHitCountAtLevel(int32 Level) const
+int32 UActiveAbility::GetMaxHitCountAtLevel_Implementation(int32 Level) const
 {
 	return FMath::RoundToInt32(MaxHitCount.GetValueAtLevel(Level));
 }
 
-float UActiveAbility::GetEffectChangePerHitAtLevel(int32 Level) const
+float UActiveAbility::GetEffectChangePerHitAtLevel_Implementation(int32 Level) const
 {
 	return EffectChangePerHit.GetValueAtLevel(Level);
+}
+
+bool UActiveAbility::IsActiveAbility_Implementation() const
+{
+	return true;
 }
 
 float UActiveAbility::GetMontagePlayRate() const

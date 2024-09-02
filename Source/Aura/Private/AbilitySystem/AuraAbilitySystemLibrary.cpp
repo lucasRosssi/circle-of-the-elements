@@ -9,10 +9,7 @@
 #include "AuraNamedArguments.h"
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
 #include "AbilitySystem/AuraAttributeSet.h"
-#include "AbilitySystem/Abilities/ActiveDamageAbility.h"
-#include "AbilitySystem/Abilities/AreaEffectActorAbility.h"
 #include "AbilitySystem/Abilities/BaseAbility.h"
-#include "AbilitySystem/Abilities/BeamAbility.h"
 #include "AbilitySystem/Data/AbilityInfo.h"
 #include "Aura/Aura.h"
 #include "Character/AuraCharacterBase.h"
@@ -22,7 +19,6 @@
 #include "Game/TeamComponent.h"
 #include "Interaction/CombatInterface.h"
 #include "Kismet/GameplayStatics.h"
-#include "Kismet/KismetMathLibrary.h"
 #include "Player/AuraPlayerState.h"
 #include "Player/AuraPlayerController.h"
 #include "UI/HUD/AuraHUD.h"
@@ -835,12 +831,13 @@ FString UAuraAbilitySystemLibrary::GetAbilityDescription(
 	)
 {
 	FAuraAbilityInfo Info = AbilityInfo->FindAbilityInfoByTag(AbilityTag);
-	UBaseAbility* Ability = Info.Ability.GetDefaultObject();
+	const UBaseAbility* Ability = Info.Ability.GetDefaultObject();
 	FormatAbilityDescriptionAtLevel(Ability, Level, Info.Description);
 
 	FString ManaCostText;
 	FString CooldownText;
-	MakeManaAndCooldownText(Ability, Level, ManaCostText, CooldownText);
+	FString ChargesText;
+	MakeAbilityDetailsText(Ability, Level, ManaCostText, CooldownText, ChargesText);
 	
 	return FString::Printf(
 		TEXT(
@@ -850,11 +847,13 @@ FString UAuraAbilitySystemLibrary::GetAbilityDescription(
 			"%s\n"
 			"%s"
 			"%s"
+			"%s"
 			),
 		*Info.Name.ToString(),
 		Level,
 		*Info.Description.ToString(),
 		*ManaCostText,
+		*ChargesText,
 		*CooldownText
 	);
 }
@@ -866,7 +865,7 @@ FString UAuraAbilitySystemLibrary::GetAbilityNextLevelDescription(
 	)
 {
 	FAuraAbilityInfo Info = AbilityInfo->FindAbilityInfoByTag(AbilityTag);
-	UBaseAbility* Ability = Info.Ability.GetDefaultObject();
+	const UBaseAbility* Ability = Info.Ability.GetDefaultObject();
 	FormatAbilityDescriptionAtLevel(Ability, Level, Info.NextLevelDescription);
 	
 	FString ManaCostText;
@@ -893,12 +892,38 @@ FString UAuraAbilitySystemLibrary::GetAbilityNextLevelDescription(
 }
 
 void UAuraAbilitySystemLibrary::FormatAbilityDescriptionAtLevel(
-	UBaseAbility* Ability,
+	const UBaseAbility* Ability,
 	int32 Level,
 	FText& OutDescription
 	)
 {
 	const FAuraNamedArguments& Args = FAuraNamedArguments::Get();
+
+	OutDescription = FText::FormatNamed(
+		OutDescription,
+		Args.AdditionalHitCount_0,
+		IAbilityInterface::Execute_GetMaxHitCountAtLevel(Ability, Level) - 1,
+		Args.AdditionalHitCount_1,
+		IAbilityInterface::Execute_GetMaxHitCountAtLevel(Ability, Level + 1) - 1,
+		Args.HitEffectChange_0,
+		FMath::Abs(IAbilityInterface::Execute_GetEffectChangePerHitAtLevel(Ability, Level)) * 100,
+		Args.HitEffectChange_1,
+		FMath::Abs(IAbilityInterface::Execute_GetEffectChangePerHitAtLevel(Ability, Level + 1)) * 100,
+		Args.Dmg_0,
+		IAbilityInterface::Execute_GetRoundedDamageAtLevel(Ability, Level),
+		Args.Dmg_1,
+		IAbilityInterface::Execute_GetRoundedDamageAtLevel(Ability, Level + 1),
+		Args.Period,
+		IAbilityInterface::Execute_GetBeamTickPeriod(Ability),
+		Args.ActorDuration_0,
+		IAbilityInterface::Execute_GetAreaEffectDurationAtLevel(Ability, Level),
+		Args.ActorDuration_1,
+		IAbilityInterface::Execute_GetAreaEffectDurationAtLevel(Ability, Level + 1),
+		Args.ActorPeriod_0,
+		IAbilityInterface::Execute_GetPeriodAtLevel(Ability, Level),
+		Args.ActorPeriod_1,
+		IAbilityInterface::Execute_GetPeriodAtLevel(Ability, Level + 1)
+	);
 	
 	if (Ability->GetStatusEffectData().IsValid())
 	{
@@ -917,60 +942,6 @@ void UAuraAbilitySystemLibrary::FormatAbilityDescriptionAtLevel(
 			Args.Duration_1,
 			Ability->GetStatusEffectData().Duration.GetValueAtLevel(Level + 1)
 		);
-	}
-	
-
-	if (const UActiveAbility* ActiveAbility = Cast<UActiveAbility>(Ability))
-	{
-		if (ActiveAbility->GetHitMode() != EAbilityHitMode::Default)
-		{
-			OutDescription = FText::FormatNamed(
-				OutDescription,
-				Args.AdditionalHitCount_0,
-				ActiveAbility->GetMaxHitCountAtLevel(Level) - 1,
-				Args.AdditionalHitCount_1,
-				ActiveAbility->GetMaxHitCountAtLevel(Level + 1) - 1,
-				Args.HitEffectChange_0,
-				FMath::Abs(ActiveAbility->GetEffectChangePerHitAtLevel(Level)) * 100,
-				Args.HitEffectChange_1,
-				FMath::Abs(ActiveAbility->GetEffectChangePerHitAtLevel(Level + 1)) * 100
-			);
-		}
-	}
-	
-	if (const UActiveDamageAbility* DamageAbility = Cast<UActiveDamageAbility>(Ability))
-	{
-		OutDescription = FText::FormatNamed(
-			OutDescription,
-			Args.Dmg_0,
-			DamageAbility->GetRoundedDamageAtLevel(Level),
-			Args.Dmg_1,
-			DamageAbility->GetRoundedDamageAtLevel(Level + 1)
-			);
-
-		if (const UBeamAbility* BeamAbility = Cast<UBeamAbility>(DamageAbility))
-		{
-			OutDescription = FText::FormatNamed(
-				OutDescription,
-				Args.Period,
-				BeamAbility->GetBeamTickPeriod()
-			);
-		}
-
-		if (const UAreaEffectActorAbility* AreaEffectAbility = Cast<UAreaEffectActorAbility>(DamageAbility))
-		{
-			OutDescription = FText::FormatNamed(
-				OutDescription,
-				Args.ActorDuration_0,
-				AreaEffectAbility->GetAreaEffectDurationAtLevel(Level),
-				Args.ActorDuration_1,
-				AreaEffectAbility->GetAreaEffectDurationAtLevel(Level + 1),
-				Args.ActorPeriod_0,
-				AreaEffectAbility->GetPeriodAtLevel(Level),
-				Args.ActorPeriod_1,
-				AreaEffectAbility->GetPeriodAtLevel(Level + 1)
-				);
-		}
 	}
 }
 
@@ -1019,15 +990,17 @@ FString UAuraAbilitySystemLibrary::GetAbilityLockedDescription(
 	return RequirementText;
 }
 
-void UAuraAbilitySystemLibrary::MakeManaAndCooldownText(
+void UAuraAbilitySystemLibrary::MakeAbilityDetailsText(
 	const UBaseAbility* Ability,
 	int32 Level,
 	FString& OutManaText,
-	FString& OutCooldownText
+	FString& OutCooldownText,
+	FString& OutChargesText
 	)
 {
 	const int32 ManaCost = Ability->GetRoundedManaCostAtLevel(Level);
 	const int32 Cooldown = Ability->GetRoundedCooldownAtLevel(Level);
+	const int32 Charges = Ability->GetMaxChargesAtLevel(Level);
 
 	if (ManaCost == 0)
 	{
@@ -1050,6 +1023,18 @@ void UAuraAbilitySystemLibrary::MakeManaAndCooldownText(
 		OutCooldownText = FString::Printf(
 			TEXT("\n<Info>Cooldown - </>%ds"),
 			Cooldown
+		);
+	}
+
+	if (Charges <= 1)
+	{
+		OutChargesText = FString::Printf(TEXT(""));
+	}
+	else
+	{
+		OutChargesText = FString::Printf(
+			TEXT("\n<Info>Charges - </>%d"),
+			Charges
 		);
 	}
 }
@@ -1112,54 +1097,54 @@ void UAuraAbilitySystemLibrary::MakeManaAndCooldownTextNextLevel(
 	}
 }
 
-TArray<FGameplayTag> UAuraAbilitySystemLibrary::GetAllAbilitiesFromLevel(
-	const UObject* WorldContextObject,
-	ECharacterName CharacterName,
-	int32 Level
-	)
-{
-	TArray<FGameplayTag> AbilitiesTags;
-	const UAbilityInfo* AbilityInfo = GetAbilitiesInfo(WorldContextObject);
-
-	if (AbilityInfo == nullptr) return AbilitiesTags;
-
-	for (auto Info : AbilityInfo->FindAbilitiesFromCharacter(CharacterName))
-	{
-		if (Info.LevelRequirement == Level) AbilitiesTags.Add(Info.AbilityTag);
-	}
-
-	return AbilitiesTags;
-}
-
-TArray<FGameplayTag> UAuraAbilitySystemLibrary::GetRandomAbilitiesFromLevel(
-	const UObject* WorldContextObject,
-	ECharacterName CharacterName,
-	int32 Level,
-	int32 Amount
-	)
-{
-	TArray<FGameplayTag> RandomAbilitiesTags;
-	TArray<FGameplayTag> AllAbilitiesTags = GetAllAbilitiesFromLevel(
-		WorldContextObject, 
-		CharacterName,
-		Level
-		);
-
-	if (AllAbilitiesTags.IsEmpty()) return RandomAbilitiesTags;
-	
-	for (int32 i = 1; i <= Amount; i++)
-	{
-		const int32 index = FMath::RandRange(0, AllAbilitiesTags.Num() - 1);
-
-		if (AllAbilitiesTags.IsValidIndex(index))
-		{
-			RandomAbilitiesTags.Add(AllAbilitiesTags[index]);
-			AllAbilitiesTags.RemoveAt(index);
-		}
-	}
-
-	return RandomAbilitiesTags;
-}
+// TArray<FGameplayTag> UAuraAbilitySystemLibrary::GetAllAbilitiesFromLevel(
+// 	const UObject* WorldContextObject,
+// 	ECharacterName CharacterName,
+// 	int32 Level
+// 	)
+// {
+// 	TArray<FGameplayTag> AbilitiesTags;
+// 	const UAbilityInfo* AbilityInfo = GetAbilitiesInfo(WorldContextObject);
+//
+// 	if (AbilityInfo == nullptr) return AbilitiesTags;
+//
+// 	for (auto Info : AbilityInfo->FindAbilitiesFromCharacter(CharacterName))
+// 	{
+// 		if (Info.LevelRequirement == Level) AbilitiesTags.Add(Info.AbilityTag);
+// 	}
+//
+// 	return AbilitiesTags;
+// }
+//
+// TArray<FGameplayTag> UAuraAbilitySystemLibrary::GetRandomAbilitiesFromLevel(
+// 	const UObject* WorldContextObject,
+// 	ECharacterName CharacterName,
+// 	int32 Level,
+// 	int32 Amount
+// 	)
+// {
+// 	TArray<FGameplayTag> RandomAbilitiesTags;
+// 	TArray<FGameplayTag> AllAbilitiesTags = GetAllAbilitiesFromLevel(
+// 		WorldContextObject, 
+// 		CharacterName,
+// 		Level
+// 		);
+//
+// 	if (AllAbilitiesTags.IsEmpty()) return RandomAbilitiesTags;
+// 	
+// 	for (int32 i = 1; i <= Amount; i++)
+// 	{
+// 		const int32 index = FMath::RandRange(0, AllAbilitiesTags.Num() - 1);
+//
+// 		if (AllAbilitiesTags.IsValidIndex(index))
+// 		{
+// 			RandomAbilitiesTags.Add(AllAbilitiesTags[index]);
+// 			AllAbilitiesTags.RemoveAt(index);
+// 		}
+// 	}
+//
+// 	return RandomAbilitiesTags;
+// }
 
 FGameplayEffectContextHandle UAuraAbilitySystemLibrary::ApplyAbilityEffect(
 	const FAbilityParams& AbilityParams,

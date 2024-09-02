@@ -30,7 +30,7 @@ public:
 	UFUNCTION(BlueprintPure, Category="Ability Defaults|Damage")
 	float GetDamageAtLevel(int32 Level) const;
 	UFUNCTION(BlueprintPure, Category="Ability Defaults|Damage")
-	int32 GetRoundedDamageAtLevel(int32 Level) const;
+	virtual int32 GetRoundedDamageAtLevel_Implementation(int32 Level) const override;
 	
 protected:
 	UFUNCTION(BlueprintPure, Category="AbilityDefaults")

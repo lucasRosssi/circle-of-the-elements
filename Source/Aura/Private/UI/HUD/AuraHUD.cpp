@@ -3,6 +3,8 @@
 
 #include "UI/HUD/AuraHUD.h"
 
+#include "Game/Components/UIManager.h"
+#include "Player/AuraPlayerController.h"
 #include "UI/Widget/AuraUserWidget.h"
 #include "UI/WidgetController/AttributeMenuWidgetController.h"
 #include "UI/WidgetController/OverlayWidgetController.h"
@@ -70,5 +72,14 @@ void AAuraHUD::InitOverlay(APlayerController* PC, APlayerState* PS, UAbilitySyst
 
 	OverlayWidget->SetWidgetController(WidgetController);
 	WidgetController->BroadcastInitialValues();
-	Widget->AddToViewport();
+	OverlayWidget->AddToViewport();
+
+	GetSkillMenuWidgetController(WidgetControllerParams);
+	GetAttributeMenuWidgetController(WidgetControllerParams);
+	
+	if (const AAuraPlayerController* AuraPC = Cast<AAuraPlayerController>(PC))
+	{
+		AuraPC->GetUIManager()->SetOverlayWidget(OverlayWidget);
+		AuraPC->GetUIManager()->SetAuraHUD(this);
+	}
 }

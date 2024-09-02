@@ -1,0 +1,42 @@
+// Copyright Lucas Rossi
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "Enums/AbilityHitMode.h"
+#include "UObject/Interface.h"
+#include "AbilityInterface.generated.h"
+
+// This class does not need to be modified.
+UINTERFACE(MinimalAPI)
+class UAbilityInterface : public UInterface
+{
+	GENERATED_BODY()
+};
+
+/**
+ * 
+ */
+class AURA_API IAbilityInterface
+{
+	GENERATED_BODY()
+
+public:
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	EAbilityHitMode GetHitMode() const;
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	int32 GetMaxHitCountAtLevel(int32 Level) const;
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	float GetEffectChangePerHitAtLevel(int32 Level) const;
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	int32 GetRoundedDamageAtLevel(int32 Level) const;
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	float GetBeamTickPeriod() const;
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	int32 GetAreaEffectDurationAtLevel(int32 Level) const;
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	float GetPeriodAtLevel(int32 Level) const;
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	bool IsActiveAbility() const;
+};

@@ -87,10 +87,10 @@ void AAuraPlayerState::AddLevel(int32 InLevel)
 	AddAttributePoints(APReward);
 	AddSkillPoints(SPReward);
 
-	if (GetAuraASC())
-	{
-		GetAuraASC()->UpdateAbilityStatuses(Level);
-	}
+	// if (GetAuraASC())
+	// {
+	// 	GetAuraASC()->UpdateAbilityStatuses(Level);
+	// }
 }
 
 void AAuraPlayerState::SetXP(int32 InXP)

@@ -1,7 +1,7 @@
 // Copyright Lucas Rossi
 
 
-#include "Game/Components/RewardManagerComponent.h"
+#include "Game/Components/RewardManager.h"
 
 #include "Actor/Level/Gate.h"
 #include "Actor/Level/LocationReward.h"
@@ -13,7 +13,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 
-URewardManagerComponent::URewardManagerComponent()
+URewardManager::URewardManager()
 {
 	if (bOverrideReward)
 	{
@@ -21,7 +21,7 @@ URewardManagerComponent::URewardManagerComponent()
 	}
 }
 
-void URewardManagerComponent::SetGatesRewards()
+void URewardManager::SetGatesRewards()
 {
 	TArray<AActor*> GateActors;
 	UGameplayStatics::GetAllActorsOfClass(
@@ -42,7 +42,7 @@ void URewardManagerComponent::SetGatesRewards()
 	}
 }
 
-void URewardManagerComponent::SpawnReward()
+void URewardManager::SpawnReward()
 {
 	const ACharacter* PlayerCharacter = UGameplayStatics::GetPlayerCharacter(GetOwner(), 0);
 	FTransform Transform;
@@ -82,7 +82,7 @@ void URewardManagerComponent::SpawnReward()
 	}
 }
 
-FGameplayTag URewardManagerComponent::GetNextRewardInBag()
+FGameplayTag URewardManager::GetNextRewardInBag()
 {
 	if (RewardBag.IsEmpty())
 	{
@@ -92,7 +92,7 @@ FGameplayTag URewardManagerComponent::GetNextRewardInBag()
 	return RewardBag.Pop();
 }
 
-void URewardManagerComponent::FillAndShuffleRewardBag()
+void URewardManager::FillAndShuffleRewardBag()
 {
 	if (bOverrideReward)
 	{
@@ -105,7 +105,7 @@ void URewardManagerComponent::FillAndShuffleRewardBag()
 	}
 }
 
-FRewardInfo URewardManagerComponent::GetNextRewardInfo()
+FRewardInfo URewardManager::GetNextRewardInfo()
 {
 	if (!NextRewardTag.IsValid())
 	{

@@ -53,12 +53,12 @@ AAuraHero* UAuraUserWidget::GetOwningHero()
 
 AAuraPlayerController* UAuraUserWidget::GetOwningAuraPlayerController()
 {
-	if (MainPlayerController == nullptr)
+	if (AuraPlayerController == nullptr)
 	{
-		MainPlayerController = Cast<AAuraPlayerController>(GetOwningPlayer());
+		AuraPlayerController = Cast<AAuraPlayerController>(GetOwningPlayer());
 	}
 
-	return MainPlayerController;
+	return AuraPlayerController;
 }
 
 AAuraPlayerState* UAuraUserWidget::GetOwningAuraPlayerState()
@@ -87,4 +87,9 @@ UTexture2D* UAuraUserWidget::GetInputActionIcon(const UInputAction* Action)
 		EAxisType::None,
 		InputRestriction
 		);
+}
+
+UUIManager* UAuraUserWidget::GetUIManager()
+{
+	return GetOwningAuraPlayerController()->GetUIManager();
 }

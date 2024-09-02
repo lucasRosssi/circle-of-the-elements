@@ -10,6 +10,7 @@
 #include "Actor/TargetingActor.h"
 #include "Aura/Aura.h"
 #include "Camera/CameraComponent.h"
+#include "Game/Components/UIManager.h"
 #include "Input/AuraInputComponent.h"
 #include "Interaction/TargetInterface.h"
 #include "GameFramework/Character.h"
@@ -22,6 +23,9 @@
 AAuraPlayerController::AAuraPlayerController()
 {
 	bReplicates = true;
+	
+	UIManager = CreateDefaultSubobject<UUIManager>("UIManager");
+	UIManager->SetAuraPlayerController(this);
 }
 
 void AAuraPlayerController::ShowTargetingActor(

@@ -1,7 +1,7 @@
 // Copyright Lucas Rossi
 
 
-#include "Game/Components/LocationManagerComponent.h"
+#include "Game/Components/LocationManager.h"
 
 #include "Game/AuraGameInstance.h"
 #include "Game/AuraGameModeBase.h"
@@ -9,12 +9,12 @@
 #include "Kismet/GameplayStatics.h"
 #include "Level/RegionInfo.h"
 
-TSoftObjectPtr<UWorld> ULocationManagerComponent::GetNextLocation(
+TSoftObjectPtr<UWorld> ULocationManager::GetNextLocation(
 	ERegion InRegion,
 	EGatePosition EntrancePosition
 	)
 {
-	GetAuraGameInstance()->SaveHeroData();
+	GetAuraGameMode()->GetAuraGameInstance()->SaveHeroData();
 
 	if (bWillExitRegion)
 	{
@@ -44,7 +44,7 @@ TSoftObjectPtr<UWorld> ULocationManagerComponent::GetNextLocation(
 	return Location;
 }
 
-TSoftObjectPtr<UWorld> ULocationManagerComponent::GetInitialLocation(ERegion InRegion)
+TSoftObjectPtr<UWorld> ULocationManager::GetInitialLocation(ERegion InRegion)
 {
 	const TSoftObjectPtr<UWorld> Location = GetAuraGameMode()->RegionInfo
 		->GetRandomizedInitialLocation(InRegion);
@@ -53,7 +53,7 @@ TSoftObjectPtr<UWorld> ULocationManagerComponent::GetInitialLocation(ERegion InR
 	return Location;
 }
 
-void ULocationManagerComponent::PlacePlayerInStartingPoint()
+void ULocationManager::PlacePlayerInStartingPoint()
 {
 	TArray<AActor*> PlayerStarts;
 	UGameplayStatics::GetAllActorsOfClass(
@@ -75,17 +75,7 @@ void ULocationManagerComponent::PlacePlayerInStartingPoint()
 		);
 }
 
-void ULocationManagerComponent::ExitLocation(EGatePosition NextGatePosition)
+void ULocationManager::ExitLocation(EGatePosition NextGatePosition)
 {
 	OnExitLocationDelegate.Broadcast(NextGatePosition);
-}
-
-UAuraGameInstance* ULocationManagerComponent::GetAuraGameInstance()
-{
-	if (AuraGameInstance == nullptr)
-	{
-		AuraGameInstance = Cast<UAuraGameInstance>(UGameplayStatics::GetGameInstance(this));
-	}
-
-	return AuraGameInstance;
 }

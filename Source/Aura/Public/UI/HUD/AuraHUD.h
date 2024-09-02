@@ -14,6 +14,7 @@ struct FWidgetControllerParams;
 class UOverlayWidgetController;
 class UAttributeMenuWidgetController;
 class UAuraUserWidget;
+
 /**
  * 
  */
@@ -30,34 +31,32 @@ public:
 		const FWidgetControllerParams& WCParams
 	);
 
+	UFUNCTION(BlueprintPure)
+	UAuraUserWidget* GetOverlayWidget() const { return OverlayWidget; }
+
 	void InitOverlay(
 		APlayerController* PC,
 		APlayerState* PS,
 		UAbilitySystemComponent* ASC,
 		UAttributeSet* AS);
 
+protected:
+	UPROPERTY(EditDefaultsOnly, Category="Root Widget")
+	TSubclassOf<UAuraUserWidget> OverlayWidgetClass;
+	UPROPERTY(EditDefaultsOnly, Category="Widget Controller")
+	TSubclassOf<UOverlayWidgetController> OverlayWidgetControllerClass;
+	UPROPERTY(EditDefaultsOnly, Category="Widget Controller")
+	TSubclassOf<UAttributeMenuWidgetController> AttributeMenuWidgetControllerClass;
+	UPROPERTY(EditDefaultsOnly, Category="Widget Controller")
+	TSubclassOf<USkillMenuWidgetController> SkillMenuWidgetControllerClass;
+
 private:
 	UPROPERTY()
 	TObjectPtr<UAuraUserWidget> OverlayWidget;
-	
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<UAuraUserWidget> OverlayWidgetClass;
-
 	UPROPERTY()
 	TObjectPtr<UOverlayWidgetController> OverlayWidgetController;
-
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<UOverlayWidgetController> OverlayWidgetControllerClass;
-
 	UPROPERTY()
 	TObjectPtr<UAttributeMenuWidgetController> AttributeMenuWidgetController;
-
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<UAttributeMenuWidgetController> AttributeMenuWidgetControllerClass;
-
 	UPROPERTY()
 	TObjectPtr<USkillMenuWidgetController> SkillMenuWidgetController;
-
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<USkillMenuWidgetController> SkillMenuWidgetControllerClass;
 };

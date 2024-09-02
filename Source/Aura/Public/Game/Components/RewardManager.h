@@ -7,15 +7,15 @@
 #include "GameplayTagContainer.h"
 #include "Game/AuraGameModeBase.h"
 #include "Level/RewardsInfo.h"
-#include "RewardManagerComponent.generated.h"
+#include "RewardManager.generated.h"
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class AURA_API URewardManagerComponent : public UAuraSystemComponent
+class AURA_API URewardManager : public UAuraSystemComponent
 {
 	GENERATED_BODY()
 
 public:
-	URewardManagerComponent();
+	URewardManager();
 	
 	void SetNextReward(const FGameplayTag& InRewardTag) { NextRewardTag = InRewardTag; }
 

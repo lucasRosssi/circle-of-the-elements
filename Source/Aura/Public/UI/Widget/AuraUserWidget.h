@@ -6,6 +6,8 @@
 #include "UINavigation/Public/UINavWidget.h"
 #include "AuraUserWidget.generated.h"
 
+enum class EMenuBlurMode : uint8;
+class UUIManager;
 class UInputAction;
 class AAuraPlayerState;
 class AAuraPlayerController;
@@ -42,15 +44,21 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 	TObjectPtr<UObject> WidgetController;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Focus")
+	EMenuBlurMode BlurMode;
+
 protected:
 	UFUNCTION(BlueprintImplementableEvent)
 	void WidgetControllerSet();
+
+	UFUNCTION(BlueprintPure)
+	UUIManager* GetUIManager();
 
 private:
 	UPROPERTY()
 	AAuraHero* Hero = nullptr;
 	UPROPERTY()
-	AAuraPlayerController* MainPlayerController = nullptr;
+	AAuraPlayerController* AuraPlayerController = nullptr;
 	UPROPERTY()
 	AAuraPlayerState* AuraPlayerState = nullptr;
 };

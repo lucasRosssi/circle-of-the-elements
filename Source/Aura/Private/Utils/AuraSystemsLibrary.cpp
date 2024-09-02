@@ -6,8 +6,45 @@
 #include "Aura/AuraLogChannels.h"
 #include "Game/AuraGameModeBase.h"
 #include "Kismet/GameplayStatics.h"
+#include "Player/AuraPlayerController.h"
+#include "UI/HUD/AuraHUD.h"
 
-UEncounterManagerComponent* UAuraSystemsLibrary::GetEncounterManager(const UObject* WorldContextObject)
+
+UAbilityManager* UAuraSystemsLibrary::GetAbilityManager(const UObject* WorldContextObject)
+{
+	AGameModeBase* GameMode = UGameplayStatics::GetGameMode(WorldContextObject);
+	if (const AAuraGameModeBase* AuraGameMode = Cast<AAuraGameModeBase>(GameMode))
+	{
+		return AuraGameMode->GetAbilityManager();
+	}
+
+	UE_LOG(LogAura, Warning, TEXT(
+		"Current world doesn't have an Ability Manager. "
+		"Trying to access from object: %s"),
+		*WorldContextObject->GetName()
+		);
+
+	return nullptr;
+}
+
+ULocationManager* UAuraSystemsLibrary::GetLocationManager(const UObject* WorldContextObject)
+{
+	AGameModeBase* GameMode = UGameplayStatics::GetGameMode(WorldContextObject);
+	if (const AAuraGameModeBase* AuraGameMode = Cast<AAuraGameModeBase>(GameMode))
+	{
+		return AuraGameMode->GetLocationManager();
+	}
+
+	UE_LOG(LogAura, Warning, TEXT(
+		"Current world doesn't have a Location Manager. "
+		"Trying to access from object: %s"),
+		*WorldContextObject->GetName()
+		);
+
+	return nullptr;
+}
+
+UEncounterManager* UAuraSystemsLibrary::GetEncounterManager(const UObject* WorldContextObject)
 {
 	AGameModeBase* GameMode = UGameplayStatics::GetGameMode(WorldContextObject);
 	if (const AAuraGameModeBase* AuraGameMode = Cast<AAuraGameModeBase>(GameMode))
@@ -24,7 +61,7 @@ UEncounterManagerComponent* UAuraSystemsLibrary::GetEncounterManager(const UObje
 	return nullptr;
 }
 
-URewardManagerComponent* UAuraSystemsLibrary::GetRewardManager(const UObject* WorldContextObject)
+URewardManager* UAuraSystemsLibrary::GetRewardManager(const UObject* WorldContextObject)
 {
 	AGameModeBase* GameMode = UGameplayStatics::GetGameMode(WorldContextObject);
 	if (const AAuraGameModeBase* AuraGameMode = Cast<AAuraGameModeBase>(GameMode))
@@ -41,16 +78,33 @@ URewardManagerComponent* UAuraSystemsLibrary::GetRewardManager(const UObject* Wo
 	return nullptr;
 }
 
-ULocationManagerComponent* UAuraSystemsLibrary::GetLocationManager(const UObject* WorldContextObject)
+UUIManager* UAuraSystemsLibrary::GetUIManager(const UObject* WorldContextObject, int32 PlayerIndex)
 {
-	AGameModeBase* GameMode = UGameplayStatics::GetGameMode(WorldContextObject);
-	if (const AAuraGameModeBase* AuraGameMode = Cast<AAuraGameModeBase>(GameMode))
+	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(WorldContextObject, PlayerIndex);
+	if (const AAuraPlayerController* AuraPlayerController = Cast<AAuraPlayerController>(PlayerController))
 	{
-		return AuraGameMode->GetLocationManager();
+		return AuraPlayerController->GetUIManager();
 	}
 
 	UE_LOG(LogAura, Warning, TEXT(
-		"Current world doesn't have a Location Manager. "
+		"Player index is invalid or doesn't have an UI Manager. "
+		"Trying to access from object: %s"),
+		*WorldContextObject->GetName()
+		);
+
+	return nullptr;
+}
+
+AAuraHUD* UAuraSystemsLibrary::GetAuraHUD(const UObject* WorldContextObject, int32 PlayerIndex)
+{
+	AGameModeBase* GameMode = UGameplayStatics::GetGameMode(WorldContextObject);
+	if (AAuraGameModeBase* AuraGameMode = Cast<AAuraGameModeBase>(GameMode))
+	{
+		return AuraGameMode->GetAuraHUD(PlayerIndex);
+	}
+
+	UE_LOG(LogAura, Warning, TEXT(
+		"Player index is invalid or doesn't have an Aura HUD. "
 		"Trying to access from object: %s"),
 		*WorldContextObject->GetName()
 		);
