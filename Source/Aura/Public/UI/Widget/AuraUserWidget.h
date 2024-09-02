@@ -6,6 +6,7 @@
 #include "UINavigation/Public/UINavWidget.h"
 #include "AuraUserWidget.generated.h"
 
+class UUIManager;
 class UInputAction;
 class AAuraPlayerState;
 class AAuraPlayerController;
@@ -46,11 +47,14 @@ protected:
 	UFUNCTION(BlueprintImplementableEvent)
 	void WidgetControllerSet();
 
+	UFUNCTION(BlueprintPure)
+	UUIManager* GetUIManager();
+
 private:
 	UPROPERTY()
 	AAuraHero* Hero = nullptr;
 	UPROPERTY()
-	AAuraPlayerController* MainPlayerController = nullptr;
+	AAuraPlayerController* AuraPlayerController = nullptr;
 	UPROPERTY()
 	AAuraPlayerState* AuraPlayerState = nullptr;
 };

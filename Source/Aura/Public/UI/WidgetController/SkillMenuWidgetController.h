@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AbilitySystem/Data/AbilityInfo.h"
 #include "UI/WidgetController/AuraWidgetController.h"
 #include "SkillMenuWidgetController.generated.h"
 
@@ -46,6 +47,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void EquipToInputPressed(const FGameplayTag& AbilityTag, const FGameplayTag& InputTag);
 
+	TArray<FAuraAbilityInfo> GetAcquiredAbilities() const { return AcquiredAbilityInfos; }
+
 private:
 	static void ShouldEnableInteractions(
 		const FGameplayTag& AbilityStatus,
@@ -53,4 +56,9 @@ private:
 		bool& bShouldEnableSpendPoint,
 		bool& bShouldEnableEquip
 	);
+
+	UFUNCTION()
+	void OnAbilitySelected(const FAuraAbilityInfo& AuraAbilityInfo);
+	
+	TArray<FAuraAbilityInfo> AcquiredAbilityInfos;
 };

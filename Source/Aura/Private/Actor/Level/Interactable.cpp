@@ -11,6 +11,7 @@
 #include "Interaction/CombatInterface.h"
 #include "Interaction/PlayerInterface.h"
 #include "Kismet/GameplayStatics.h"
+#include "Player/AuraPlayerController.h"
 
 AInteractable::AInteractable()
 {
@@ -59,7 +60,7 @@ float AInteractable::GetInteractAreaRadius()
 	return InteractArea->GetScaledSphereRadius();
 }
 
-void AInteractable::PreInteract(AController* InstigatorController)
+void AInteractable::PreInteract(AAuraPlayerController* InstigatorController)
 {
 	if (!bInteractionEnabled) return;
 
@@ -76,7 +77,7 @@ void AInteractable::PreInteract(AController* InstigatorController)
 	DisableInteraction();
 }
 
-void AInteractable::Interact(AController* InstigatorController)
+void AInteractable::Interact(AAuraPlayerController* InstigatorController)
 {
 	if (InstigatorController->GetPawn()->Implements<UCombatInterface>())
 	{

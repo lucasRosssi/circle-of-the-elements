@@ -12,7 +12,7 @@ class UAuraAbilitySystemComponent;
 struct FAbilityInfoParams;
 enum class ECharacterName : uint8;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAbilitySelected, FAuraAbilityInfo, AbilityInfo);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAbilitySelected, const FAuraAbilityInfo&, AbilityInfo);
 
 /**
  * 
@@ -94,7 +94,7 @@ protected:
 	TMap<FGameplayTag, FGameplayTagContainer> ElementalTierPool;
 
 private:
-	void AssignNextAbilities();
+	void AssignInitialAbilities();
 	FGameplayTag RandomizeTier(const TMap<FGameplayTag, int32>& TierMap);
 	TMap<FGameplayTag, FAuraAbilityInfo> GetRemainingElementAbilities(
 		ECharacterName CharacterName,

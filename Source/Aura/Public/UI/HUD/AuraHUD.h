@@ -14,6 +14,7 @@ struct FWidgetControllerParams;
 class UOverlayWidgetController;
 class UAttributeMenuWidgetController;
 class UAuraUserWidget;
+
 /**
  * 
  */
@@ -39,16 +40,6 @@ public:
 		UAbilitySystemComponent* ASC,
 		UAttributeSet* AS);
 
-	UFUNCTION(BlueprintCallable)
-	UAuraUserWidget* BuildWidget(TSubclassOf<UAuraUserWidget> WidgetClass);
-	UFUNCTION(BlueprintCallable)
-	void ShowWidget(UAuraUserWidget* Widget);
-	UFUNCTION(BlueprintCallable)
-	UAuraUserWidget* NavigateToWidget(TSubclassOf<UAuraUserWidget> WidgetClass);
-
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	void ShowRewardSelectionMenu(const FGameplayTag& ElementTag);
-
 protected:
 	UPROPERTY(EditDefaultsOnly, Category="Root Widget")
 	TSubclassOf<UAuraUserWidget> OverlayWidgetClass;
@@ -58,9 +49,6 @@ protected:
 	TSubclassOf<UAttributeMenuWidgetController> AttributeMenuWidgetControllerClass;
 	UPROPERTY(EditDefaultsOnly, Category="Widget Controller")
 	TSubclassOf<USkillMenuWidgetController> SkillMenuWidgetControllerClass;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Location")
-	TSubclassOf<UAuraUserWidget> RewardSelectionWidgetClass;
 
 private:
 	UPROPERTY()

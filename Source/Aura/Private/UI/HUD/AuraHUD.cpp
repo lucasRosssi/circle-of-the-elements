@@ -73,26 +73,3 @@ void AAuraHUD::InitOverlay(APlayerController* PC, APlayerState* PS, UAbilitySyst
 	WidgetController->BroadcastInitialValues();
 	Widget->AddToViewport();
 }
-
-UAuraUserWidget* AAuraHUD::BuildWidget(TSubclassOf<UAuraUserWidget> WidgetClass)
-{
-	return CreateWidget<UAuraUserWidget>(GetOwningPlayerController(), WidgetClass);
-}
-
-void AAuraHUD::ShowWidget(UAuraUserWidget* Widget)
-{
-	OverlayWidget->GoToBuiltWidget(Widget, false);
-}
-
-UAuraUserWidget* AAuraHUD::NavigateToWidget(TSubclassOf<UAuraUserWidget> WidgetClass)
-{
-	UAuraUserWidget* Widget = BuildWidget(WidgetClass);
-	ShowWidget(Widget);
-
-	return Widget;
-}
-
-void AAuraHUD::ShowRewardSelectionMenu_Implementation(const FGameplayTag& ElementTag)
-{
-	UE_LOG(LogAura, Warning, TEXT("ShowRewardSelectionMenu was not overriden in BP!"))
-}

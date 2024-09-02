@@ -6,6 +6,7 @@
 #include "AbilitySystemComponent.h"
 #include "AuraWidgetController.generated.h"
 
+class AAuraHUD;
 class UAbilityInfo;
 class UAuraAbilitySystemComponent;
 class UAuraAttributeSet;
@@ -72,11 +73,16 @@ public:
 	
 	virtual void BindCallbacksToDependencies();
 
+	void BroadcastAbilityInfo();
+	
 	UPROPERTY(BlueprintAssignable, Category = "Ability")
 	FAbilityInfoSignature AbilityInfoDelegate;
 
-	void BroadcastAbilityInfo();
 protected:
+	AAuraPlayerController* GetMainPlayerController();
+	AAuraPlayerState* GetAuraPlayerState();
+	UAuraAbilitySystemComponent* GetAuraAbilitySystemComponent();
+	UAuraAttributeSet* GetAuraAttributeSet();
 	
 	UPROPERTY(BlueprintReadOnly, Category = "Widget Controller")
 	TObjectPtr<APlayerController> PlayerController;
@@ -104,9 +110,5 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Data")
 	TObjectPtr<UAbilityInfo> AbilityInfo;
-
-	AAuraPlayerController* GetMainPlayerController();
-	AAuraPlayerState* GetAuraPlayerState();
-	UAuraAbilitySystemComponent* GetAuraAbilitySystemComponent();
-	UAuraAttributeSet* GetAuraAttributeSet();
+	
 };

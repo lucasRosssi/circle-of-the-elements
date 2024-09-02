@@ -8,9 +8,10 @@
 #include "Game/AuraGameInstance.h"
 #include "Game/AuraGameModeBase.h"
 #include "Game/Components/RewardManager.h"
+#include "Game/Components/UIManager.h"
 #include "Level/RewardsInfo.h"
+#include "Player/AuraPlayerController.h"
 #include "Player/AuraPlayerState.h"
-#include "UI/HUD/AuraHUD.h"
 #include "Utils/AuraSystemsLibrary.h"
 
 ALocationReward::ALocationReward()
@@ -18,7 +19,7 @@ ALocationReward::ALocationReward()
 	EnableInteraction();
 }
 
-void ALocationReward::Interact(AController* InstigatorController)
+void ALocationReward::Interact(AAuraPlayerController* InstigatorController)
 {
 	Super::Interact(InstigatorController);
 	
@@ -35,7 +36,7 @@ void ALocationReward::Interact(AController* InstigatorController)
 		}
 		else
 		{
-			GetAuraGameMode()->GetAuraHUD(0)->ShowRewardSelectionMenu(GetAbilityElement());
+			InstigatorController->GetUIManager()->OpenSkillSelectionMenu.Broadcast(GetAbilityElement());
 		}
 		
 		GetAuraGameInstance()->AddPlayerResource(RewardTag, RewardInfo.Amount);

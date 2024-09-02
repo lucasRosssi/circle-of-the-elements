@@ -6,6 +6,7 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "AuraSystemsLibrary.generated.h"
 
+class UUIManager;
 class UAbilityManager;
 class ULocationManager;
 class URewardManager;
@@ -45,7 +46,13 @@ public:
 	static URewardManager* GetRewardManager(const UObject* WorldContextObject);
 	UFUNCTION(
 		BlueprintPure,
-		Category="Aura Systems|HUD",
+		Category="Aura Systems|UI",
+		meta=(HidePin="WorldContextObject", DefaultToSelf="WorldContextObject")
+		)
+	static UUIManager* GetUIManager(const UObject* WorldContextObject, int32 PlayerIndex);
+	UFUNCTION(
+		BlueprintPure,
+		Category="Aura Systems|UI",
 		meta=(HidePin="WorldContextObject", DefaultToSelf="WorldContextObject")
 		)
 	static AAuraHUD* GetAuraHUD(const UObject* WorldContextObject, int32 PlayerIndex);

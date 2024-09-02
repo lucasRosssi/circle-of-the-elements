@@ -7,7 +7,6 @@
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
 #include "AbilitySystem/AuraAttributeSet.h"
 #include "AbilitySystem/Data/AbilityInfo.h"
-#include "Aura/AuraLogChannels.h"
 #include "Player/AuraPlayerState.h"
 
 void UOverlayWidgetController::BroadcastInitialValues()
@@ -134,13 +133,6 @@ void UOverlayWidgetController::ShowBossHealthBar(ABossEnemy* Boss)
 void UOverlayWidgetController::HideBossHealthBar()
 {
 	HideBossHealthBarDelegate.Broadcast();
-}
-
-void UOverlayWidgetController::OnElementalEssenceTaken_Implementation(
-	const FGameplayTag& EssenceTag
-	)
-{
-	UE_LOG(LogAura, Warning, TEXT("OnElementalEssenceTaken not overriden in Blueprint"));
 }
 
 void UOverlayWidgetController::OnAbilityEquipped(

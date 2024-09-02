@@ -33,7 +33,7 @@ void UAbilityManager::BeginPlay()
 {
 	Super::BeginPlay();
 
-	AssignNextAbilities();
+	AssignInitialAbilities();
 }
 
 TMap<FGameplayTag, FAuraAbilityInfo> UAbilityManager::GetElementAbilities(
@@ -167,12 +167,13 @@ void UAbilityManager::SelectAbilityReward(
 		GetAuraGameMode()->CurrentCharacterName,
 		ElementTag
 		);
+	
 	OnAbilitySelectedDelegate.Broadcast(AbilityInfo);
 	UAuraAbilitySystemLibrary::GetOverlayWidgetController(GetOwner())
 		->AbilityInfoDelegate.Broadcast(AbilityInfo);
 }
 
-void UAbilityManager::AssignNextAbilities()
+void UAbilityManager::AssignInitialAbilities()
 {
 	const ECharacterName CharacterName = GetAuraGameMode()->CurrentCharacterName;
 	

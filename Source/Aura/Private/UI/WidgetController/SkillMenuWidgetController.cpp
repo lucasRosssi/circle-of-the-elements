@@ -6,7 +6,9 @@
 #include "AuraGameplayTags.h"
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
 #include "AbilitySystem/Data/AbilityInfo.h"
+#include "Game/Components/AbilityManager.h"
 #include "Player/AuraPlayerState.h"
+#include "Utils/AuraSystemsLibrary.h"
 
 void USkillMenuWidgetController::BroadcastInitialValues()
 {
@@ -40,6 +42,9 @@ void USkillMenuWidgetController::BindCallbacksToDependencies()
 			SkillPointsChanged.Broadcast(SkillPoints);
 		}
 	);
+
+	UAuraSystemsLibrary::GetAbilityManager(this)
+		->OnAbilitySelectedDelegate.AddDynamic(this, &USkillMenuWidgetController::OnAbilitySelected);
 }
 
 void USkillMenuWidgetController::SkillGlobeSelected(const FGameplayTag& AbilityTag)
@@ -164,4 +169,9 @@ void USkillMenuWidgetController::ShouldEnableInteractions(
 		bShouldEnableEquip = false;
 		bShouldEnableSpendPoint = false;
 	}
+}
+
+void USkillMenuWidgetController::OnAbilitySelected(const FAuraAbilityInfo& AuraAbilityInfo)
+{
+	AcquiredAbilityInfos.Add(AuraAbilityInfo);
 }

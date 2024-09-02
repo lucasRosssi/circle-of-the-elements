@@ -10,6 +10,7 @@
 #include "Actor/TargetingActor.h"
 #include "Aura/Aura.h"
 #include "Camera/CameraComponent.h"
+#include "Game/Components/UIManager.h"
 #include "Input/AuraInputComponent.h"
 #include "Interaction/TargetInterface.h"
 #include "GameFramework/Character.h"
@@ -17,11 +18,15 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Materials/MaterialParameterCollectionInstance.h"
+#include "UI/HUD/AuraHUD.h"
 #include "UI/Widget/DamageTextComponent.h"
 
 AAuraPlayerController::AAuraPlayerController()
 {
 	bReplicates = true;
+
+	UIManager = CreateDefaultSubobject<UUIManager>("UIManager");
+	UIManager->SetAuraPlayerController(this);
 }
 
 void AAuraPlayerController::ShowTargetingActor(
@@ -488,6 +493,16 @@ UAuraAbilitySystemComponent* AAuraPlayerController::GetASC()
 	}
 	
 	return AuraAbilitySystemComponent;
+}
+
+AAuraHUD* AAuraPlayerController::GetAuraHUD()
+{
+	if (AuraHUD == nullptr)
+	{
+		AuraHUD = Cast<AAuraHUD>(GetHUD());
+	}
+
+	return AuraHUD;
 }
 
 void AAuraPlayerController::UpdateTargetingActorLocation()

@@ -6,6 +6,7 @@
 #include "Aura/AuraLogChannels.h"
 #include "Game/AuraGameModeBase.h"
 #include "Kismet/GameplayStatics.h"
+#include "Player/AuraPlayerController.h"
 
 
 UAbilityManager* UAuraSystemsLibrary::GetAbilityManager(const UObject* WorldContextObject)
@@ -69,6 +70,23 @@ URewardManager* UAuraSystemsLibrary::GetRewardManager(const UObject* WorldContex
 
 	UE_LOG(LogAura, Warning, TEXT(
 		"Current world doesn't have a Reward Manager. "
+		"Trying to access from object: %s"),
+		*WorldContextObject->GetName()
+		);
+
+	return nullptr;
+}
+
+UUIManager* UAuraSystemsLibrary::GetUIManager(const UObject* WorldContextObject, int32 PlayerIndex)
+{
+	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(WorldContextObject, PlayerIndex);
+	if (const AAuraPlayerController* AuraPlayerController = Cast<AAuraPlayerController>(PlayerController))
+	{
+		return AuraPlayerController->GetUIManager();
+	}
+
+	UE_LOG(LogAura, Warning, TEXT(
+		"Player index is invalid or doesn't have an UI Manager. "
 		"Trying to access from object: %s"),
 		*WorldContextObject->GetName()
 		);

@@ -84,9 +84,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void HideBossHealthBar();
 
-	UFUNCTION(BlueprintNativeEvent)
-	void OnElementalEssenceTaken(const FGameplayTag& EssenceTag);
-
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Data")
 	TObjectPtr<UDataTable> MessageWidgetDataTable;

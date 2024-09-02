@@ -19,7 +19,7 @@ void AGate::BeginPlay()
 	GetAuraGameMode()->GetOnRewardTakenDelegate().AddDynamic(this, &AGate::EnableInteraction);
 }
 
-void AGate::Interact(AController* InstigatorController)
+void AGate::Interact(AAuraPlayerController* InstigatorController)
 {
 	Super::Interact(InstigatorController);
 

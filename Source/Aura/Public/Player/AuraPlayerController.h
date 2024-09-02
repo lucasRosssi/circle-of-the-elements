@@ -11,6 +11,8 @@
 
 #include "AuraPlayerController.generated.h"
 
+class AAuraHUD;
+class UUIManager;
 struct FTimeline;
 enum class ETargetTeam : uint8;
 class ATargetingActor;
@@ -76,6 +78,8 @@ public:
 	void OnOcclusionChange(bool bIsOccluding);
 
 	UUINavPCComponent* GetUINavComponent() const { return UINavPCComp; }
+	UUIManager* GetUIManager() const { return UIManager; }
+	AAuraHUD* GetAuraHUD();
 
 	void AimAbilityGamepad(AActor* AvatarActor, FHitResult& OutHitResult);
 	void AimAbilityMouse(AActor* AvatarActor, FHitResult& OutHitResult);
@@ -109,7 +113,10 @@ protected:
 	
 	void HandleEnvironmentOcclusion();
 	void GamepadMoveTargetingActor(const FInputActionValue& InputActionValue);
-
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="UI")
+	TObjectPtr<UUIManager> UIManager;
+	
 	UPROPERTY(BlueprintReadWrite, Category="Input")
 	bool bUsingGamepad = false;
 
@@ -118,6 +125,23 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Input")
 	TObjectPtr<UAuraInputConfig> InputConfig;
+
+	UPROPERTY(EditAnywhere, Category="Input")
+	TObjectPtr<UInputMappingContext> MainContext;
+
+	UPROPERTY(EditAnywhere, Category="Input")
+	TObjectPtr<UInputAction> MoveAction;
+	UPROPERTY(EditAnywhere, Category="Input")
+	TObjectPtr<UInputAction> TargetingActorMoveAction;
+	UPROPERTY(EditAnywhere, Category="Input")
+	TObjectPtr<UInputAction> ConfirmAction;
+	UPROPERTY(EditAnywhere, Category="Input")
+	TObjectPtr<UInputAction> CancelAction;
+	UPROPERTY(EditAnywhere, Category="Input")
+	TObjectPtr<UInputAction> InteractAction;
+
+	UPROPERTY(EditAnywhere, Category="Input")
+	TObjectPtr<UInputAction> CheckInputSourceAction;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Camera|Occlusion")
 	TObjectPtr<UMaterialParameterCollection> OcclusionMaskParameterCollection;
@@ -148,28 +172,11 @@ private:
 
 	void UpdateTargetingActorLocation();
 	void UpdatePlayerLocationParameterCollection();
-	
-	UPROPERTY(EditAnywhere, Category="Input")
-	TObjectPtr<UInputMappingContext> MainContext;
-
-	UPROPERTY(EditAnywhere, Category="Input")
-	TObjectPtr<UInputAction> MoveAction;
-	UPROPERTY(EditAnywhere, Category="Input")
-	TObjectPtr<UInputAction> TargetingActorMoveAction;
-	UPROPERTY(EditAnywhere, Category="Input")
-	TObjectPtr<UInputAction> ConfirmAction;
-	UPROPERTY(EditAnywhere, Category="Input")
-	TObjectPtr<UInputAction> CancelAction;
-	UPROPERTY(EditAnywhere, Category="Input")
-	TObjectPtr<UInputAction> InteractAction;
-
-	UPROPERTY(EditAnywhere, Category="Input")
-	TObjectPtr<UInputAction> CheckInputSourceAction;
+	UAuraAbilitySystemComponent* GetASC();
 
 	UPROPERTY()
 	TObjectPtr<UAuraAbilitySystemComponent> AuraAbilitySystemComponent;
 	
-	UAuraAbilitySystemComponent* GetASC();
 
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UDamageTextComponent> DamageTextComponentClass;
@@ -191,4 +198,7 @@ private:
 	UCameraComponent* PlayerCamera = nullptr;
 
 	bool bControllerEnabled = true;
+
+	UPROPERTY()
+	AAuraHUD* AuraHUD = nullptr;
 };

@@ -8,6 +8,7 @@
 #include "Level/RewardsInfo.h"
 #include "AuraGameModeBase.generated.h"
 
+class UUIManager;
 class AAuraHUD;
 enum class ECharacterName : uint8;
 class UAbilityManager;
