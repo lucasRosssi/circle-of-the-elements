@@ -24,6 +24,8 @@ protected:
 	// START Interactable overrides
 	virtual void Interact(AController* InstigatorController) override;
 	// END Interactable overrides
+
+	FGameplayTag GetAbilityElement() const;
 	
 	UPROPERTY(
 		EditDefaultsOnly,

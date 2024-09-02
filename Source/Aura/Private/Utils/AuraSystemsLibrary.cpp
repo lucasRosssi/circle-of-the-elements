@@ -75,3 +75,20 @@ URewardManager* UAuraSystemsLibrary::GetRewardManager(const UObject* WorldContex
 
 	return nullptr;
 }
+
+AAuraHUD* UAuraSystemsLibrary::GetAuraHUD(const UObject* WorldContextObject, int32 PlayerIndex)
+{
+	AGameModeBase* GameMode = UGameplayStatics::GetGameMode(WorldContextObject);
+	if (AAuraGameModeBase* AuraGameMode = Cast<AAuraGameModeBase>(GameMode))
+	{
+		return AuraGameMode->GetAuraHUD(PlayerIndex);
+	}
+
+	UE_LOG(LogAura, Warning, TEXT(
+		"Player index is invalid or doesn't have an Aura HUD. "
+		"Trying to access from object: %s"),
+		*WorldContextObject->GetName()
+		);
+
+	return nullptr;
+}

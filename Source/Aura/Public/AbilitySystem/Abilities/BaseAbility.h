@@ -49,6 +49,10 @@ public:
 		const FGameplayAbilityActorInfo* ActorInfo,
 		const FGameplayAbilitySpec* Spec
 		);
+
+	// Ability Interface overrides
+	virtual bool IsActiveAbility_Implementation() const override;
+	// END Ability Interface overrides
 	
 	UFUNCTION(BlueprintPure, Category="Resources", meta=(HidePin="Target", DefaultToSelf="Target"))
 	float GetManaCostAtLevel(int32 Level) const;

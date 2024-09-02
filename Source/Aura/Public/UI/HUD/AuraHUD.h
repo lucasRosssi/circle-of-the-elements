@@ -30,34 +30,45 @@ public:
 		const FWidgetControllerParams& WCParams
 	);
 
+	UFUNCTION(BlueprintPure)
+	UAuraUserWidget* GetOverlayWidget() const { return OverlayWidget; }
+
 	void InitOverlay(
 		APlayerController* PC,
 		APlayerState* PS,
 		UAbilitySystemComponent* ASC,
 		UAttributeSet* AS);
 
+	UFUNCTION(BlueprintCallable)
+	UAuraUserWidget* BuildWidget(TSubclassOf<UAuraUserWidget> WidgetClass);
+	UFUNCTION(BlueprintCallable)
+	void ShowWidget(UAuraUserWidget* Widget);
+	UFUNCTION(BlueprintCallable)
+	UAuraUserWidget* NavigateToWidget(TSubclassOf<UAuraUserWidget> WidgetClass);
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void ShowRewardSelectionMenu(const FGameplayTag& ElementTag);
+
+protected:
+	UPROPERTY(EditDefaultsOnly, Category="Root Widget")
+	TSubclassOf<UAuraUserWidget> OverlayWidgetClass;
+	UPROPERTY(EditDefaultsOnly, Category="Widget Controller")
+	TSubclassOf<UOverlayWidgetController> OverlayWidgetControllerClass;
+	UPROPERTY(EditDefaultsOnly, Category="Widget Controller")
+	TSubclassOf<UAttributeMenuWidgetController> AttributeMenuWidgetControllerClass;
+	UPROPERTY(EditDefaultsOnly, Category="Widget Controller")
+	TSubclassOf<USkillMenuWidgetController> SkillMenuWidgetControllerClass;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Location")
+	TSubclassOf<UAuraUserWidget> RewardSelectionWidgetClass;
+
 private:
 	UPROPERTY()
 	TObjectPtr<UAuraUserWidget> OverlayWidget;
-	
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<UAuraUserWidget> OverlayWidgetClass;
-
 	UPROPERTY()
 	TObjectPtr<UOverlayWidgetController> OverlayWidgetController;
-
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<UOverlayWidgetController> OverlayWidgetControllerClass;
-
 	UPROPERTY()
 	TObjectPtr<UAttributeMenuWidgetController> AttributeMenuWidgetController;
-
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<UAttributeMenuWidgetController> AttributeMenuWidgetControllerClass;
-
 	UPROPERTY()
 	TObjectPtr<USkillMenuWidgetController> SkillMenuWidgetController;
-
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<USkillMenuWidgetController> SkillMenuWidgetControllerClass;
 };

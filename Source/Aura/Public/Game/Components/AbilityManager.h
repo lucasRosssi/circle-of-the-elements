@@ -8,6 +8,7 @@
 #include "Game/Components/AuraSystemComponent.h"
 #include "AbilityManager.generated.h"
 
+class UAuraAbilitySystemComponent;
 struct FAbilityInfoParams;
 enum class ECharacterName : uint8;
 
@@ -46,6 +47,13 @@ public:
 		FText& AbilityName,
 		FText& AbilityDescription,
 		FText& AbilityDetails
+		);
+
+	UFUNCTION(BlueprintCallable, Category="Manager|Ability")
+	void SelectAbilityReward(
+		const FGameplayTag& ElementTag,
+		const FAuraAbilityInfo& AbilityInfo,
+		UAuraAbilitySystemComponent* AuraASC
 		);
 
 	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category="Manager|Ability")
@@ -97,4 +105,6 @@ private:
 		const TMap<FGameplayTag, FAuraAbilityInfo>& ElementAbilities 
 		);
 	TMap<FGameplayTag, int32> GetAvailableTiers(const FGameplayTag& ElementTag);
+
+	FGameplayTag GetAvailableInputTag(UAuraAbilitySystemComponent* AuraASC);
 };

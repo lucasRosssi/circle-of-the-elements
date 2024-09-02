@@ -36,4 +36,7 @@ public:
 	int32 GetAreaEffectDurationAtLevel(int32 Level) const;
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	float GetPeriodAtLevel(int32 Level) const;
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	bool IsActiveAbility() const;
 };

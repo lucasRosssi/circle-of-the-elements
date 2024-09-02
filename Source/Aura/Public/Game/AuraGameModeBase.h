@@ -8,6 +8,7 @@
 #include "Level/RewardsInfo.h"
 #include "AuraGameModeBase.generated.h"
 
+class AAuraHUD;
 enum class ECharacterName : uint8;
 class UAbilityManager;
 class ULocationManager;
@@ -56,6 +57,7 @@ public:
 	int32 GetEnemiesLevel() const;
 	
 	UAuraGameInstance* GetAuraGameInstance();
+	AAuraHUD* GetAuraHUD(int32 PlayerIndex);
 
 	FOnEncounterFinished& GetOnEncounterFinishedDelegate();
 	FOnExitLocation& GetOnExitLocationDelegate();
@@ -96,4 +98,7 @@ protected:
 private:
 	UPROPERTY()
 	UAuraGameInstance* AuraGameInstance = nullptr;
+
+	UPROPERTY()
+	TMap<int32, AAuraHUD*> AuraHUDs;
 };

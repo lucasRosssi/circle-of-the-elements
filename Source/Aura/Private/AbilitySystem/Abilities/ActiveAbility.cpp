@@ -30,6 +30,11 @@ float UActiveAbility::GetEffectChangePerHitAtLevel_Implementation(int32 Level) c
 	return EffectChangePerHit.GetValueAtLevel(Level);
 }
 
+bool UActiveAbility::IsActiveAbility_Implementation() const
+{
+	return true;
+}
+
 float UActiveAbility::GetMontagePlayRate() const
 {
 	return MontagePlayRate.GetValueAtLevel(GetAbilityLevel());

@@ -10,6 +10,7 @@
 #include "Game/Components/LocationManager.h"
 #include "Game/Components/RewardManager.h"
 #include "Kismet/GameplayStatics.h"
+#include "UI/HUD/AuraHUD.h"
 
 AAuraGameModeBase::AAuraGameModeBase()
 {
@@ -45,6 +46,20 @@ UAuraGameInstance* AAuraGameModeBase::GetAuraGameInstance()
 	}
 
 	return AuraGameInstance;
+}
+
+AAuraHUD* AAuraGameModeBase::GetAuraHUD(int32 PlayerIndex)
+{
+	if (!AuraHUDs.Contains(PlayerIndex))
+	{
+		AAuraHUD* AuraHUD = Cast<AAuraHUD>(
+			UGameplayStatics::GetPlayerController(this, PlayerIndex)->GetHUD()
+			);
+	
+		AuraHUDs.Add(PlayerIndex, AuraHUD);
+	}
+
+	return AuraHUDs[PlayerIndex];
 }
 
 void AAuraGameModeBase::LoadLevelInfo()

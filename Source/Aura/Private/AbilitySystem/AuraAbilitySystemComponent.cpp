@@ -7,7 +7,6 @@
 #include "AuraGameplayTags.h"
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "AbilitySystem/Abilities/ActiveAbility.h"
-#include "Aura/Aura.h"
 #include "Aura/AuraLogChannels.h"
 #include "Character/AuraCharacterBase.h"
 #include "Interaction/PlayerInterface.h"
@@ -369,6 +368,14 @@ void UAuraAbilitySystemComponent::ClientEquipAbility_Implementation(
 	AbilityEquipped.Broadcast(AbilityTag, StatusTag, InputTag, PreviousInputTag);
 }
 
+void UAuraAbilitySystemComponent::UnlockAbility(FGameplayAbilitySpec& AbilitySpec)
+{
+	if (!GetAvatarActor()->HasAuthority()) return;
+	SetAbilityStatusFromSpec(AbilitySpec, FAuraGameplayTags::Get().Abilities_Status_Unlocked);
+	GiveAbility(AbilitySpec);
+	MarkAbilitySpecDirty(AbilitySpec);
+}
+
 FString UAuraAbilitySystemComponent::GetDescriptionByAbilityTag(
 	const UAbilityInfo* AbilityInfo,
 	const FGameplayTag& AbilityTag
@@ -401,6 +408,18 @@ FString UAuraAbilitySystemComponent::GetNextLevelDescriptionByAbilityTag(
 	}
 
 	return FString();
+}
+
+bool UAuraAbilitySystemComponent::IsInputTagAssigned(const FGameplayTag& InputTag)
+{
+	if (!InputTag.IsValid()) return false;
+
+	for (const auto& AbilitySpec : GetActivatableAbilities())
+	{
+		if (AbilitySpec.DynamicAbilityTags.HasTagExact(InputTag)) return true;
+	}
+
+	return false;
 }
 
 void UAuraAbilitySystemComponent::SetInputTagFromSpec(

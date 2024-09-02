@@ -4,11 +4,13 @@
 #include "Game/Components/AbilityManager.h"
 
 #include "AuraGameplayTags.h"
+#include "AbilitySystem/AuraAbilitySystemComponent.h"
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "Aura/AuraLogChannels.h"
 #include "Enums/CharacterName.h"
 #include "Game/AuraGameModeBase.h"
 #include "AbilitySystem/Abilities/BaseAbility.h"
+#include "UI/WidgetController/OverlayWidgetController.h"
 
 UAbilityManager::UAbilityManager()
 {
@@ -45,90 +47,6 @@ TMap<FGameplayTag, FAuraAbilityInfo> UAbilityManager::GetElementAbilities(
 FAuraAbilityInfo UAbilityManager::GetAbilityInfo(const FAbilityInfoParams& Params)
 {
 	return GetAuraGameMode()->AbilityInfo->FindAbilityInfoWithParams(Params);
-}
-
-void UAbilityManager::AssignNextAbilities()
-{
-	const ECharacterName CharacterName = GetAuraGameMode()->CurrentCharacterName;
-	
-	const FAuraGameplayTags& Tags = FAuraGameplayTags::Get();
-	for (const FGameplayTag& ElementTag : *Tags.ParentsToChildren.Find(Tags.Abilities_Element))
-	{
-		RandomizeElementAbilities(CharacterName, ElementTag);
-	}
-}
-
-FGameplayTag UAbilityManager::RandomizeTier(const TMap<FGameplayTag, int32>& TierMap)
-{
-	float TiersSum = 0.f;
-	for (const auto& Tier : TierMap)
-	{
-		TiersSum += Tier.Value;
-	}
-	float RandomFloat = FMath::FRandRange(0.f, TiersSum);
-	for (const auto& Tier : TierMap)
-	{
-		if (Tier.Value < RandomFloat)
-		{
-			return Tier.Key;
-		}
-
-		RandomFloat -= Tier.Value;
-	}
-
-	return FGameplayTag();
-}
-
-TMap<FGameplayTag, FAuraAbilityInfo> UAbilityManager::GetRemainingElementAbilities(
-	ECharacterName CharacterName,
-	const FGameplayTag ElementTag
-	)
-{
-	return GetElementAbilities(CharacterName, ElementTag).FilterByPredicate(
-		[this](const TTuple<FGameplayTag, FAuraAbilityInfo>& 
-	AbilityInfo)
-	{
-		return !AcquiredAbilities.HasTagExact(AbilityInfo.Key) ||
-			!BlockedAbilities.HasTagExact(AbilityInfo.Key);
-	});
-}
-
-TArray<FAuraAbilityInfo> UAbilityManager::GetRemainingTierAbilities(
-	const FGameplayTag& TierTag,
-	const TMap<FGameplayTag, FAuraAbilityInfo>& ElementAbilities
-	)
-{
-	TArray<FAuraAbilityInfo> Abilities;
-	ElementAbilities.GenerateValueArray(Abilities);
-	Abilities.FilterByPredicate([this, TierTag](const FAuraAbilityInfo& Ability)
-		{
-			return TierTag.MatchesTagExact(Ability.TierTag);
-		});
-	
-	if (Abilities.IsEmpty())
-	{
-		UE_LOG(
-			LogAura,
-			Warning,
-			TEXT("No Ability of tier %s left!"),
-			*TierTag.ToString()
-			);
-	}
-
-	return Abilities;
-}
-
-TMap<FGameplayTag, int32> UAbilityManager::GetAvailableTiers(const FGameplayTag& ElementTag)
-{
-	const FGameplayTagContainer* TierPool = ElementalTierPool.Find(ElementTag);
-
-	if (TierPool == nullptr) return TMap<FGameplayTag, int32>();
-	
-	return GetAuraGameMode()->AbilityInfo->TierDropProbability
-	  .FilterByPredicate([TierPool](const TTuple<FGameplayTag, int32>& TierInfo)
-	  {
-	    return TierPool->HasTagExact(TierInfo.Key);
-	  });
 }
 
 TArray<FAuraAbilityInfo> UAbilityManager::RandomizeElementAbilities(
@@ -223,4 +141,128 @@ void UAbilityManager::GetAbilityFormattedTexts(
 		*ManaCostText,
 		*CooldownText
 	));
+}
+
+void UAbilityManager::SelectAbilityReward(
+		const FGameplayTag& ElementTag,
+		const FAuraAbilityInfo& AbilityInfo,
+		UAuraAbilitySystemComponent* AuraASC
+		)
+{
+	FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(AbilityInfo.Ability, 1);
+	AuraASC->UnlockAbility(AbilitySpec);
+	
+	if (IAbilityInterface::Execute_IsActiveAbility(AbilitySpec.Ability))
+	{
+		const FGameplayTag& AvailableInputTag = GetAvailableInputTag(AuraASC);
+		if (AvailableInputTag.IsValid())
+		{
+			AuraASC->ServerEquipAbility(AbilityInfo.AbilityTag, AvailableInputTag);
+		}
+	}
+
+	AcquiredAbilities.AddTag(AbilityInfo.AbilityTag);
+	AbilitiesBag[ElementTag].Reset();
+	RandomizeElementAbilities(
+		GetAuraGameMode()->CurrentCharacterName,
+		ElementTag
+		);
+	OnAbilitySelectedDelegate.Broadcast(AbilityInfo);
+	UAuraAbilitySystemLibrary::GetOverlayWidgetController(GetOwner())
+		->AbilityInfoDelegate.Broadcast(AbilityInfo);
+}
+
+void UAbilityManager::AssignNextAbilities()
+{
+	const ECharacterName CharacterName = GetAuraGameMode()->CurrentCharacterName;
+	
+	const FAuraGameplayTags& Tags = FAuraGameplayTags::Get();
+	for (const FGameplayTag& ElementTag : Tags.ParentsToChildren[Tags.Abilities_Element])
+	{
+		RandomizeElementAbilities(CharacterName, ElementTag);
+	}
+}
+
+FGameplayTag UAbilityManager::RandomizeTier(const TMap<FGameplayTag, int32>& TierMap)
+{
+	float TiersSum = 0.f;
+	for (const auto& Tier : TierMap)
+	{
+		TiersSum += Tier.Value;
+	}
+	float RandomFloat = FMath::FRandRange(0.f, TiersSum);
+	for (const auto& Tier : TierMap)
+	{
+		if (Tier.Value < RandomFloat)
+		{
+			return Tier.Key;
+		}
+
+		RandomFloat -= Tier.Value;
+	}
+
+	return FGameplayTag();
+}
+
+TMap<FGameplayTag, FAuraAbilityInfo> UAbilityManager::GetRemainingElementAbilities(
+	ECharacterName CharacterName,
+	const FGameplayTag ElementTag
+	)
+{
+	return GetElementAbilities(CharacterName, ElementTag).FilterByPredicate(
+		[this](const TTuple<FGameplayTag, FAuraAbilityInfo>& 
+	AbilityInfo)
+	{
+		return !AcquiredAbilities.HasTagExact(AbilityInfo.Key) &&
+			!BlockedAbilities.HasTagExact(AbilityInfo.Key);
+	});
+}
+
+TArray<FAuraAbilityInfo> UAbilityManager::GetRemainingTierAbilities(
+	const FGameplayTag& TierTag,
+	const TMap<FGameplayTag, FAuraAbilityInfo>& ElementAbilities
+	)
+{
+	TArray<FAuraAbilityInfo> Abilities;
+	ElementAbilities.GenerateValueArray(Abilities);
+	Abilities.FilterByPredicate([this, TierTag](const FAuraAbilityInfo& Ability)
+		{
+			return TierTag.MatchesTagExact(Ability.TierTag);
+		});
+	
+	if (Abilities.IsEmpty())
+	{
+		UE_LOG(
+			LogAura,
+			Warning,
+			TEXT("No Ability of tier %s left!"),
+			*TierTag.ToString()
+			);
+	}
+
+	return Abilities;
+}
+
+TMap<FGameplayTag, int32> UAbilityManager::GetAvailableTiers(const FGameplayTag& ElementTag)
+{
+	const FGameplayTagContainer* TierPool = ElementalTierPool.Find(ElementTag);
+
+	if (TierPool == nullptr) return TMap<FGameplayTag, int32>();
+	
+	return GetAuraGameMode()->AbilityInfo->TierDropProbability
+	  .FilterByPredicate([TierPool](const TTuple<FGameplayTag, int32>& TierInfo)
+	  {
+	    return TierPool->HasTagExact(TierInfo.Key);
+	  });
+}
+
+FGameplayTag UAbilityManager::GetAvailableInputTag(UAuraAbilitySystemComponent* AuraASC)
+{
+	const FAuraGameplayTags& AuraTags = FAuraGameplayTags::Get();
+	for (const auto& InputTag : AuraTags.ParentsToChildren[AuraTags.InputTag])
+	{
+		if (!AuraASC->IsInputTagAssigned(InputTag)) return InputTag;
+	}
+
+	return FGameplayTag();
 }

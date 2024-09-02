@@ -1077,6 +1077,15 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	 * Map of Tags to their children
 	 */
 
+	const TArray SkillsInputTags({
+		GameplayTags.InputTag_1,
+		GameplayTags.InputTag_2,
+		GameplayTags.InputTag_3,
+		GameplayTags.InputTag_4
+	});
+
+	GameplayTags.ParentsToChildren.Add(GameplayTags.InputTag, SkillsInputTags);
+
 	const TArray BuffTags({
 		GameplayTags.StatusEffects_Buff_Shield
 	});

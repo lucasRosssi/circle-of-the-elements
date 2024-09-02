@@ -6,6 +6,7 @@
 #include "AbilitySystemComponent.h"
 #include "AuraAbilitySystemComponent.generated.h"
 
+class UBaseAbility;
 class UAbilityInfo;
 class AAuraCharacterBase;
 struct FAuraGameplayTags;
@@ -105,6 +106,7 @@ public:
 		const FGameplayTag& InputTag,
 		const FGameplayTag& PreviousInputTag
 		);
+	void UnlockAbility(FGameplayAbilitySpec& AbilitySpec);
 
 	FString GetDescriptionByAbilityTag(
 		const UAbilityInfo* AbilityInfo,
@@ -114,6 +116,8 @@ public:
 		const UAbilityInfo* AbilityInfo,
 		const FGameplayTag& AbilityTag
 		);
+
+	bool IsInputTagAssigned(const FGameplayTag& InputTag);
 	
 protected:
 	virtual void OnRep_ActivateAbilities() override;

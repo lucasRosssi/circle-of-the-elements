@@ -43,5 +43,11 @@ public:
 		meta=(HidePin="WorldContextObject", DefaultToSelf="WorldContextObject")
 		)
 	static URewardManager* GetRewardManager(const UObject* WorldContextObject);
+	UFUNCTION(
+		BlueprintPure,
+		Category="Aura Systems|HUD",
+		meta=(HidePin="WorldContextObject", DefaultToSelf="WorldContextObject")
+		)
+	static AAuraHUD* GetAuraHUD(const UObject* WorldContextObject, int32 PlayerIndex);
 
 };

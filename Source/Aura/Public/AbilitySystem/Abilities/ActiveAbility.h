@@ -30,9 +30,12 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category="Input", meta=(EditCondition="bIsPlayerAbility", DisplayPriority=3))
 	bool bUsesMovementInputDirection = false;
 
+	// Ability Interface overrides
 	virtual EAbilityHitMode GetHitMode_Implementation() const override { return HitMode; }
 	virtual int32 GetMaxHitCountAtLevel_Implementation (int32 Level) const override;
 	virtual float GetEffectChangePerHitAtLevel_Implementation(int32 Level) const override;
+	virtual bool IsActiveAbility_Implementation() const override;
+	// END Ability Interface overrides
 
 protected:
 	UFUNCTION(BlueprintPure, Category="Ability Defaults")
