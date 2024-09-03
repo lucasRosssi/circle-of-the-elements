@@ -451,7 +451,7 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 
 	GameplayTags.StatusEffects_Debuff_Root = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("StatusEffects.Debuff.Root"),
-		FString("Root effect. Can't move or use movement abilities.")
+		FString("Root effect. Can't move or use mobility abilities.")
 		);
 
 	// Incapacitations
@@ -656,6 +656,13 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	GameplayTags.Abilities_Type_None = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Abilities.Type.None"),
 		FString("No type ability.")
+		);
+
+	// Movement
+
+	GameplayTags.Abilities_Mobility = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Mobility"),
+		FString("Mobility ability.")
 		);
 
 	// Tiers

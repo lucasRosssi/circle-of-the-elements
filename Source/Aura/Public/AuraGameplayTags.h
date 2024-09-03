@@ -152,6 +152,8 @@ public:
 	FGameplayTag Abilities_Type_Triggered;
 	FGameplayTag Abilities_Type_None;
 
+	FGameplayTag Abilities_Mobility;
+
 	FGameplayTag Abilities_Tier;
 	FGameplayTag Abilities_Tier_I;
 	FGameplayTag Abilities_Tier_II;
