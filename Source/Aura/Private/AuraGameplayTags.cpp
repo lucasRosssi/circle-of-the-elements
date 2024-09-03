@@ -407,6 +407,11 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FString("Blocks limited instances of damage")
 		);
 
+	GameplayTags.StatusEffects_Buff_Haste = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("StatusEffects.Buff.Haste"),
+		FString("Increases action speed")
+		);
+
 	// Debuffs
 
 	GameplayTags.StatusEffects_Debuff = UGameplayTagsManager::Get().AddNativeGameplayTag(
@@ -434,6 +439,21 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FString("Charm effect. Temporarily fights for the source team.")
 		);
 
+	GameplayTags.StatusEffects_Debuff_Weakness = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("StatusEffects.Debuff.Weakness"),
+		FString("Weakness effect. Reduces damage done.")
+		);
+
+	GameplayTags.StatusEffects_Debuff_Exposed = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("StatusEffects.Debuff.Exposed"),
+		FString("Exposed effect. Increases damage received.")
+		);
+
+	GameplayTags.StatusEffects_Debuff_Root = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("StatusEffects.Debuff.Root"),
+		FString("Root effect. Can't move or use movement abilities.")
+		);
+
 	// Incapacitations
 
 	GameplayTags.StatusEffects_Incapacitation = UGameplayTagsManager::Get().AddNativeGameplayTag(
@@ -459,6 +479,11 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	GameplayTags.StatusEffects_Incapacitation_Freeze = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("StatusEffects.Incapacitation.Freeze"),
 		FString("Freeze effect. Inflicted when having many stacks of Chill applied. Can't do anything. Temporarily resist new applications after recovery.")
+		);
+
+	GameplayTags.StatusEffects_Incapacitation_Sleep = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("StatusEffects.Incapacitation.Sleep"),
+		FString("Sleep effect. Can't do anything. Removed when taking instant damage.")
 		);
 
 	
@@ -1149,19 +1174,24 @@ FString("WindGust ability")
 	GameplayTags.ParentsToChildren.Add(GameplayTags.InputTag, SkillsInputTags);
 
 	const TArray BuffTags({
-		GameplayTags.StatusEffects_Buff_Shield
+		GameplayTags.StatusEffects_Buff_Shield,
+		GameplayTags.StatusEffects_Buff_Haste
 	});
 	const TArray DebuffTags({
 		GameplayTags.StatusEffects_Debuff_Bleeding,
 		GameplayTags.StatusEffects_Debuff_Burning,
 		GameplayTags.StatusEffects_Debuff_Chill,
 		GameplayTags.StatusEffects_Debuff_Charm,
+		GameplayTags.StatusEffects_Debuff_Weakness,
+		GameplayTags.StatusEffects_Debuff_Exposed,
+		GameplayTags.StatusEffects_Debuff_Root,
 	});
 	const TArray IncapacitationTags({
 		GameplayTags.StatusEffects_Incapacitation_HitReact,
 		GameplayTags.StatusEffects_Incapacitation_Knockback,
 		GameplayTags.StatusEffects_Incapacitation_Stun,
-		GameplayTags.StatusEffects_Incapacitation_Freeze
+		GameplayTags.StatusEffects_Incapacitation_Freeze,
+		GameplayTags.StatusEffects_Incapacitation_Sleep
 	});
 	const TArray ConditionTags({
 		GameplayTags.StatusEffects_Condition_Alive,

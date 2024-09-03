@@ -81,18 +81,23 @@ public:
 
 	FGameplayTag StatusEffects_Buff;
 	FGameplayTag StatusEffects_Buff_Shield;
+	FGameplayTag StatusEffects_Buff_Haste;
 	
 	FGameplayTag StatusEffects_Debuff;
 	FGameplayTag StatusEffects_Debuff_Bleeding;
 	FGameplayTag StatusEffects_Debuff_Burning;
 	FGameplayTag StatusEffects_Debuff_Chill;
 	FGameplayTag StatusEffects_Debuff_Charm;
+	FGameplayTag StatusEffects_Debuff_Weakness;
+	FGameplayTag StatusEffects_Debuff_Exposed;
+	FGameplayTag StatusEffects_Debuff_Root;
 
 	FGameplayTag StatusEffects_Incapacitation;
 	FGameplayTag StatusEffects_Incapacitation_HitReact;
 	FGameplayTag StatusEffects_Incapacitation_Knockback;
 	FGameplayTag StatusEffects_Incapacitation_Stun;
 	FGameplayTag StatusEffects_Incapacitation_Freeze;
+	FGameplayTag StatusEffects_Incapacitation_Sleep;
 
 	FGameplayTag StatusEffects_Condition;
 	FGameplayTag StatusEffects_Condition_Alive;
