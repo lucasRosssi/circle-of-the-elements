@@ -97,9 +97,5 @@ protected:
 	TObjectPtr<URewardManager> RewardManager;
 
 private:
-	UPROPERTY()
-	UAuraGameInstance* AuraGameInstance = nullptr;
-
-	UPROPERTY()
 	TMap<int32, AAuraHUD*> AuraHUDs;
 };
