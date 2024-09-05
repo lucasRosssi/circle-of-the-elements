@@ -149,6 +149,16 @@ bool UBaseAbility::IsActiveAbility_Implementation() const
 	return false;
 }
 
+bool UBaseAbility::IsDamageAbility_Implementation() const
+{
+	return false;
+}
+
+bool UBaseAbility::IsAreaEffectActorAbility_Implementation() const
+{
+	return false;
+}
+
 float UBaseAbility::GetManaCostAtLevel(int32 Level) const
 {
 	float ManaCost = 0.f;

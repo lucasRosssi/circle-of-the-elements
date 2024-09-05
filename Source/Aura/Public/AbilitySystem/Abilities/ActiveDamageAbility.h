@@ -18,6 +18,11 @@ public:
 	override;
 	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
 
+	// Ability Interface overrides
+	virtual bool IsDamageAbility_Implementation() const override;
+	virtual FGameplayTag GetDamageTypeTag_Implementation() const override;;
+	// END Ability Interface overrides
+
 	UFUNCTION(BlueprintCallable)
 	FAbilityParams ApplyEffectChangePerHitToAbilityParams(
 		UPARAM(ref) FAbilityParams& AbilityParams,

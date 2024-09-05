@@ -52,6 +52,8 @@ public:
 
 	// Ability Interface overrides
 	virtual bool IsActiveAbility_Implementation() const override;
+	virtual bool IsDamageAbility_Implementation() const override;
+	virtual bool IsAreaEffectActorAbility_Implementation() const override;
 	// END Ability Interface overrides
 	
 	UFUNCTION(BlueprintPure, Category="Resources", meta=(HidePin="Target", DefaultToSelf="Target"))

@@ -10,12 +10,16 @@
  * Template for the named arguments used in the project
  */
 
+struct FGameplayTag;
+
 struct FAuraNamedArguments
 {
 public:
 	static const FAuraNamedArguments& Get() { return NamedArguments; }
 	static void InitializeNamedArguments();
 
+	/* VALUES */
+	
 	FString Level_0;
 	FString Level_1;
 	
@@ -23,6 +27,7 @@ public:
 	FString Mana_1;
 	FString CD_0;
 	FString CD_1;
+
 	
 	FString Dmg_0;
 	FString Dmg_1;
@@ -31,6 +36,8 @@ public:
 	FString Effect_1;
 	FString EffectPercent_0;
 	FString EffectPercent_1;
+	FString EffectPercentFromResult_0;
+	FString EffectPercentFromResult_1;
 	FString Duration_0;
 	FString Duration_1;
 	FString Period;
@@ -43,6 +50,24 @@ public:
 	FString ActorDuration_1;
 	FString ActorPeriod_0;
 	FString ActorPeriod_1;
+
+	/* HELPERS - Common used texts */
+
+	FString FireDmg;
+	FString IceDmg;
+	FString LightningDmg;
+	FString ArcaneDmg;
+	FString NecroticDmg;
+	FString PhysicalDmg;
+	FString NextFireDmg;
+	FString NextIceDmg;
+	FString NextLightningDmg;
+	FString NextArcaneDmg;
+	FString NextNecroticDmg;
+	FString NextPhysicalDmg;
+
+	TMap<FGameplayTag, TTuple<FString, FString>> DamageTypeTexts;
+	TMap<FGameplayTag, TTuple<FString, FString>> NextDamageTypeTexts;
 
 private:
 	static FAuraNamedArguments NamedArguments;

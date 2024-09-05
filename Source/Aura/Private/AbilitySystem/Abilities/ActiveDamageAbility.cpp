@@ -46,6 +46,16 @@ void UActiveDamageAbility::EndAbility(
 	ComboIndex = 0;
 }
 
+bool UActiveDamageAbility::IsDamageAbility_Implementation() const
+{
+	return true;
+}
+
+FGameplayTag UActiveDamageAbility::GetDamageTypeTag_Implementation() const
+{
+	return DamageType;
+}
+
 FAbilityParams UActiveDamageAbility::ApplyEffectChangePerHitToAbilityParams(
 	FAbilityParams& AbilityParams,
 	int32 HitCount

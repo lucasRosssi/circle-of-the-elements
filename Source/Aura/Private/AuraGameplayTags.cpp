@@ -886,6 +886,16 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FString("Fireball ability charges")
 		);
 
+	GameplayTags.Abilities_Active_Aura_FireMissiles = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Active.Aura.FireMissiles"),
+		FString("FireMissiles ability")
+		);
+
+	GameplayTags.Cooldown_Active_Aura_FireMissiles = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Cooldown.Active.Aura.FireMissiles"),
+		FString("FireMissiles ability cooldown")
+		);
+
 	// Aura Lightning Abilities
 
 	GameplayTags.Abilities_Active_Aura_ChainLightning = UGameplayTagsManager::Get().AddNativeGameplayTag(
@@ -923,6 +933,16 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FString("ThunderBall ability cooldown")
 		);
 
+	GameplayTags.Abilities_Active_Aura_LightningMissiles = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Active.Aura.LightningMissiles"),
+		FString("LightningMissiles ability")
+		);
+
+	GameplayTags.Cooldown_Active_Aura_LightningMissiles = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Cooldown.Active.Aura.LightningMissiles"),
+		FString("LightningMissiles ability cooldown")
+		);
+
 	// Aura Ice Abilities
 	
 	GameplayTags.Abilities_Active_Aura_FrostRay = UGameplayTagsManager::Get().AddNativeGameplayTag(
@@ -953,6 +973,16 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	GameplayTags.Cooldown_Active_Aura_FrostBolt = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Cooldown.Active.Aura.FrostBolt"),
 		FString("FrostBolt ability cooldown")
+		);
+
+	GameplayTags.Abilities_Active_Aura_IceMissiles = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Active.Aura.IceMissiles"),
+		FString("IceMissiles ability")
+		);
+
+	GameplayTags.Cooldown_Active_Aura_IceMissiles = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Cooldown.Active.Aura.IceMissiles"),
+		FString("IceMissiles ability cooldown")
 		);
 
 	// Aura Arcane Abilities
@@ -1009,16 +1039,36 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FString("NecroBolt ability cooldown")
 		);
 
+	GameplayTags.Abilities_Active_Aura_NecroMissiles = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Active.Aura.NecroMissiles"),
+		FString("NecroMissiles ability")
+		);
+
+	GameplayTags.Cooldown_Active_Aura_NecroMissiles = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Cooldown.Active.Aura.NecroMissiles"),
+		FString("NecroMissiles ability cooldown")
+		);
+
 	// Aura Physical Abilities
 
 	GameplayTags.Abilities_Active_Aura_WindGust = UGameplayTagsManager::Get().AddNativeGameplayTag(
-FName("Abilities.Active.Aura.WindGust"),
-FString("WindGust ability")
-);
+		FName("Abilities.Active.Aura.WindGust"),
+		FString("WindGust ability")
+		);
 
 	GameplayTags.Cooldown_Active_Aura_WindGust = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Cooldown.Active.Aura.WindGust"),
 		FString("WindGust ability cooldown")
+		);
+
+	GameplayTags.Abilities_Active_Aura_RockMissiles = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Active.Aura.RockMissiles"),
+		FString("RockMissiles ability")
+		);
+
+	GameplayTags.Cooldown_Active_Aura_RockMissiles = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Cooldown.Active.Aura.RockMissiles"),
+		FString("RockMissiles ability cooldown")
 		);
 
 	// Vilkar active abilities

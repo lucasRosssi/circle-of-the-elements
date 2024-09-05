@@ -212,6 +212,8 @@ public:
 	FGameplayTag Abilities_Active_Aura_Fireball;
 	FGameplayTag Cooldown_Active_Aura_Fireball;
 	FGameplayTag Charges_Active_Aura_Fireball;
+	FGameplayTag Abilities_Active_Aura_FireMissiles;
+	FGameplayTag Cooldown_Active_Aura_FireMissiles;
 
 	// Lightning
 	
@@ -222,6 +224,8 @@ public:
 	FGameplayTag Charges_Active_Aura_MagneticShot;
 	FGameplayTag Abilities_Active_Aura_ThunderBall;
 	FGameplayTag Cooldown_Active_Aura_ThunderBall;
+	FGameplayTag Abilities_Active_Aura_LightningMissiles;
+	FGameplayTag Cooldown_Active_Aura_LightningMissiles;
 
 	// Ice
 	
@@ -231,6 +235,8 @@ public:
 	FGameplayTag Cooldown_Active_Aura_Blizzard;
 	FGameplayTag Abilities_Active_Aura_FrostBolt;
 	FGameplayTag Cooldown_Active_Aura_FrostBolt;
+	FGameplayTag Abilities_Active_Aura_IceMissiles;
+	FGameplayTag Cooldown_Active_Aura_IceMissiles;
 
 	// Arcane
 	
@@ -247,11 +253,15 @@ public:
 
 	FGameplayTag Abilities_Active_Aura_NecroBolt;
 	FGameplayTag Cooldown_Active_Aura_NecroBolt;
+	FGameplayTag Abilities_Active_Aura_NecroMissiles;
+	FGameplayTag Cooldown_Active_Aura_NecroMissiles;
 	
 	// Physical
 
 	FGameplayTag Abilities_Active_Aura_WindGust;
 	FGameplayTag Cooldown_Active_Aura_WindGust;
+	FGameplayTag Abilities_Active_Aura_RockMissiles;
+	FGameplayTag Cooldown_Active_Aura_RockMissiles;
 
 	/* Vilkar */
 
