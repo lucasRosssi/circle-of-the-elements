@@ -6,7 +6,22 @@
 #include "AbilitySystemComponent.h"
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "Actor/AuraProjectile.h"
+#include "Components/SphereComponent.h"
 #include "Interaction/CombatInterface.h"
+
+void UProjectileAbility::EndAbility(
+	const FGameplayAbilitySpecHandle Handle,
+	const FGameplayAbilityActorInfo* ActorInfo,
+	const FGameplayAbilityActivationInfo ActivationInfo,
+	bool bReplicateEndAbility,
+	bool bWasCancelled
+	)
+{
+	bScannedForTargets = false;
+	Targets.Empty();
+	
+	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
+}
 
 void UProjectileAbility::SpawnProjectile(
 	const FVector& ProjectileTargetLocation,
@@ -28,11 +43,11 @@ void UProjectileAbility::SpawnProjectile(
 	const FVector Forward = Rotation.Vector();
 	
 	TArray<FRotator> Rotators = UAuraAbilitySystemLibrary::EvenlySpacedRotators(
-	Forward,
-	FVector::UpVector,
-	ProjectileSpread, 
-	ProjectileCount
-	);
+		Forward,
+		FVector::UpVector,
+		ProjectileSpread, 
+		ProjectileCount
+		);
 
 	for (const auto& Rotator : Rotators)
 	{
@@ -49,6 +64,26 @@ void UProjectileAbility::SpawnProjectile(
 		);
 		if (bHoming)
 		{
+			if (HomingMode != EProjectileHomingMode::OneTarget && !bScannedForTargets)
+			{
+				TArray<AActor*> ActorsToIgnore;
+				UAuraAbilitySystemLibrary::GetAliveCharactersWithinRadius(
+					GetAvatarActorFromActorInfo(),
+					Targets,
+					ActorsToIgnore,
+					Projectile->GetHomingSphere()->GetScaledSphereRadius(),
+					SpawnTransform.GetLocation(),
+					ETargetTeam::Enemies
+					);
+				
+				bScannedForTargets = true;
+			}
+
+			if (!Targets.IsEmpty())
+			{
+				SetHomingInitialTarget(Projectile);
+			}
+			
 			if (HomingActivationDelay > 0.f)
 			{
 				Projectile->ScheduleHomingActivation(HomingActivationDelay);
@@ -70,5 +105,32 @@ void UProjectileAbility::SpawnProjectile(
 		Projectile->TargetTeam = AbilityTargetTeam;
 		Projectile->AbilityParams = MakeAbilityParamsFromDefaults();
 		Projectile->FinishSpawning(SpawnTransform);
+	}
+}
+
+void UProjectileAbility::SetHomingInitialTarget(AAuraProjectile* Projectile)
+{
+	switch (HomingMode)
+	{
+	case EProjectileHomingMode::DifferentTargets:
+		{
+			if (Targets.IsValidIndex(ProjectileSpawnCycleCount))
+			{
+				Projectile->InitialTarget = Targets[ProjectileSpawnCycleCount];
+			}
+			else
+			{
+				ProjectileSpawnCycleCount = 0;
+				Projectile->InitialTarget = Targets[ProjectileSpawnCycleCount];
+			}
+			ProjectileSpawnCycleCount += 1;
+		}
+	case EProjectileHomingMode::RandomTargets:
+		{
+			const int32 RandomIndex = FMath::RandRange(0, Targets.Num() - 1);
+			Projectile->InitialTarget = Targets[RandomIndex];
+		}
+	case EProjectileHomingMode::OneTarget: {}
+	default: {}
 	}
 }

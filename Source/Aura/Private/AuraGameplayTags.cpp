@@ -454,6 +454,11 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FString("Root effect. Can't move or use mobility abilities.")
 		);
 
+	GameplayTags.StatusEffects_Debuff_Shock = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("StatusEffects.Debuff.Shock"),
+		FString("Shock effect. Gets paralyzed every 1.5s.")
+		);
+
 	// Incapacitations
 
 	GameplayTags.StatusEffects_Incapacitation = UGameplayTagsManager::Get().AddNativeGameplayTag(
@@ -484,6 +489,11 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	GameplayTags.StatusEffects_Incapacitation_Sleep = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("StatusEffects.Incapacitation.Sleep"),
 		FString("Sleep effect. Can't do anything. Removed when taking instant damage.")
+		);
+
+	GameplayTags.StatusEffects_Incapacitation_Paralysis = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("StatusEffects.Incapacitation.Paralysis"),
+		FString("Paralysis effect. Can't do anything.")
 		);
 
 	
@@ -803,6 +813,16 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FString("Get charmed ability")
 		);
 
+	GameplayTags.Abilities_Reaction_Shock = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Reaction.Shock"),
+		FString("Get shocked ability")
+		);
+
+	GameplayTags.Abilities_Reaction_Paralysis = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Reaction.Paralysis"),
+		FString("Get paralyzed ability")
+		);
+
 	// Actions
 
 	GameplayTags.Abilities_Action = UGameplayTagsManager::Get().AddNativeGameplayTag(
@@ -982,6 +1002,11 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 
 	GameplayTags.Cooldown_Active_Aura_IceMissiles = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Cooldown.Active.Aura.IceMissiles"),
+		FString("IceMissiles ability cooldown")
+		);
+
+	GameplayTags.Charges_Active_Aura_IceMissiles = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Charges.Active.Aura.IceMissiles"),
 		FString("IceMissiles ability cooldown")
 		);
 
@@ -1242,13 +1267,15 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		GameplayTags.StatusEffects_Debuff_Weakness,
 		GameplayTags.StatusEffects_Debuff_Exposed,
 		GameplayTags.StatusEffects_Debuff_Root,
+		GameplayTags.StatusEffects_Debuff_Shock,
 	});
 	const TArray IncapacitationTags({
 		GameplayTags.StatusEffects_Incapacitation_HitReact,
 		GameplayTags.StatusEffects_Incapacitation_Knockback,
 		GameplayTags.StatusEffects_Incapacitation_Stun,
 		GameplayTags.StatusEffects_Incapacitation_Freeze,
-		GameplayTags.StatusEffects_Incapacitation_Sleep
+		GameplayTags.StatusEffects_Incapacitation_Sleep,
+		GameplayTags.StatusEffects_Incapacitation_Paralysis
 	});
 	const TArray ConditionTags({
 		GameplayTags.StatusEffects_Condition_Alive,

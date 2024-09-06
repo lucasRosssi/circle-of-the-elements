@@ -299,6 +299,7 @@ void UBaseAbility::HandleCooldownRecharge(
 {
 	if (
 		RechargeMode == EAbilityRechargeMode::AllCharges &&
+		ChargesEffectClass.GetDefaultObject()->StackDurationRefreshPolicy == EGameplayEffectStackingDurationPolicy::NeverRefresh &&
 		ActorInfo->AbilitySystemComponent->GetGameplayEffectCount(
 			CooldownGameplayEffectClass,
 			nullptr

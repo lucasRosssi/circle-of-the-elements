@@ -46,7 +46,12 @@ AAuraProjectile::AAuraProjectile()
 void AAuraProjectile::ActivateHomingMode()
 {
 	ProjectileMovement->bIsHomingProjectile = true;
-
+	if (IsValid(InitialTarget) && !ICombatInterface::Execute_IsDead(InitialTarget))
+	{
+		SetReplicateMovement(true);
+		MulticastHomingTarget(InitialTarget);
+	}
+	
 	HomingRadius->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 }
 
@@ -191,13 +196,11 @@ void AAuraProjectile::HandleSingleTarget(AActor* OtherActor, bool& bSuccess)
 
 void AAuraProjectile::HandleBounceHitMode(AActor* OtherActor)
 {
-	TArray<AActor*> ActorsToIgnore;
-	ActorsToIgnore.Append(ActorsHit);
 	AActor* ClosestActor = UAuraAbilitySystemLibrary::GetClosestActorToTarget(
 		OtherActor,
 		BounceRadius,
 		TargetTeam == ETargetTeam::Both ? TargetTeam : ETargetTeam::Friends,
-		ActorsToIgnore
+		ActorsHit
 	);
 
 	if (ClosestActor)
@@ -208,7 +211,8 @@ void AAuraProjectile::HandleBounceHitMode(AActor* OtherActor)
 			GetActorLocation(),
 			ClosestActor->GetActorLocation()
 		));
-		ActorsHit.Add(OtherActor);
+		if (!bCanRepeatTarget)	ActorsHit.Add(OtherActor);
+		
 		ProjectileMovement->SetVelocityInLocalSpace(GetVelocity());
 		// If it is also homing, set the homing target to the closest actor
 		if (ProjectileMovement->bIsHomingProjectile)
@@ -233,12 +237,11 @@ void AAuraProjectile::HandlePenetrationHitMode(AActor* OtherActor)
 		// If it is also homing, we should set a new target after penetrating
 		if (ProjectileMovement->bIsHomingProjectile)
 		{
-			TArray<AActor*> ActorsToIgnore;
 			AActor* ClosestActor = UAuraAbilitySystemLibrary::GetClosestActorToTarget(
 				OtherActor,
 				BounceRadius,
 				TargetTeam == ETargetTeam::Both ? TargetTeam : ETargetTeam::Friends,
-				ActorsToIgnore
+				ActorsHit
 			);
 			MulticastHomingTarget(ClosestActor);
 		}
@@ -285,8 +288,6 @@ void AAuraProjectile::OnSphereOverlap(
 
 	if (UAuraAbilitySystemLibrary::IsTargetInvulnerable(OtherActor)) return;
 
-	if (bCanRepeatTarget && HitCount < MaxHitCount) ActorsHit.Empty();
-
 	OnHit(
 		HitMode == EAbilityHitMode::Default ||
 		HitCount >= MaxHitCount
@@ -313,7 +314,7 @@ void AAuraProjectile::OnSphereOverlap(
 		}
 		/*
 		 * If it is a penetrating ability, we just have to check if the target hit implements
-		 * the combat interface and keep the projectile trajectory. If if doesn't implement it,
+		 * the combat interface and keep the projectile trajectory. If it doesn't implement it,
 		 * then the projectile hit the environment and should destroy itself
 		 */
 		else if (HitMode == EAbilityHitMode::Penetration && HitCount + 1 < MaxHitCount)

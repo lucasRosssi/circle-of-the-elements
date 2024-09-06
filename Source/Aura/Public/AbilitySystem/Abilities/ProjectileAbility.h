@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "ActiveDamageAbility.h"
 #include "Actor/AuraProjectile.h"
+#include "Enums/ProjectileHomingMode.h"
 #include "ProjectileAbility.generated.h"
 
 class AAuraProjectile;
@@ -15,6 +16,9 @@ UCLASS()
 class AURA_API UProjectileAbility : public UActiveDamageAbility
 {
 	GENERATED_BODY()
+
+public:
+	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
 
 protected:
 	UFUNCTION(BlueprintCallable, Category = "Projectile")
@@ -40,4 +44,18 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Projectile|Homing", meta=(EditCondition="bHoming"))
 	float HomingActivationDelay = 0.f;
+
+	// Homing Targeting Mode, only available when bHoming is true and when the ability spawns more then 1 projectile
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Projectile|Homing", meta=(EditCondition="bHoming && ProjectileCount > 1"))
+	EProjectileHomingMode HomingMode = EProjectileHomingMode::OneTarget;
+
+private:
+	void SetHomingInitialTarget(AAuraProjectile* Projectile);
+
+	UPROPERTY()
+	TArray<AActor*> Targets;
+
+	bool bScannedForTargets = false;
+
+	int32 ProjectileSpawnCycleCount = 0;
 };

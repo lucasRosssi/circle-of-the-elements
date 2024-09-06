@@ -41,6 +41,7 @@ public:
 
 	TObjectPtr<UNiagaraSystem> GetMuzzleEffect() { return MuzzleEffect; }
 	TObjectPtr<USoundBase> GetMuzzleSound() { return MuzzleSound; }
+	USphereComponent* GetHomingSphere() { return HomingRadius; }
 
 	ETargetTeam TargetTeam = ETargetTeam::Enemies;
 	EAbilityHitMode HitMode = EAbilityHitMode::Default;
@@ -48,6 +49,8 @@ public:
 	float EffectChangePerHit = 0.f;
 	float BounceRadius = 500.f;
 	bool bCanRepeatTarget = false;
+	UPROPERTY()
+	AActor* InitialTarget = nullptr;
 
 protected:
 	virtual void BeginPlay() override;

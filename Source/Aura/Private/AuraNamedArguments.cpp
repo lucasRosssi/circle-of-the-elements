@@ -57,51 +57,51 @@ void FAuraNamedArguments::InitializeNamedArguments()
 
 	NamedArguments.DamageTypeTexts.Add(
 		AuraTags.Damage_Fire,
-		{NamedArguments.FireDmg, TEXT("<Fire>{$Dmg_0} fire</> damage")}
+		{NamedArguments.FireDmg, FText::FromString("<Fire>{$Dmg_0} fire</> damage")}
 		);
 	NamedArguments.DamageTypeTexts.Add(
 		AuraTags.Damage_Ice,
-		{NamedArguments.IceDmg, TEXT("<Ice>{$Dmg_0} ice</> damage")}
+		{NamedArguments.IceDmg, FText::FromString("<Ice>{$Dmg_0} ice</> damage")}
 		);
 	NamedArguments.DamageTypeTexts.Add(
 		AuraTags.Damage_Lightning,
-		{NamedArguments.LightningDmg, TEXT("<Lightning>{$Dmg_0} lightning</> damage")}
+		{NamedArguments.LightningDmg, FText::FromString("<Lightning>{$Dmg_0} lightning</> damage")}
 		);
 	NamedArguments.DamageTypeTexts.Add(
 		AuraTags.Damage_Energy,
-		{NamedArguments.ArcaneDmg, TEXT("<Arcane>{$Dmg_0} arcane</> damage")}
+		{NamedArguments.ArcaneDmg, FText::FromString("<Arcane>{$Dmg_0} arcane</> damage")}
 		);
 	NamedArguments.DamageTypeTexts.Add(
 		AuraTags.Damage_Necrotic,
-		{NamedArguments.NecroticDmg, TEXT("<Necrotic>{$Dmg_0} necrotic</> damage")}
+		{NamedArguments.NecroticDmg, FText::FromString("<Necrotic>{$Dmg_0} necrotic</> damage")}
 		);
 	NamedArguments.DamageTypeTexts.Add(
 		AuraTags.Damage_Physical,
-		{NamedArguments.PhysicalDmg, TEXT("<Physical>{$Dmg_0} physical</> damage")}
+		{NamedArguments.PhysicalDmg, FText::FromString("<Physical>{$Dmg_0} physical</> damage")}
 		);
 	
 	NamedArguments.NextDamageTypeTexts.Add(
 		AuraTags.Damage_Fire,
-		{NamedArguments.NextFireDmg, TEXT("<Old>{$Dmg_0}</> > <Fire>{$Dmg_1} fire</> damage")}
+		{NamedArguments.NextFireDmg, FText::FromString("<Old>{$Dmg_0}</> > <Fire>{$Dmg_1} fire</> damage")}
 		);
 	NamedArguments.NextDamageTypeTexts.Add(
 		AuraTags.Damage_Ice,
-		{NamedArguments.NextIceDmg, TEXT("<Old>{$Dmg_0}</> > <Ice>{$Dmg_1} ice</> damage")}
+		{NamedArguments.NextIceDmg, FText::FromString("<Old>{$Dmg_0}</> > <Ice>{$Dmg_1} ice</> damage")}
 		);
 	NamedArguments.NextDamageTypeTexts.Add(
 		AuraTags.Damage_Lightning,
-		{NamedArguments.NextLightningDmg, TEXT("<Old>{$Dmg_0}</> > <Lightning>{$Dmg_1} lightning</> damage")}
+		{NamedArguments.NextLightningDmg, FText::FromString("<Old>{$Dmg_0}</> > <Lightning>{$Dmg_1} lightning</> damage")}
 		);
 	NamedArguments.NextDamageTypeTexts.Add(
 		AuraTags.Damage_Energy,
-		{NamedArguments.NextArcaneDmg, TEXT("<Old>{$Dmg_0}</> > <Arcane>{$Dmg_1} arcane</> damage")}
+		{NamedArguments.NextArcaneDmg, FText::FromString("<Old>{$Dmg_0}</> > <Arcane>{$Dmg_1} arcane</> damage")}
 		);
 	NamedArguments.NextDamageTypeTexts.Add(
 		AuraTags.Damage_Necrotic,
-		{NamedArguments.NextNecroticDmg, TEXT("<Old>{$Dmg_0}</> > <Necrotic>{$Dmg_1} necrotic</> damage")}
+		{NamedArguments.NextNecroticDmg, FText::FromString("<Old>{$Dmg_0}</> > <Necrotic>{$Dmg_1} necrotic</> damage")}
 		);
 	NamedArguments.NextDamageTypeTexts.Add(
 		AuraTags.Damage_Physical,
-		{NamedArguments.NextPhysicalDmg, TEXT("<Old>{$Dmg_0}</> > <Physical>{$Dmg_1} physical</> damage")}
+		{NamedArguments.NextPhysicalDmg, FText::FromString("<Old>{$Dmg_0}</> > <Physical>{$Dmg_1} physical</> damage")}
 		);
 }

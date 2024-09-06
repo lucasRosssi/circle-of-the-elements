@@ -91,6 +91,7 @@ public:
 	FGameplayTag StatusEffects_Debuff_Weakness;
 	FGameplayTag StatusEffects_Debuff_Exposed;
 	FGameplayTag StatusEffects_Debuff_Root;
+	FGameplayTag StatusEffects_Debuff_Shock;
 
 	FGameplayTag StatusEffects_Incapacitation;
 	FGameplayTag StatusEffects_Incapacitation_HitReact;
@@ -98,6 +99,7 @@ public:
 	FGameplayTag StatusEffects_Incapacitation_Stun;
 	FGameplayTag StatusEffects_Incapacitation_Freeze;
 	FGameplayTag StatusEffects_Incapacitation_Sleep;
+	FGameplayTag StatusEffects_Incapacitation_Paralysis;
 
 	FGameplayTag StatusEffects_Condition;
 	FGameplayTag StatusEffects_Condition_Alive;
@@ -185,6 +187,8 @@ public:
 	FGameplayTag Abilities_Reaction_Stun;
 	FGameplayTag Abilities_Reaction_ShieldStackRemove;
 	FGameplayTag Abilities_Reaction_Charm;
+	FGameplayTag Abilities_Reaction_Shock;
+	FGameplayTag Abilities_Reaction_Paralysis;
 
 	// Actions
 	
@@ -237,6 +241,7 @@ public:
 	FGameplayTag Cooldown_Active_Aura_FrostBolt;
 	FGameplayTag Abilities_Active_Aura_IceMissiles;
 	FGameplayTag Cooldown_Active_Aura_IceMissiles;
+	FGameplayTag Charges_Active_Aura_IceMissiles;
 
 	// Arcane
 	

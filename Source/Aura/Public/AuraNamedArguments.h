@@ -3,14 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
 
 /**
  * AuraNamedArguments
  *
  * Template for the named arguments used in the project
  */
-
-struct FGameplayTag;
 
 struct FAuraNamedArguments
 {
@@ -27,7 +26,6 @@ public:
 	FString Mana_1;
 	FString CD_0;
 	FString CD_1;
-
 	
 	FString Dmg_0;
 	FString Dmg_1;
@@ -66,8 +64,8 @@ public:
 	FString NextNecroticDmg;
 	FString NextPhysicalDmg;
 
-	TMap<FGameplayTag, TTuple<FString, FString>> DamageTypeTexts;
-	TMap<FGameplayTag, TTuple<FString, FString>> NextDamageTypeTexts;
+	TMap<FGameplayTag, TTuple<FString, FText>> DamageTypeTexts;
+	TMap<FGameplayTag, TTuple<FString, FText>> NextDamageTypeTexts;
 
 private:
 	static FAuraNamedArguments NamedArguments;
