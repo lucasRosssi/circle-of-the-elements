@@ -510,34 +510,38 @@ void UAuraAbilitySystemLibrary::GetAliveCharactersWithinRadius(
 			FCollisionShape::MakeSphere(Radius),
 			SphereParams
 		);
-		for (auto& Overlap : Overlaps)
-		{
-			AActor* OverlappedActor = Overlap.GetActor();
+		
+		AddOverlappedCharactersByTeam(ContextActor, OutOverlappingActors, Overlaps, TargetTeam);
+	}
+}
 
-			if (!OverlappedActor->Implements<UCombatInterface>()) continue;
-			if (ICombatInterface::Execute_IsDead(OverlappedActor)) continue;
+void UAuraAbilitySystemLibrary::GetAliveCharactersWithinBox(
+	const AActor* ContextActor,
+	TArray<AActor*>& OutOverlappingActors,
+	TArray<AActor*>& ActorsToIgnore,
+	const FVector& Dimensions,
+	const FVector& Center,
+	ETargetTeam TargetTeam
+	)
+{
+	if (TargetTeam == ETargetTeam::Self) return;
+	
+	FCollisionQueryParams BoxParams;
+	BoxParams.AddIgnoredActors(ActorsToIgnore);
 
-			if (TargetTeam == ETargetTeam::Both)
-			{
-				OutOverlappingActors.AddUnique(OverlappedActor);
-				continue;
-			}
+	TArray<FOverlapResult> Overlaps;
+	if (const UWorld* World = GEngine->GetWorldFromContextObject(ContextActor, EGetWorldErrorMode::LogAndReturnNull))
+	{
+		World->OverlapMultiByObjectType(
+			Overlaps,
+			Center,
+			FQuat::Identity,
+			FCollisionObjectQueryParams(FCollisionObjectQueryParams::InitType::AllDynamicObjects),
+			FCollisionShape::MakeBox(Dimensions),
+			BoxParams
+		);
 
-			if (TargetTeam == ETargetTeam::Enemies &&
-				AreActorsEnemies(ContextActor, OverlappedActor)
-				)
-			{
-				OutOverlappingActors.AddUnique(OverlappedActor);
-				continue;
-			}
-
-			if (TargetTeam == ETargetTeam::Friends &&
-				AreActorsFriends(ContextActor, OverlappedActor)
-				)
-			{
-				OutOverlappingActors.AddUnique(OverlappedActor);
-			}
-		}
+		AddOverlappedCharactersByTeam(ContextActor, OutOverlappingActors, Overlaps, TargetTeam);
 	}
 }
 
@@ -1130,6 +1134,43 @@ void UAuraAbilitySystemLibrary::MakeManaAndCooldownTextNextLevel(
 			Cooldown,
 			NextCooldown
 		);
+	}
+}
+
+void UAuraAbilitySystemLibrary::AddOverlappedCharactersByTeam(
+	const AActor* ContextActor,
+	TArray<AActor*>& OutOverlappingActors,
+	const TArray<FOverlapResult>& Overlaps,
+	ETargetTeam TargetTeam
+	)
+{
+	for (const auto& Overlap : Overlaps)
+	{
+		AActor* OverlappedActor = Overlap.GetActor();
+
+		if (!OverlappedActor->Implements<UCombatInterface>()) continue;
+		if (ICombatInterface::Execute_IsDead(OverlappedActor)) continue;
+
+		if (TargetTeam == ETargetTeam::Both)
+		{
+			OutOverlappingActors.AddUnique(OverlappedActor);
+			continue;
+		}
+
+		if (TargetTeam == ETargetTeam::Enemies &&
+			AreActorsEnemies(ContextActor, OverlappedActor)
+			)
+		{
+			OutOverlappingActors.AddUnique(OverlappedActor);
+			continue;
+		}
+
+		if (TargetTeam == ETargetTeam::Friends &&
+			AreActorsFriends(ContextActor, OverlappedActor)
+			)
+		{
+			OutOverlappingActors.AddUnique(OverlappedActor);
+		}
 	}
 }
 

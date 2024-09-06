@@ -77,6 +77,23 @@ public:
 	virtual FAbilityParams MakeAbilityParamsFromDefaults(AActor* TargetActor = nullptr) const;
 
 protected:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Debug")
+	bool bDebugAbility = false;
+	UPROPERTY(
+		EditDefaultsOnly,
+		BlueprintReadOnly,
+		Category="Debug",
+		meta=(EditCondition="bDebugAbility", EditConditionHides)
+		)
+	float DrawShapeDuration = 2.f;
+	UPROPERTY(
+		EditDefaultsOnly,
+		BlueprintReadOnly,
+		Category="Debug",
+		meta=(EditCondition="bDebugAbility", EditConditionHides)
+		)
+	FColor DrawShapeColor = FColor::Green;
+	
 	UFUNCTION(BlueprintPure, Category="Ability")
 	AAuraCharacterBase* GetAvatarCharacter();
 	

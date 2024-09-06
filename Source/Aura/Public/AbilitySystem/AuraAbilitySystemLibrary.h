@@ -260,6 +260,16 @@ public:
 	);
 
 	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|GameplayMechanics")
+	static void GetAliveCharactersWithinBox(
+		const AActor* ContextActor,
+		TArray<AActor*>& OutOverlappingActors,
+		UPARAM(ref) TArray<AActor*>& ActorsToIgnore,
+		const FVector& Dimensions,
+		const FVector& Center,
+		ETargetTeam TargetTeam = ETargetTeam::Both
+	);
+
+	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|GameplayMechanics")
 	static AActor* GetClosestActorToTarget(
 		AActor* TargetActor,
 		float Radius,
@@ -429,4 +439,12 @@ public:
 	// 	int32 Level,
 	// 	int32 Amount
 	// 	);
+
+private:
+	static void AddOverlappedCharactersByTeam(
+		const AActor* ContextActor,
+		TArray<AActor*>& OutOverlappingActors,
+		const TArray<FOverlapResult>& Overlaps,
+		ETargetTeam TargetTeam
+		);
 };

@@ -46,6 +46,17 @@ void UActiveDamageAbility::EndAbility(
 	ComboIndex = 0;
 }
 
+void UActiveDamageAbility::GetMontageParams(
+	UAnimMontage*& Montage,
+	float& PlayRate,
+	float& RootMotionScale
+	) const
+{
+	Montage = bIsComboSequence ? ComboSequenceMontages[ComboIndex] : MontageToPlay;
+	PlayRate = MontagePlayRate.GetValueAtLevel(GetAbilityLevel());
+	RootMotionScale = AnimRootMotionTranslateScale.GetValueAtLevel(GetAbilityLevel());
+}
+
 bool UActiveDamageAbility::IsDamageAbility_Implementation() const
 {
 	return true;
@@ -61,7 +72,7 @@ FAbilityParams UActiveDamageAbility::ApplyEffectChangePerHitToAbilityParams(
 	int32 HitCount
 	)
 {
-	if (HitMode != EAbilityHitMode::Default && GetMaxHitCount() > 1)
+	if (RangedHitMode != EAbilityHitMode::Default && GetMaxHitCount() > 1)
 	{
 		AbilityParams.DamageParams.BaseDamage *= (1.f + GetEffectChangePerHit() * HitCount);
 		AbilityParams.EffectParams.Value *= (1.f + GetEffectChangePerHit() * HitCount);
@@ -69,24 +80,6 @@ FAbilityParams UActiveDamageAbility::ApplyEffectChangePerHitToAbilityParams(
 	}
 
 	return AbilityParams;
-}
-
-void UActiveDamageAbility::CauseDamage(AActor* TargetActor)
-{
-	const FGameplayEffectSpecHandle DamageSpecHandle =  MakeOutgoingGameplayEffectSpec
-	(DamageEffectClass, 1.f);
-	
-	const float ScaledDamage = GetDamageAtLevel(GetAbilityLevel());
-	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(
-		DamageSpecHandle,
-		DamageType,
-		ScaledDamage
-	);
-	
-	GetAbilitySystemComponentFromActorInfo()->ApplyGameplayEffectSpecToTarget(
-		*DamageSpecHandle.Data.Get(),
-		UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(TargetActor)
-	);
 }
 
 float UActiveDamageAbility::GetDamageAtLevel(int32 Level) const
@@ -97,6 +90,18 @@ float UActiveDamageAbility::GetDamageAtLevel(int32 Level) const
 int32 UActiveDamageAbility::GetRoundedDamageAtLevel_Implementation(int32 Level) const
 {
 	return FMath::RoundToInt32(GetDamageAtLevel(Level));
+}
+
+void UActiveDamageAbility::HandleComboSequence()
+{
+	if (!bComboInputPressed) return;
+
+	ComboIndex += 1;
+	bComboInputPressed = false;
+
+	if (!ComboSequenceMontages.IsValidIndex(ComboIndex)) return;
+
+	OnNextComboSequence();
 }
 
 float UActiveDamageAbility::GetComboMagnitude() const

@@ -94,9 +94,9 @@ void UProjectileAbility::SpawnProjectile(
 			}
 		}
 
-		if (HitMode != EAbilityHitMode::Default)
+		if (RangedHitMode != EAbilityHitMode::Default)
 		{
-			Projectile->HitMode = HitMode;
+			Projectile->HitMode = RangedHitMode;
 			Projectile->MaxHitCount = GetMaxHitCount();
 			Projectile->EffectChangePerHit = GetEffectChangePerHit();
 			Projectile->bCanRepeatTarget = bCanRepeatTarget;
@@ -124,11 +124,13 @@ void UProjectileAbility::SetHomingInitialTarget(AAuraProjectile* Projectile)
 				Projectile->InitialTarget = Targets[ProjectileSpawnCycleCount];
 			}
 			ProjectileSpawnCycleCount += 1;
+			break;
 		}
 	case EProjectileHomingMode::RandomTargets:
 		{
 			const int32 RandomIndex = FMath::RandRange(0, Targets.Num() - 1);
 			Projectile->InitialTarget = Targets[RandomIndex];
+			break;
 		}
 	case EProjectileHomingMode::OneTarget: {}
 	default: {}
