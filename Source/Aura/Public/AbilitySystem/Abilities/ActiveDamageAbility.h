@@ -17,20 +17,28 @@ public:
 	virtual FAbilityParams MakeAbilityParamsFromDefaults(AActor* TargetActor = nullptr) const 
 	override;
 	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
+	virtual void GetMontageParams(UAnimMontage*& Montage, float& PlayRate, float& RootMotionScale) const;
+
+	// Ability Interface overrides
+	virtual bool IsDamageAbility_Implementation() const override;
+	virtual FGameplayTag GetDamageTypeTag_Implementation() const override;;
+	// END Ability Interface overrides
 
 	UFUNCTION(BlueprintCallable)
 	FAbilityParams ApplyEffectChangePerHitToAbilityParams(
 		UPARAM(ref) FAbilityParams& AbilityParams,
 		int32 HitCount
 		);
-	
-	UFUNCTION(BlueprintCallable)
-	void CauseDamage(AActor* TargetActor);
 
 	UFUNCTION(BlueprintPure, Category="Ability Defaults|Damage")
 	float GetDamageAtLevel(int32 Level) const;
 	UFUNCTION(BlueprintPure, Category="Ability Defaults|Damage")
 	virtual int32 GetRoundedDamageAtLevel_Implementation(int32 Level) const override;
+
+	UFUNCTION(BlueprintCallable, Category="Ability Defaults|Combo")
+	void HandleComboSequence();
+	UFUNCTION(BlueprintImplementableEvent, Category="Ability Defaults|Combo")
+	void OnNextComboSequence();
 	
 protected:
 	UFUNCTION(BlueprintPure, Category="AbilityDefaults")

@@ -56,6 +56,12 @@ void UEncounterManager::StartEncounter()
 
 void UEncounterManager::NextWave()
 {
+	if (EnemyWaves.IsEmpty())
+	{
+		UE_LOG(LogAura, Error, TEXT("No enemy waves to spawn!"));
+		FinishEncounter();
+		return;
+	}
 	if (EnemySpawners.Num() < EnemyWaves.Num())
 	{
 		UE_LOG(LogAura, Error, TEXT("Game Mode is trying to spawn more enemies this wave than there is available spawners"));

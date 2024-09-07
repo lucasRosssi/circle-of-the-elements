@@ -18,8 +18,11 @@ class AURA_API UAreaEffectActorAbility : public UActiveDamageAbility
 public:
 	UAreaEffectActorAbility();
 
+	// Ability Interface overrides
 	virtual int32 GetAreaEffectDurationAtLevel_Implementation(int32 Level) const override;
 	virtual float GetPeriodAtLevel_Implementation(int32 Level) const override;
+	virtual bool IsAreaEffectActorAbility_Implementation() const override;
+	// END Ability Interface overrides
 protected:
 	UFUNCTION(BlueprintCallable, Category="Spawning")
 	AAreaEffectActor* SpawnEffectActor(const FVector& TargetLocation);

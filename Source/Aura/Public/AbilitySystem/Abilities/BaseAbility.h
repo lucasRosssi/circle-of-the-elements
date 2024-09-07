@@ -52,6 +52,8 @@ public:
 
 	// Ability Interface overrides
 	virtual bool IsActiveAbility_Implementation() const override;
+	virtual bool IsDamageAbility_Implementation() const override;
+	virtual bool IsAreaEffectActorAbility_Implementation() const override;
 	// END Ability Interface overrides
 	
 	UFUNCTION(BlueprintPure, Category="Resources", meta=(HidePin="Target", DefaultToSelf="Target"))
@@ -75,6 +77,23 @@ public:
 	virtual FAbilityParams MakeAbilityParamsFromDefaults(AActor* TargetActor = nullptr) const;
 
 protected:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Debug")
+	bool bDebugAbility = false;
+	UPROPERTY(
+		EditDefaultsOnly,
+		BlueprintReadOnly,
+		Category="Debug",
+		meta=(EditCondition="bDebugAbility", EditConditionHides)
+		)
+	float DrawShapeDuration = 2.f;
+	UPROPERTY(
+		EditDefaultsOnly,
+		BlueprintReadOnly,
+		Category="Debug",
+		meta=(EditCondition="bDebugAbility", EditConditionHides)
+		)
+	FColor DrawShapeColor = FColor::Green;
+	
 	UFUNCTION(BlueprintPure, Category="Ability")
 	AAuraCharacterBase* GetAvatarCharacter();
 	

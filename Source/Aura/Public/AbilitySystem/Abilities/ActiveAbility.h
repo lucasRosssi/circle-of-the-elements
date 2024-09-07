@@ -9,6 +9,7 @@
 
 class ATargetingActor;
 class AAuraPlayerController;
+
 /**
  * 
  */
@@ -31,13 +32,15 @@ public:
 	bool bUsesMovementInputDirection = false;
 
 	// Ability Interface overrides
-	virtual EAbilityHitMode GetHitMode_Implementation() const override { return HitMode; }
+	virtual EAbilityHitMode GetHitMode_Implementation() const override { return RangedHitMode; }
 	virtual int32 GetMaxHitCountAtLevel_Implementation (int32 Level) const override;
 	virtual float GetEffectChangePerHitAtLevel_Implementation(int32 Level) const override;
 	virtual bool IsActiveAbility_Implementation() const override;
 	// END Ability Interface overrides
 
 protected:
+	UFUNCTION(BlueprintPure, Category="Ability Defaults")
+	virtual void GetMontageParams(UAnimMontage*& Montage, float& PlayRate, float& RootMotionScale) const;
 	UFUNCTION(BlueprintPure, Category="Ability Defaults")
 	float GetMontagePlayRate() const;
 	UFUNCTION(BlueprintPure, Category="Ability Defaults")
@@ -62,7 +65,7 @@ protected:
 		Category="Ability Defaults|Weapon",
 		meta=(DisplayPriority=0)
 		)
-	bool bUseWeapon;
+	bool bUseWeaponSocket;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Ability Defaults")
 	TObjectPtr<UAnimMontage> MontageToPlay;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Ability Defaults")
@@ -75,7 +78,7 @@ protected:
 	TSubclassOf<ATargetingActor> TargetingActorClass;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Ability Defaults|Mode")
-	EAbilityHitMode HitMode = EAbilityHitMode::Default;
+	EAbilityHitMode RangedHitMode = EAbilityHitMode::Default;
 	UPROPERTY(
 		EditDefaultsOnly,
 		BlueprintReadOnly,

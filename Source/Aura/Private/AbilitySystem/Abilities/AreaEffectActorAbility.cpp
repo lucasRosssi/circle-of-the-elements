@@ -22,6 +22,11 @@ float UAreaEffectActorAbility::GetPeriodAtLevel_Implementation(int32 Level) cons
 	return Period.GetValueAtLevel(Level);
 }
 
+bool UAreaEffectActorAbility::IsAreaEffectActorAbility_Implementation() const
+{
+	return true;
+}
+
 AAreaEffectActor* UAreaEffectActorAbility::SpawnEffectActor(const FVector& TargetLocation)
 {
 	AActor* AvatarActor = GetAvatarActorFromActorInfo();

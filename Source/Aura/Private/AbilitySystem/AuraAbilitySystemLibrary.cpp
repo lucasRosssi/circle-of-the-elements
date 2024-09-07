@@ -510,34 +510,38 @@ void UAuraAbilitySystemLibrary::GetAliveCharactersWithinRadius(
 			FCollisionShape::MakeSphere(Radius),
 			SphereParams
 		);
-		for (auto& Overlap : Overlaps)
-		{
-			AActor* OverlappedActor = Overlap.GetActor();
+		
+		AddOverlappedCharactersByTeam(ContextActor, OutOverlappingActors, Overlaps, TargetTeam);
+	}
+}
 
-			if (!OverlappedActor->Implements<UCombatInterface>()) continue;
-			if (ICombatInterface::Execute_IsDead(OverlappedActor)) continue;
+void UAuraAbilitySystemLibrary::GetAliveCharactersWithinBox(
+	const AActor* ContextActor,
+	TArray<AActor*>& OutOverlappingActors,
+	TArray<AActor*>& ActorsToIgnore,
+	const FVector& Dimensions,
+	const FVector& Center,
+	ETargetTeam TargetTeam
+	)
+{
+	if (TargetTeam == ETargetTeam::Self) return;
+	
+	FCollisionQueryParams BoxParams;
+	BoxParams.AddIgnoredActors(ActorsToIgnore);
 
-			if (TargetTeam == ETargetTeam::Both)
-			{
-				OutOverlappingActors.AddUnique(OverlappedActor);
-				continue;
-			}
+	TArray<FOverlapResult> Overlaps;
+	if (const UWorld* World = GEngine->GetWorldFromContextObject(ContextActor, EGetWorldErrorMode::LogAndReturnNull))
+	{
+		World->OverlapMultiByObjectType(
+			Overlaps,
+			Center,
+			FQuat::Identity,
+			FCollisionObjectQueryParams(FCollisionObjectQueryParams::InitType::AllDynamicObjects),
+			FCollisionShape::MakeBox(Dimensions),
+			BoxParams
+		);
 
-			if (TargetTeam == ETargetTeam::Enemies &&
-				AreActorsEnemies(ContextActor, OverlappedActor)
-				)
-			{
-				OutOverlappingActors.AddUnique(OverlappedActor);
-				continue;
-			}
-
-			if (TargetTeam == ETargetTeam::Friends &&
-				AreActorsFriends(ContextActor, OverlappedActor)
-				)
-			{
-				OutOverlappingActors.AddUnique(OverlappedActor);
-			}
-		}
+		AddOverlappedCharactersByTeam(ContextActor, OutOverlappingActors, Overlaps, TargetTeam);
 	}
 }
 
@@ -898,7 +902,7 @@ void UAuraAbilitySystemLibrary::FormatAbilityDescriptionAtLevel(
 	)
 {
 	const FAuraNamedArguments& Args = FAuraNamedArguments::Get();
-
+	
 	OutDescription = FText::FormatNamed(
 		OutDescription,
 		Args.AdditionalHitCount_0,
@@ -909,21 +913,53 @@ void UAuraAbilitySystemLibrary::FormatAbilityDescriptionAtLevel(
 		FMath::Abs(IAbilityInterface::Execute_GetEffectChangePerHitAtLevel(Ability, Level)) * 100,
 		Args.HitEffectChange_1,
 		FMath::Abs(IAbilityInterface::Execute_GetEffectChangePerHitAtLevel(Ability, Level + 1)) * 100,
-		Args.Dmg_0,
-		IAbilityInterface::Execute_GetRoundedDamageAtLevel(Ability, Level),
-		Args.Dmg_1,
-		IAbilityInterface::Execute_GetRoundedDamageAtLevel(Ability, Level + 1),
 		Args.Period,
-		IAbilityInterface::Execute_GetBeamTickPeriod(Ability),
-		Args.ActorDuration_0,
-		IAbilityInterface::Execute_GetAreaEffectDurationAtLevel(Ability, Level),
-		Args.ActorDuration_1,
-		IAbilityInterface::Execute_GetAreaEffectDurationAtLevel(Ability, Level + 1),
-		Args.ActorPeriod_0,
-		IAbilityInterface::Execute_GetPeriodAtLevel(Ability, Level),
-		Args.ActorPeriod_1,
-		IAbilityInterface::Execute_GetPeriodAtLevel(Ability, Level + 1)
+		IAbilityInterface::Execute_GetBeamTickPeriod(Ability)
 	);
+
+	if (IAbilityInterface::Execute_IsDamageAbility(Ability))
+	{
+		const FGameplayTag& DamageTypeTag = IAbilityInterface::Execute_GetDamageTypeTag(Ability);
+		if (const auto Tuple = Args.DamageTypeTexts.Find(DamageTypeTag))
+		{
+			OutDescription = FText::FormatNamed(
+				OutDescription,
+				Tuple->Key,
+				Tuple->Value
+				);
+		}
+		if (const auto NextTuple = Args.NextDamageTypeTexts.Find(DamageTypeTag))
+		{
+			OutDescription = FText::FormatNamed(
+				OutDescription,
+				NextTuple->Key,
+				NextTuple->Value
+				);
+		}
+
+		OutDescription = FText::FormatNamed(
+			OutDescription,
+			Args.Dmg_0,
+			IAbilityInterface::Execute_GetRoundedDamageAtLevel(Ability, Level),
+			Args.Dmg_1,
+			IAbilityInterface::Execute_GetRoundedDamageAtLevel(Ability, Level + 1)
+		);
+	}
+
+	if (IAbilityInterface::Execute_IsAreaEffectActorAbility(Ability))
+	{
+		OutDescription = FText::FormatNamed(
+			OutDescription,
+			Args.ActorDuration_0,
+			IAbilityInterface::Execute_GetAreaEffectDurationAtLevel(Ability, Level),
+			Args.ActorDuration_1,
+			IAbilityInterface::Execute_GetAreaEffectDurationAtLevel(Ability, Level + 1),
+			Args.ActorPeriod_0,
+			IAbilityInterface::Execute_GetPeriodAtLevel(Ability, Level),
+			Args.ActorPeriod_1,
+			IAbilityInterface::Execute_GetPeriodAtLevel(Ability, Level + 1)
+		);
+	}
 	
 	if (Ability->GetStatusEffectData().IsValid())
 	{
@@ -934,9 +970,13 @@ void UAuraAbilitySystemLibrary::FormatAbilityDescriptionAtLevel(
 			Args.Effect_1,
 			Ability->GetStatusEffectData().Value.GetValueAtLevel(Level + 1),
 			Args.EffectPercent_0,
-			Ability->GetStatusEffectData().Value.GetValueAtLevel(Level) * 100,
+			FMath::Abs(Ability->GetStatusEffectData().Value.GetValueAtLevel(Level) * 100),
 			Args.EffectPercent_1,
-			Ability->GetStatusEffectData().Value.GetValueAtLevel(Level + 1) * 100,
+			FMath::Abs(Ability->GetStatusEffectData().Value.GetValueAtLevel(Level + 1) * 100),
+			Args.EffectPercentFromResult_0,
+			FMath::Abs((1.f - Ability->GetStatusEffectData().Value.GetValueAtLevel(Level)) * 100),
+			Args.EffectPercentFromResult_1,
+			FMath::Abs((1.f - Ability->GetStatusEffectData().Value.GetValueAtLevel(Level + 1)) * 100),
 			Args.Duration_0,
 			Ability->GetStatusEffectData().Duration.GetValueAtLevel(Level),
 			Args.Duration_1,
@@ -1094,6 +1134,43 @@ void UAuraAbilitySystemLibrary::MakeManaAndCooldownTextNextLevel(
 			Cooldown,
 			NextCooldown
 		);
+	}
+}
+
+void UAuraAbilitySystemLibrary::AddOverlappedCharactersByTeam(
+	const AActor* ContextActor,
+	TArray<AActor*>& OutOverlappingActors,
+	const TArray<FOverlapResult>& Overlaps,
+	ETargetTeam TargetTeam
+	)
+{
+	for (const auto& Overlap : Overlaps)
+	{
+		AActor* OverlappedActor = Overlap.GetActor();
+
+		if (!OverlappedActor->Implements<UCombatInterface>()) continue;
+		if (ICombatInterface::Execute_IsDead(OverlappedActor)) continue;
+
+		if (TargetTeam == ETargetTeam::Both)
+		{
+			OutOverlappingActors.AddUnique(OverlappedActor);
+			continue;
+		}
+
+		if (TargetTeam == ETargetTeam::Enemies &&
+			AreActorsEnemies(ContextActor, OverlappedActor)
+			)
+		{
+			OutOverlappingActors.AddUnique(OverlappedActor);
+			continue;
+		}
+
+		if (TargetTeam == ETargetTeam::Friends &&
+			AreActorsFriends(ContextActor, OverlappedActor)
+			)
+		{
+			OutOverlappingActors.AddUnique(OverlappedActor);
+		}
 	}
 }
 

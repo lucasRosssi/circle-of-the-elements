@@ -81,18 +81,25 @@ public:
 
 	FGameplayTag StatusEffects_Buff;
 	FGameplayTag StatusEffects_Buff_Shield;
+	FGameplayTag StatusEffects_Buff_Haste;
 	
 	FGameplayTag StatusEffects_Debuff;
 	FGameplayTag StatusEffects_Debuff_Bleeding;
 	FGameplayTag StatusEffects_Debuff_Burning;
 	FGameplayTag StatusEffects_Debuff_Chill;
 	FGameplayTag StatusEffects_Debuff_Charm;
+	FGameplayTag StatusEffects_Debuff_Weakness;
+	FGameplayTag StatusEffects_Debuff_Exposed;
+	FGameplayTag StatusEffects_Debuff_Root;
+	FGameplayTag StatusEffects_Debuff_Shock;
 
 	FGameplayTag StatusEffects_Incapacitation;
 	FGameplayTag StatusEffects_Incapacitation_HitReact;
 	FGameplayTag StatusEffects_Incapacitation_Knockback;
 	FGameplayTag StatusEffects_Incapacitation_Stun;
 	FGameplayTag StatusEffects_Incapacitation_Freeze;
+	FGameplayTag StatusEffects_Incapacitation_Sleep;
+	FGameplayTag StatusEffects_Incapacitation_Paralysis;
 
 	FGameplayTag StatusEffects_Condition;
 	FGameplayTag StatusEffects_Condition_Alive;
@@ -147,6 +154,8 @@ public:
 	FGameplayTag Abilities_Type_Triggered;
 	FGameplayTag Abilities_Type_None;
 
+	FGameplayTag Abilities_Mobility;
+
 	FGameplayTag Abilities_Tier;
 	FGameplayTag Abilities_Tier_I;
 	FGameplayTag Abilities_Tier_II;
@@ -170,18 +179,26 @@ public:
 	FGameplayTag Abilities_Element_Lightning;
 	FGameplayTag Abilities_Element_Necrotic;
 	FGameplayTag Abilities_Element_Duo;
+
+	// Reactions
 	
 	FGameplayTag Abilities_Reaction;
 	FGameplayTag Abilities_Reaction_HitReact;
 	FGameplayTag Abilities_Reaction_Stun;
 	FGameplayTag Abilities_Reaction_ShieldStackRemove;
 	FGameplayTag Abilities_Reaction_Charm;
+	FGameplayTag Abilities_Reaction_Shock;
+	FGameplayTag Abilities_Reaction_Paralysis;
+
+	// Actions
 	
 	FGameplayTag Abilities_Action;
 	FGameplayTag Abilities_Action_Dodge;
 	FGameplayTag Cooldown_Action_Dodge;
 	FGameplayTag Charges_Action_Dodge;
 
+	// Common Active
+	
 	FGameplayTag Abilities_Active;
 	FGameplayTag Abilities_Active_Primary;
 	FGameplayTag Abilities_Active_Secondary;
@@ -190,22 +207,43 @@ public:
 	FGameplayTag Abilities_Active_5th;
 	FGameplayTag Abilities_Active_6th;
 
+	/* Aura */
+	
 	FGameplayTag Abilities_Active_Aura;
+
+	// Fire
 	
 	FGameplayTag Abilities_Active_Aura_Fireball;
 	FGameplayTag Cooldown_Active_Aura_Fireball;
 	FGameplayTag Charges_Active_Aura_Fireball;
+	FGameplayTag Abilities_Active_Aura_FireMissiles;
+	FGameplayTag Cooldown_Active_Aura_FireMissiles;
+
+	// Lightning
 	
 	FGameplayTag Abilities_Active_Aura_ChainLightning;
 	FGameplayTag Cooldown_Active_Aura_ChainLightning;
 	FGameplayTag Abilities_Active_Aura_MagneticShot;
 	FGameplayTag Cooldown_Active_Aura_MagneticShot;
 	FGameplayTag Charges_Active_Aura_MagneticShot;
+	FGameplayTag Abilities_Active_Aura_ThunderBall;
+	FGameplayTag Cooldown_Active_Aura_ThunderBall;
+	FGameplayTag Abilities_Active_Aura_LightningMissiles;
+	FGameplayTag Cooldown_Active_Aura_LightningMissiles;
 
+	// Ice
+	
 	FGameplayTag Abilities_Active_Aura_FrostRay;
 	FGameplayTag Cooldown_Active_Aura_FrostRay;
 	FGameplayTag Abilities_Active_Aura_Blizzard;
 	FGameplayTag Cooldown_Active_Aura_Blizzard;
+	FGameplayTag Abilities_Active_Aura_FrostBolt;
+	FGameplayTag Cooldown_Active_Aura_FrostBolt;
+	FGameplayTag Abilities_Active_Aura_IceMissiles;
+	FGameplayTag Cooldown_Active_Aura_IceMissiles;
+	FGameplayTag Charges_Active_Aura_IceMissiles;
+
+	// Arcane
 	
 	FGameplayTag Abilities_Active_Aura_ArcaneMissiles;
 	FGameplayTag Cooldown_Active_Aura_ArcaneMissiles;
@@ -213,6 +251,24 @@ public:
 	FGameplayTag Cooldown_Active_Aura_ArcaneShards;
 	FGameplayTag Abilities_Active_Aura_CharmingHex;
 	FGameplayTag Cooldown_Active_Aura_CharmingHex;
+	FGameplayTag Abilities_Active_Aura_ArcaneBolt;
+	FGameplayTag Cooldown_Active_Aura_ArcaneBolt;
+
+	// Necrotic
+
+	FGameplayTag Abilities_Active_Aura_NecroBolt;
+	FGameplayTag Cooldown_Active_Aura_NecroBolt;
+	FGameplayTag Abilities_Active_Aura_NecroMissiles;
+	FGameplayTag Cooldown_Active_Aura_NecroMissiles;
+	
+	// Physical
+
+	FGameplayTag Abilities_Active_Aura_WindGust;
+	FGameplayTag Cooldown_Active_Aura_WindGust;
+	FGameplayTag Abilities_Active_Aura_RockMissiles;
+	FGameplayTag Cooldown_Active_Aura_RockMissiles;
+
+	/* Vilkar */
 
 	FGameplayTag Abilities_Active_Vilkar;
 

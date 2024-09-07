@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
 
 /**
  * AuraNamedArguments
@@ -16,6 +17,8 @@ public:
 	static const FAuraNamedArguments& Get() { return NamedArguments; }
 	static void InitializeNamedArguments();
 
+	/* VALUES */
+	
 	FString Level_0;
 	FString Level_1;
 	
@@ -31,6 +34,8 @@ public:
 	FString Effect_1;
 	FString EffectPercent_0;
 	FString EffectPercent_1;
+	FString EffectPercentFromResult_0;
+	FString EffectPercentFromResult_1;
 	FString Duration_0;
 	FString Duration_1;
 	FString Period;
@@ -43,6 +48,24 @@ public:
 	FString ActorDuration_1;
 	FString ActorPeriod_0;
 	FString ActorPeriod_1;
+
+	/* HELPERS - Common used texts */
+
+	FString FireDmg;
+	FString IceDmg;
+	FString LightningDmg;
+	FString ArcaneDmg;
+	FString NecroticDmg;
+	FString PhysicalDmg;
+	FString NextFireDmg;
+	FString NextIceDmg;
+	FString NextLightningDmg;
+	FString NextArcaneDmg;
+	FString NextNecroticDmg;
+	FString NextPhysicalDmg;
+
+	TMap<FGameplayTag, TTuple<FString, FText>> DamageTypeTexts;
+	TMap<FGameplayTag, TTuple<FString, FText>> NextDamageTypeTexts;
 
 private:
 	static FAuraNamedArguments NamedArguments;

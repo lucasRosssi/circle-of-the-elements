@@ -15,8 +15,8 @@ AAuraGameModeBase* UAuraSystemComponent::GetAuraGameMode()
 {
 	if (AuraGameMode == nullptr)
 	{
-		UGameplayStatics::GetGameMode(GetOwner());
+		AuraGameMode = Cast<AAuraGameModeBase>(UGameplayStatics::GetGameMode(GetOwner()));
 	}
 
-	return AuraGameMode;
+	return AuraGameMode.Get();
 }

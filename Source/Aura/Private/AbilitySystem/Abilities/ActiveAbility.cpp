@@ -35,6 +35,17 @@ bool UActiveAbility::IsActiveAbility_Implementation() const
 	return true;
 }
 
+void UActiveAbility::GetMontageParams(
+	UAnimMontage*& Montage,
+	float& PlayRate,
+	float& RootMotionScale
+	) const
+{
+	Montage = MontageToPlay;
+	PlayRate = MontagePlayRate.GetValueAtLevel(GetAbilityLevel());
+	RootMotionScale = AnimRootMotionTranslateScale.GetValueAtLevel(GetAbilityLevel());
+}
+
 float UActiveAbility::GetMontagePlayRate() const
 {
 	return MontagePlayRate.GetValueAtLevel(GetAbilityLevel());

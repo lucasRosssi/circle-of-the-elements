@@ -4,8 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Game/AuraGameModeBase.h"
 #include "AuraSystemComponent.generated.h"
-
 
 class AAuraGameModeBase;
 
@@ -21,8 +21,7 @@ public:
 
 protected:
 	AAuraGameModeBase* GetAuraGameMode();
-	UPROPERTY()
-	AAuraGameModeBase* AuraGameMode = nullptr;
+	TWeakObjectPtr<AAuraGameModeBase> AuraGameMode;
 
 private:
 		

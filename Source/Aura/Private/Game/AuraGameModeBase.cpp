@@ -40,12 +40,7 @@ void AAuraGameModeBase::BeginPlay()
 
 UAuraGameInstance* AAuraGameModeBase::GetAuraGameInstance()
 {
-	if (AuraGameInstance == nullptr)
-	{
-		AuraGameInstance = Cast<UAuraGameInstance>(UGameplayStatics::GetGameInstance(this));
-	}
-
-	return AuraGameInstance;
+	return Cast<UAuraGameInstance>(UGameplayStatics::GetGameInstance(this));
 }
 
 AAuraHUD* AAuraGameModeBase::GetAuraHUD(int32 PlayerIndex)

@@ -407,6 +407,11 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FString("Blocks limited instances of damage")
 		);
 
+	GameplayTags.StatusEffects_Buff_Haste = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("StatusEffects.Buff.Haste"),
+		FString("Increases action speed")
+		);
+
 	// Debuffs
 
 	GameplayTags.StatusEffects_Debuff = UGameplayTagsManager::Get().AddNativeGameplayTag(
@@ -434,6 +439,26 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FString("Charm effect. Temporarily fights for the source team.")
 		);
 
+	GameplayTags.StatusEffects_Debuff_Weakness = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("StatusEffects.Debuff.Weakness"),
+		FString("Weakness effect. Reduces damage done.")
+		);
+
+	GameplayTags.StatusEffects_Debuff_Exposed = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("StatusEffects.Debuff.Exposed"),
+		FString("Exposed effect. Increases damage received.")
+		);
+
+	GameplayTags.StatusEffects_Debuff_Root = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("StatusEffects.Debuff.Root"),
+		FString("Root effect. Can't move or use mobility abilities.")
+		);
+
+	GameplayTags.StatusEffects_Debuff_Shock = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("StatusEffects.Debuff.Shock"),
+		FString("Shock effect. Gets paralyzed every 1.5s.")
+		);
+
 	// Incapacitations
 
 	GameplayTags.StatusEffects_Incapacitation = UGameplayTagsManager::Get().AddNativeGameplayTag(
@@ -459,6 +484,16 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	GameplayTags.StatusEffects_Incapacitation_Freeze = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("StatusEffects.Incapacitation.Freeze"),
 		FString("Freeze effect. Inflicted when having many stacks of Chill applied. Can't do anything. Temporarily resist new applications after recovery.")
+		);
+
+	GameplayTags.StatusEffects_Incapacitation_Sleep = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("StatusEffects.Incapacitation.Sleep"),
+		FString("Sleep effect. Can't do anything. Removed when taking instant damage.")
+		);
+
+	GameplayTags.StatusEffects_Incapacitation_Paralysis = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("StatusEffects.Incapacitation.Paralysis"),
+		FString("Paralysis effect. Can't do anything.")
 		);
 
 	
@@ -633,6 +668,13 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FString("No type ability.")
 		);
 
+	// Movement
+
+	GameplayTags.Abilities_Mobility = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Mobility"),
+		FString("Mobility ability.")
+		);
+
 	// Tiers
 
 	GameplayTags.Abilities_Tier = UGameplayTagsManager::Get().AddNativeGameplayTag(
@@ -771,6 +813,16 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FString("Get charmed ability")
 		);
 
+	GameplayTags.Abilities_Reaction_Shock = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Reaction.Shock"),
+		FString("Get shocked ability")
+		);
+
+	GameplayTags.Abilities_Reaction_Paralysis = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Reaction.Paralysis"),
+		FString("Get paralyzed ability")
+		);
+
 	// Actions
 
 	GameplayTags.Abilities_Action = UGameplayTagsManager::Get().AddNativeGameplayTag(
@@ -837,6 +889,8 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FString("Aura active abilities")
 		);
 
+	// Aura Fire Abilities
+
 	GameplayTags.Abilities_Active_Aura_Fireball = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Abilities.Active.Aura.Fireball"),
 		FString("Fireball ability")
@@ -851,6 +905,18 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FName("Charges.Active.Aura.Fireball"),
 		FString("Fireball ability charges")
 		);
+
+	GameplayTags.Abilities_Active_Aura_FireMissiles = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Active.Aura.FireMissiles"),
+		FString("FireMissiles ability")
+		);
+
+	GameplayTags.Cooldown_Active_Aura_FireMissiles = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Cooldown.Active.Aura.FireMissiles"),
+		FString("FireMissiles ability cooldown")
+		);
+
+	// Aura Lightning Abilities
 
 	GameplayTags.Abilities_Active_Aura_ChainLightning = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Abilities.Active.Aura.ChainLightning"),
@@ -877,6 +943,28 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FString("MagneticShot ability charges")
 		);
 
+	GameplayTags.Abilities_Active_Aura_ThunderBall = UGameplayTagsManager::Get().AddNativeGameplayTag(
+	FName("Abilities.Active.Aura.ThunderBall"),
+	FString("ThunderBall ability")
+	);
+
+	GameplayTags.Cooldown_Active_Aura_ThunderBall = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Cooldown.Active.Aura.ThunderBall"),
+		FString("ThunderBall ability cooldown")
+		);
+
+	GameplayTags.Abilities_Active_Aura_LightningMissiles = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Active.Aura.LightningMissiles"),
+		FString("LightningMissiles ability")
+		);
+
+	GameplayTags.Cooldown_Active_Aura_LightningMissiles = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Cooldown.Active.Aura.LightningMissiles"),
+		FString("LightningMissiles ability cooldown")
+		);
+
+	// Aura Ice Abilities
+	
 	GameplayTags.Abilities_Active_Aura_FrostRay = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Abilities.Active.Aura.FrostRay"),
 		FString("FrostRay ability")
@@ -896,6 +984,33 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FName("Cooldown.Active.Aura.Blizzard"),
 		FString("Blizzard ability cooldown")
 		);
+
+	GameplayTags.Abilities_Active_Aura_FrostBolt = UGameplayTagsManager::Get().AddNativeGameplayTag(
+	FName("Abilities.Active.Aura.FrostBolt"),
+	FString("FrostBolt ability")
+	);
+
+	GameplayTags.Cooldown_Active_Aura_FrostBolt = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Cooldown.Active.Aura.FrostBolt"),
+		FString("FrostBolt ability cooldown")
+		);
+
+	GameplayTags.Abilities_Active_Aura_IceMissiles = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Active.Aura.IceMissiles"),
+		FString("IceMissiles ability")
+		);
+
+	GameplayTags.Cooldown_Active_Aura_IceMissiles = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Cooldown.Active.Aura.IceMissiles"),
+		FString("IceMissiles ability cooldown")
+		);
+
+	GameplayTags.Charges_Active_Aura_IceMissiles = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Charges.Active.Aura.IceMissiles"),
+		FString("IceMissiles ability cooldown")
+		);
+
+	// Aura Arcane Abilities
 
 	GameplayTags.Abilities_Active_Aura_ArcaneMissiles = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Abilities.Active.Aura.ArcaneMissiles"),
@@ -925,6 +1040,60 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	GameplayTags.Cooldown_Active_Aura_CharmingHex = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Cooldown.Active.Aura.CharmingHex"),
 		FString("CharmingHex ability cooldown")
+		);
+
+	GameplayTags.Abilities_Active_Aura_ArcaneBolt = UGameplayTagsManager::Get().AddNativeGameplayTag(
+	FName("Abilities.Active.Aura.ArcaneBolt"),
+	FString("ArcaneBolt ability")
+	);
+
+	GameplayTags.Cooldown_Active_Aura_ArcaneBolt = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Cooldown.Active.Aura.ArcaneBolt"),
+		FString("ArcaneBolt ability cooldown")
+		);
+
+	// Aura Necrotic Abilities
+
+	GameplayTags.Abilities_Active_Aura_NecroBolt = UGameplayTagsManager::Get().AddNativeGameplayTag(
+	FName("Abilities.Active.Aura.NecroBolt"),
+	FString("NecroBolt ability")
+	);
+
+	GameplayTags.Cooldown_Active_Aura_NecroBolt = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Cooldown.Active.Aura.NecroBolt"),
+		FString("NecroBolt ability cooldown")
+		);
+
+	GameplayTags.Abilities_Active_Aura_NecroMissiles = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Active.Aura.NecroMissiles"),
+		FString("NecroMissiles ability")
+		);
+
+	GameplayTags.Cooldown_Active_Aura_NecroMissiles = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Cooldown.Active.Aura.NecroMissiles"),
+		FString("NecroMissiles ability cooldown")
+		);
+
+	// Aura Physical Abilities
+
+	GameplayTags.Abilities_Active_Aura_WindGust = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Active.Aura.WindGust"),
+		FString("WindGust ability")
+		);
+
+	GameplayTags.Cooldown_Active_Aura_WindGust = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Cooldown.Active.Aura.WindGust"),
+		FString("WindGust ability cooldown")
+		);
+
+	GameplayTags.Abilities_Active_Aura_RockMissiles = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Active.Aura.RockMissiles"),
+		FString("RockMissiles ability")
+		);
+
+	GameplayTags.Cooldown_Active_Aura_RockMissiles = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Cooldown.Active.Aura.RockMissiles"),
+		FString("RockMissiles ability cooldown")
 		);
 
 	// Vilkar active abilities
@@ -1087,19 +1256,26 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	GameplayTags.ParentsToChildren.Add(GameplayTags.InputTag, SkillsInputTags);
 
 	const TArray BuffTags({
-		GameplayTags.StatusEffects_Buff_Shield
+		GameplayTags.StatusEffects_Buff_Shield,
+		GameplayTags.StatusEffects_Buff_Haste
 	});
 	const TArray DebuffTags({
 		GameplayTags.StatusEffects_Debuff_Bleeding,
 		GameplayTags.StatusEffects_Debuff_Burning,
 		GameplayTags.StatusEffects_Debuff_Chill,
 		GameplayTags.StatusEffects_Debuff_Charm,
+		GameplayTags.StatusEffects_Debuff_Weakness,
+		GameplayTags.StatusEffects_Debuff_Exposed,
+		GameplayTags.StatusEffects_Debuff_Root,
+		GameplayTags.StatusEffects_Debuff_Shock,
 	});
 	const TArray IncapacitationTags({
 		GameplayTags.StatusEffects_Incapacitation_HitReact,
 		GameplayTags.StatusEffects_Incapacitation_Knockback,
 		GameplayTags.StatusEffects_Incapacitation_Stun,
-		GameplayTags.StatusEffects_Incapacitation_Freeze
+		GameplayTags.StatusEffects_Incapacitation_Freeze,
+		GameplayTags.StatusEffects_Incapacitation_Sleep,
+		GameplayTags.StatusEffects_Incapacitation_Paralysis
 	});
 	const TArray ConditionTags({
 		GameplayTags.StatusEffects_Condition_Alive,
