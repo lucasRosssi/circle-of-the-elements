@@ -73,5 +73,5 @@ UAuraGameInstance* ALocationReward::GetAuraGameInstance()
 		AuraGameInstance = Cast<UAuraGameInstance>(GetGameInstance());
 	}
 
-	return AuraGameInstance;
+	return AuraGameInstance.Get();
 }

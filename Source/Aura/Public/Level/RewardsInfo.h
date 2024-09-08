@@ -28,6 +28,12 @@ struct FRewardInfo
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(MultiLine))
 	FText Description = FText();
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TObjectPtr<UTexture2D> Icon = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TObjectPtr<UMaterialInterface> BackgroundMaterial = nullptr;
 };
 
 /**

@@ -46,6 +46,5 @@ protected:
 
 private:
 	UAuraGameInstance* GetAuraGameInstance();
-	UPROPERTY()
-	UAuraGameInstance* AuraGameInstance = nullptr;
+	TWeakObjectPtr<UAuraGameInstance> AuraGameInstance = nullptr;
 };

@@ -9,6 +9,7 @@
 #include "Enums/Region.h"
 #include "Gate.generated.h"
 
+class UWidgetComponent;
 /**
  * 
  */
@@ -20,8 +21,10 @@ class AURA_API AGate : public AInteractable
 public:
 	AGate();
 
-	void SetGateReward(const FGameplayTag& InRewardTag) { RewardTag = InRewardTag; }
+	void SetGateReward(const FGameplayTag& InRewardTag);
 	FGameplayTag GetGateReward() { return RewardTag; }
+	UFUNCTION(BlueprintImplementableEvent)
+	void RewardAssigned();
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Location|Gate")
 	bool bActive = true;
@@ -40,6 +43,8 @@ protected:
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<UStaticMeshComponent> GateMesh;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TObjectPtr<UWidgetComponent> RewardWidget;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Location|Gate")
 	ERegion Region = ERegion::Undefined;
@@ -48,4 +53,6 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Location|Gate")
 	FGameplayTag RewardTag = FGameplayTag();
 private:
+	UFUNCTION()
+	void Enable();
 };

@@ -16,6 +16,9 @@ class AURA_API URewardManager : public UAuraSystemComponent
 
 public:
 	URewardManager();
+
+	UFUNCTION(BlueprintPure)
+	FRewardInfo GetRewardInfo(const FGameplayTag& RewardTag);
 	
 	void SetNextReward(const FGameplayTag& InRewardTag) { NextRewardTag = InRewardTag; }
 
