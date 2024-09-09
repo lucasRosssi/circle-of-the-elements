@@ -59,8 +59,7 @@ protected:
 	UFUNCTION(BlueprintPure)
 	AAuraGameModeBase* GetAuraGameMode();
 	
-	UPROPERTY()
-	AAuraGameModeBase* AuraGameMode = nullptr;
+	TWeakObjectPtr<AAuraGameModeBase> AuraGameMode = nullptr;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Interaction")
 	TObjectPtr<USphereComponent> InteractArea;

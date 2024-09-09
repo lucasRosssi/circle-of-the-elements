@@ -166,5 +166,5 @@ AAuraGameModeBase* AInteractable::GetAuraGameMode()
 		AuraGameMode = Cast<AAuraGameModeBase>(UGameplayStatics::GetGameMode(this));
 	}
 
-	return AuraGameMode;
+	return AuraGameMode.Get();
 }

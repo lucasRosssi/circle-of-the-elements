@@ -335,11 +335,11 @@ public:
 		int32 Level
 	);
 
-	// If has ANY tag that prevents harmful effects
+	// If it has ANY tag that prevents harmful effects
 	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|GameplayMechanics")
 	static bool HasAnyHarmfulEffectBlockTag(const UAbilitySystemComponent* TargetASC);
 
-	// If has tags that prevents harmful effects, but abilities still interact with target
+	// If it has tags that prevents harmful effects, but abilities still interact with target
 	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|GameplayMechanics")
 	static bool HasAnyParryTag(const UAbilitySystemComponent* TargetASC);
 
