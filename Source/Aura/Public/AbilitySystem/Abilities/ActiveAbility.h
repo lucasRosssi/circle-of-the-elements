@@ -84,7 +84,7 @@ protected:
 		BlueprintReadOnly,
 		Category="Ability Defaults|Mode",
 		meta=(
-			EditCondition="HitMode != EAbilityHitMode::Default",
+			EditCondition="RangedHitMode != EAbilityHitMode::Default",
 			EditConditionHides
 			)
 		)
@@ -96,7 +96,7 @@ protected:
 		BlueprintReadOnly,
 		Category="Ability Defaults|Mode",
 		meta=(
-			EditCondition="HitMode != EAbilityHitMode::Default",
+			EditCondition="RangedHitMode != EAbilityHitMode::Default",
 			EditConditionHides
 			)
 		)
@@ -106,14 +106,14 @@ protected:
 		EditDefaultsOnly,
 		BlueprintReadOnly,
 		Category="Ability Defaults|Mode",
-		meta=(EditCondition="HitMode == EAbilityHitMode::Bounce", EditConditionHides)
+		meta=(EditCondition="RangedHitMode == EAbilityHitMode::Bounce", EditConditionHides)
 		)
 	FScalableFloat BounceRadius = 500.f;
 	UPROPERTY(
 		EditDefaultsOnly,
 		BlueprintReadOnly,
 		Category="Ability Defaults|Mode",
-		meta=(EditCondition="HitMode == EAbilityHitMode::Bounce", EditConditionHides)
+		meta=(EditCondition="RangedHitMode == EAbilityHitMode::Bounce", EditConditionHides)
 		)
 	bool bCanRepeatTarget = false;
 

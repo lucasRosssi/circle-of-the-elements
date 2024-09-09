@@ -21,6 +21,11 @@ URewardManager::URewardManager()
 	}
 }
 
+FRewardInfo URewardManager::GetRewardInfo(const FGameplayTag& RewardTag)
+{
+	return GetAuraGameMode()->RewardsInfo->GetRewardInfo(RewardTag);
+}
+
 void URewardManager::SetGatesRewards()
 {
 	TArray<AActor*> GateActors;
@@ -29,14 +34,34 @@ void URewardManager::SetGatesRewards()
 		AGate::StaticClass(),
 		GateActors
 		);
-	
+
+	TArray<FGameplayTag> SelectedRewards;
+	TArray<FGameplayTag> ReturningRewards;
 	for (const auto GateActor : GateActors)
 	{
+		FGameplayTag NextReward = GetNextRewardInBag();
+		
+		while (SelectedRewards.Contains(NextReward))
+		{
+			ReturningRewards.Add(NextReward);
+			NextReward = GetNextRewardInBag();
+		}
+		
+		SelectedRewards.Add(NextReward);
+
+		if (!ReturningRewards.IsEmpty())
+		{
+			for (const auto& Reward : ReturningRewards)
+			{
+				RewardBag.Add(Reward);
+			}
+		}
+		
 		if (AGate* Gate = Cast<AGate>(GateActor))
 		{
 			if (Gate->bActive)
 			{
-				Gate->SetGateReward(GetNextRewardInBag());
+				Gate->SetGateReward(NextReward);
 			}
 		}
 	}
