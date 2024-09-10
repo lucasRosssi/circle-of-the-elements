@@ -80,7 +80,7 @@ TSoftObjectPtr<UWorld> URegionInfo::GetRandomizedRegionLocation(
 	TArray<TSoftObjectPtr<UWorld>> Levels = GetRegionLocations(Region, EntrancePosition);
 	if (Levels.IsEmpty()) return nullptr;
 
-	if (!LevelsToExclude.IsEmpty())
+	if (!LevelsToExclude.IsEmpty() && LevelsToExclude.Num() < Levels.Num())
 	{
 		for (auto Level : LevelsToExclude)
 		{

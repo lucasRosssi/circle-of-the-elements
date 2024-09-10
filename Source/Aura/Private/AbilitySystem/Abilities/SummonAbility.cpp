@@ -3,9 +3,12 @@
 
 #include "AbilitySystem/Abilities/SummonAbility.h"
 
+#include "Aura/Aura.h"
 #include "Character/AuraCharacterBase.h"
 #include "Components/CapsuleComponent.h"
+#include "Game/Components/EncounterManager.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Utils/AuraSystemsLibrary.h"
 
 TArray<FVector> USummonAbility::GetSpawnLocations()
 {
@@ -85,8 +88,15 @@ AAuraCharacterBase* USummonAbility::SpawnMinion(FVector Location)
 
 	if (Minion)
 	{
-			Minion->InitSummon(TeamComponent->TeamID);
-			ActiveMinions++;
+		Minion->InitSummon(TeamComponent->TeamID);
+		ActiveMinions++;
+
+		if (TeamComponent->TeamID != PLAYER_TEAM)
+		{
+			UEncounterManager* EncounterManager =	UAuraSystemsLibrary::GetEncounterManager(GetAvatarActorFromActorInfo());
+			EncounterManager->OnEnemySpawned(Minion);
+			Minion->OnDeath.AddDynamic(EncounterManager, &UEncounterManager::OnEnemyKilled);
+		}
 	}
 	
 	return Minion;
