@@ -25,7 +25,8 @@ public class Aura : ModuleRules
             "GameplayTasks",
             "NavigationSystem",
             "Niagara",
-            "AIModule"
+            "AIModule",
+            "UniversalCameraPlugin"
 		});
 
 		// Uncomment if you are using Slate UI

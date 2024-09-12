@@ -7,6 +7,7 @@
 #include "Interaction/PlayerInterface.h"
 #include "AuraHero.generated.h"
 
+class AAuraCamera;
 class USpotLightComponent;
 class APostProcessVolume;
 enum class ETargetTeam : uint8;
@@ -68,24 +69,23 @@ public:
 	TArray<TSubclassOf<UGameplayAbility>> EligibleAbilities;
 
 protected:
+	virtual void BeginPlay() override;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Level")
 	TObjectPtr<UNiagaraSystem> LevelUpNiagaraSystem;
-
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Level")
 	TObjectPtr<USoundBase> LevelUpSound;
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<UWidgetComponent> LevelUpWidgetComponent;
 
 	UPROPERTY(BlueprintReadOnly)
 	AAuraPlayerController* AuraPlayerController;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Camera")
-	TObjectPtr<UCameraComponent> Camera;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Camera")
-	TObjectPtr<USpringArmComponent> CameraBoom;
-
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Camera")
+	TSubclassOf<AAuraCamera> CameraClass;
+	UPROPERTY(BlueprintReadOnly, Category="Camera")
+	TObjectPtr<AAuraCamera> ActiveCamera;
+	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Camera")
 	TObjectPtr<USpotLightComponent> SpotLight;
 

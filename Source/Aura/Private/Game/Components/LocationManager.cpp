@@ -7,11 +7,12 @@
 #include "Game/AuraGameModeBase.h"
 #include "GameFramework/PlayerStart.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "Level/RegionInfo.h"
 
 TSoftObjectPtr<UWorld> ULocationManager::GetNextLocation(
 	ERegion InRegion,
-	EGatePosition EntrancePosition
+	EGatePosition InEntrancePosition
 	)
 {
 	GetAuraGameMode()->GetAuraGameInstance()->SaveHeroData();
@@ -27,7 +28,7 @@ TSoftObjectPtr<UWorld> ULocationManager::GetNextLocation(
 	{
 		Location = RegionInfo->GetRandomizedRegionLocation(
 		InRegion,
-		EntrancePosition, 
+		InEntrancePosition, 
 	SelectedLocations
 		);
 	}
@@ -40,6 +41,8 @@ TSoftObjectPtr<UWorld> ULocationManager::GetNextLocation(
 	SelectedLocations.Add(Location);
 	PrevLocation = CurrentLocation;
 	CurrentLocation = Location;
+
+	EntrancePosition = InEntrancePosition;
 
 	return Location;
 }
@@ -75,7 +78,14 @@ void ULocationManager::PlacePlayerInStartingPoint()
 		);
 }
 
+void ULocationManager::InitLocation()
+{
+	PlacePlayerInStartingPoint();
+	OnInitLocationDelegate.Broadcast(EntrancePosition);
+}
+
 void ULocationManager::ExitLocation(EGatePosition NextGatePosition)
 {
+	CameraBoundaryActors.Empty();
 	OnExitLocationDelegate.Broadcast(NextGatePosition);
 }

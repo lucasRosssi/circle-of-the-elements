@@ -23,6 +23,8 @@
 AAuraPlayerController::AAuraPlayerController()
 {
 	bReplicates = true;
+
+	bAutoManageActiveCameraTarget = false;
 	
 	UIManager = CreateDefaultSubobject<UUIManager>("UIManager");
 	UIManager->SetAuraPlayerController(this);

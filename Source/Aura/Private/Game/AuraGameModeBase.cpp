@@ -59,7 +59,7 @@ AAuraHUD* AAuraGameModeBase::GetAuraHUD(int32 PlayerIndex)
 
 void AAuraGameModeBase::LoadLevelInfo()
 {
-	LocationManager->PlacePlayerInStartingPoint();
+	LocationManager->InitLocation();
 	EncounterManager->SetCurrentEncounterData();
 	RewardManager->SetGatesRewards();
 }
