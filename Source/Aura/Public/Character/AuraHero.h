@@ -63,6 +63,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	AAuraPlayerState* GetAuraPlayerState() const;
+	UFUNCTION(BlueprintPure, meta=(DefaultToSelf="Target", HidePin="Target"))
 	AAuraPlayerController* GetAuraPlayerController();
 
 	UPROPERTY(EditDefaultsOnly, Category="Character Defaults|Abilities|Startup")
@@ -77,10 +78,7 @@ protected:
 	TObjectPtr<USoundBase> LevelUpSound;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<UWidgetComponent> LevelUpWidgetComponent;
-
-	UPROPERTY(BlueprintReadOnly)
-	AAuraPlayerController* AuraPlayerController;
-
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Camera")
 	TSubclassOf<AAuraCamera> CameraClass;
 	UPROPERTY(BlueprintReadOnly, Category="Camera")
@@ -108,4 +106,6 @@ private:
 	void MulticastLevelUpParticles() const;
 
 	bool bDying = false;
+
+	TWeakObjectPtr<AAuraPlayerController> AuraPlayerController;
 };

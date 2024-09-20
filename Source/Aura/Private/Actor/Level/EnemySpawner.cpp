@@ -24,7 +24,7 @@ void AEnemySpawner::PreSpawn()
 {
 	UNiagaraFunctionLibrary::SpawnSystemAtLocation(
 		this,
-		SpawnEffect,
+		SpawnCircle,
 		GetActorLocation(),
 		GetActorRotation()
 	);
@@ -106,7 +106,15 @@ void AEnemySpawner::SpawnNextEnemy()
 	Enemy->SetLevel(EnemyLevel);
 	Enemy->GetOnDeathDelegate().AddDynamic(this, &AEnemySpawner::OnSpawnedEnemyDeath);
 	Enemy->FinishSpawning(SpawnTransform);
+  Enemy->OnSpawned();
 	EnemySpawnedDelegate.Broadcast(Enemy);
+  
+  UNiagaraFunctionLibrary::SpawnSystemAtLocation(
+    this,
+    SpawnBurst,
+    GetActorLocation(),
+    GetActorRotation()
+  );
 
 	EnemyQueue.RemoveAt(0);
 }

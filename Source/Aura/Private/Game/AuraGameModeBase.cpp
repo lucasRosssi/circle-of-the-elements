@@ -14,17 +14,17 @@
 
 AAuraGameModeBase::AAuraGameModeBase()
 {
-	AbilityManager = CreateDefaultSubobject<UAbilityManager>("Ability Manager");
-	AbilityManager->SetGameMode(this);
-	
-	LocationManager = CreateDefaultSubobject<ULocationManager>("LocationManager");
-	LocationManager->SetGameMode(this);
-	
-	EncounterManager = CreateDefaultSubobject<UEncounterManager>("EncounterManager");
-	EncounterManager->SetGameMode(this);
-	
-	RewardManager = CreateDefaultSubobject<URewardManager>("RewardManager");
-	RewardManager->SetGameMode(this);
+  AbilityManager = CreateDefaultSubobject<UAbilityManager>("Ability Manager");
+  AbilityManager->SetGameMode(this);
+
+  LocationManager = CreateDefaultSubobject<ULocationManager>("LocationManager");
+  LocationManager->SetGameMode(this);
+
+  EncounterManager = CreateDefaultSubobject<UEncounterManager>("EncounterManager");
+  EncounterManager->SetGameMode(this);
+
+  RewardManager = CreateDefaultSubobject<URewardManager>("RewardManager");
+  RewardManager->SetGameMode(this);
 }
 
 void AAuraGameModeBase::AddToXPStack(float InXP)
@@ -33,58 +33,58 @@ void AAuraGameModeBase::AddToXPStack(float InXP)
 
 void AAuraGameModeBase::BeginPlay()
 {
-	Super::BeginPlay();
+  Super::BeginPlay();
 
-	GetOnEncounterFinishedDelegate().AddDynamic(RewardManager, &URewardManager::SpawnReward);
+  GetOnEncounterFinishedDelegate().AddDynamic(RewardManager, &URewardManager::SpawnReward);
 }
 
 UAuraGameInstance* AAuraGameModeBase::GetAuraGameInstance()
 {
-	return Cast<UAuraGameInstance>(UGameplayStatics::GetGameInstance(this));
+  return Cast<UAuraGameInstance>(UGameplayStatics::GetGameInstance(this));
 }
 
 AAuraHUD* AAuraGameModeBase::GetAuraHUD(int32 PlayerIndex)
 {
-	if (!AuraHUDs.Contains(PlayerIndex))
-	{
-		AAuraHUD* AuraHUD = Cast<AAuraHUD>(
-			UGameplayStatics::GetPlayerController(this, PlayerIndex)->GetHUD()
-			);
-	
-		AuraHUDs.Add(PlayerIndex, AuraHUD);
-	}
+  if (!AuraHUDs.Contains(PlayerIndex))
+  {
+    AAuraHUD* AuraHUD = Cast<AAuraHUD>(
+      UGameplayStatics::GetPlayerController(this, PlayerIndex)->GetHUD()
+    );
 
-	return AuraHUDs[PlayerIndex];
+    AuraHUDs.Add(PlayerIndex, AuraHUD);
+  }
+
+  return AuraHUDs[PlayerIndex];
 }
 
 void AAuraGameModeBase::LoadLevelInfo()
 {
-	LocationManager->InitLocation();
-	EncounterManager->SetCurrentEncounterData();
-	RewardManager->SetGatesRewards();
+  LocationManager->InitLocation();
+  EncounterManager->SetCurrentEncounterData();
+  RewardManager->SetGatesRewards();
 }
 
 int32 AAuraGameModeBase::GetEnemiesLevel() const
 {
-	return EncounterManager->GetEnemiesLevel();
+  return EncounterManager->GetEnemiesLevel();
 }
 
 void AAuraGameModeBase::SetNextReward(const FGameplayTag& InRewardTag)
 {
-	RewardManager->SetNextReward(InRewardTag);
+  RewardManager->SetNextReward(InRewardTag);
 }
 
 FOnExitLocation& AAuraGameModeBase::GetOnExitLocationDelegate()
 {
-	return LocationManager->OnExitLocationDelegate;
+  return LocationManager->OnExitLocationDelegate;
 }
 
 FOnEncounterFinished& AAuraGameModeBase::GetOnEncounterFinishedDelegate()
 {
-	return EncounterManager->OnEncounterFinishedDelegate;
+  return EncounterManager->OnEncounterFinishedDelegate;
 }
 
 FOnRewardTaken& AAuraGameModeBase::GetOnRewardTakenDelegate()
 {
-	return RewardManager->OnRewardTakenDelegate;
+  return RewardManager->OnRewardTakenDelegate;
 }

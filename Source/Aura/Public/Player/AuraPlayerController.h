@@ -6,6 +6,7 @@
 #include "UINavigation/Public/UINavController.h"
 #include "GameplayTagContainer.h"
 #include "InputActionValue.h"
+#include "Camera/CameraComponent.h"
 #include "Components/TimelineComponent.h"
 #include "Interaction/PlayerInterface.h"
 
@@ -17,7 +18,6 @@ struct FTimeline;
 enum class ETargetTeam : uint8;
 class ATargetingActor;
 class UCapsuleComponent;
-class UCameraComponent;
 class USpringArmComponent;
 class UDamageTextComponent;
 class UInputMappingContext;
@@ -28,6 +28,7 @@ class UAuraInputConfig;
 class UAuraAbilitySystemComponent;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnControllerDeviceChanged, bool, bIsGamepad);
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnOcclusionChanged, bool, bShouldOcclude);
 
 /**
@@ -36,165 +37,165 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnOcclusionChanged, bool, bShouldOc
 UCLASS()
 class AURA_API AAuraPlayerController : public AUINavController
 {
-	GENERATED_BODY()
+  GENERATED_BODY()
+
 public:
-	AAuraPlayerController();
-	virtual void PlayerTick(float DeltaTime) override;
+  AAuraPlayerController();
+  virtual void PlayerTick(float DeltaTime) override;
 
-	UFUNCTION(BlueprintCallable)
-	void EnableController();
-	UFUNCTION(BlueprintCallable)
-	void DisableController();
-	
-	UFUNCTION(Client, Reliable)
-	void ShowDamageNumber(
-		float DamageAmount,
-		ACharacter* TargetCharacter,
-		bool bParried,
-		bool bCriticalHit,
-		bool bIsPlayer = false
-	);
-	
-	bool IsUsingGamepad() const { return bUsingGamepad; }
-	UFUNCTION(BlueprintCallable)
-	void ChangeUsingGamepad(bool bIsGamepad);
-	FVector GetInputDirection() { return InputDirection; }
-	bool IsTargeting() const { return bTargeting; }
-	ATargetingActor* GetTargetingActor() const { return TargetingActor; }
+  UFUNCTION(BlueprintCallable)
+  void EnableController();
+  UFUNCTION(BlueprintCallable)
+  void DisableController();
 
-	UFUNCTION(BlueprintCallable)
-	void ShowTargetingActor(
-		TSubclassOf<ATargetingActor> TargetingActorClass,
-		ETargetTeam TargetTeam,
-		float Radius = 300.f);
-	UFUNCTION(BlueprintCallable)
-	void HideTargetingActor();
+  UFUNCTION(Client, Reliable)
+  void ShowDamageNumber(
+    float DamageAmount,
+    ACharacter* TargetCharacter,
+    bool bParried,
+    bool bCriticalHit,
+    bool bIsPlayer = false
+  );
 
-	void SetShouldOccludeObjects(bool bInShouldOcclude);
+  bool IsUsingGamepad() const { return bUsingGamepad; }
+  UFUNCTION(BlueprintCallable)
+  void ChangeUsingGamepad(bool bIsGamepad);
+  FVector GetInputDirection() { return InputDirection; }
+  bool IsTargeting() const { return bTargeting; }
+  ATargetingActor* GetTargetingActor() const { return TargetingActor; }
 
-	void SetPlayerCamera(UCameraComponent* InCamera) { PlayerCamera = InCamera; }
+  UFUNCTION(BlueprintCallable)
+  void ShowTargetingActor(
+    TSubclassOf<ATargetingActor> TargetingActorClass,
+    ETargetTeam TargetTeam,
+    float Radius = 300.f);
+  UFUNCTION(BlueprintCallable)
+  void HideTargetingActor();
 
-	UFUNCTION(BlueprintImplementableEvent, Category="Camera|Occlusion")
-	void OnOcclusionChange(bool bIsOccluding);
+  void SetShouldOccludeObjects(bool bInShouldOcclude);
 
-	UUINavPCComponent* GetUINavComponent() const { return UINavPCComp; }
-	UUIManager* GetUIManager() const { return UIManager; }
+  void SetPlayerCamera(UCameraComponent* InCamera) { PlayerCamera = InCamera; }
 
-	void AimAbilityGamepad(AActor* AvatarActor, FHitResult& OutHitResult);
-	void AimAbilityMouse(AActor* AvatarActor, FHitResult& OutHitResult);
+  UFUNCTION(BlueprintImplementableEvent, Category="Camera|Occlusion")
+  void OnOcclusionChange(bool bIsOccluding);
 
-	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category="ControllerDevice")
-	FOnControllerDeviceChanged ControllerDeviceChangedDelegate;
+  UUINavPCComponent* GetUINavComponent() const { return UINavPCComp; }
+  UUIManager* GetUIManager() const { return UIManager; }
 
-	UPROPERTY(BlueprintAssignable, Category="Interaction")
-	FOnInteract InteractActionTriggered;
+  void AimAbilityGamepad(AActor* AvatarActor, FHitResult& OutHitResult);
+  void AimAbilityMouse(AActor* AvatarActor, FHitResult& OutHitResult);
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Aim Assist")
-	bool bAimAssistOn = true;
-	UPROPERTY(
-		EditDefaultsOnly,
-		BlueprintReadWrite,
-		Category="Aim Assist",
-		meta=(EditCondition="bAimAssistOn", EditConditionHides)
-		)
-	bool bDebugAimAssist = false;
-	UPROPERTY(
-		EditDefaultsOnly,
-		BlueprintReadWrite,
-		Category="Aim Assist",
-		meta=(EditCondition="bAimAssistOn", EditConditionHides)
-		)
-	float AimAssistStrength = 100.f;
+  UPROPERTY(BlueprintAssignable, BlueprintCallable, Category="ControllerDevice")
+  FOnControllerDeviceChanged ControllerDeviceChangedDelegate;
+
+  UPROPERTY(BlueprintAssignable, Category="Interaction")
+  FOnInteract InteractActionTriggered;
+
+  UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Aim Assist")
+  bool bAimAssistOn = true;
+  UPROPERTY(
+    EditDefaultsOnly,
+    BlueprintReadWrite,
+    Category="Aim Assist",
+    meta=(EditCondition="bAimAssistOn", EditConditionHides)
+  )
+  bool bDebugAimAssist = false;
+  UPROPERTY(
+    EditDefaultsOnly,
+    BlueprintReadWrite,
+    Category="Aim Assist",
+    meta=(EditCondition="bAimAssistOn", EditConditionHides)
+  )
+  float AimAssistStrength = 100.f;
 
 protected:
-	virtual void BeginPlay() override;
-	virtual void SetupInputComponent() override;
-	
-	void HandleEnvironmentOcclusion();
-	void GamepadMoveTargetingActor(const FInputActionValue& InputActionValue);
-	
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="UI")
-	TObjectPtr<UUIManager> UIManager;
-	
-	UPROPERTY(BlueprintReadWrite, Category="Input")
-	bool bUsingGamepad = false;
+  virtual void BeginPlay() override;
+  virtual void SetupInputComponent() override;
 
-	UPROPERTY(BlueprintReadOnly, Category="Input")
-	FVector InputDirection = FVector::Zero();
+  void HandleEnvironmentOcclusion();
+  void GamepadMoveTargetingActor(const FInputActionValue& InputActionValue);
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Input")
-	TObjectPtr<UAuraInputConfig> InputConfig;
+  UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="UI")
+  TObjectPtr<UUIManager> UIManager;
 
-	UPROPERTY(EditAnywhere, Category="Input")
-	TObjectPtr<UInputMappingContext> MainContext;
+  UPROPERTY(BlueprintReadWrite, Category="Input")
+  bool bUsingGamepad = false;
 
-	UPROPERTY(EditAnywhere, Category="Input")
-	TObjectPtr<UInputAction> MoveAction;
-	UPROPERTY(EditAnywhere, Category="Input")
-	TObjectPtr<UInputAction> TargetingActorMoveAction;
-	UPROPERTY(EditAnywhere, Category="Input")
-	TObjectPtr<UInputAction> ConfirmAction;
-	UPROPERTY(EditAnywhere, Category="Input")
-	TObjectPtr<UInputAction> CancelAction;
-	UPROPERTY(EditAnywhere, Category="Input")
-	TObjectPtr<UInputAction> InteractAction;
+  UPROPERTY(BlueprintReadOnly, Category="Input")
+  FVector InputDirection = FVector::Zero();
 
-	UPROPERTY(EditAnywhere, Category="Input")
-	TObjectPtr<UInputAction> CheckInputSourceAction;
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Input")
+  TObjectPtr<UAuraInputConfig> InputConfig;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Camera|Occlusion")
-	TObjectPtr<UMaterialParameterCollection> OcclusionMaskParameterCollection;
+  UPROPERTY(EditAnywhere, Category="Input")
+  TObjectPtr<UInputMappingContext> MainContext;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Camera|Occlusion")
-	float OcclusionSize = 120.f;
-	
-	UPROPERTY(EditAnywhere, Category="Camera|Occlusion")
-	bool bDebugCameraOcclusionTrace = false;
+  UPROPERTY(EditAnywhere, Category="Input")
+  TObjectPtr<UInputAction> MoveAction;
+  UPROPERTY(EditAnywhere, Category="Input")
+  TObjectPtr<UInputAction> TargetingActorMoveAction;
+  UPROPERTY(EditAnywhere, Category="Input")
+  TObjectPtr<UInputAction> ConfirmAction;
+  UPROPERTY(EditAnywhere, Category="Input")
+  TObjectPtr<UInputAction> CancelAction;
+  UPROPERTY(EditAnywhere, Category="Input")
+  TObjectPtr<UInputAction> InteractAction;
+
+  UPROPERTY(EditAnywhere, Category="Input")
+  TObjectPtr<UInputAction> CheckInputSourceAction;
+
+  UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Camera|Occlusion")
+  TObjectPtr<UMaterialParameterCollection> OcclusionMaskParameterCollection;
+
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Camera|Occlusion")
+  float OcclusionSize = 120.f;
+
+  UPROPERTY(EditAnywhere, Category="Camera|Occlusion")
+  bool bDebugCameraOcclusionTrace = false;
 
 private:
-	void Move(const FInputActionValue& InputActionValue);
-	void MoveComplete(const FInputActionValue& InputActionValue);
-	
-	void CursorTrace();
-	FHitResult CursorHit;
-	AActor* LastActor = nullptr;
-	AActor* ThisActor = nullptr;
+  void Move(const FInputActionValue& InputActionValue);
+  void MoveComplete(const FInputActionValue& InputActionValue);
 
-	void AbilityInputTagPressed(FGameplayTag InputTag);
-	void AbilityInputTagReleased(FGameplayTag InputTag);
-	void AbilityInputTagHeld(FGameplayTag InputTag);
+  void CursorTrace();
+  FHitResult CursorHit;
+  AActor* LastActor = nullptr;
+  AActor* ThisActor = nullptr;
 
-	void ConfirmPressed();
-	void CancelPressed();
+  void AbilityInputTagPressed(FGameplayTag InputTag);
+  void AbilityInputTagReleased(FGameplayTag InputTag);
+  void AbilityInputTagHeld(FGameplayTag InputTag);
 
-	void InteractPressed();
+  void ConfirmPressed();
+  void CancelPressed();
 
-	void UpdateTargetingActorLocation();
-	void UpdatePlayerLocationParameterCollection();
-	UAuraAbilitySystemComponent* GetASC();
+  void InteractPressed();
 
-	UPROPERTY()
-	TObjectPtr<UAuraAbilitySystemComponent> AuraAbilitySystemComponent;
-	
+  void UpdateTargetingActorLocation();
+  void UpdatePlayerLocationParameterCollection();
+  UAuraAbilitySystemComponent* GetASC();
 
-	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<UDamageTextComponent> DamageTextComponentClass;
+  UPROPERTY()
+  TObjectPtr<UAuraAbilitySystemComponent> AuraAbilitySystemComponent;
 
-	UPROPERTY()
-	TObjectPtr<ATargetingActor> TargetingActor;
-	
-	bool bTargeting = false;
 
-	// BEGIN Environment occlusion
-	UPROPERTY()
-	UMaterialParameterCollectionInstance* OcclusionMaskParameterCollectionInstance = nullptr;
-	UMaterialParameterCollectionInstance* GetOcclusionMaskParameterCollectionInstance();
-	bool bCameraOcclusionActive = false;
-	FTimeline FadeTimeline = FTimeline();
-	// END Environment occlusion
+  UPROPERTY(EditDefaultsOnly)
+  TSubclassOf<UDamageTextComponent> DamageTextComponentClass;
 
-	UPROPERTY()
-	UCameraComponent* PlayerCamera = nullptr;
+  UPROPERTY()
+  TObjectPtr<ATargetingActor> TargetingActor;
 
-	bool bControllerEnabled = true;
+  bool bTargeting = false;
+
+  // BEGIN Environment occlusion
+  UPROPERTY()
+  UMaterialParameterCollectionInstance* OcclusionMaskParameterCollectionInstance = nullptr;
+  UMaterialParameterCollectionInstance* GetOcclusionMaskParameterCollectionInstance();
+  bool bCameraOcclusionActive = false;
+  FTimeline FadeTimeline = FTimeline();
+  // END Environment occlusion
+
+  TWeakObjectPtr<UCameraComponent> PlayerCamera;
+
+  bool bControllerEnabled = true;
 };

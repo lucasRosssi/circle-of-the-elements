@@ -27,12 +27,27 @@ TArray<FVector> USummonAbility::GetSpawnLocations()
 		FVector ChosenSpawnLocation = Location + Direction *
 			FMath::FRandRange(MinSpawnDistance, MaxSpawnDistance);
 
+	  FHitResult LineOfSightHitResult;
+	  FCollisionQueryParams Params;
+	  Params.AddIgnoredActor(AvatarActor);
+	  GetWorld()->LineTraceSingleByChannel(
+      LineOfSightHitResult,
+      Location,
+      ChosenSpawnLocation,
+      ECC_Pawn,
+      Params
+    );
+	  if (LineOfSightHitResult.bBlockingHit)
+	  {
+	    ChosenSpawnLocation = LineOfSightHitResult.ImpactPoint;
+	  }
+
 		FHitResult HitResult;
 		GetWorld()->LineTraceSingleByChannel(
 			HitResult,
 			ChosenSpawnLocation + FVector(0.f, 0.f, 400.f),
 			ChosenSpawnLocation - FVector(0.f, 0.f, 400.f),
-			ECC_Visibility
+			ECC_Pawn
 		);
 
 		if (HitResult.bBlockingHit)

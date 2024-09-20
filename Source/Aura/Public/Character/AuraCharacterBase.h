@@ -74,6 +74,8 @@ public:
 	/** end Combat Interface */
 
 	void InitSummon(int32 TeamID);
+  UFUNCTION(BlueprintImplementableEvent)
+  void OnSpawned();
 
 	void ChangeActionSpeed(float InActionSpeed);
 
@@ -111,9 +113,6 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
-	
-	UFUNCTION(BlueprintImplementableEvent)
-	void OnSummoned();
 
 	void ReleaseWeapon();
 	void RagdollMesh(const FVector& DeathImpulse = FVector::ZeroVector);

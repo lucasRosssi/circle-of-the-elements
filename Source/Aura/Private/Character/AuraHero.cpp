@@ -190,6 +190,7 @@ void AAuraHero::StartDeath()
 	
 	GetMovementComponent()->Deactivate();
 	GetAuraPlayerController()->DisableController();
+  ActiveCamera->bFollowActorIgnoreRestrictions = true;
 	
 	FCollisionQueryParams SphereParams;
 	SphereParams.AddIgnoredActor(this);
@@ -314,7 +315,7 @@ AAuraPlayerController* AAuraHero::GetAuraPlayerController()
 		AuraPlayerController = Cast<AAuraPlayerController>(GetController());
 	}
 
-	return AuraPlayerController;
+	return AuraPlayerController.Get();
 }
 
 void AAuraHero::BeginPlay()
@@ -376,7 +377,7 @@ void AAuraHero::InitAbilityActorInfo()
 	
 	if(AAuraHUD* AuraHUD = GetAuraPlayerController()->GetHUD<AAuraHUD>())
 	{
-		AuraHUD->InitOverlay(AuraPlayerController, AuraPlayerState, AbilitySystemComponent, 
+		AuraHUD->InitOverlay(AuraPlayerController.Get(), AuraPlayerState, AbilitySystemComponent, 
 		AttributeSet);
 	}
 	
