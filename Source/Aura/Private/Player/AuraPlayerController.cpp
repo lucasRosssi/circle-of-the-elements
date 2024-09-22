@@ -23,6 +23,8 @@
 AAuraPlayerController::AAuraPlayerController()
 {
 	bReplicates = true;
+
+	bAutoManageActiveCameraTarget = false;
 	
 	UIManager = CreateDefaultSubobject<UUIManager>("UIManager");
 	UIManager->SetAuraPlayerController(this);
@@ -68,7 +70,7 @@ void AAuraPlayerController::ShowTargetingActor(
 		TargetingActor->SetSourceActor(GetPawn());
 		TargetingActor->SetTargetTeam(TargetTeam);
 		TargetingActor->SetTargetingRadius(Radius);
-		TargetingActor->AttachToComponent(PlayerCamera, FAttachmentTransformRules::KeepWorldTransform);
+		TargetingActor->AttachToComponent(PlayerCamera.Get(), FAttachmentTransformRules::KeepWorldTransform);
 
 		TargetingActor->FinishSpawning(SpawnTransform);
 	}
@@ -210,7 +212,7 @@ void AAuraPlayerController::BeginPlay()
 
 void AAuraPlayerController::HandleEnvironmentOcclusion()
 {
-	if (!PlayerCamera || !bControllerEnabled) return;
+	if (!PlayerCamera.Get() || !bControllerEnabled) return;
 	
 	const TArray<AActor*> ActorsToIgnore;
 	FHitResult HitResult;

@@ -12,7 +12,7 @@
 void UEncounterManager::SetEncounterDifficulty()
 {
 	const int32 EncountersCount = GetAuraGameMode()->EncountersCount;
-	EnemiesLevel = FMath::Floor(EncountersCount / 2);
+	EnemiesLevel = FMath::Max(1, FMath::Floor(EncountersCount / 3));
 
 	if (bOverrideEnemyWaves)
 	{
@@ -21,19 +21,24 @@ void UEncounterManager::SetEncounterDifficulty()
 	else
 	{
 		const FAuraGameplayTags& GameplayTags = FAuraGameplayTags::Get();
-		if (EncountersCount < 4)
+		if (EncountersCount == 0)
 		{
-			TotalWaves = FMath::RandRange(1, 3);
+			TotalWaves = 1;
+			DifficultyClass = GameplayTags.DifficultyClass_Initial;
+		}
+		else if (EncountersCount < 4)
+		{
+			TotalWaves = FMath::RandRange(2, 3);
 			DifficultyClass = GameplayTags.DifficultyClass_Easy;
 		}
 		else if (EncountersCount < 7)
 		{
-			TotalWaves = FMath::RandRange(2, 4);
+			TotalWaves = 3;
 			DifficultyClass = GameplayTags.DifficultyClass_Normal;
 		}
 		else
 		{
-			TotalWaves = FMath::RandRange(3, 5);
+			TotalWaves = FMath::RandRange(3, 4);
 			DifficultyClass = GameplayTags.DifficultyClass_Hard;
 		}
 	}
@@ -62,9 +67,10 @@ void UEncounterManager::NextWave()
 		FinishEncounter();
 		return;
 	}
-	if (EnemySpawners.Num() < EnemyWaves.Num())
+	if (EnemySpawners.Num() < EnemyWaves[0].Enemies.Num())
 	{
-		UE_LOG(LogAura, Error, TEXT("Game Mode is trying to spawn more enemies this wave than there is available spawners"));
+		UE_LOG(LogAura, Error, TEXT("Trying to spawn more enemies than there is available spawners!"));
+		FinishEncounter();
 		return;
 	}
 

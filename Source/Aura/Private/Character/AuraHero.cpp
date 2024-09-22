@@ -1,7 +1,7 @@
 // Copyright Lucas Rossi
 
 
-#include "..\..\Public\Character\AuraHero.h"
+#include "Character/AuraHero.h"
 
 #include "AbilitySystemComponent.h"
 #include "AuraGameplayTags.h"
@@ -9,6 +9,7 @@
 #include "NiagaraFunctionLibrary.h"
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
 #include "AbilitySystem/AuraAttributeSet.h"
+#include "Actor/AuraCamera.h"
 #include "Aura/Aura.h"
 #include "Camera/CameraComponent.h"
 #include "Components/SpotLightComponent.h"
@@ -16,7 +17,6 @@
 #include "Engine/PostProcessVolume.h"
 #include "Game/TeamComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Player/AuraPlayerState.h"
 #include "Player/AuraPlayerController.h"
@@ -24,16 +24,6 @@
 
 AAuraHero::AAuraHero()
 {
-	CameraBoom = CreateDefaultSubobject<USpringArmComponent>("CameraBoom");
-	CameraBoom->SetupAttachment(GetRootComponent());
-	CameraBoom->SetUsingAbsoluteRotation(true);
-	CameraBoom->bDoCollisionTest = false;
-	CameraBoom->TargetArmLength = 5000.f;
-	Camera = CreateDefaultSubobject<UCameraComponent>("Camera");
-	Camera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
-	Camera->bUsePawnControlRotation = false;
-	Camera->SetFieldOfView(30.f);
-
 	SpotLight = CreateDefaultSubobject<USpotLightComponent>("SpotLight");
 	SpotLight->SetupAttachment(GetRootComponent());
 	SpotLight->Intensity = 50000.f;
@@ -69,8 +59,8 @@ void AAuraHero::Tick(float DeltaSeconds)
 
 	if (bDying)
 	{
-		Camera->SetFieldOfView(FMath::FInterpTo(
-			Camera->FieldOfView,
+		ActiveCamera->GetCameraComponent()->SetFieldOfView(FMath::FInterpTo(
+			ActiveCamera->GetCameraComponent()->FieldOfView,
 			15.f,
 			DeltaSeconds,
 			10.f
@@ -85,6 +75,13 @@ void AAuraHero::PossessedBy(AController* NewController)
 	// Init ability actor info for the Server
 	InitAbilityActorInfo();
 	AddCharacterAbilities();
+
+	if (ActiveCamera)
+	{
+		GetAuraPlayerController()->SetPlayerCamera(ActiveCamera->GetCameraComponent());
+		GetAuraPlayerController()->SetViewTargetWithBlend(ActiveCamera);
+	}
+	
 }
 	
 void AAuraHero::OnRep_PlayerState()
@@ -193,6 +190,7 @@ void AAuraHero::StartDeath()
 	
 	GetMovementComponent()->Deactivate();
 	GetAuraPlayerController()->DisableController();
+  ActiveCamera->bFollowActorIgnoreRestrictions = true;
 	
 	FCollisionQueryParams SphereParams;
 	SphereParams.AddIgnoredActor(this);
@@ -317,7 +315,29 @@ AAuraPlayerController* AAuraHero::GetAuraPlayerController()
 		AuraPlayerController = Cast<AAuraPlayerController>(GetController());
 	}
 
-	return AuraPlayerController;
+	return AuraPlayerController.Get();
+}
+
+void AAuraHero::BeginPlay()
+{
+	Super::BeginPlay();
+
+	FActorSpawnParameters SpawnParameters;
+	SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	ActiveCamera = GetWorld()->SpawnActor<AAuraCamera>(
+		CameraClass,
+		GetActorLocation(),
+		GetActorRotation(),
+		SpawnParameters
+		);
+
+	if (ActiveCamera)
+	{
+		ActiveCamera->FollowTarget(
+			AUniversalCamera::UseActor(this),
+			FConstrainVector2(),
+			FBoolRotation());
+	}
 }
 
 void AAuraHero::MulticastLevelUpParticles_Implementation() const
@@ -355,18 +375,9 @@ void AAuraHero::InitAbilityActorInfo()
 
 	GetAuraASC()->AbilityActorInfoSet();
 	
-	if (IsLocallyControlled() || HasAuthority())
-	{
-		if (GetAuraPlayerController())
-		{
-			AuraPlayerController->SetPlayerCamera(Camera);
-		}
-		
-	}
-	
 	if(AAuraHUD* AuraHUD = GetAuraPlayerController()->GetHUD<AAuraHUD>())
 	{
-		AuraHUD->InitOverlay(AuraPlayerController, AuraPlayerState, AbilitySystemComponent, 
+		AuraHUD->InitOverlay(AuraPlayerController.Get(), AuraPlayerState, AbilitySystemComponent, 
 		AttributeSet);
 	}
 	

@@ -129,7 +129,7 @@ void AAuraCharacterBase::InitSummon(int32 TeamID)
 	LifeSpanDuration = 2.f;
 	SpawnDefaultController();
 	
-	OnSummoned();
+	OnSpawned();
 }
 
 void AAuraCharacterBase::BeginPlay()

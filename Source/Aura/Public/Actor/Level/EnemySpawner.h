@@ -38,7 +38,9 @@ protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Spawning")
-	TObjectPtr<UNiagaraSystem> SpawnEffect;
+	TObjectPtr<UNiagaraSystem> SpawnCircle;
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Spawning")
+  TObjectPtr<UNiagaraSystem> SpawnBurst;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Spawning")
 	float SpawnDelay = 0.f;

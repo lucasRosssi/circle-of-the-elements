@@ -26,6 +26,11 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void StartEncounter();
 
+	UFUNCTION()
+	void OnEnemySpawned(AActor* Enemy);
+	UFUNCTION()
+	void OnEnemyKilled(AActor* Enemy);
+
 	UPROPERTY(BlueprintAssignable)
 	FOnEncounterFinished OnEncounterFinishedDelegate;
 
@@ -87,11 +92,6 @@ private:
 	void NextWave();
 	void FinishEncounter();
 	void PostFinishEncounter();
-	
-	UFUNCTION()
-	void OnEnemySpawned(AActor* Enemy);
-	UFUNCTION()
-	void OnEnemyKilled(AActor* Enemy);
 	
 	int32 EnemyCount = 0;
 	int32 CurrentWave = 0;

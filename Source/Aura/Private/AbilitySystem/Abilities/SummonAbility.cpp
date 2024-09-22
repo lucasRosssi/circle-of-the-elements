@@ -3,9 +3,12 @@
 
 #include "AbilitySystem/Abilities/SummonAbility.h"
 
+#include "Aura/Aura.h"
 #include "Character/AuraCharacterBase.h"
 #include "Components/CapsuleComponent.h"
+#include "Game/Components/EncounterManager.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Utils/AuraSystemsLibrary.h"
 
 TArray<FVector> USummonAbility::GetSpawnLocations()
 {
@@ -24,12 +27,27 @@ TArray<FVector> USummonAbility::GetSpawnLocations()
 		FVector ChosenSpawnLocation = Location + Direction *
 			FMath::FRandRange(MinSpawnDistance, MaxSpawnDistance);
 
+	  FHitResult LineOfSightHitResult;
+	  FCollisionQueryParams Params;
+	  Params.AddIgnoredActor(AvatarActor);
+	  GetWorld()->LineTraceSingleByChannel(
+      LineOfSightHitResult,
+      Location,
+      ChosenSpawnLocation,
+      ECC_Pawn,
+      Params
+    );
+	  if (LineOfSightHitResult.bBlockingHit)
+	  {
+	    ChosenSpawnLocation = LineOfSightHitResult.ImpactPoint;
+	  }
+
 		FHitResult HitResult;
 		GetWorld()->LineTraceSingleByChannel(
 			HitResult,
 			ChosenSpawnLocation + FVector(0.f, 0.f, 400.f),
 			ChosenSpawnLocation - FVector(0.f, 0.f, 400.f),
-			ECC_Visibility
+			ECC_Pawn
 		);
 
 		if (HitResult.bBlockingHit)
@@ -85,8 +103,15 @@ AAuraCharacterBase* USummonAbility::SpawnMinion(FVector Location)
 
 	if (Minion)
 	{
-			Minion->InitSummon(TeamComponent->TeamID);
-			ActiveMinions++;
+		Minion->InitSummon(TeamComponent->TeamID);
+		ActiveMinions++;
+
+		if (TeamComponent->TeamID != PLAYER_TEAM)
+		{
+			UEncounterManager* EncounterManager =	UAuraSystemsLibrary::GetEncounterManager(GetAvatarActorFromActorInfo());
+			EncounterManager->OnEnemySpawned(Minion);
+			Minion->OnDeath.AddDynamic(EncounterManager, &UEncounterManager::OnEnemyKilled);
+		}
 	}
 	
 	return Minion;

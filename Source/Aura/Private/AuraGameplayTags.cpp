@@ -26,26 +26,31 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 			FString("Difficulty Class tags")
 			);
 
+  GameplayTags.DifficultyClass_Initial = UGameplayTagsManager::Get().AddNativeGameplayTag(
+      FName("DifficultyClass.Initial"),
+      FString("Initial areas difficulty")
+      );
+
 	GameplayTags.DifficultyClass_Easy = UGameplayTagsManager::Get().AddNativeGameplayTag(
 			FName("DifficultyClass.Easy"),
-			FString("Difficulty Class tags")
+			FString("Easy difficulty")
 			);
 
 	GameplayTags.DifficultyClass_Normal = UGameplayTagsManager::Get().AddNativeGameplayTag(
 			FName("DifficultyClass.Normal"),
-			FString("Difficulty Class tags")
+			FString("Normal difficulty")
 			);
 	GameplayTags.DifficultyClass_Hard = UGameplayTagsManager::Get().AddNativeGameplayTag(
 			FName("DifficultyClass.Hard"),
-			FString("Difficulty Class tags")
+			FString("Hard difficulty")
 			);
 	GameplayTags.DifficultyClass_Extreme = UGameplayTagsManager::Get().AddNativeGameplayTag(
 			FName("DifficultyClass.Extreme"),
-			FString("Difficulty Class tags")
+			FString("Extreme difficulty")
 			);
 	GameplayTags.DifficultyClass_Special = UGameplayTagsManager::Get().AddNativeGameplayTag(
 			FName("DifficultyClass.Special"),
-			FString("Difficulty Class tags")
+			FString("Special encounters")
 			);
 	
 	/*

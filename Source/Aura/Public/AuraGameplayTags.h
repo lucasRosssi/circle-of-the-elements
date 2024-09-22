@@ -19,6 +19,7 @@ public:
   static void InitializeNativeGameplayTags();
 
 	FGameplayTag DifficultyClass;
+	FGameplayTag DifficultyClass_Initial;
 	FGameplayTag DifficultyClass_Easy;
 	FGameplayTag DifficultyClass_Normal;
 	FGameplayTag DifficultyClass_Hard;

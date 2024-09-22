@@ -16,7 +16,8 @@
 				"EnhancedInput",
 				"AIModule",
 				"Niagara",
-				"UINavigation"
+				"UINavigation",
+				"UniversalCameraPlugin"
 			]
 		}
 	],
@@ -58,6 +59,11 @@
 				"Win64",
 				"Android"
 			]
+		},
+		{
+			"Name": "UniversalCameraPlugin",
+			"Enabled": true,
+			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/product/a9172fdfc87c464eae3a49860ee2610f"
 		}
 	]
 }
