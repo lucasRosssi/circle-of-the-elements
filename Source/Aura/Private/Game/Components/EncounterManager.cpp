@@ -33,12 +33,12 @@ void UEncounterManager::SetEncounterDifficulty()
 		}
 		else if (EncountersCount < 7)
 		{
-			TotalWaves = FMath::RandRange(3, 4);
+			TotalWaves = 3;
 			DifficultyClass = GameplayTags.DifficultyClass_Normal;
 		}
 		else
 		{
-			TotalWaves = FMath::RandRange(4, 5);
+			TotalWaves = FMath::RandRange(3, 4);
 			DifficultyClass = GameplayTags.DifficultyClass_Hard;
 		}
 	}
