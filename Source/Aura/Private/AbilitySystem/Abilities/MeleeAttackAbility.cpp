@@ -7,25 +7,69 @@
 #include "Components/BoxComponent.h"
 #include "Enums/MeleeHitMode.h"
 #include "Interaction/CombatInterface.h"
+#include "Utils/UtilityLibrary.h"
+
+#if WITH_EDITOR
+void UMeleeAttackAbility::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
+{
+  Super::PostEditChangeProperty(PropertyChangedEvent);
+
+  // Get the name of the property that was changed
+  const FName PropertyName = PropertyChangedEvent.Property ?
+    PropertyChangedEvent.Property->GetFName() : NAME_None;
+
+  // Check the changed property
+  if (PropertyName == GET_MEMBER_NAME_CHECKED(UMeleeAttackAbility, ComboSequenceData))
+  {
+    if (ComboSequenceData.Num() > 0)
+    {
+      ComboSequenceData[ComboSequenceData.Num() - 1].bMeleeAbility = true;
+    }
+  }
+}
+#endif
+
+void UMeleeAttackAbility::EndAbility(
+  const FGameplayAbilitySpecHandle Handle,
+  const FGameplayAbilityActorInfo* ActorInfo,
+  const FGameplayAbilityActivationInfo ActivationInfo,
+  bool bReplicateEndAbility,
+  bool bWasCancelled
+  )
+{
+  Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
+  
+  ActorsHitInMontage.Empty();
+}
+
+void UMeleeAttackAbility::HandleComboSequence()
+{
+  ActorsHitInMontage.Empty();
+  Super::HandleComboSequence();
+}
 
 void UMeleeAttackAbility::ExecuteAttackScan()
 {
 	const FVector AbilitySocketLocation = ICombatInterface::Execute_GetAbilitySocketLocation(
 		GetAvatarActorFromActorInfo(),
-		AbilitySocketName,
-		bUseWeaponSocket
+		GetAbilitySocketName(),
+		IsUsingWeapon()
 		);
+
+  const FVector RelativeShapeOffset = GetAvatarActorFromActorInfo()->GetActorRotation().RotateVector(ShapeOffset);
+  const FVector FinalLocation = AbilitySocketLocation + RelativeShapeOffset;
 
 	if (bDebugAbility)
 	{
-		DrawDebugMeleeHitShape(AbilitySocketLocation);
+		DrawDebugMeleeHitShape(FinalLocation);
 	}
 
-	const TArray<AActor*>& HitActors = ShapeScan(AbilitySocketLocation);
+	const TArray<AActor*>& HitActors = ShapeScan(FinalLocation);
 
 	for (const auto HitActor : HitActors)
 	{
 		ApplyEffectToHitActor(HitActor);
+	  ActorsHitInMontage.Add(HitActor);
 	}
 }
 
@@ -35,16 +79,62 @@ void UMeleeAttackAbility::HandleWeaponCollision()
 	WeaponBox->OnComponentBeginOverlap.AddUniqueDynamic(this, &UMeleeAttackAbility::OnWeaponCollision);
 }
 
+FComboData UMeleeAttackAbility::GetComboData() const
+{
+  FComboData ComboData = Super::GetComboData();
+
+  if (!ComboData.bUseCustomData)
+  {
+    ComboData.MeleeHitMode = MeleeHitMode;
+    ComboData.SphereHitRadius = SphereHitRadius;
+    ComboData.BoxHitDimensions = BoxHitDimensions;
+    ComboData.AngleWidth = AngleWidth;
+    ComboData.AngleHeight = AngleHeight;
+  }
+
+  return ComboData;
+}
+
+EMeleeHitMode UMeleeAttackAbility::GetMeleeHitMode() const
+{
+  return bIsComboSequence ? GetComboData().MeleeHitMode : MeleeHitMode;
+}
+
+FVector UMeleeAttackAbility::GetShapeOffset() const
+{
+  return GetComboData().ShapeOffset;
+}
+
+FVector UMeleeAttackAbility::GetBoxHitDimensions() const
+{
+  return GetComboData().BoxHitDimensions;
+}
+
+float UMeleeAttackAbility::GetSphereHitRadius() const
+{
+  return GetComboData().SphereHitRadius;
+}
+
+float UMeleeAttackAbility::GetAngleWidth() const
+{
+  return GetComboData().AngleWidth;
+}
+
+float UMeleeAttackAbility::GetAngleHeight() const
+{
+  return GetComboData().AngleHeight;
+}
+
 void UMeleeAttackAbility::DrawDebugMeleeHitShape(const FVector& AbilitySocketLocation)
 {
-	switch (MeleeHitMode)
+	switch (GetMeleeHitMode())
 	{
 	case EMeleeHitMode::Sphere:
 		{
 			DrawDebugSphere(
 				GetWorld(),
 				AbilitySocketLocation,
-				SphereHitRadius,
+				GetSphereHitRadius(),
 				12,
 				DrawShapeColor,
 				false,
@@ -57,13 +147,44 @@ void UMeleeAttackAbility::DrawDebugMeleeHitShape(const FVector& AbilitySocketLoc
 			DrawDebugBox(
 				GetWorld(),
 				AbilitySocketLocation,
-				BoxHitDimensions,
+				GetBoxHitDimensions(),
+				GetAvatarActorFromActorInfo()->GetActorQuat(),
 				DrawShapeColor,
 				false,
 				DrawShapeDuration
 			);
 			break;
 		}
+	case EMeleeHitMode::Cone:
+	  {
+	    DrawDebugCone(
+        GetWorld(),
+        GetAvatarActorFromActorInfo()->GetActorLocation(),
+        AbilitySocketLocation,
+        UUtilityLibrary::GetDistance(AbilitySocketLocation, GetAvatarActorFromActorInfo()->GetActorLocation()),
+        FMath::DegreesToRadians(GetAngleWidth()),
+        FMath::DegreesToRadians(GetAngleHeight()),
+        12,
+        DrawShapeColor,
+        false,
+        DrawShapeDuration
+      );
+	    break;
+	  }
+	case EMeleeHitMode::LineTraces:
+	  {
+	    DrawDebugLine(
+        GetWorld(),
+        GetAvatarActorFromActorInfo()->GetActorLocation(),
+        AbilitySocketLocation,
+        DrawShapeColor,
+        false,
+        DrawShapeDuration,
+        0,
+        2.f
+      );
+	    break;
+	  }
 	case EMeleeHitMode::Weapon: {}
 	default: {}
 	}
@@ -72,8 +193,9 @@ void UMeleeAttackAbility::DrawDebugMeleeHitShape(const FVector& AbilitySocketLoc
 TArray<AActor*> UMeleeAttackAbility::ShapeScan(const FVector& Origin)
 {
 	TArray ActorsToIgnore({ GetAvatarActorFromActorInfo() });
+  ActorsToIgnore.Append(ActorsHitInMontage);
 	TArray<AActor*> AliveActors;
-	switch (MeleeHitMode)
+	switch (GetMeleeHitMode())
 	{
 	case EMeleeHitMode::Sphere:
 		{
@@ -81,7 +203,7 @@ TArray<AActor*> UMeleeAttackAbility::ShapeScan(const FVector& Origin)
 				GetAvatarActorFromActorInfo(),
 				AliveActors,
 				ActorsToIgnore,
-				SphereHitRadius,
+				GetSphereHitRadius(),
 				Origin,
 				AbilityTargetTeam
 			);
@@ -93,12 +215,25 @@ TArray<AActor*> UMeleeAttackAbility::ShapeScan(const FVector& Origin)
 				GetAvatarActorFromActorInfo(),
 				AliveActors,
 				ActorsToIgnore,
-				BoxHitDimensions,
+				GetBoxHitDimensions(),
 				Origin,
+				GetAvatarActorFromActorInfo()->GetActorQuat(),
 				AbilityTargetTeam
 			);
 			break;
 		}
+	case EMeleeHitMode::Cone:
+	case EMeleeHitMode::LineTraces:
+	  {
+	    UAuraAbilitySystemLibrary::GetAliveCharactersWithinLine(
+	      GetAvatarActorFromActorInfo(),
+	      AliveActors,
+	      ActorsToIgnore,
+	      GetAvatarActorFromActorInfo()->GetActorLocation(),
+	      Origin,
+	      AbilityTargetTeam
+	      );
+	  }
 	case EMeleeHitMode::Weapon: {}
 	default: {}
 	}
@@ -137,6 +272,7 @@ void UMeleeAttackAbility::OnWeaponCollision(UPrimitiveComponent* OverlappedCompo
 	)
 {
 	if (GetAvatarActorFromActorInfo() == OtherActor) return;
+  if (ActorsHitInMontage.Contains(OtherActor)) return;
 
 	bool bValidTarget = false;
 	switch (AbilityTargetTeam)
@@ -160,4 +296,5 @@ void UMeleeAttackAbility::OnWeaponCollision(UPrimitiveComponent* OverlappedCompo
 	}
 
 	if (bValidTarget)	ApplyEffectToHitActor(OtherActor);
+  ActorsHitInMontage.Add(OtherActor);
 }

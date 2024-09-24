@@ -266,8 +266,32 @@ public:
 		UPARAM(ref) TArray<AActor*>& ActorsToIgnore,
 		const FVector& Dimensions,
 		const FVector& Center,
+		const FQuat& Rotation,
 		ETargetTeam TargetTeam = ETargetTeam::Both
 	);
+
+  UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|GameplayMechanics")
+  static void GetAliveCharactersWithinCone(
+    const AActor* ContextActor,
+    TArray<AActor*>& OutOverlappingActors,
+    UPARAM(ref) TArray<AActor*>& ActorsToIgnore,
+    const FVector& Origin, 
+    const FVector& Direction, 
+    float Length, 
+    float AngleWidth, 
+    float AngleHeight, 
+    ETargetTeam TargetTeam = ETargetTeam::Both
+  );
+
+  UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|GameplayMechanics")
+  static void GetAliveCharactersWithinLine(
+    const AActor* ContextActor,
+    TArray<AActor*>& OutOverlappingActors,
+    UPARAM(ref) TArray<AActor*>& ActorsToIgnore,
+    const FVector& LineStart,
+    const FVector& LineEnd,
+    ETargetTeam TargetTeam = ETargetTeam::Both
+  );
 
 	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|GameplayMechanics")
 	static AActor* GetClosestActorToTarget(
@@ -447,4 +471,10 @@ private:
 		const TArray<FOverlapResult>& Overlaps,
 		ETargetTeam TargetTeam
 		);
+  static void AddHitCharactersByTeam(
+    const AActor* ContextActor,
+    TArray<AActor*>& OutOverlappingActors,
+    const TArray<FHitResult>& HitResults,
+    ETargetTeam TargetTeam
+    );
 };
