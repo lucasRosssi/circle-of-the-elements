@@ -5,6 +5,7 @@
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
+#include "Aura/AuraLogChannels.h"
 
 FAbilityParams UActiveDamageAbility::MakeAbilityParamsFromDefaults(AActor* TargetActor) const
 {
@@ -16,7 +17,7 @@ FAbilityParams UActiveDamageAbility::MakeAbilityParamsFromDefaults(AActor* Targe
 	
 	if (bIsComboSequence)
 	{
-		if (ComboIndex == ComboSequenceMontages.Num() - 1)
+		if (ComboIndex == ComboSequenceData.Num() - 1)
 		{
 			const float FinishEffectChange = ComboFinishMagnitude.GetValueAtLevel(GetAbilityLevel());
 			CurrentDamage = CurrentDamage * (1.f + FinishEffectChange);
@@ -44,6 +45,7 @@ void UActiveDamageAbility::EndAbility(
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 
 	ComboIndex = 0;
+  bComboInputPressed = false;
 }
 
 void UActiveDamageAbility::GetMontageParams(
@@ -52,7 +54,7 @@ void UActiveDamageAbility::GetMontageParams(
 	float& RootMotionScale
 	) const
 {
-	Montage = bIsComboSequence ? ComboSequenceMontages[ComboIndex] : MontageToPlay;
+	Montage = GetAnimMontage();
 	PlayRate = MontagePlayRate.GetValueAtLevel(GetAbilityLevel());
 	RootMotionScale = AnimRootMotionTranslateScale.GetValueAtLevel(GetAbilityLevel());
 }
@@ -99,9 +101,24 @@ void UActiveDamageAbility::HandleComboSequence()
 	ComboIndex += 1;
 	bComboInputPressed = false;
 
-	if (!ComboSequenceMontages.IsValidIndex(ComboIndex)) return;
+	if (!ComboSequenceData.IsValidIndex(ComboIndex)) return;
 
 	OnNextComboSequence();
+}
+
+UAnimMontage* UActiveDamageAbility::GetAnimMontage() const
+{
+  return bIsComboSequence ? GetComboData().Montage : MontageToPlay;
+}
+
+FName UActiveDamageAbility::GetAbilitySocketName() const
+{
+  return bIsComboSequence ? GetComboData().SocketName : AbilitySocketName;
+}
+
+bool UActiveDamageAbility::IsUsingWeapon() const
+{
+  return bIsComboSequence ? GetComboData().bUseWeaponSocket : bUseWeaponSocket;
 }
 
 float UActiveDamageAbility::GetComboMagnitude() const
@@ -114,7 +131,21 @@ float UActiveDamageAbility::GetComboFinishMagnitude() const
 	return ComboFinishMagnitude.GetValueAtLevel(GetAbilityLevel());
 }
 
-UAnimMontage* UActiveDamageAbility::GetAnimMontage()
+FComboData UActiveDamageAbility::GetComboData() const
 {
-	return bIsComboSequence ? ComboSequenceMontages[ComboIndex] : MontageToPlay;
+  if (!ComboSequenceData.IsValidIndex(ComboIndex))
+  {
+    UE_LOG(LogAura, Error, TEXT("Tried to access invalid index in ComboSequenceData!"));
+    return FComboData();
+  }
+
+  FComboData ComboData = ComboSequenceData[ComboIndex];
+
+  if (!ComboData.bUseCustomData)
+  {
+    ComboData.bUseWeaponSocket = bUseWeaponSocket;
+    ComboData.SocketName = AbilitySocketName;
+  }
+
+  return ComboData;
 }

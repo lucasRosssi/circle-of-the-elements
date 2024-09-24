@@ -19,6 +19,7 @@
 #include "Game/TeamComponent.h"
 #include "Interaction/CombatInterface.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "Player/AuraPlayerState.h"
 #include "Player/AuraPlayerController.h"
 #include "UI/HUD/AuraHUD.h"
@@ -521,6 +522,7 @@ void UAuraAbilitySystemLibrary::GetAliveCharactersWithinBox(
 	TArray<AActor*>& ActorsToIgnore,
 	const FVector& Dimensions,
 	const FVector& Center,
+	const FQuat& Rotation,
 	ETargetTeam TargetTeam
 	)
 {
@@ -535,7 +537,7 @@ void UAuraAbilitySystemLibrary::GetAliveCharactersWithinBox(
 		World->OverlapMultiByObjectType(
 			Overlaps,
 			Center,
-			FQuat::Identity,
+			Rotation,
 			FCollisionObjectQueryParams(FCollisionObjectQueryParams::InitType::AllDynamicObjects),
 			FCollisionShape::MakeBox(Dimensions),
 			BoxParams
@@ -543,6 +545,61 @@ void UAuraAbilitySystemLibrary::GetAliveCharactersWithinBox(
 
 		AddOverlappedCharactersByTeam(ContextActor, OutOverlappingActors, Overlaps, TargetTeam);
 	}
+}
+
+void UAuraAbilitySystemLibrary::GetAliveCharactersWithinCone(
+  const AActor* ContextActor,
+  TArray<AActor*>& OutOverlappingActors,
+  TArray<AActor*>& ActorsToIgnore,
+  const FVector& Origin,
+  const FVector& Direction,
+  float Length,
+  float AngleWidth,
+  float AngleHeight,
+  ETargetTeam TargetTeam
+  )
+{
+  if (TargetTeam == ETargetTeam::Self) return;
+	
+  FCollisionQueryParams ConeParams;
+  ConeParams.AddIgnoredActors(ActorsToIgnore);
+
+  TArray<FOverlapResult> Overlaps;
+  if (const UWorld* World = GEngine->GetWorldFromContextObject(ContextActor, EGetWorldErrorMode::LogAndReturnNull))
+  {
+    //TODO: Cone logic
+
+    AddOverlappedCharactersByTeam(ContextActor, OutOverlappingActors, Overlaps, TargetTeam);
+  }
+}
+
+void UAuraAbilitySystemLibrary::GetAliveCharactersWithinLine(
+  const AActor* ContextActor,
+  TArray<AActor*>& OutOverlappingActors,
+  TArray<AActor*>& ActorsToIgnore,
+  const FVector& LineStart,
+  const FVector& LineEnd,
+  ETargetTeam TargetTeam
+  )
+{
+  if (TargetTeam == ETargetTeam::Self) return;
+  
+  FCollisionQueryParams LineParams;
+  LineParams.AddIgnoredActors(ActorsToIgnore);
+
+  TArray<FHitResult> HitResults;
+  if (const UWorld* World = GEngine->GetWorldFromContextObject(ContextActor, EGetWorldErrorMode::LogAndReturnNull))
+  {
+    World->LineTraceMultiByObjectType(
+      HitResults,
+      LineStart,
+      LineEnd,
+      FCollisionObjectQueryParams(FCollisionObjectQueryParams::InitType::AllDynamicObjects),
+      LineParams
+      );
+
+    AddHitCharactersByTeam(ContextActor, OutOverlappingActors, HitResults, TargetTeam);
+  }
 }
 
 AActor* UAuraAbilitySystemLibrary::GetClosestActorToTarget(
@@ -1151,27 +1208,70 @@ void UAuraAbilitySystemLibrary::AddOverlappedCharactersByTeam(
 		if (!OverlappedActor->Implements<UCombatInterface>()) continue;
 		if (ICombatInterface::Execute_IsDead(OverlappedActor)) continue;
 
-		if (TargetTeam == ETargetTeam::Both)
-		{
-			OutOverlappingActors.AddUnique(OverlappedActor);
-			continue;
-		}
-
-		if (TargetTeam == ETargetTeam::Enemies &&
-			AreActorsEnemies(ContextActor, OverlappedActor)
-			)
-		{
-			OutOverlappingActors.AddUnique(OverlappedActor);
-			continue;
-		}
-
-		if (TargetTeam == ETargetTeam::Friends &&
-			AreActorsFriends(ContextActor, OverlappedActor)
-			)
-		{
-			OutOverlappingActors.AddUnique(OverlappedActor);
-		}
+	  switch (TargetTeam)
+	  {
+	  case ETargetTeam::Enemies:
+	    {
+	      if (AreActorsEnemies(ContextActor, OverlappedActor))
+	      {
+	        OutOverlappingActors.AddUnique(OverlappedActor);
+	      }
+	      break;
+	    }
+	  case ETargetTeam::Friends:
+	    {
+	      if (AreActorsFriends(ContextActor, OverlappedActor))
+	      {
+	        OutOverlappingActors.AddUnique(OverlappedActor);
+	      }
+	    }
+	  case ETargetTeam::Both:
+	    {
+	      OutOverlappingActors.AddUnique(OverlappedActor);
+	    }
+	  default: {}
+	  }
 	}
+}
+
+void UAuraAbilitySystemLibrary::AddHitCharactersByTeam(
+  const AActor* ContextActor,
+  TArray<AActor*>& OutOverlappingActors,
+  const TArray<FHitResult>& HitResults,
+  ETargetTeam TargetTeam
+  )
+{
+  for (const auto& HitResult : HitResults)
+  {
+    AActor* HitActor = HitResult.GetActor();
+
+    if (!HitActor->Implements<UCombatInterface>()) continue;
+    if (ICombatInterface::Execute_IsDead(HitActor)) continue;
+
+    switch (TargetTeam)
+    {
+      case ETargetTeam::Enemies:
+        {
+          if (AreActorsEnemies(ContextActor, HitActor))
+          {
+            OutOverlappingActors.AddUnique(HitActor);
+          }
+          break;
+        }
+      case ETargetTeam::Friends:
+        {
+          if (AreActorsFriends(ContextActor, HitActor))
+          {
+            OutOverlappingActors.AddUnique(HitActor);
+          }
+        }
+      case ETargetTeam::Both:
+        {
+          OutOverlappingActors.AddUnique(HitActor);
+        }
+      default: {}
+    }
+  }
 }
 
 // TArray<FGameplayTag> UAuraAbilitySystemLibrary::GetAllAbilitiesFromLevel(

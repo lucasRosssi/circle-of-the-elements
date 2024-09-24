@@ -54,18 +54,10 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void ClearBounceHitTargets();
 	
-	// True when a player uses the ability, false when its an AI
+	// True when a player uses the ability, false when it is an AI
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Input", meta=(DisplayPriority=0))
 	bool bIsPlayerAbility = false;
-
-	// True when the ability is related to a weapon (uses a weapon socket)
-	UPROPERTY(
-		EditDefaultsOnly,
-		BlueprintReadOnly,
-		Category="Ability Defaults|Weapon",
-		meta=(DisplayPriority=0)
-		)
-	bool bUseWeaponSocket;
+  
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Ability Defaults")
 	TObjectPtr<UAnimMontage> MontageToPlay;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Ability Defaults")
@@ -74,6 +66,10 @@ protected:
 	FScalableFloat AnimRootMotionTranslateScale = 1.0f;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Ability Defaults")
 	FName AbilitySocketName;
+  // True when the ability is related to a weapon (uses a weapon socket)
+  UPROPERTY(EditDefaultsOnly,	BlueprintReadOnly, Category="Ability Defaults")
+  bool bUseWeaponSocket;
+  
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Ability Defaults|Targeting")
 	TSubclassOf<ATargetingActor> TargetingActorClass;
 

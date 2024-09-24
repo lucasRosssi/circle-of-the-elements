@@ -9,6 +9,10 @@ enum class EMeleeHitMode : uint8
 	Box UMETA(DisplayName = "Box"),
 	// Melee hit scan will occur through the Weapon Box collision (scan window)
 	Weapon UMETA(DisplayName = "Weapon"),
+  // Melee hit scan will occur with a Cone shaped collision (instant scan)
+  Cone UMETA(DisplayName = "Cone"),
+  // Melee hit scan will occur through multiple Line Traces (scan window)
+  LineTraces UMETA(DisplayName = "Line Traces"),
 
 	MAX UMETA(Hidden)
 };
