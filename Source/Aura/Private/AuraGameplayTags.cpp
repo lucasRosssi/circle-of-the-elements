@@ -389,6 +389,11 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FString("Duration for the status effect")
 		);
 
+  GameplayTags.StatusEffects_Stacks = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("StatusEffects.Stacks"),
+    FString("Stacks of the the status effect applied in a single application")
+    );
+
 
 	GameplayTags.StatusEffects_Invulnerable = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("StatusEffects.Invulnerable"),

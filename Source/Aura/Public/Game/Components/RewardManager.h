@@ -31,6 +31,8 @@ public:
 	FOnRewardTaken OnRewardTakenDelegate;
 
 protected:
+  virtual void BeginPlay() override;
+  
 	UPROPERTY(EditDefaultsOnly, Category="Location|Reward")
 	bool bOverrideReward = false;
 	UPROPERTY(

@@ -27,6 +27,9 @@ struct FStatusEffectApplicationData
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(Units="Seconds"))
 	FScalableFloat Duration = 0.f;
 
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(ClampMin=1.f, UIMin=1.f, ClampMax=10.f, UIMax=10.f))
+  FScalableFloat Stacks = 1.f;
+
 	bool IsValid() const { return StatusEffectTag.IsValid(); }
 };
 /**
@@ -71,7 +74,7 @@ public:
 	UGameplayEffect* GetChargesEffect();
 	bool IsUsingCharges() const { return bUseCharges; }
 
-	const FStatusEffectApplicationData& GetStatusEffectData() const { return StatusEffectData; }
+	TArray<FStatusEffectApplicationData> GetStatusEffectData() const { return StatusEffectData; }
 
 	UFUNCTION(BlueprintPure, Category="Ability Effect", meta=(HidePin="Target", DefaultToSelf="Target"))
 	virtual FAbilityParams MakeAbilityParamsFromDefaults(AActor* TargetActor = nullptr) const;
@@ -108,7 +111,7 @@ protected:
 	int32 GetMaxCharges() const;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Status Effects")
-	FStatusEffectApplicationData StatusEffectData;
+	TArray<FStatusEffectApplicationData> StatusEffectData;
 
 	UPROPERTY(
 		EditDefaultsOnly,

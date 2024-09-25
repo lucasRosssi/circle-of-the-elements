@@ -179,6 +179,11 @@ void UAbilityManager::SelectAbilityReward(
 
 void UAbilityManager::AssignInitialAbilities()
 {
+  if (bOverrideAbilities)
+  {
+    
+  }
+  
 	const ECharacterName CharacterName = GetAuraGameMode()->CurrentCharacterName;
 	
 	const FAuraGameplayTags& Tags = FAuraGameplayTags::Get();

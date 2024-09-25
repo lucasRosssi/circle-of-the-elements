@@ -250,15 +250,22 @@ FAbilityParams UBaseAbility::MakeAbilityParamsFromDefaults(AActor* TargetActor) 
 		}
 	}
 	
-	if (StatusEffectData.IsValid())
+	if (StatusEffectData.Num() > 0)
 	{
-		UStatusEffectInfo* StatusEffectInfo = UAuraAbilitySystemLibrary
-			::GetStatusEffectInfo(AbilityParams.WorldContextObject);
-		AbilityParams.EffectParams.GameplayEffectClass = StatusEffectInfo
-			->StatusEffects.Find(StatusEffectData.StatusEffectTag)->StatusEffectClass;
-		AbilityParams.EffectParams.GameplayTag = StatusEffectData.StatusEffectTag;
-		AbilityParams.EffectParams.Value = StatusEffectData.Value.GetValueAtLevel(GetAbilityLevel());
-		AbilityParams.EffectParams.Duration = StatusEffectData.Duration.GetValueAtLevel(GetAbilityLevel());
+	  for (const auto& Effect : StatusEffectData)
+	  {
+		  UStatusEffectInfo* StatusEffectInfo = UAuraAbilitySystemLibrary
+			  ::GetStatusEffectInfo(AbilityParams.WorldContextObject);
+	    FEffectParams EffectParams;
+		  EffectParams.GameplayEffectClass = StatusEffectInfo
+			  ->StatusEffects.Find(Effect.StatusEffectTag)->StatusEffectClass;
+		  EffectParams.GameplayTag = Effect.StatusEffectTag;
+		  EffectParams.Value = Effect.Value.GetValueAtLevel(GetAbilityLevel());
+		  EffectParams.Duration = Effect.Duration.GetValueAtLevel(GetAbilityLevel());
+	    EffectParams.Stacks = Effect.Stacks.GetValueAtLevel(GetAbilityLevel());
+
+	    AbilityParams.EffectParams.Add(EffectParams);
+	  }
 	}
 	
 	return AbilityParams;

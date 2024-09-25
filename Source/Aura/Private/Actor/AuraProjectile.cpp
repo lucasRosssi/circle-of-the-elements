@@ -382,8 +382,14 @@ void AAuraProjectile::ApplyProjectileEffect(bool& bSuccess)
 	if (HitMode != EAbilityHitMode::Default && MaxHitCount > 1)
 	{
 		AbilityParams.DamageParams.BaseDamage *= (1.f + EffectChangePerHit * HitCount);
-		AbilityParams.EffectParams.Value *= (1.f + EffectChangePerHit * HitCount);
-		AbilityParams.EffectParams.Duration *= (1.f + EffectChangePerHit * HitCount);
+	  if (AbilityParams.EffectParams.Num() > 0)
+	  {
+	    for (auto& StatusEffect : AbilityParams.EffectParams)
+	    {
+	      StatusEffect.Value *= (1.f + EffectChangePerHit * HitCount);
+	      StatusEffect.Duration *= (1.f + EffectChangePerHit * HitCount);
+	    }
+	  }
 	}
 	
 	UAuraAbilitySystemLibrary::ApplyAbilityEffect(AbilityParams, bSuccess);

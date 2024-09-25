@@ -10,6 +10,7 @@
 #include "UI/WidgetController/AuraWidgetController.h"
 #include "AuraAbilitySystemLibrary.generated.h"
 
+struct FEffectParams;
 class URegionInfo;
 enum class ECharacterName : uint8;
 enum class ETargetTeam : uint8;
@@ -122,13 +123,7 @@ public:
 	static bool IsApplyingEffect(const FGameplayEffectContextHandle& EffectContextHandle);
 
 	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|GameplayEffects")
-	static float GetEffectValue(const FGameplayEffectContextHandle& EffectContextHandle);
-
-	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|GameplayEffects")
-	static float GetEffectDuration(const FGameplayEffectContextHandle& EffectContextHandle);
-
-	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|GameplayEffects")
-	static FGameplayTag GetEffectType(const FGameplayEffectContextHandle& EffectContextHandle);
+	static TArray<FEffectParams> GetStatusEffects(const FGameplayEffectContextHandle& EffectContextHandle);
 
 	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|GameplayEffects")
 	static FVector GetForwardVector(const FGameplayEffectContextHandle& EffectContextHandle);
@@ -172,21 +167,9 @@ public:
 		);
 
 	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|GameplayEffects")
-	static void SetEffectValue(
+	static void SetStatusEffects(
 		UPARAM(ref) FGameplayEffectContextHandle& EffectContextHandle,
-		float InEffectValue
-		);
-
-	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|GameplayEffects")
-	static void SetEffectDuration(
-		UPARAM(ref) FGameplayEffectContextHandle& EffectContextHandle,
-		float InEffectDuration
-		);
-
-	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|GameplayEffects")
-	static void SetEffectType(
-		UPARAM(ref) FGameplayEffectContextHandle& EffectContextHandle,
-		const FGameplayTag& InEffectType
+		const TArray<FEffectParams>& InEffectsArray
 		);
 
 	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|GameplayEffects")

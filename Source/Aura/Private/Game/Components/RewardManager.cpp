@@ -13,12 +13,14 @@
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 
-URewardManager::URewardManager()
+void URewardManager::BeginPlay()
 {
-	if (bOverrideReward)
-	{
-		OverridenRewardBag = RewardBag;
-	}
+  Super::BeginPlay();
+
+  if (bOverrideReward)
+  {
+    OverridenRewardBag = RewardBag;
+  }
 }
 
 FRewardInfo URewardManager::GetRewardInfo(const FGameplayTag& RewardTag)

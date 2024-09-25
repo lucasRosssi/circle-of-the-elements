@@ -17,5 +17,4 @@ class AURA_API UStatusEffect : public UGameplayEffect
 public:
 	UStatusEffect();
 	
-	FOnActiveGameplayEffectStackChange StackChange;
 };
