@@ -1,11 +1,10 @@
 // Copyright Lucas Rossi
 
 
-#include "Game/Components/UIManager.h"
+#include "Managers/UIManager.h"
 
-#include "Player/AuraPlayerController.h"
-#include "UI/HUD/AuraHUD.h"
 #include "UI/Widget/AuraUserWidget.h"
+#include "GameFramework/PlayerController.h"
 
 UUIManager::UUIManager()
 {
@@ -15,7 +14,7 @@ UUIManager::UUIManager()
 
 UAuraUserWidget* UUIManager::BuildWidget(TSubclassOf<UAuraUserWidget> WidgetClass)
 {
-	return CreateWidget<UAuraUserWidget>(AuraPlayerController, WidgetClass);
+	return CreateWidget<UAuraUserWidget>(PlayerController, WidgetClass);
 }
 
 UAuraUserWidget* UUIManager::OpenWidget(UAuraUserWidget* Widget)

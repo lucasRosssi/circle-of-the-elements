@@ -3,7 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/ActorComponent.h"
 #include "Game/AuraGameModeBase.h"
 #include "AuraSystemComponent.generated.h"
 

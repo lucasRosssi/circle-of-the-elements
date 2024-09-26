@@ -6,11 +6,11 @@
 #include "AuraGameplayTags.h"
 #include "Aura/AuraLogChannels.h"
 #include "Game/AuraGameInstance.h"
-#include "Game/Components/AbilityManager.h"
-#include "Game/Components/EncounterManager.h"
-#include "Game/Components/LocationManager.h"
-#include "Game/Components/RewardManager.h"
 #include "Kismet/GameplayStatics.h"
+#include "Managers/AbilityManager.h"
+#include "Managers/EncounterManager.h"
+#include "Managers/LocationManager.h"
+#include "Managers/RewardManager.h"
 #include "UI/HUD/AuraHUD.h"
 
 AAuraGameModeBase::AAuraGameModeBase()

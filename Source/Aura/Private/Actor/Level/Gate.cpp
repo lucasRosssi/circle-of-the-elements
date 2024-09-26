@@ -5,7 +5,7 @@
 
 #include "Components/WidgetComponent.h"
 #include "Game/AuraGameModeBase.h"
-#include "Game/Components/LocationManager.h"
+#include "Managers/LocationManager.h"
 
 AGate::AGate()
 {

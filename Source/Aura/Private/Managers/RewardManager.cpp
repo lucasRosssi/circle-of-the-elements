@@ -1,7 +1,7 @@
 // Copyright Lucas Rossi
 
 
-#include "Game/Components/RewardManager.h"
+#include "Managers/RewardManager.h"
 
 #include "AuraGameplayTags.h"
 #include "Actor/Level/Gate.h"

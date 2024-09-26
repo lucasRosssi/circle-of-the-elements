@@ -1,7 +1,7 @@
 // Copyright Lucas Rossi
 
 
-#include "Game/Components/AuraSystemComponent.h"
+#include "Managers/AuraSystemComponent.h"
 
 #include "Kismet/GameplayStatics.h"
 

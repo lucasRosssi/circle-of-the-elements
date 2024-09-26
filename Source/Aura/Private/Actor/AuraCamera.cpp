@@ -4,7 +4,7 @@
 #include "Actor/AuraCamera.h"
 
 #include "Camera/CameraComponent.h"
-#include "Game/Components/LocationManager.h"
+#include "Managers/LocationManager.h"
 #include "Utils/AuraSystemsLibrary.h"
 
 AAuraCamera::AAuraCamera()

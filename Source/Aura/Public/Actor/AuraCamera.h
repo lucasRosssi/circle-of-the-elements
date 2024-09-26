@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "UniversalCamera.h"
-#include "Game/Components/LocationManager.h"
 #include "AuraCamera.generated.h"
 
 class UCameraComponent;

@@ -1,7 +1,7 @@
 // Copyright Lucas Rossi
 
 
-#include "Game/Components/LocationManager.h"
+#include "Managers/LocationManager.h"
 
 #include "Game/AuraGameInstance.h"
 #include "Game/AuraGameModeBase.h"

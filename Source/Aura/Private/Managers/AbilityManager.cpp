@@ -1,7 +1,7 @@
 // Copyright Lucas Rossi
 
 
-#include "Game/Components/AbilityManager.h"
+#include "Managers/AbilityManager.h"
 
 #include "AuraGameplayTags.h"
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
@@ -9,7 +9,6 @@
 #include "Aura/AuraLogChannels.h"
 #include "Enums/CharacterName.h"
 #include "AbilitySystem/Abilities/BaseAbility.h"
-#include "Kismet/GameplayStatics.h"
 #include "UI/WidgetController/OverlayWidgetController.h"
 
 UAbilityManager::UAbilityManager()

@@ -3,9 +3,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AuraSystemComponent.h"
 #include "GameplayTagContainer.h"
 #include "AbilitySystem/Data/AbilityInfo.h"
-#include "Game/Components/AuraSystemComponent.h"
 #include "AbilityManager.generated.h"
 
 class UAuraAbilitySystemComponent;

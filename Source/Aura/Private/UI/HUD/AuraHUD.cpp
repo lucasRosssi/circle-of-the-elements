@@ -3,7 +3,7 @@
 
 #include "UI/HUD/AuraHUD.h"
 
-#include "Game/Components/UIManager.h"
+#include "Managers/UIManager.h"
 #include "Player/AuraPlayerController.h"
 #include "UI/Widget/AuraUserWidget.h"
 #include "UI/WidgetController/AttributeMenuWidgetController.h"

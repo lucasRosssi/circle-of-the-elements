@@ -10,13 +10,13 @@
 #include "Actor/TargetingActor.h"
 #include "Aura/Aura.h"
 #include "Camera/CameraComponent.h"
-#include "Game/Components/UIManager.h"
 #include "Input/AuraInputComponent.h"
 #include "Interaction/TargetInterface.h"
 #include "GameFramework/Character.h"
 #include "Interaction/CombatInterface.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "Managers/UIManager.h"
 #include "Materials/MaterialParameterCollectionInstance.h"
 #include "UI/Widget/DamageTextComponent.h"
 
@@ -27,7 +27,7 @@ AAuraPlayerController::AAuraPlayerController()
 	bAutoManageActiveCameraTarget = false;
 	
 	UIManager = CreateDefaultSubobject<UUIManager>("UIManager");
-	UIManager->SetAuraPlayerController(this);
+	UIManager->SetPlayerController(this);
 }
 
 void AAuraPlayerController::ShowTargetingActor(

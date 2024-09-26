@@ -8,7 +8,6 @@
 #include "Enums/CharacterType.h"
 #include "AbilitySystem/Data/CharacterInfo.h"
 #include "Enums/CharacterName.h"
-#include "Game/TeamComponent.h"
 #include "GameFramework/Character.h"
 #include "Interaction/CombatInterface.h"
 #include "Interaction/TargetInterface.h"
@@ -79,8 +78,7 @@ public:
 
 	void ChangeActionSpeed(float InActionSpeed);
 
-	int32 GetTeamID() { return TeamComponent->TeamID; }
-	void SetTeamID(int32 InID) { TeamComponent->TeamID = InID; }
+	UTeamComponent* GetTeamComponent() const { return TeamComponent; }
 
 	UAuraAbilitySystemComponent* GetAuraASC();
 
