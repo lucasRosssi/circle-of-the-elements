@@ -53,7 +53,10 @@ public:
 
 	FRewardInfo GetRandomizedReward();
 
-	void FillRewardBag(TArray<FGameplayTag>& OutBag);
+	void FillRewardBag(
+	  TArray<FGameplayTag>& OutBag,
+	  const FGameplayTagContainer& BlockedRewards = FGameplayTagContainer()
+	  );
 	
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(Categories="Resources", ForceInlineRow))

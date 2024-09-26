@@ -46,41 +46,33 @@ bool FAuraGameplayEffectContext::NetSerialize(FArchive& Ar, UPackageMap* Map, bo
 		{
 			RepBits |= 1 << 9;
 		}
-		if (EffectValue > 0.f)
+		if (StatusEffects.Num() > 0)
 		{
 			RepBits |= 1 << 10;
 		}
-		if (EffectDuration > 0.f)
+		if (!ForwardVector.IsZero())
 		{
 			RepBits |= 1 << 11;
 		}
-		if (EffectType.IsValid())
+		if (bApplyHitReact)
 		{
 			RepBits |= 1 << 12;
 		}
-		if (!ForwardVector.IsZero())
-		{
-			RepBits |= 1 << 13;
-		}
-		if (bApplyHitReact)
-		{
-			RepBits |= 1 << 14;
-		}
 		if (bIsAreaAbility)
 		{
-			RepBits |= 1 << 15;
+			RepBits |= 1 << 13;
 
 			if (AreaInnerRadius > 0.f)
 			{
-				RepBits |= 1 << 16;
+				RepBits |= 1 << 14;
 			}
 			if (AreaOuterRadius > 0.f)
 			{
-				RepBits |= 1 << 17;
+				RepBits |= 1 << 15;
 			}
 			if (!AreaOrigin.IsZero())
 			{
-				RepBits |= 1 << 18;
+				RepBits |= 1 << 16;
 			}
 		}
 		
@@ -142,44 +134,29 @@ bool FAuraGameplayEffectContext::NetSerialize(FArchive& Ar, UPackageMap* Map, bo
 	}
 	if (RepBits & (1 << 10))
 	{
-		Ar << EffectValue;
+		SafeNetSerializeTArray_WithNetSerialize<3, FEffectParams>(Ar, StatusEffects, Map);
 	}
 	if (RepBits & (1 << 11))
 	{
-		Ar << EffectDuration;
+		ForwardVector.NetSerialize(Ar, Map, bOutSuccess);
 	}
 	if (RepBits & (1 << 12))
 	{
-		if (Ar.IsLoading())
-		{
-			if (!EffectType.IsValid())
-			{
-				EffectType = MakeShared<FGameplayTag>();
-			}
-		}
-		EffectType->NetSerialize(Ar, Map, bOutSuccess);
+		Ar << bApplyHitReact;
 	}
 	if (RepBits & (1 << 13))
 	{
-		ForwardVector.NetSerialize(Ar, Map, bOutSuccess);
-	}
-	if (RepBits & (1 << 14))
-	{
-		Ar << bApplyHitReact;
-	}
-	if (RepBits & (1 << 15))
-	{
 		Ar << bIsAreaAbility;
 		
-		if (RepBits & (1 << 16))
+		if (RepBits & (1 << 14))
 		{
 			Ar << AreaInnerRadius;
 		}
-		if (RepBits & (1 << 17))
+		if (RepBits & (1 << 15))
 		{
 			Ar << AreaOuterRadius;	
 		}
-		if (RepBits & (1 << 18))
+		if (RepBits & (1 << 16))
 		{
 			AreaOrigin.NetSerialize(Ar, Map, bOutSuccess);
 		}

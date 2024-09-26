@@ -35,8 +35,8 @@ struct FEffectParams
 	UPROPERTY(BlueprintReadWrite)
 	TSubclassOf<UGameplayEffect> GameplayEffectClass = nullptr;
 
-	UPROPERTY(BlueprintReadWrite)
-	FGameplayTag GameplayTag = FGameplayTag();
+  UPROPERTY(BlueprintReadWrite)
+  FGameplayTag GameplayTag = FGameplayTag();
 	
 	UPROPERTY(BlueprintReadWrite)
 	float Value = 0.f;
@@ -44,10 +44,37 @@ struct FEffectParams
 	UPROPERTY(BlueprintReadWrite)
 	float Duration = 0.f;
 
+  UPROPERTY(BlueprintReadWrite)
+  int32 Stacks = 1;
+
 	bool IsValid() const
 	{
 		return GameplayEffectClass != nullptr && GameplayTag.IsValid();
 	}
+
+  bool NetSerialize(FArchive& Ar, class UPackageMap* Map, bool& bOutSuccess)
+	{
+	  Ar << GameplayEffectClass;
+
+	  GameplayTag.NetSerialize(Ar, Map, bOutSuccess);
+
+	  Ar << Value;
+	  Ar << Duration;
+	  Ar << Stacks;
+
+	  bOutSuccess = true;
+	  return true;
+	}
+};
+
+template<>
+struct TStructOpsTypeTraits<FEffectParams> : public TStructOpsTypeTraitsBase2<FEffectParams>
+{
+  enum
+  {
+    WithNetSerializer = true,  // Enable custom net serialization
+    WithNetSharedSerialization = true,  // Enable shared serialization optimization
+  };
 };
 
 USTRUCT(BlueprintType)
@@ -71,7 +98,7 @@ struct FAbilityParams
 	FDamageParams DamageParams = FDamageParams();
 
 	UPROPERTY(BlueprintReadWrite)
-	FEffectParams EffectParams = FEffectParams();
+	TArray<FEffectParams> EffectParams = TArray<FEffectParams>();
 
 	UPROPERTY(BlueprintReadWrite)
 	FVector ForwardVector = FVector::ZeroVector;
@@ -100,9 +127,7 @@ public:
 	bool IsCriticalHit() const { return bCriticalHit; }
 	bool IsParried() const { return bParried; }
 	bool IsApplyingEffect() const { return bApplyingEffect; }
-	float GetEffectValue() const { return EffectValue; }
-	float GetEffectDuration() const { return EffectDuration; }
-	TSharedPtr<FGameplayTag> GetEffectType() const { return EffectType; }
+	TArray<FEffectParams> GetStatusEffects() const { return StatusEffects; }
 	FVector GetForwardVector() const { return ForwardVector; }
 	bool GetApplyHitReact() const { return bApplyHitReact; }
 	bool IsAreaAbility() const { return bIsAreaAbility; }
@@ -113,9 +138,7 @@ public:
 	void SetIsCriticalHit(bool bInCriticalHit) { bCriticalHit = bInCriticalHit; }
 	void SetIsParried(bool bInParried) { bParried = bInParried; }
 	void SetIsApplyingEffect(bool bInApplyingEffect) { bApplyingEffect = bInApplyingEffect; }
-	void SetEffectValue(float InEffectValue) { EffectValue = InEffectValue; }
-	void SetEffectDuration(float InEffectDuration) { EffectDuration = InEffectDuration; }
-	void SetEffectType(TSharedPtr<FGameplayTag> InEffectType) { EffectType = InEffectType; }
+	void SetStatusEffects(const TArray<FEffectParams>& InEffects) { StatusEffects = InEffects; }
 	void SetForwardVector(const FVector& InVector) { ForwardVector = InVector; }
 	void SetApplyHitReact(bool InApplyHitReact) { bApplyHitReact = InApplyHitReact; }
 	void SetIsAreaAbility(bool bInIsRadialDamage) { bIsAreaAbility = bInIsRadialDamage; }
@@ -154,12 +177,8 @@ protected:
 	bool bDoT = false;
 	UPROPERTY()
 	bool bApplyingEffect = false;
-	UPROPERTY()
-	float EffectValue = 0.f;
-	UPROPERTY()
-	float EffectDuration = 0.f;
 	
-	TSharedPtr<FGameplayTag> EffectType;
+	TArray<FEffectParams> StatusEffects;
 
 	UPROPERTY()
 	FVector ForwardVector = FVector::ZeroVector;

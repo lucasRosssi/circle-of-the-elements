@@ -52,13 +52,19 @@ FRewardInfo URewardsInfo::GetRandomizedReward()
 	return FRewardInfo();
 }
 
-void URewardsInfo::FillRewardBag(TArray<FGameplayTag>& OutBag)
+void URewardsInfo::FillRewardBag(
+    TArray<FGameplayTag>& OutBag,
+    const FGameplayTagContainer& BlockedRewards
+    )
 {
 	for (const auto& Reward : Rewards)
 	{
 		for (int32 i = 0; i < Reward.Value.DropRateWeight; i++)
 		{
-			OutBag.Add(Reward.Key);
+		  if (!BlockedRewards.HasTagExact(Reward.Key))
+		  {
+			  OutBag.Add(Reward.Key);
+		  }
 		}
 	}
 }

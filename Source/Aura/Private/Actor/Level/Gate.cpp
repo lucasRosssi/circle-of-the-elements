@@ -23,6 +23,11 @@ void AGate::SetGateReward(const FGameplayTag& InRewardTag)
 	RewardAssigned();
 }
 
+void AGate::DeactivateGate()
+{
+  bActive = false;
+}
+
 void AGate::BeginPlay()
 {
 	Super::BeginPlay();
@@ -50,6 +55,8 @@ TSoftObjectPtr<UWorld> AGate::GetRandomLocation()
 
 void AGate::Enable()
 {
+  if (!bActive) return;
+  
 	EnableInteraction();
 	RewardWidget->SetVisibility(true);
 }

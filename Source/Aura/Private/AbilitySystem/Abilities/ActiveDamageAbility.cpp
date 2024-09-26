@@ -77,8 +77,14 @@ FAbilityParams UActiveDamageAbility::ApplyEffectChangePerHitToAbilityParams(
 	if (RangedHitMode != EAbilityHitMode::Default && GetMaxHitCount() > 1)
 	{
 		AbilityParams.DamageParams.BaseDamage *= (1.f + GetEffectChangePerHit() * HitCount);
-		AbilityParams.EffectParams.Value *= (1.f + GetEffectChangePerHit() * HitCount);
-		AbilityParams.EffectParams.Duration *= (1.f + GetEffectChangePerHit() * HitCount);
+	  if (AbilityParams.EffectParams.Num() > 0)
+	  {
+	    for (auto& StatusEffect : AbilityParams.EffectParams)
+	    {
+		    StatusEffect.Value *= (1.f + GetEffectChangePerHit() * HitCount);
+		    StatusEffect.Duration *= (1.f + GetEffectChangePerHit() * HitCount);
+	    }
+	  }
 	}
 
 	return AbilityParams;

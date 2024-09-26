@@ -19,7 +19,6 @@
 #include "Game/TeamComponent.h"
 #include "Interaction/CombatInterface.h"
 #include "Kismet/GameplayStatics.h"
-#include "Kismet/KismetMathLibrary.h"
 #include "Player/AuraPlayerState.h"
 #include "Player/AuraPlayerController.h"
 #include "UI/HUD/AuraHUD.h"
@@ -185,7 +184,7 @@ bool UAuraAbilitySystemLibrary::IsApplyingEffect(
 	return false;
 }
 
-float UAuraAbilitySystemLibrary::GetEffectValue(
+TArray<FEffectParams> UAuraAbilitySystemLibrary::GetStatusEffects(
 	const FGameplayEffectContextHandle& EffectContextHandle)
 {
 	const FAuraGameplayEffectContext* AuraEffectContext = 
@@ -193,41 +192,13 @@ float UAuraAbilitySystemLibrary::GetEffectValue(
 
 	if (AuraEffectContext)
 	{
-		return AuraEffectContext->GetEffectValue();
-	}
-
-	return 0.f;
-}
-
-float UAuraAbilitySystemLibrary::GetEffectDuration(
-	const FGameplayEffectContextHandle& EffectContextHandle)
-{
-	const FAuraGameplayEffectContext* AuraEffectContext = 
-		static_cast<const FAuraGameplayEffectContext*>(EffectContextHandle.Get());
-
-	if (AuraEffectContext)
-	{
-		return AuraEffectContext->GetEffectDuration();
-	}
-
-	return 0.f;
-}
-
-FGameplayTag UAuraAbilitySystemLibrary::GetEffectType(
-	const FGameplayEffectContextHandle& EffectContextHandle)
-{
-	const FAuraGameplayEffectContext* AuraEffectContext = 
-		static_cast<const FAuraGameplayEffectContext*>(EffectContextHandle.Get());
-
-	if (AuraEffectContext)
-	{
-		if (AuraEffectContext->GetEffectType().IsValid())
+		if (AuraEffectContext->GetStatusEffects().Num() > 0)
 		{
-			return *AuraEffectContext->GetEffectType();
+			return AuraEffectContext->GetStatusEffects();
 		}
 	}
 
-	return FGameplayTag();
+	return TArray<FEffectParams>();
 }
 
 FVector UAuraAbilitySystemLibrary::GetForwardVector(const FGameplayEffectContextHandle& EffectContextHandle)
@@ -363,43 +334,16 @@ void UAuraAbilitySystemLibrary::SetIsApplyingEffect(
 	}
 }
 
-void UAuraAbilitySystemLibrary::SetEffectValue(
+void UAuraAbilitySystemLibrary::SetStatusEffects(
 	FGameplayEffectContextHandle& EffectContextHandle,
-	float InEffectValue
+	const TArray<FEffectParams>& InEffectsArray
 	)
 {
 	FAuraGameplayEffectContext* AuraEffectContext =
 		static_cast<FAuraGameplayEffectContext*>(EffectContextHandle.Get());
 	if (AuraEffectContext)
 	{
-		AuraEffectContext->SetEffectValue(InEffectValue);
-	}
-}
-
-void UAuraAbilitySystemLibrary::SetEffectDuration(
-	FGameplayEffectContextHandle& EffectContextHandle,
-	float InEffectDuration
-	)
-{
-	FAuraGameplayEffectContext* AuraEffectContext =
-		static_cast<FAuraGameplayEffectContext*>(EffectContextHandle.Get());
-	if (AuraEffectContext)
-	{
-		AuraEffectContext->SetEffectDuration(InEffectDuration);
-	}
-}
-
-void UAuraAbilitySystemLibrary::SetEffectType(
-	FGameplayEffectContextHandle& EffectContextHandle,
-	const FGameplayTag& InEffectType
-	)
-{
-	FAuraGameplayEffectContext* AuraEffectContext =
-		static_cast<FAuraGameplayEffectContext*>(EffectContextHandle.Get());
-	if (AuraEffectContext)
-	{
-		const TSharedPtr<FGameplayTag> EffectType = MakeShared<FGameplayTag>(InEffectType);
-		AuraEffectContext->SetEffectType(EffectType);
+		AuraEffectContext->SetStatusEffects(InEffectsArray);
 	}
 }
 
@@ -1017,28 +961,36 @@ void UAuraAbilitySystemLibrary::FormatAbilityDescriptionAtLevel(
 			IAbilityInterface::Execute_GetPeriodAtLevel(Ability, Level + 1)
 		);
 	}
-	
-	if (Ability->GetStatusEffectData().IsValid())
+
+  TArray<FStatusEffectApplicationData> StatusEffects = Ability->GetStatusEffectData();
+	if (StatusEffects.Num() > 0)
 	{
-		OutDescription = FText::FormatNamed(
-			OutDescription,
-			Args.Effect_0,
-			Ability->GetStatusEffectData().Value.GetValueAtLevel(Level),
-			Args.Effect_1,
-			Ability->GetStatusEffectData().Value.GetValueAtLevel(Level + 1),
-			Args.EffectPercent_0,
-			FMath::Abs(Ability->GetStatusEffectData().Value.GetValueAtLevel(Level) * 100),
-			Args.EffectPercent_1,
-			FMath::Abs(Ability->GetStatusEffectData().Value.GetValueAtLevel(Level + 1) * 100),
-			Args.EffectPercentFromResult_0,
-			FMath::Abs((1.f - Ability->GetStatusEffectData().Value.GetValueAtLevel(Level)) * 100),
-			Args.EffectPercentFromResult_1,
-			FMath::Abs((1.f - Ability->GetStatusEffectData().Value.GetValueAtLevel(Level + 1)) * 100),
-			Args.Duration_0,
-			Ability->GetStatusEffectData().Duration.GetValueAtLevel(Level),
-			Args.Duration_1,
-			Ability->GetStatusEffectData().Duration.GetValueAtLevel(Level + 1)
-		);
+	  for (int32 i = 0; i < StatusEffects.Num(); i++)
+	  {
+		  OutDescription = FText::FormatNamed(
+			  OutDescription,
+			  Args.StatusEffectsArgs[i].Effect_0,
+			  StatusEffects[i].Value.GetValueAtLevel(Level),
+			  Args.StatusEffectsArgs[i].Effect_1,
+			  StatusEffects[i].Value.GetValueAtLevel(Level + 1),
+			  Args.StatusEffectsArgs[i].EffectPercent_0,
+			  FMath::Abs(StatusEffects[i].Value.GetValueAtLevel(Level) * 100),
+			  Args.StatusEffectsArgs[i].EffectPercent_1,
+			  FMath::Abs(StatusEffects[i].Value.GetValueAtLevel(Level + 1) * 100),
+			  Args.StatusEffectsArgs[i].EffectPercentFromResult_0,
+			  FMath::Abs((1.f - StatusEffects[i].Value.GetValueAtLevel(Level)) * 100),
+			  Args.StatusEffectsArgs[i].EffectPercentFromResult_1,
+			  FMath::Abs((1.f - StatusEffects[i].Value.GetValueAtLevel(Level + 1)) * 100),
+			  Args.StatusEffectsArgs[i].Duration_0,
+			  StatusEffects[i].Duration.GetValueAtLevel(Level),
+			  Args.StatusEffectsArgs[i].Duration_1,
+			  StatusEffects[i].Duration.GetValueAtLevel(Level + 1),
+			  Args.StatusEffectsArgs[i].Stacks_0,
+        StatusEffects[i].Stacks.GetValueAtLevel(Level),
+        Args.StatusEffectsArgs[i].Stacks_1,
+        StatusEffects[i].Stacks.GetValueAtLevel(Level + 1)
+		  );
+	  }
 	}
 }
 
@@ -1349,7 +1301,7 @@ FGameplayEffectContextHandle UAuraAbilitySystemLibrary::ApplyAbilityEffect(
 	}
 	
 	const FDamageParams& DamageParams = AbilityParams.DamageParams;
-	const FEffectParams& EffectParams = AbilityParams.EffectParams;
+	const TArray<FEffectParams>& EffectParams = AbilityParams.EffectParams;
 	
 	SetForwardVector(EffectContextHandle, AbilityParams.ForwardVector);
 	SetIsAreaAbility(EffectContextHandle, AbilityParams.bIsAreaAbility);
@@ -1381,29 +1333,37 @@ FGameplayEffectContextHandle UAuraAbilitySystemLibrary::ApplyAbilityEffect(
 		bSuccess = true;
 	}
 
-	if (EffectParams.IsValid())
+	if (EffectParams.Num() > 0)
 	{
-		const FGameplayEffectSpecHandle EffectSpecHandle = AbilityParams.SourceASC->MakeOutgoingSpec(
-				EffectParams.GameplayEffectClass,
-				AbilityParams.AbilityLevel,
-				EffectContextHandle
-				);
+	  for (const auto& Effect : EffectParams)
+	  {
+	    if (!Effect.IsValid()) continue;
+		  const FGameplayEffectSpecHandle EffectSpecHandle = AbilityParams.SourceASC->MakeOutgoingSpec(
+				  Effect.GameplayEffectClass,
+				  AbilityParams.AbilityLevel,
+				  EffectContextHandle
+				  );
 
-		UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(
-			EffectSpecHandle,
-			EffectParams.GameplayTag,
-			EffectParams.Value
-			);
-		UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(
-			EffectSpecHandle,
-			FAuraGameplayTags::Get().StatusEffects_Duration,
-			EffectParams.Duration
-			);
+		  UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(
+			  EffectSpecHandle,
+			  Effect.GameplayTag,
+			  Effect.Value
+			  );
+		  UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(
+			  EffectSpecHandle,
+			  FAuraGameplayTags::Get().StatusEffects_Duration,
+			  Effect.Duration
+			  );
 
-		AbilityParams.SourceASC
-			->ApplyGameplayEffectSpecToTarget(*EffectSpecHandle.Data, AbilityParams.TargetASC);
-		
-		bSuccess = true;
+	    for (int32 i = 0; i < Effect.Stacks; i++)
+	    {
+		    AbilityParams.SourceASC
+			    ->ApplyGameplayEffectSpecToTarget(*EffectSpecHandle.Data, AbilityParams.TargetASC);
+	    }
+
+	  }
+	  
+	  bSuccess = true;
 	}
 
 	return EffectContextHandle;

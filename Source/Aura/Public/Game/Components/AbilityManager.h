@@ -24,8 +24,10 @@ class AURA_API UAbilityManager : public UAuraSystemComponent
 
 public:
 	UAbilityManager();
-	
-	UFUNCTION(BlueprintPure, Category="Manager|Ability")
+  
+  void GiveAcquiredAbilities(AActor* Actor);
+
+  UFUNCTION(BlueprintPure, Category="Manager|Ability")
 	TMap<FGameplayTag, FAuraAbilityInfo> GetElementAbilities(
 		ECharacterName CharacterName,
 		const FGameplayTag ElementTag
@@ -49,7 +51,7 @@ public:
 		FText& AbilityDetails
 		);
 
-	UFUNCTION(BlueprintCallable, Category="Manager|Ability")
+  UFUNCTION(BlueprintCallable, Category="Manager|Ability")
 	void SelectAbilityReward(
 		const FGameplayTag& ElementTag,
 		const FAuraAbilityInfo& AbilityInfo,
@@ -62,34 +64,34 @@ public:
 protected:
 	virtual void BeginPlay() override;
 	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Manager|Ability")
-	bool bOverrideAbilities = false;
 	UPROPERTY(
 		EditDefaultsOnly,
 		BlueprintReadWrite,
 		Category="Manager|Ability",
-		meta=(EditCondition="bOverrideAbilities")
+		meta=(Categories="Abilities.Active.Aura|Abilities.Active.Vilkar|Abilities.Passive.Aura|Abilities.Passive.Vilkar")
 		)
 	FGameplayTagContainer AcquiredAbilities;
 	UPROPERTY(
 		EditDefaultsOnly,
 		BlueprintReadWrite,
 		Category="Manager|Ability",
-		meta=(EditCondition="bOverrideAbilities")
+		meta=(Categories="Abilities.Active.Aura|Abilities.Active.Vilkar|Abilities.Passive.Aura|Abilities.Passive.Vilkar")
 		)
 	FGameplayTagContainer BlockedAbilities;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Manager|Ability")
+	bool bOverrideAbilitiesContainer = false;
 	UPROPERTY(
 		EditDefaultsOnly,
 		BlueprintReadWrite,
 		Category="Manager|Ability",
-		meta=(EditCondition="bOverrideAbilities", ForceInlineRow)
+		meta=(EditCondition="bOverrideAbilitiesContainer", ForceInlineRow, Categories="Abilities.Active|Abilities.Passive|Abilities.Element")
 		)
-	TMap<FGameplayTag, FGameplayTagContainer> AbilitiesBag;
+	TMap<FGameplayTag, FGameplayTagContainer> AbilitiesContainer;
 	UPROPERTY(
 		EditDefaultsOnly,
 		BlueprintReadWrite,
 		Category="Manager|Ability",
-		meta=(EditCondition="bOverrideAbilities", ForceInlineRow)
+		meta=(EditCondition="bOverrideAbilitiesContainer", ForceInlineRow, Categories="Abilities.Element|Abilities.Tier")
 		)
 	TMap<FGameplayTag, FGameplayTagContainer> ElementalTierPool;
 
@@ -107,4 +109,8 @@ private:
 	TMap<FGameplayTag, int32> GetAvailableTiers(const FGameplayTag& ElementTag);
 
 	FGameplayTag GetAvailableInputTag(UAuraAbilitySystemComponent* AuraASC);
+
+  void GiveAbility(const FAuraAbilityInfo& AbilityInfo, UAuraAbilitySystemComponent* AuraASC);
+
+  TMap<FGameplayTag, FGameplayTagContainer> OverridenAbilitiesContainer;
 };

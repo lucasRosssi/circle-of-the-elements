@@ -75,7 +75,8 @@ public:
 	TMap<FGameplayTag, FGameplayTag> DamageTypesToResistances;
 
 	FGameplayTag StatusEffects;
-	FGameplayTag StatusEffects_Duration;
+  FGameplayTag StatusEffects_Duration;
+  FGameplayTag StatusEffects_Stacks;
 	
 	FGameplayTag StatusEffects_Invulnerable;
 	FGameplayTag StatusEffects_ManaRegenOff;
