@@ -8,8 +8,8 @@
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "Aura/AuraLogChannels.h"
 #include "Enums/CharacterName.h"
-#include "Game/AuraGameModeBase.h"
 #include "AbilitySystem/Abilities/BaseAbility.h"
+#include "Kismet/GameplayStatics.h"
 #include "UI/WidgetController/OverlayWidgetController.h"
 
 UAbilityManager::UAbilityManager()
@@ -25,13 +25,32 @@ UAbilityManager::UAbilityManager()
 	for (const FGameplayTag& ElementTag : *Tags.ParentsToChildren.Find(Tags.Abilities_Element))
 	{
 		ElementalTierPool.Add(ElementTag, TierTags);
-		AbilitiesBag.Add(ElementTag);
+		AbilitiesContainer.Add(ElementTag);
 	}
+}
+
+void UAbilityManager::GiveAcquiredAbilities(AActor* Actor)
+{
+  if (AcquiredAbilities.Num() > 0)
+  {
+    for (auto AbilityTagIterator = AcquiredAbilities.CreateConstIterator(); AbilityTagIterator; ++AbilityTagIterator)
+    {
+      const FAuraAbilityInfo& AbilityInfo = GetAuraGameMode()->AbilityInfo->FindAbilityInfoByTag(*AbilityTagIterator);
+      UAuraAbilitySystemComponent* AuraASC = UAuraAbilitySystemLibrary::GetAuraAbilitySystemComponent(Actor);
+      GiveAbility(AbilityInfo, AuraASC);
+    }
+  }
 }
 
 void UAbilityManager::BeginPlay()
 {
 	Super::BeginPlay();
+
+  if (bOverrideAbilitiesContainer)
+  {
+    OverridenAbilitiesContainer = AbilitiesContainer;
+    return;
+  }
 
 	AssignInitialAbilities();
 }
@@ -81,7 +100,7 @@ TArray<FAuraAbilityInfo> UAbilityManager::RandomizeElementAbilities(
 		SelectedAbilities.Add(RemainingAbilities[RandomAbilityIndex]);
 		ElementAbilities.Remove(RemainingAbilities[RandomAbilityIndex].AbilityTag);
 		
-		AbilitiesBag.Find(ElementTag)->AddTag(RemainingAbilities[RandomAbilityIndex].AbilityTag);
+		AbilitiesContainer.Find(ElementTag)->AddTag(RemainingAbilities[RandomAbilityIndex].AbilityTag);
 	}
 	
 	return SelectedAbilities;
@@ -90,7 +109,7 @@ TArray<FAuraAbilityInfo> UAbilityManager::RandomizeElementAbilities(
 TArray<FAuraAbilityInfo> UAbilityManager::GetAbilitiesFromBag(const FGameplayTag& ElementTag)
 {
 	TArray<FAuraAbilityInfo> AbilitiesInfos;
-	if (const FGameplayTagContainer* AbilitiesTags = AbilitiesBag.Find(ElementTag))
+	if (const FGameplayTagContainer* AbilitiesTags = AbilitiesContainer.Find(ElementTag))
 	{
 		for (auto AbilityTagIterator = AbilitiesTags->CreateConstIterator(); AbilityTagIterator; ++AbilityTagIterator)
 		{
@@ -147,43 +166,38 @@ void UAbilityManager::GetAbilityFormattedTexts(
 	));
 }
 
+
+
 void UAbilityManager::SelectAbilityReward(
 		const FGameplayTag& ElementTag,
 		const FAuraAbilityInfo& AbilityInfo,
 		UAuraAbilitySystemComponent* AuraASC
 		)
 {
-	FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(AbilityInfo.Ability, 1);
-	AuraASC->UnlockAbility(AbilitySpec);
-	
-	if (IAbilityInterface::Execute_IsActiveAbility(AbilitySpec.Ability))
-	{
-		const FGameplayTag& AvailableInputTag = GetAvailableInputTag(AuraASC);
-		if (AvailableInputTag.IsValid())
-		{
-			AuraASC->ServerEquipAbility(AbilityInfo.AbilityTag, AvailableInputTag);
-		}
-	}
-
+	GiveAbility(AbilityInfo, AuraASC);
 	AcquiredAbilities.AddTag(AbilityInfo.AbilityTag);
-	AbilitiesBag[ElementTag].Reset();
-	RandomizeElementAbilities(
-		GetAuraGameMode()->CurrentCharacterName,
-		ElementTag
-		);
+
+  if (!bOverrideAbilitiesContainer)
+  {
+	  AbilitiesContainer[ElementTag].Reset();
+	  RandomizeElementAbilities(
+		  GetAuraGameMode()->CurrentCharacterName,
+		  ElementTag
+		  );
+  }
 	
 	OnAbilitySelectedDelegate.Broadcast(AbilityInfo);
 	UAuraAbilitySystemLibrary::GetOverlayWidgetController(GetOwner())
 		->AbilityInfoDelegate.Broadcast(AbilityInfo);
+
+  if (AbilitiesContainer[ElementTag].IsEmpty())
+  {
+    GetAuraGameMode()->OnNoAbilitiesLeft(ElementTag);
+  }
 }
 
 void UAbilityManager::AssignInitialAbilities()
 {
-  if (bOverrideAbilities)
-  {
-    
-  }
-  
 	const ECharacterName CharacterName = GetAuraGameMode()->CurrentCharacterName;
 	
 	const FAuraGameplayTags& Tags = FAuraGameplayTags::Get();
@@ -275,4 +289,19 @@ FGameplayTag UAbilityManager::GetAvailableInputTag(UAuraAbilitySystemComponent* 
 	}
 
 	return FGameplayTag();
+}
+
+void UAbilityManager::GiveAbility(const FAuraAbilityInfo& AbilityInfo, UAuraAbilitySystemComponent* AuraASC)
+{
+  FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(AbilityInfo.Ability, 1);
+  AuraASC->UnlockAbility(AbilitySpec);
+	
+  if (IAbilityInterface::Execute_IsActiveAbility(AbilitySpec.Ability))
+  {
+    const FGameplayTag& AvailableInputTag = GetAvailableInputTag(AuraASC);
+    if (AvailableInputTag.IsValid())
+    {
+      AuraASC->ServerEquipAbility(AbilityInfo.AbilityTag, AvailableInputTag);
+    }
+  }
 }

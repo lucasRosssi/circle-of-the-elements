@@ -15,8 +15,6 @@ class AURA_API URewardManager : public UAuraSystemComponent
 	GENERATED_BODY()
 
 public:
-	URewardManager();
-
 	UFUNCTION(BlueprintPure)
 	FRewardInfo GetRewardInfo(const FGameplayTag& RewardTag);
 	
@@ -27,12 +25,22 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SpawnReward();
 
+  void RemoveRewardFromPool(const FGameplayTag& RewardTag);
+  
 	UPROPERTY(BlueprintAssignable)
 	FOnRewardTaken OnRewardTakenDelegate;
+
 
 protected:
   virtual void BeginPlay() override;
   
+  UPROPERTY(
+    EditDefaultsOnly,
+    BlueprintReadWrite,
+    Category="Location|Reward",
+    meta=(Categories="Resources")
+    )
+  FGameplayTagContainer BlockedRewards;
 	UPROPERTY(EditDefaultsOnly, Category="Location|Reward")
 	bool bOverrideReward = false;
 	UPROPERTY(
@@ -48,7 +56,7 @@ protected:
 		Category="Location|Reward",
 		meta=(EditCondition="bOverrideReward", Categories="Resources")
 		)
-	TArray<FGameplayTag> RewardBag;
+  TArray<FGameplayTag> RewardBag;
 
 private:
 	FGameplayTag GetNextRewardInBag();
@@ -56,6 +64,6 @@ private:
 	
 	FRewardInfo GetNextRewardInfo();
 
-	TArray<FGameplayTag> OverridenRewardBag;
+  TArray<FGameplayTag> OverridenRewardBag;
 	
 };

@@ -16,11 +16,13 @@
 #include "Components/WidgetComponent.h"
 #include "Engine/PostProcessVolume.h"
 #include "Game/TeamComponent.h"
+#include "Game/Components/AbilityManager.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Player/AuraPlayerState.h"
 #include "Player/AuraPlayerController.h"
 #include "UI/HUD/AuraHUD.h"
+#include "Utils/AuraSystemsLibrary.h"
 
 AAuraHero::AAuraHero()
 {
@@ -81,7 +83,6 @@ void AAuraHero::PossessedBy(AController* NewController)
 		GetAuraPlayerController()->SetPlayerCamera(ActiveCamera->GetCameraComponent());
 		GetAuraPlayerController()->SetViewTargetWithBlend(ActiveCamera);
 	}
-	
 }
 	
 void AAuraHero::OnRep_PlayerState()
@@ -100,6 +101,11 @@ void AAuraHero::AddCharacterAbilities()
 		EligibleAbilities,
 		FAuraGameplayTags::Get().Abilities_Status_Eligible
 		);
+  
+  if (UAbilityManager* AbilityManager = UAuraSystemsLibrary::GetAbilityManager(this))
+  {
+    AbilityManager->GiveAcquiredAbilities(this);
+  }
 }
 
 void AAuraHero::Die(const FVector& DeathImpulse)

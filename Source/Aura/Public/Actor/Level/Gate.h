@@ -22,12 +22,14 @@ public:
 	AGate();
 
 	void SetGateReward(const FGameplayTag& InRewardTag);
-	FGameplayTag GetGateReward() { return RewardTag; }
+	FGameplayTag GetGateReward() const { return RewardTag; }
+  bool IsActive() const { return bActive; }
+  
 	UFUNCTION(BlueprintImplementableEvent)
 	void RewardAssigned();
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Location|Gate")
-	bool bActive = true;
+  void DeactivateGate();
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -55,4 +57,6 @@ protected:
 private:
 	UFUNCTION()
 	void Enable();
+
+  bool bActive = true;
 };

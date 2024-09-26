@@ -4,6 +4,7 @@
 #include "Game/AuraGameModeBase.h"
 
 #include "AuraGameplayTags.h"
+#include "Aura/AuraLogChannels.h"
 #include "Game/AuraGameInstance.h"
 #include "Game/Components/AbilityManager.h"
 #include "Game/Components/EncounterManager.h"
@@ -25,6 +26,23 @@ AAuraGameModeBase::AAuraGameModeBase()
 
   RewardManager = CreateDefaultSubobject<URewardManager>("RewardManager");
   RewardManager->SetGameMode(this);
+}
+
+void AAuraGameModeBase::OnNoAbilitiesLeft(const FGameplayTag& ElementTag)
+{
+  if (const FGameplayTag* EssenceTag = FAuraGameplayTags::Get().EssenceToAbility.FindKey(ElementTag))
+  {
+    RewardManager->RemoveRewardFromPool(*EssenceTag);
+  }
+  else
+  {
+    UE_LOG(
+      LogAura,
+      Warning,
+      TEXT("Matching Essence Tag for %s not found! Failed to remove essence from the reward pool."),
+      *ElementTag.ToString()
+      )
+  }
 }
 
 void AAuraGameModeBase::AddToXPStack(float InXP)

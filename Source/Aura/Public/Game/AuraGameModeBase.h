@@ -49,6 +49,8 @@ public:
 	UEncounterManager* GetEncounterManager() const { return EncounterManager; }
 	URewardManager* GetRewardManager() const { return RewardManager; }
 
+  void OnNoAbilitiesLeft(const FGameplayTag& ElementTag);
+
 	void AddToXPStack(float InXP);
 
 	UFUNCTION(BlueprintCallable)

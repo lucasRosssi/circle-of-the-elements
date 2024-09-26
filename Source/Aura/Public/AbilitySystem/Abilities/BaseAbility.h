@@ -24,10 +24,10 @@ struct FStatusEffectApplicationData
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	FScalableFloat Value = 0.f;
 	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(Units="Seconds"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	FScalableFloat Duration = 0.f;
 
-  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(ClampMin=1.f, UIMin=1.f, ClampMax=10.f, UIMax=10.f))
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
   FScalableFloat Stacks = 1.f;
 
 	bool IsValid() const { return StatusEffectTag.IsValid(); }

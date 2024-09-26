@@ -3,6 +3,7 @@
 
 #include "Game/Components/RewardManager.h"
 
+#include "AuraGameplayTags.h"
 #include "Actor/Level/Gate.h"
 #include "Actor/Level/LocationReward.h"
 #include "Algo/RandomShuffle.h"
@@ -20,6 +21,10 @@ void URewardManager::BeginPlay()
   if (bOverrideReward)
   {
     OverridenRewardBag = RewardBag;
+  }
+  else
+  {
+    RewardBag.Empty();
   }
 }
 
@@ -42,31 +47,37 @@ void URewardManager::SetGatesRewards()
 	for (const auto GateActor : GateActors)
 	{
 		FGameplayTag NextReward = GetNextRewardInBag();
-		
-		while (SelectedRewards.Contains(NextReward))
+
+	  int32 Count = 0; // Add a Count to get out of the while loop in some rare situations. Most of the time the loop will finish before Count reaching 5.
+		while (SelectedRewards.Contains(NextReward) && Count < 5)
 		{
 			ReturningRewards.Add(NextReward);
 			NextReward = GetNextRewardInBag();
+		  Count++;
 		}
-		
-		SelectedRewards.Add(NextReward);
 
-		if (!ReturningRewards.IsEmpty())
-		{
-			for (const auto& Reward : ReturningRewards)
-			{
-				RewardBag.Add(Reward);
-			}
-		}
+	  AGate* Gate = Cast<AGate>(GateActor);
+
+		if (!Gate) continue;
 		
-		if (AGate* Gate = Cast<AGate>(GateActor))
-		{
-			if (Gate->bActive)
-			{
-				Gate->SetGateReward(NextReward);
-			}
-		}
+	  if (Count == 5 && SelectedRewards.Contains(NextReward)) // If it was the last count and the NextReward is still one already assigned to another gate, we deactivate this gate.
+	  {
+	    Gate->DeactivateGate();
+	  }
+		
+    if (Gate->IsActive())
+    {
+      Gate->SetGateReward(NextReward);
+		  SelectedRewards.Add(NextReward);
+    }
 	}
+
+  if (ReturningRewards.IsEmpty()) return;
+  
+  for (const auto& Reward : ReturningRewards)
+  {
+    RewardBag.Add(Reward);
+  }
 }
 
 void URewardManager::SpawnReward()
@@ -109,6 +120,16 @@ void URewardManager::SpawnReward()
 	}
 }
 
+void URewardManager::RemoveRewardFromPool(const FGameplayTag& RewardTag)
+{
+  RewardBag = RewardBag.FilterByPredicate([RewardTag](const FGameplayTag& Tag)
+  {
+    return !Tag.MatchesTagExact(RewardTag);
+  });
+
+  BlockedRewards.AddTag(RewardTag);
+}
+
 FGameplayTag URewardManager::GetNextRewardInBag()
 {
 	if (RewardBag.IsEmpty())
@@ -123,11 +144,23 @@ void URewardManager::FillAndShuffleRewardBag()
 {
 	if (bOverrideReward)
 	{
-		RewardBag = OverridenRewardBag;
+	  if (
+	    OverridenRewardBag.Num() > 0 &&
+      OverridenRewardBag[OverridenRewardBag.Num() - 1].MatchesTag(FAuraGameplayTags::Get().Resources)
+      )
+	  {
+		  RewardBag = OverridenRewardBag;
+	  }
+	  else
+	  {
+	    UE_LOG(LogAura, Warning, TEXT("Trying to override Reward Bag with invalid data! Falling back to randomizing items."))
+	    GetAuraGameMode()->RewardsInfo->FillRewardBag(RewardBag, BlockedRewards);
+	    Algo::RandomShuffle(RewardBag);
+	  }
 	}
 	else
 	{
-		GetAuraGameMode()->RewardsInfo->FillRewardBag(RewardBag);
+		GetAuraGameMode()->RewardsInfo->FillRewardBag(RewardBag, BlockedRewards);
 		Algo::RandomShuffle(RewardBag);
 	}
 }
