@@ -120,6 +120,15 @@ URegionInfo* UAuraAbilitySystemLibrary::GetRegionInfo(const UObject* WorldContex
   return AuraGameMode->RegionInfo;
 }
 
+URewardsInfo* UAuraAbilitySystemLibrary::GetRewardsInfo(const UObject* WorldContextObject)
+{
+  const AAuraGameModeBase* AuraGameMode = CastChecked<AAuraGameModeBase>(
+    UGameplayStatics::GetGameMode(WorldContextObject)
+  );
+
+  return AuraGameMode->RewardsInfo;
+}
+
 void UAuraAbilitySystemLibrary::GiveStartupAbilities(
   const UObject* WorldContextObject,
   UAbilitySystemComponent* ASC

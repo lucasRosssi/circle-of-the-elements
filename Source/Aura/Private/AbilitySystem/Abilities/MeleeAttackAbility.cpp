@@ -59,10 +59,12 @@ void UMeleeAttackAbility::ExecuteAttackScan()
   const FVector RelativeShapeOffset = GetAvatarActorFromActorInfo()->GetActorRotation().RotateVector(ShapeOffset);
   const FVector FinalLocation = AbilitySocketLocation + RelativeShapeOffset;
 
+#if WITH_EDITOR
 	if (bDebugAbility)
 	{
 		DrawDebugMeleeHitShape(FinalLocation);
 	}
+#endif
 
 	const TArray<AActor*>& HitActors = ShapeScan(FinalLocation);
 
@@ -125,6 +127,7 @@ float UMeleeAttackAbility::GetAngleHeight() const
   return GetComboData().AngleHeight;
 }
 
+#if WITH_EDITOR
 void UMeleeAttackAbility::DrawDebugMeleeHitShape(const FVector& AbilitySocketLocation)
 {
 	switch (GetMeleeHitMode())
@@ -189,6 +192,7 @@ void UMeleeAttackAbility::DrawDebugMeleeHitShape(const FVector& AbilitySocketLoc
 	default: {}
 	}
 }
+#endif
 
 TArray<AActor*> UMeleeAttackAbility::ShapeScan(const FVector& Origin)
 {
@@ -249,6 +253,7 @@ void UMeleeAttackAbility::ApplyEffectToHitActor(AActor* HitActor)
 	bool bSuccess;
 	UAuraAbilitySystemLibrary::ApplyAbilityEffect(AbilityParams, bSuccess);
 
+#if WITH_EDITOR
 	if (bDebugAbility)
 	{
 		DrawDebugSphere(
@@ -261,6 +266,8 @@ void UMeleeAttackAbility::ApplyEffectToHitActor(AActor* HitActor)
 			DrawShapeDuration
 			);
 	}
+#endif
+  
 }
 
 void UMeleeAttackAbility::OnWeaponCollision(UPrimitiveComponent* OverlappedComponent,

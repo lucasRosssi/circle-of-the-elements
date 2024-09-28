@@ -9,6 +9,7 @@
 #include "Algo/RandomShuffle.h"
 #include "Aura/AuraLogChannels.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/InteractComponent.h"
 #include "Game/AuraGameModeBase.h"
 #include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
@@ -108,7 +109,7 @@ void URewardManager::SpawnReward()
     Transform.SetLocation(FVector(
       SpawnLocation.X,
       SpawnLocation.Y,
-      PlayerLocation.Z + Reward->GetInteractAreaRadius()));
+      PlayerLocation.Z + Reward->GetInteractComponent()->GetInteractAreaRadius()));
     Reward->FinishSpawning(Transform);
   }
   else

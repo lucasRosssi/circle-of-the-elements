@@ -81,7 +81,10 @@ protected:
   float AngleHeight = 60.f;
 
 private:
+#if WITH_EDITOR
 	void DrawDebugMeleeHitShape(const FVector& AbilitySocketLocation);
+#endif
+  
 	TArray<AActor*> ShapeScan(const FVector& Origin);
 	void ApplyEffectToHitActor(AActor* HitActor);
 	UFUNCTION()

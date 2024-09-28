@@ -24,7 +24,6 @@ public:
 	UUIManager();
 
 	void SetPlayerController(APlayerController* InController) { PlayerController = InController; }
-	APlayerController* GetAuraPlayerController() const { return PlayerController; }
 	UFUNCTION(BlueprintPure)
 	AAuraHUD* GetAuraHUD() const { return AuraHUD; }
 	void SetAuraHUD(AAuraHUD* InHUD) { AuraHUD = InHUD; }

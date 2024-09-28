@@ -87,11 +87,6 @@ int32 AAuraGameModeBase::GetEnemiesLevel() const
   return EncounterManager->GetEnemiesLevel();
 }
 
-void AAuraGameModeBase::SetNextReward(const FGameplayTag& InRewardTag)
-{
-  RewardManager->SetNextReward(InRewardTag);
-}
-
 FOnExitLocation& AAuraGameModeBase::GetOnExitLocationDelegate()
 {
   return LocationManager->OnExitLocationDelegate;

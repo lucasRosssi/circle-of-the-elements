@@ -10,6 +10,7 @@
 #include "UI/WidgetController/AuraWidgetController.h"
 #include "AuraAbilitySystemLibrary.generated.h"
 
+class URewardsInfo;
 struct FEffectParams;
 class URegionInfo;
 enum class ECharacterName : uint8;
@@ -89,17 +90,16 @@ public:
 	 * DEFAULTS
 	 */
 
-	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|CharacterClassDefaults")
+	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|Info")
 	static UCharacterInfo* GetCharacterClassInfo(const UObject* WorldContextObject);
-
-	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|CharacterClassDefaults")
+	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|Info")
 	static UAbilityInfo* GetAbilitiesInfo(const UObject* WorldContextObject);
-
-	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|StatusEffectsDefaults")
+	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|Info")
 	static UStatusEffectInfo* GetStatusEffectInfo(const UObject* WorldContextObject);
-
-	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|EncounterDefaults")
+	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|Info")
 	static URegionInfo* GetRegionInfo(const UObject* WorldContextObject);
+  UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|Info")
+  static URewardsInfo* GetRewardsInfo(const UObject* WorldContextObject);
 
 	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|CharacterClassDefaults")
 	static void GiveStartupAbilities(

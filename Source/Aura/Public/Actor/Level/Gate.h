@@ -4,17 +4,20 @@
 
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
-#include "Actor/Level/Interactable.h"
 #include "Enums/GatePosition.h"
 #include "Enums/Region.h"
 #include "Gate.generated.h"
 
+class UInteractComponent;
+class AAuraPlayerController;
+class URewardManager;
+class ULocationManager;
 class UWidgetComponent;
 /**
  * 
  */
 UCLASS()
-class AURA_API AGate : public AInteractable
+class AURA_API AGate : public AActor
 {
 	GENERATED_BODY()
 
@@ -32,10 +35,10 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
-
-	// START Interactable overrides
-	virtual void Interact(AAuraPlayerController* InstigatorController) override;
-	// END Interactable overrides
+  
+	void Interact(const AAuraPlayerController* InstigatorController);
+  UFUNCTION(BlueprintImplementableEvent)
+  void OnInteracted(const AAuraPlayerController* InstigatorController);
 
 	UFUNCTION(BlueprintPure)
 	TSoftObjectPtr<UWorld> GetCurrentLocation();
@@ -47,6 +50,8 @@ protected:
 	TObjectPtr<UStaticMeshComponent> GateMesh;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<UWidgetComponent> RewardWidget;
+  UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+  TObjectPtr<UInteractComponent> InteractComponent;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Location|Gate")
 	ERegion Region = ERegion::Undefined;
@@ -57,6 +62,11 @@ protected:
 private:
 	UFUNCTION()
 	void Enable();
+
+  ULocationManager* GetLocationManager();
+  URewardManager* GetRewardManager();
+  TWeakObjectPtr<ULocationManager> LocationManager = nullptr;
+  TWeakObjectPtr<URewardManager> RewardManager = nullptr;
 
   bool bActive = true;
 };

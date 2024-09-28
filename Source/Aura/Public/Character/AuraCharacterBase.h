@@ -83,6 +83,7 @@ public:
 	UAuraAbilitySystemComponent* GetAuraASC();
 
 	FOnASCRegistered OnASCRegistered;
+  UPROPERTY(BlueprintAssignable)
 	FOnDeath OnDeath;
 
 	UPROPERTY(BlueprintReadOnly, Category="Combat")
