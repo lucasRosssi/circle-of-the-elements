@@ -13,7 +13,7 @@
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "Actor/ProjectileEffect.h"
 #include "Aura/Aura.h"
-#include "Interaction/CombatInterface.h"
+#include "Interfaces/CombatInterface.h"
 #include "Kismet/KismetMathLibrary.h"
 
 AAuraProjectile::AAuraProjectile()

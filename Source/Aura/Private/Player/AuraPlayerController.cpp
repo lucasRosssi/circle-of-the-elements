@@ -10,10 +10,11 @@
 #include "Actor/TargetingActor.h"
 #include "Aura/Aura.h"
 #include "Camera/CameraComponent.h"
+#include "Components/InteractComponent.h"
 #include "Input/AuraInputComponent.h"
-#include "Interaction/TargetInterface.h"
 #include "GameFramework/Character.h"
-#include "Interaction/CombatInterface.h"
+#include "Interfaces/CombatInterface.h"
+#include "Interfaces/TargetInterface.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Managers/UIManager.h"
@@ -480,7 +481,47 @@ void AAuraPlayerController::CancelPressed()
 
 void AAuraPlayerController::InteractPressed()
 {
-	InteractActionTriggered.Broadcast(this);
+	if (InteractablesInRange.IsEmpty()) return;
+  
+  const UInteractComponent* Interactable = InteractablesInRange[InteractablesInRange.Num() - 1];
+  if (!IsValid(Interactable))
+  {
+    RemoveInteractableInRange(Interactable);
+    return;
+  }
+
+  if (!Interactable->IsEnabled()) return;
+
+  Interactable->BeginInteract(this);
+}
+
+void AAuraPlayerController::AddInteractableInRange(const UInteractComponent* InteractComponent)
+{
+  if (!IsValid(InteractComponent)) return;
+
+  InteractablesInRange.Add(InteractComponent);
+  
+  if (InteractablesInRange.Num() == 1)
+  {
+    IPlayerInterface::Safe_SetInteractMessageVisible(GetPawn(), InteractComponent->GetInteractText());
+  }
+}
+
+void AAuraPlayerController::RemoveInteractableInRange(const UInteractComponent* InteractComponent)
+{
+  InteractablesInRange.Remove(InteractComponent);
+  
+  if (InteractablesInRange.Num() == 0)
+  {
+    IPlayerInterface::Safe_SetInteractMessageVisible(GetPawn(), FText());
+  }
+  else
+  {
+    IPlayerInterface::Safe_SetInteractMessageVisible(
+      GetPawn(),
+      InteractablesInRange[InteractablesInRange.Num() - 1]->GetInteractText()
+      );
+  }
 }
 
 UAuraAbilitySystemComponent* AAuraPlayerController::GetASC()

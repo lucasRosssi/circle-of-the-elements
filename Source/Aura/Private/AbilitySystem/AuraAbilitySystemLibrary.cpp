@@ -17,7 +17,6 @@
 #include "Engine/DamageEvents.h"
 #include "Enums/TargetTeam.h"
 #include "Game/AuraGameModeBase.h"
-#include "Interaction/CombatInterface.h"
 #include "Kismet/GameplayStatics.h"
 #include "Player/AuraPlayerState.h"
 #include "Player/AuraPlayerController.h"

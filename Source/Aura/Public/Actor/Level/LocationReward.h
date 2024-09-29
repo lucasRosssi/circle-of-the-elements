@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
+#include "Interfaces/InteractInterface.h"
 #include "LocationReward.generated.h"
 
 class AAuraPlayerController;
@@ -16,21 +17,20 @@ class UAuraGameInstance;
  * 
  */
 UCLASS()
-class AURA_API ALocationReward : public AActor
+class AURA_API ALocationReward : public AActor, public IInteractInterface
 {
 	GENERATED_BODY()
 
 public:
 	ALocationReward();
 
-  UInteractComponent* GetInteractComponent() const { return InteractComponent; }
+  /* Interact Interface */
+  virtual void Interact_Implementation(const AController* Controller) override;
+  virtual UInteractComponent* GetInteractComponent_Implementation() const override;
+  /* END Interact Interface */
 protected:
   virtual void BeginPlay() override;
   virtual void Destroyed() override;
-	
-	void Interact(const AAuraPlayerController* InstigatorController);
-  UFUNCTION(BlueprintImplementableEvent)
-  void OnInteracted(const AAuraPlayerController* InstigatorController);
   
 	FGameplayTag GetAbilityElement() const;
 

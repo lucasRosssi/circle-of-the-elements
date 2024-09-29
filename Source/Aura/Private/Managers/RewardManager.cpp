@@ -109,7 +109,7 @@ void URewardManager::SpawnReward()
     Transform.SetLocation(FVector(
       SpawnLocation.X,
       SpawnLocation.Y,
-      PlayerLocation.Z + Reward->GetInteractComponent()->GetInteractAreaRadius()));
+      PlayerLocation.Z + Reward->GetInteractComponent_Implementation()->GetInteractAreaRadius()));
     Reward->FinishSpawning(Transform);
   }
   else

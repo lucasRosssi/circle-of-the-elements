@@ -28,12 +28,42 @@ ALocationReward::ALocationReward()
   InteractComponent->EnableInteraction();
 }
 
+void ALocationReward::Interact_Implementation(const AController* Controller)
+{
+  const FRewardInfo& RewardInfo = UAuraAbilitySystemLibrary::GetRewardsInfo(this)
+    ->GetRewardInfo(RewardTag);
+
+  const FAuraGameplayTags& GameplayTags = FAuraGameplayTags::Get();
+  if (RewardTag.MatchesTag(GameplayTags.Resources_Essence))
+  {
+    AAuraPlayerState* AuraPS = Controller->GetPlayerState<AAuraPlayerState>();
+
+    if (RewardTag.MatchesTagExact(GameplayTags.Resources_Essence_Soul))
+    {
+      AuraPS->AddAttributePoints(RewardInfo.Amount);
+    }
+    else if (const AAuraPlayerController* AuraPC = Cast<AAuraPlayerController>(Controller))
+    {
+      AuraPC->GetUIManager()->OpenSkillSelectionMenu.Broadcast(GetAbilityElement());
+    }
+
+    GetAuraGameInstance()->AddPlayerResource(RewardTag, RewardInfo.Amount);
+  }
+
+  const URewardManager* RewardManager = UAuraSystemsLibrary::GetRewardManager(this);
+  RewardManager->OnRewardTakenDelegate.Broadcast();
+
+  Destroy();
+}
+
+UInteractComponent* ALocationReward::GetInteractComponent_Implementation() const
+{
+  return InteractComponent;
+}
+
 void ALocationReward::BeginPlay()
 {
   Super::BeginPlay();
-
-  InteractComponent->OnInteractedDelegate.BindUObject(this, &ALocationReward::Interact);
-  InteractComponent->OnPostInteractedDelegate.BindUObject(this, &ALocationReward::OnInteracted);
 
   SpawnNiagaraEffects();
 }
@@ -46,32 +76,6 @@ void ALocationReward::Destroyed()
   }
 
   Super::Destroyed();
-}
-
-void ALocationReward::Interact(const AAuraPlayerController* InstigatorController)
-{
-  const FRewardInfo& RewardInfo = UAuraAbilitySystemLibrary::GetRewardsInfo(this)
-    ->GetRewardInfo(RewardTag);
-
-  const FAuraGameplayTags& GameplayTags = FAuraGameplayTags::Get();
-  if (RewardTag.MatchesTag(GameplayTags.Resources_Essence))
-  {
-    AAuraPlayerState* AuraPS = InstigatorController->GetPlayerState<AAuraPlayerState>();
-
-    if (RewardTag.MatchesTagExact(GameplayTags.Resources_Essence_Soul))
-    {
-      AuraPS->AddAttributePoints(RewardInfo.Amount);
-    }
-    else
-    {
-      InstigatorController->GetUIManager()->OpenSkillSelectionMenu.Broadcast(GetAbilityElement());
-    }
-
-    GetAuraGameInstance()->AddPlayerResource(RewardTag, RewardInfo.Amount);
-  }
-
-  const URewardManager* RewardManager = UAuraSystemsLibrary::GetRewardManager(this);
-  RewardManager->OnRewardTakenDelegate.Broadcast();
 }
 
 FGameplayTag ALocationReward::GetAbilityElement() const

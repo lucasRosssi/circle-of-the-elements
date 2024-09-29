@@ -4,20 +4,25 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Interfaces/InteractInterface.h"
 #include "WidgetInteractable.generated.h"
 
 enum class ECharacterName : uint8;
-class AAuraPlayerController;
 class UAuraUserWidget;
 class UInteractComponent;
 
 UCLASS()
-class AURA_API AWidgetInteractable : public AActor
+class AURA_API AWidgetInteractable : public AActor, public IInteractInterface
 {
   GENERATED_BODY()
 
 public:
   AWidgetInteractable();
+
+  /* Interact Interface */
+  virtual void Interact_Implementation(const AController* Controller) override;
+  virtual UInteractComponent* GetInteractComponent_Implementation() const override;
+  /* END Interact Interface */
 
 protected:
   virtual void BeginPlay() override;
@@ -32,7 +37,4 @@ protected:
   TSubclassOf<UAuraUserWidget> WidgetClass;
 
 private:
-  void Interact(const AAuraPlayerController* Controller);
-
-  ECharacterName CharacterName;
 };

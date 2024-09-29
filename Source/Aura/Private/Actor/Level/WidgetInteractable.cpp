@@ -5,7 +5,7 @@
 
 #include "Components/InteractComponent.h"
 #include "Managers/UIManager.h"
-#include "Utils/AuraSystemsLibrary.h"
+#include "Player/AuraPlayerController.h"
 
 AWidgetInteractable::AWidgetInteractable()
 {
@@ -21,14 +21,21 @@ AWidgetInteractable::AWidgetInteractable()
 
 }
 
+void AWidgetInteractable::Interact_Implementation(const AController* Controller)
+{
+  const AAuraPlayerController* AuraPC = Cast<AAuraPlayerController>(Controller);
+  if (!AuraPC) return;
+  
+  AuraPC->GetUIManager()->BuildAndOpenWidget(WidgetClass);
+}
+
+UInteractComponent* AWidgetInteractable::GetInteractComponent_Implementation() const
+{
+  return InteractComponent;
+}
+
 void AWidgetInteractable::BeginPlay()
 {
 	Super::BeginPlay();
 
-  InteractComponent->OnInteractedDelegate.BindUObject(this, &AWidgetInteractable::Interact);
-}
-
-void AWidgetInteractable::Interact(const AAuraPlayerController* Controller)
-{
-  UAuraSystemsLibrary::GetUIManager(this, 0)->BuildAndOpenWidget(WidgetClass);
 }

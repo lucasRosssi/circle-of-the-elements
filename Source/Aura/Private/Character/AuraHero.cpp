@@ -19,7 +19,6 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Managers/AbilityManager.h"
-#include "Managers/UIManager.h"
 #include "Player/AuraPlayerState.h"
 #include "Player/AuraPlayerController.h"
 #include "UI/HUD/AuraHUD.h"
@@ -35,9 +34,7 @@ AAuraHero::AAuraHero()
   SpotLight->Temperature = 5000.f;
   SpotLight->CastShadows = false;
   SpotLight->SetVisibility(false);
-
-  LevelUpWidgetComponent = CreateDefaultSubobject<UWidgetComponent>("LevelUpMessage");
-  LevelUpWidgetComponent->SetupAttachment(GetRootComponent());
+  
   InteractWidgetComponent = CreateDefaultSubobject<UWidgetComponent>("InteractMessage");
   InteractWidgetComponent->SetupAttachment(GetRootComponent());
   InteractWidgetComponent->SetVisibility(false);
@@ -136,11 +133,6 @@ int32 AAuraHero::GetXP_Implementation() const
   return GetAuraPlayerState()->GetXP();;
 }
 
-void AAuraHero::LevelUp_Implementation()
-{
-  MulticastLevelUpParticles();
-}
-
 int32 AAuraHero::GetAttributePoints_Implementation() const
 {
   return GetAuraPlayerState()->GetAttributePoints();
@@ -175,14 +167,27 @@ void AAuraHero::HideTargetingActor_Implementation()
   AuraPlayerController->HideTargetingActor();
 }
 
-FOnInteract& AAuraHero::GetOnInteractDelegate()
+void AAuraHero::SetInteractMessageVisible_Implementation(const FText& InteractText)
 {
-  return GetAuraPlayerController()->InteractActionTriggered;
+  const bool bVisible = !InteractText.IsEmptyOrWhitespace();
+  SetInteractionWidgetText(InteractText);
+  InteractWidgetComponent->SetVisibility(bVisible);
 }
 
-void AAuraHero::SetInteractMessageVisible_Implementation(bool bVisible)
+void AAuraHero::AddInteractableToList_Implementation(const UInteractComponent* InteractableComponent)
 {
-  InteractWidgetComponent->SetVisibility(bVisible);
+  if (GetAuraPlayerController())
+  {
+    AuraPlayerController->AddInteractableInRange(InteractableComponent);
+  }
+}
+
+void AAuraHero::RemoveInteractableFromList_Implementation(const UInteractComponent* InteractableComponent)
+{
+  if (GetAuraPlayerController())
+  {
+    AuraPlayerController->RemoveInteractableInRange(InteractableComponent);
+  }
 }
 
 ECharacterName AAuraHero::GetHeroName_Implementation()
@@ -344,27 +349,6 @@ void AAuraHero::BeginPlay()
       AUniversalCamera::UseActor(this),
       FConstrainVector2(),
       FBoolRotation());
-  }
-}
-
-void AAuraHero::MulticastLevelUpParticles_Implementation() const
-{
-  LevelUpWidgetComponent->GetWidget()->SetVisibility(ESlateVisibility::Visible);
-  if (IsLocallyControlled() && IsValid(LevelUpSound))
-  {
-    UGameplayStatics::PlaySound2D(
-      this,
-      LevelUpSound
-    );
-  }
-  if (IsValid(LevelUpNiagaraSystem))
-  {
-    UNiagaraFunctionLibrary::SpawnSystemAtLocation(
-      this,
-      LevelUpNiagaraSystem,
-      GetActorLocation(),
-      GetActorRotation()
-    );
   }
 }
 

@@ -7,7 +7,7 @@
 #include "Abilities/GameplayAbility.h"
 #include "Enums/AbilityRechargeMode.h"
 #include "Enums/TargetTeam.h"
-#include "Interaction/AbilityInterface.h"
+#include "Interfaces/AbilityInterface.h"
 #include "BaseAbility.generated.h"
 
 class AAuraCharacterBase;

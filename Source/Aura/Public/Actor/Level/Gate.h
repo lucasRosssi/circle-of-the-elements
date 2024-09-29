@@ -6,6 +6,7 @@
 #include "GameplayTagContainer.h"
 #include "Enums/GatePosition.h"
 #include "Enums/Region.h"
+#include "Interfaces/InteractInterface.h"
 #include "Gate.generated.h"
 
 class UInteractComponent;
@@ -17,12 +18,17 @@ class UWidgetComponent;
  * 
  */
 UCLASS()
-class AURA_API AGate : public AActor
+class AURA_API AGate : public AActor, public IInteractInterface
 {
 	GENERATED_BODY()
 
 public:
 	AGate();
+
+  /* Interact Interface */
+  virtual void Interact_Implementation(const AController* Controller) override;
+  virtual UInteractComponent* GetInteractComponent_Implementation() const override;
+  /* END Interact Interface */
 
 	void SetGateReward(const FGameplayTag& InRewardTag);
 	FGameplayTag GetGateReward() const { return RewardTag; }
@@ -36,9 +42,8 @@ public:
 protected:
 	virtual void BeginPlay() override;
   
-	void Interact(const AAuraPlayerController* InstigatorController);
   UFUNCTION(BlueprintImplementableEvent)
-  void OnInteracted(const AAuraPlayerController* InstigatorController);
+  void OnInteracted(const AController* Controller);
 
 	UFUNCTION(BlueprintPure)
 	TSoftObjectPtr<UWorld> GetCurrentLocation();

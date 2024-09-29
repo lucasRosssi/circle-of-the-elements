@@ -6,7 +6,7 @@
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "Components/BoxComponent.h"
 #include "Enums/MeleeHitMode.h"
-#include "Interaction/CombatInterface.h"
+#include "Interfaces/CombatInterface.h"
 #include "Utils/UtilityLibrary.h"
 
 #if WITH_EDITOR

@@ -9,7 +9,7 @@
 #include "AbilitySystem/Abilities/ActiveAbility.h"
 #include "Aura/AuraLogChannels.h"
 #include "Character/AuraCharacterBase.h"
-#include "Interaction/PlayerInterface.h"
+#include "Interfaces/PlayerInterface.h"
 
 void UAuraAbilitySystemComponent::AbilityActorInfoSet()
 {

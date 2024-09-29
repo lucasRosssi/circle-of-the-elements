@@ -22,6 +22,19 @@ AGate::AGate()
   InteractComponent->SetupInteractAreaAttachment(GetRootComponent());
 }
 
+void AGate::Interact_Implementation(const AController* Controller)
+{
+  GetRewardManager()->SetNextReward(RewardTag);
+  RewardWidget->SetVisibility(false);
+  
+  OnInteracted(Controller);
+}
+
+UInteractComponent* AGate::GetInteractComponent_Implementation() const
+{
+  return InteractComponent;
+}
+
 void AGate::SetGateReward(const FGameplayTag& InRewardTag)
 {
 	RewardTag = InRewardTag;
@@ -38,14 +51,6 @@ void AGate::BeginPlay()
 	Super::BeginPlay();
 
   GetRewardManager()->OnRewardTakenDelegate.AddDynamic(this, &AGate::Enable);
-  InteractComponent->OnInteractedDelegate.BindUObject(this, &AGate::Interact);
-  InteractComponent->OnPostInteractedDelegate.BindUObject(this, &AGate::OnInteracted);
-}
-
-void AGate::Interact(const AAuraPlayerController* InstigatorController)
-{
-	GetRewardManager()->SetNextReward(RewardTag);
-	RewardWidget->SetVisibility(false);
 }
 
 TSoftObjectPtr<UWorld> AGate::GetCurrentLocation()

@@ -6,15 +6,11 @@
 #include "GameFramework/Actor.h"
 #include "InteractComponent.generated.h"
 
-class AAuraPlayerController;
 class UNiagaraSystem;
 class UNiagaraComponent;
 enum class ECharacterName : uint8;
 class AAuraGameModeBase;
 class USphereComponent;
-
-DECLARE_DELEGATE_OneParam(FOnInteracted, const AAuraPlayerController* /* InstigatorController */)
-DECLARE_DELEGATE_OneParam(FOnPostInteracted, const AAuraPlayerController* /* InstigatorController */)
 
 UCLASS()
 class AURA_API UInteractComponent : public UActorComponent
@@ -24,18 +20,17 @@ class AURA_API UInteractComponent : public UActorComponent
 public:
   UInteractComponent();
 
+  bool IsEnabled() const { return bInteractionEnabled; }
+  FText GetInteractText() const { return InteractText; }
+  
   void SetupInteractAreaAttachment(USceneComponent* Component);
 
-  float GetInteractAreaRadius();
+  float GetInteractAreaRadius() const;
 
-  UFUNCTION()
   void EnableInteraction();
-  UFUNCTION()
   void DisableInteraction();
-
-  FOnInteracted OnInteractedDelegate;
-  FOnPostInteracted OnPostInteractedDelegate;
-
+  void BeginInteract(const AController* InstigatorController) const;
+  
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Interaction")
   bool bDisableAfterInteraction = true;
 
@@ -51,6 +46,9 @@ protected:
   bool bInteractionEnabled = false;
 
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Interaction")
+  FText InteractText;
+
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Interaction")
   TMap<ECharacterName, TObjectPtr<UAnimMontage>> InteractMontages;
 
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Interaction")
@@ -63,11 +61,6 @@ protected:
   FVector InteractNiagaraOffset = FVector::ZeroVector;
 
 private:
-  UFUNCTION()
-  void PreInteract(const AAuraPlayerController* InstigatorController);
-  void Interact(const AAuraPlayerController* InstigatorController);
-  void PostInteract(const AAuraPlayerController* InstigatorController);
-
   UFUNCTION()
   void OnInteractAreaOverlap(
     UPrimitiveComponent* OverlappedComponent,

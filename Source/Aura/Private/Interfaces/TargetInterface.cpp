@@ -1,7 +1,7 @@
 // Copyright Lucas Rossi
 
 
-#include "Interaction/TargetInterface.h"
+#include "Interfaces/TargetInterface.h"
 
 bool ITargetInterface::Implements(const UObject* Object)
 {

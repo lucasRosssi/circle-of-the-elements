@@ -7,7 +7,7 @@
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "Actor/AuraProjectile.h"
 #include "Components/SphereComponent.h"
-#include "Interaction/CombatInterface.h"
+#include "Interfaces/CombatInterface.h"
 
 void UProjectileAbility::EndAbility(
 	const FGameplayAbilitySpecHandle Handle,
