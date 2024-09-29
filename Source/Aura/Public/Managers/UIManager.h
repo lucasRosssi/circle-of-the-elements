@@ -6,11 +6,10 @@
 #include "Components/ActorComponent.h"
 #include "UIManager.generated.h"
 
-
 class AAuraHUD;
 struct FGameplayTag;
 class UAuraUserWidget;
-class AAuraPlayerController;
+class APlayerController;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNewMenuOpened, UAuraUserWidget*, Widget);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOpenSkillSelectionMenu, const FGameplayTag&, ElementTag);
@@ -24,8 +23,7 @@ class AURA_API UUIManager : public UActorComponent
 public:	
 	UUIManager();
 
-	void SetAuraPlayerController(AAuraPlayerController* InController) { AuraPlayerController = InController; }
-	AAuraPlayerController* GetAuraPlayerController() const { return AuraPlayerController; }
+	void SetPlayerController(APlayerController* InController) { PlayerController = InController; }
 	UFUNCTION(BlueprintPure)
 	AAuraHUD* GetAuraHUD() const { return AuraHUD; }
 	void SetAuraHUD(AAuraHUD* InHUD) { AuraHUD = InHUD; }
@@ -51,10 +49,7 @@ protected:
 	
 
 private:
-	UPROPERTY()
-	AAuraPlayerController* AuraPlayerController = nullptr;
-	UPROPERTY()
+	APlayerController* PlayerController = nullptr;
 	UAuraUserWidget* OverlayWidget = nullptr;
-	UPROPERTY()
 	AAuraHUD* AuraHUD = nullptr;
 };

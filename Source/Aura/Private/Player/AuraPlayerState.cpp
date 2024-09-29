@@ -7,7 +7,7 @@
 #include "AbilitySystem/AuraAttributeSet.h"
 #include "AbilitySystem/Data/LevelInfo.h"
 #include "Character/AuraCharacterBase.h"
-#include "Interaction/PlayerInterface.h"
+#include "Interfaces/PlayerInterface.h"
 #include "Net/UnrealNetwork.h"
 
 AAuraPlayerState::AAuraPlayerState()

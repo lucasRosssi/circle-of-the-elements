@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "Enums/CharacterName.h"
 #include "GameFramework/Character.h"
-#include "Interaction/TargetInterface.h"
+#include "Interfaces/TargetInterface.h"
 #include "AuraCharacterSelection.generated.h"
 
 class AAuraHero;

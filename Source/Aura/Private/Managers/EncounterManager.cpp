@@ -1,7 +1,7 @@
 // Copyright Lucas Rossi
 
 
-#include "Game/Components/EncounterManager.h"
+#include "Managers/EncounterManager.h"
 
 #include "AuraGameplayTags.h"
 #include "Actor/Level/EnemySpawner.h"

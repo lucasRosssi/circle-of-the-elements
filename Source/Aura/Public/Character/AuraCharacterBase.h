@@ -8,10 +8,9 @@
 #include "Enums/CharacterType.h"
 #include "AbilitySystem/Data/CharacterInfo.h"
 #include "Enums/CharacterName.h"
-#include "Game/TeamComponent.h"
 #include "GameFramework/Character.h"
-#include "Interaction/CombatInterface.h"
-#include "Interaction/TargetInterface.h"
+#include "Interfaces/CombatInterface.h"
+#include "Interfaces/TargetInterface.h"
 #include "AuraCharacterBase.generated.h"
 
 class UAuraAbilitySystemComponent;
@@ -71,7 +70,7 @@ public:
 	virtual UBoxComponent* EnableWeaponCollision_Implementation(bool bEnable) override;
 	virtual bool IsFriend_Implementation(AActor* Actor) override;
 	virtual bool IsEnemy_Implementation(AActor* Actor) override;
-	/** end Combat Interface */
+	/** END Combat Interface */
 
 	void InitSummon(int32 TeamID);
   UFUNCTION(BlueprintImplementableEvent)
@@ -79,12 +78,12 @@ public:
 
 	void ChangeActionSpeed(float InActionSpeed);
 
-	int32 GetTeamID() { return TeamComponent->TeamID; }
-	void SetTeamID(int32 InID) { TeamComponent->TeamID = InID; }
+	UTeamComponent* GetTeamComponent() const { return TeamComponent; }
 
 	UAuraAbilitySystemComponent* GetAuraASC();
 
 	FOnASCRegistered OnASCRegistered;
+  UPROPERTY(BlueprintAssignable)
 	FOnDeath OnDeath;
 
 	UPROPERTY(BlueprintReadOnly, Category="Combat")
@@ -114,92 +113,73 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+  virtual void InitAbilityActorInfo();
+  virtual void AddCharacterAbilities();
+  void InitializeDefaultAttributes() const;
+  
+  void ApplyEffectToSelf(TSubclassOf<UGameplayEffect> GameplayEffectClass, float Level) const;
+  
 	void ReleaseWeapon();
 	void RagdollMesh(const FVector& DeathImpulse = FVector::ZeroVector);
+  
+  void DissolveCharacter();
+  UFUNCTION(BlueprintImplementableEvent)
+  void StartDissolveTimeline(UMaterialInstanceDynamic* DynamicMaterialInstance);
+  UFUNCTION(BlueprintImplementableEvent)
+  void StartWeaponDissolveTimeline(UMaterialInstanceDynamic* DynamicMaterialInstance);
 
+  UPROPERTY()
+  TObjectPtr<UAuraAttributeSet> AttributeSet;
+  UPROPERTY()
+  TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
+  UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Character Defaults|Attributes")
+  TSubclassOf<UGameplayEffect> DefaultPrimaryAttributes;
+  UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Character Defaults|Attributes")
+  TSubclassOf<UGameplayEffect> DefaultSecondaryAttributes;
+  UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Character Defaults|Attributes")
+  TSubclassOf<UGameplayEffect> DefaultVitalAttributes;
+  UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Character Defaults|Attributes")
+  TSubclassOf<UGameplayEffect> DefaultRegenerationEffect;
+  
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Character Defaults|Montages|Combat")
 	TObjectPtr<UAnimMontage> DodgeMontage;
-	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Defaults|Montages|Combat")
 	TObjectPtr<UAnimMontage> HitReactMontage;
-	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Defaults|Montages|Combat")
 	TObjectPtr<UAnimMontage> StunMontage;
 
+  UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Defaults|Combat")
+  TObjectPtr<UNiagaraSystem> BloodEffect;
+  UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Defaults|Combat")
+  TObjectPtr<USoundBase> HitSound;
+  UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Defaults|Combat")
+  TObjectPtr<USoundBase> DeathSound;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat")
 	TObjectPtr<USkeletalMeshComponent> Weapon;
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat")
 	TObjectPtr<UBoxComponent> WeaponHitBox;
-
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
 	FName WeaponSocketName;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat")
 	TObjectPtr<UTeamComponent> TeamComponent;
 
+  bool bDead = false;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Defaults")
 	ECharacterName CharacterName = ECharacterName::Undefined;
-
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Defaults")
 	ECharacterType CharacterType = ECharacterType::Regular;
-	
-	UPROPERTY()
-	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
-
-	UPROPERTY()
-	TObjectPtr<UAuraAttributeSet> AttributeSet;
-
-	virtual void InitAbilityActorInfo();
-
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Character Defaults|Attributes")
-	TSubclassOf<UGameplayEffect> DefaultPrimaryAttributes;
-
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Character Defaults|Attributes")
-	TSubclassOf<UGameplayEffect> DefaultSecondaryAttributes;
-
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Character Defaults|Attributes")
-	TSubclassOf<UGameplayEffect> DefaultVitalAttributes;
-
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Character Defaults|Attributes")
-	TSubclassOf<UGameplayEffect> DefaultRegenerationEffect;
-
-	void ApplyEffectToSelf(TSubclassOf<UGameplayEffect> GameplayEffectClass, float Level) const;
-	void InitializeDefaultAttributes() const;
-
-	virtual void AddCharacterAbilities();
-
-	/* Dissolve Effects */
-	void DissolveCharacter();
-
-	UFUNCTION(BlueprintImplementableEvent)
-	void StartDissolveTimeline(UMaterialInstanceDynamic* DynamicMaterialInstance);
-
-	UFUNCTION(BlueprintImplementableEvent)
-	void StartWeaponDissolveTimeline(UMaterialInstanceDynamic* DynamicMaterialInstance);
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Character Defaults", meta=( DisplayThumbnail="true", AllowedClasses="/Script/Engine.Texture,/Script/Engine.MaterialInterface,/Script/Engine.SlateTextureAtlasInterface", DisallowedClasses = "/Script/MediaAssets.MediaTexture"))
+  TObjectPtr<UObject> Portrait;
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Character Defaults")
+  FColor MainColor;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TObjectPtr<UMaterialInstance> DissolveMaterialInstance;
-
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TObjectPtr<UMaterialInstance> WeaponDissolveMaterialInstance;
-
-	bool bDead = false;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Defaults|Combat")
-	TObjectPtr<UNiagaraSystem> BloodEffect;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Defaults|Combat")
-	TObjectPtr<USoundBase> HitSound;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Defaults|Combat")
-	TObjectPtr<USoundBase> DeathSound;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Character Defaults", meta=( DisplayThumbnail="true", AllowedClasses="/Script/Engine.Texture,/Script/Engine.MaterialInterface,/Script/Engine.SlateTextureAtlasInterface", DisallowedClasses = "/Script/MediaAssets.MediaTexture"))
-	TObjectPtr<UObject> Portrait;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Character Defaults")
-	FColor MainColor;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category= "Character Defaults|Speed")
 	float DefaultWalkSpeed = 600.f;

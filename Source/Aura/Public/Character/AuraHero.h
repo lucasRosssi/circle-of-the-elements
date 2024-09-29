@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Character/AuraCharacterBase.h"
-#include "Interaction/PlayerInterface.h"
+#include "Interfaces/PlayerInterface.h"
 #include "AuraHero.generated.h"
 
 class AAuraCamera;
@@ -41,7 +41,6 @@ public:
 	/** Player Interface */
 	virtual void AddToXP_Implementation(int32 InXP) override;
 	virtual int32 GetXP_Implementation() const override;
-	virtual void LevelUp_Implementation() override;
 	virtual int32 GetAttributePoints_Implementation() const override;
 	virtual int32 GetSkillPoints_Implementation() const override;
 	virtual void SpendAttributePoints_Implementation(int32 Amount) override;
@@ -52,8 +51,9 @@ public:
 		float Radius = 300.f
 		) override;
 	virtual void HideTargetingActor_Implementation() override;
-	virtual FOnInteract& GetOnInteractDelegate() override;
-	virtual void SetInteractMessageVisible_Implementation(bool bVisible) override;
+	virtual void SetInteractMessageVisible_Implementation(const FText& InteractText) override;
+  virtual void AddInteractableToList_Implementation(const UInteractComponent* InteractableComponent) override;
+  virtual void RemoveInteractableFromList_Implementation(const UInteractComponent* InteractableComponent) override;
 	virtual ECharacterName GetHeroName_Implementation() override;
 	/** end Player Interface */
 	
@@ -71,19 +71,14 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Level")
-	TObjectPtr<UNiagaraSystem> LevelUpNiagaraSystem;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Level")
-	TObjectPtr<USoundBase> LevelUpSound;
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	TObjectPtr<UWidgetComponent> LevelUpWidgetComponent;
+
+  UFUNCTION(BlueprintImplementableEvent)
+  void SetInteractionWidgetText(const FText& Text);
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Camera")
 	TSubclassOf<AAuraCamera> CameraClass;
 	UPROPERTY(BlueprintReadOnly, Category="Camera")
 	TObjectPtr<AAuraCamera> ActiveCamera;
-	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Camera")
 	TObjectPtr<USpotLightComponent> SpotLight;
 
@@ -96,14 +91,11 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Death")
 	TObjectPtr<USoundBase> DeathSound2;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Interaction")
 	TObjectPtr<UWidgetComponent> InteractWidgetComponent;
 
 private:
 	virtual void InitAbilityActorInfo() override;
-
-	UFUNCTION(NetMulticast, Reliable)
-	void MulticastLevelUpParticles() const;
 
 	bool bDying = false;
 

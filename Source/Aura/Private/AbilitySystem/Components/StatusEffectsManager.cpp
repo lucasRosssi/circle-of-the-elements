@@ -11,7 +11,9 @@
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "AbilitySystem/Data/StatusEffectInfo.h"
 #include "Enums/StatusEffectPosition.h"
-#include "Interaction/CombatInterface.h"
+#include "Interfaces/CombatInterface.h"
+
+class ICombatInterface;
 
 UStatusEffectsManager::UStatusEffectsManager()
 {

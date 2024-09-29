@@ -11,7 +11,7 @@
 #include "AbilitySystem/Abilities/SummonAbility.h"
 #include "Animation/CharacterAnimInstance.h"
 #include "Components/BoxComponent.h"
-#include "Game/TeamComponent.h"
+#include "Components/TeamComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -125,7 +125,7 @@ void AAuraCharacterBase::MulticastHandleDeath_Implementation(const FVector& Deat
 void AAuraCharacterBase::InitSummon(int32 TeamID)
 {
 	CharacterType = ECharacterType::Minion;
-	SetTeamID(TeamID);
+	TeamComponent->TeamID = TeamID;
 	LifeSpanDuration = 2.f;
 	SpawnDefaultController();
 	

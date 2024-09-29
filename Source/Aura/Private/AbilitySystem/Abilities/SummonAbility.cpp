@@ -6,8 +6,9 @@
 #include "Aura/Aura.h"
 #include "Character/AuraCharacterBase.h"
 #include "Components/CapsuleComponent.h"
-#include "Game/Components/EncounterManager.h"
+#include "Components/TeamComponent.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Managers/EncounterManager.h"
 #include "Utils/AuraSystemsLibrary.h"
 
 TArray<FVector> USummonAbility::GetSpawnLocations()

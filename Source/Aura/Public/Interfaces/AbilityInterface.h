@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
 #include "Enums/AbilityHitMode.h"
 #include "UObject/Interface.h"
 #include "AbilityInterface.generated.h"

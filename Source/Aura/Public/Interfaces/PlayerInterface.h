@@ -3,13 +3,15 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Enums/CharacterName.h"
 #include "UObject/Interface.h"
 #include "PlayerInterface.generated.h"
 
+class UInteractComponent;
 class ATargetingActor;
 enum class ETargetTeam : uint8;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnInteract, AAuraPlayerController*, InstigatorController);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnInteract, const AAuraPlayerController*, InstigatorController);
 
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI, BlueprintType)
@@ -61,10 +63,16 @@ public:
 	void HideTargetingActor();
 
 	UFUNCTION(BlueprintNativeEvent)
-	void SetInteractMessageVisible(bool bVisible);
+	void SetInteractMessageVisible(const FText& InteractText);
+  static void Safe_SetInteractMessageVisible(UObject*, const FText& InteractText);
+
+  UFUNCTION(BlueprintNativeEvent)
+  void AddInteractableToList(const UInteractComponent* InteractableComponent);
+  static void Safe_AddInteractableToList(UObject*, const UInteractComponent* InteractableComponent);
+  UFUNCTION(BlueprintNativeEvent)
+  void RemoveInteractableFromList(const UInteractComponent* InteractableComponent);
+  static void Safe_RemoveInteractableFromList(UObject*, const UInteractComponent* InteractableComponent);
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	ECharacterName GetHeroName();
-
-	virtual FOnInteract& GetOnInteractDelegate() = 0;
 };

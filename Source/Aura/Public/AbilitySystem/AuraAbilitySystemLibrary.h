@@ -10,6 +10,7 @@
 #include "UI/WidgetController/AuraWidgetController.h"
 #include "AuraAbilitySystemLibrary.generated.h"
 
+class URewardsInfo;
 struct FEffectParams;
 class URegionInfo;
 enum class ECharacterName : uint8;
@@ -89,17 +90,16 @@ public:
 	 * DEFAULTS
 	 */
 
-	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|CharacterClassDefaults")
+	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|Info")
 	static UCharacterInfo* GetCharacterClassInfo(const UObject* WorldContextObject);
-
-	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|CharacterClassDefaults")
+	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|Info")
 	static UAbilityInfo* GetAbilitiesInfo(const UObject* WorldContextObject);
-
-	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|StatusEffectsDefaults")
+	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|Info")
 	static UStatusEffectInfo* GetStatusEffectInfo(const UObject* WorldContextObject);
-
-	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|EncounterDefaults")
+	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|Info")
 	static URegionInfo* GetRegionInfo(const UObject* WorldContextObject);
+  UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|Info")
+  static URewardsInfo* GetRewardsInfo(const UObject* WorldContextObject);
 
 	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|CharacterClassDefaults")
 	static void GiveStartupAbilities(
@@ -393,13 +393,13 @@ public:
 	 * UI
 	 */
 	
-	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|UI", meta = (HidePin = "WorldContextObject", DefaultToSelf = "WorldContextObject"))
+	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|UI")
 	static FString GetAbilityDescription(
 		const UAbilityInfo* AbilityInfo,
 		const FGameplayTag& AbilityTag,
 		int32 Level
 		);
-	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|UI", meta = (HidePin = "WorldContextObject", DefaultToSelf = "WorldContextObject"))
+	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|UI")
 	static FString GetAbilityNextLevelDescription(
 		const UAbilityInfo* AbilityInfo,
 		const FGameplayTag& AbilityTag,
@@ -416,7 +416,7 @@ public:
 		int32 Level,
 		const FGameplayTagContainer& AbilitiesRequirement
 	);
-	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|UI", meta = (HidePin = "WorldContextObject", DefaultToSelf = "WorldContextObject"))
+	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|UI")
 	static void MakeAbilityDetailsText(
 		const UBaseAbility* Ability,
 		int32 Level,
@@ -424,28 +424,13 @@ public:
 		FString& OutCooldownText,
 		FString& OutChargesText
 		);
-	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|UI", meta = (HidePin = "WorldContextObject", DefaultToSelf = "WorldContextObject"))
+	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|UI")
 	static void MakeManaAndCooldownTextNextLevel(
 		const UBaseAbility* Ability,
 		int32 Level,
 		FString& OutManaText,
 		FString& OutCooldownText
 		);
-
-	// UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|UI", meta = (HidePin = "WorldContextObject", DefaultToSelf = "WorldContextObject"))
-	// static TArray<FGameplayTag> GetAllAbilitiesFromLevel(
-	// 	const UObject* WorldContextObject,
-	// 	ECharacterName CharacterName,
-	// 	int32 Level
-	// 	);
-	//
-	// UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|UI", meta = (HidePin = "WorldContextObject", DefaultToSelf = "WorldContextObject"))
-	// static TArray<FGameplayTag> GetRandomAbilitiesFromLevel(
-	// 	const UObject* WorldContextObject,
-	// 	ECharacterName CharacterName,
-	// 	int32 Level,
-	// 	int32 Amount
-	// 	);
 
 private:
 	static void AddOverlappedCharactersByTeam(

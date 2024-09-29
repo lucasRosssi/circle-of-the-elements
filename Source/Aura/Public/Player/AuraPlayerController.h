@@ -8,10 +8,11 @@
 #include "InputActionValue.h"
 #include "Camera/CameraComponent.h"
 #include "Components/TimelineComponent.h"
-#include "Interaction/PlayerInterface.h"
+#include "Interfaces/PlayerInterface.h"
 
 #include "AuraPlayerController.generated.h"
 
+class UInteractComponent;
 class AAuraHUD;
 class UUIManager;
 struct FTimeline;
@@ -68,7 +69,8 @@ public:
   void ShowTargetingActor(
     TSubclassOf<ATargetingActor> TargetingActorClass,
     ETargetTeam TargetTeam,
-    float Radius = 300.f);
+    float Radius = 300.f
+  );
   UFUNCTION(BlueprintCallable)
   void HideTargetingActor();
 
@@ -84,6 +86,9 @@ public:
 
   void AimAbilityGamepad(AActor* AvatarActor, FHitResult& OutHitResult);
   void AimAbilityMouse(AActor* AvatarActor, FHitResult& OutHitResult);
+
+  void AddInteractableInRange(const UInteractComponent* InteractComponent);
+  void RemoveInteractableInRange(const UInteractComponent* InteractComponent);
 
   UPROPERTY(BlueprintAssignable, BlueprintCallable, Category="ControllerDevice")
   FOnControllerDeviceChanged ControllerDeviceChangedDelegate;
@@ -170,6 +175,7 @@ private:
   void CancelPressed();
 
   void InteractPressed();
+  void RemoveLastInteractable();
 
   void UpdateTargetingActorLocation();
   void UpdatePlayerLocationParameterCollection();
@@ -198,4 +204,7 @@ private:
   TWeakObjectPtr<UCameraComponent> PlayerCamera;
 
   bool bControllerEnabled = true;
+
+  UPROPERTY()
+  TArray<const UInteractComponent*> InteractablesInRange;
 };

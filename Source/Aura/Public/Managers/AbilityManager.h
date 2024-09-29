@@ -3,9 +3,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AuraSystemComponent.h"
 #include "GameplayTagContainer.h"
 #include "AbilitySystem/Data/AbilityInfo.h"
-#include "Game/Components/AuraSystemComponent.h"
 #include "AbilityManager.generated.h"
 
 class UAuraAbilitySystemComponent;
@@ -68,14 +68,14 @@ protected:
 		EditDefaultsOnly,
 		BlueprintReadWrite,
 		Category="Manager|Ability",
-		meta=(Categories="Abilities.Active.Aura|Abilities.Active.Vilkar|Abilities.Passive.Aura|Abilities.Passive.Vilkar")
+		meta=(Categories="Abilities.Active.Aura,Abilities.Active.Vilkar,Abilities.Passive.Aura,Abilities.Passive.Vilkar")
 		)
 	FGameplayTagContainer AcquiredAbilities;
 	UPROPERTY(
 		EditDefaultsOnly,
 		BlueprintReadWrite,
 		Category="Manager|Ability",
-		meta=(Categories="Abilities.Active.Aura|Abilities.Active.Vilkar|Abilities.Passive.Aura|Abilities.Passive.Vilkar")
+		meta=(Categories="Abilities.Active.Aura,Abilities.Active.Vilkar,Abilities.Passive.Aura,Abilities.Passive.Vilkar")
 		)
 	FGameplayTagContainer BlockedAbilities;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Manager|Ability")
@@ -84,14 +84,14 @@ protected:
 		EditDefaultsOnly,
 		BlueprintReadWrite,
 		Category="Manager|Ability",
-		meta=(EditCondition="bOverrideAbilitiesContainer", ForceInlineRow, Categories="Abilities.Active|Abilities.Passive|Abilities.Element")
+		meta=(EditCondition="bOverrideAbilitiesContainer", ForceInlineRow, Categories="Abilities.Active,Abilities.Passive,Abilities.Element")
 		)
 	TMap<FGameplayTag, FGameplayTagContainer> AbilitiesContainer;
 	UPROPERTY(
 		EditDefaultsOnly,
 		BlueprintReadWrite,
 		Category="Manager|Ability",
-		meta=(EditCondition="bOverrideAbilitiesContainer", ForceInlineRow, Categories="Abilities.Element|Abilities.Tier")
+		meta=(EditCondition="bOverrideAbilitiesContainer", ForceInlineRow, Categories="Abilities.Element,Abilities.Tier")
 		)
 	TMap<FGameplayTag, FGameplayTagContainer> ElementalTierPool;
 

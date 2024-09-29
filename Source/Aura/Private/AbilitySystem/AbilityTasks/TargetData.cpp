@@ -4,13 +4,9 @@
 #include "AbilitySystem/AbilityTasks/TargetData.h"
 
 #include "AbilitySystemComponent.h"
-#include "AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "AbilitySystem/Abilities/ActiveAbility.h"
 #include "Actor/TargetingActor.h"
 #include "Aura/Aura.h"
-#include "Interaction/CombatInterface.h"
-#include "Kismet/KismetMathLibrary.h"
-#include "Kismet/KismetSystemLibrary.h"
 #include "Player/AuraPlayerController.h"
 
 UTargetData* UTargetData::

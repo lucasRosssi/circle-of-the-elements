@@ -56,8 +56,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void LoadLevelInfo();
 
-	void SetNextReward(const FGameplayTag& InRewardTag);
-
 	int32 GetEnemiesLevel() const;
 	
 	UAuraGameInstance* GetAuraGameInstance();

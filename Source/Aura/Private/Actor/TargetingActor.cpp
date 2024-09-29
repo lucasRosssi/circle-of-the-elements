@@ -7,7 +7,7 @@
 #include "Components/DecalComponent.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/FloatingPawnMovement.h"
-#include "Interaction/TargetInterface.h"
+#include "Interfaces/TargetInterface.h"
 
 ATargetingActor::ATargetingActor()
 {

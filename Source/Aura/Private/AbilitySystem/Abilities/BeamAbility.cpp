@@ -4,7 +4,7 @@
 #include "AbilitySystem/Abilities/BeamAbility.h"
 
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
-#include "Interaction/CombatInterface.h"
+#include "Interfaces/CombatInterface.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Utils/UtilityLibrary.h"
 

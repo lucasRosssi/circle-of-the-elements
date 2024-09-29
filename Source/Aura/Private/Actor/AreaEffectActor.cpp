@@ -8,7 +8,7 @@
 #include "NiagaraComponent.h"
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "Aura/Aura.h"
-#include "Game/TeamComponent.h"
+#include "Components/TeamComponent.h"
 
 AAreaEffectActor::AAreaEffectActor()
 {

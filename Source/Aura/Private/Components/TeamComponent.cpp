@@ -1,7 +1,7 @@
 // Copyright Lucas Rossi
 
 
-#include "Game/TeamComponent.h"
+#include "Components/TeamComponent.h"
 
 #include "Aura/Aura.h"
 
