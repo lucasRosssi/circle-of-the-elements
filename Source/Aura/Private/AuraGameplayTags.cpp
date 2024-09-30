@@ -1163,6 +1163,109 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FString("Vilkar passive abilities")
 		);
 
+  /*
+   * Player Upgrades
+   */
+
+  GameplayTags.Upgrades = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Upgrades"),
+    FString("Upgrades tags")
+    );
+
+  // Soul
+
+  GameplayTags.Upgrades_Soul = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Upgrades.Soul"),
+    FString("Soul upgrades tags")
+    );
+
+  GameplayTags.Upgrades_Soul_Absorption = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Upgrades.Soul.Absorption"),
+    FString("Soul Absorption upgrade tag")
+    );
+
+  GameplayTags.Upgrades_Soul_HealthRegeneration = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Upgrades.Soul.HealthRegeneration"),
+    FString("Health Regeneration upgrade tag")
+    );
+
+  GameplayTags.Upgrades_Soul_ManaRegeneration = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Upgrades.Soul.ManaRegeneration"),
+    FString("Mana Regeneration upgrade tag")
+    );
+
+  // Fire
+
+  GameplayTags.Upgrades_Fire = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Upgrades.Fire"),
+    FString("Fire upgrades tags")
+    );
+
+  GameplayTags.Upgrades_Fire_Absorption = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Upgrades.Fire.Absorption"),
+    FString("Fire Absorption upgrade tag")
+    );
+
+  // Ice
+
+  GameplayTags.Upgrades_Ice = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Upgrades.Ice"),
+    FString("Ice upgrades tags")
+    );
+
+  GameplayTags.Upgrades_Ice_Absorption = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Upgrades.Ice.Absorption"),
+    FString("Ice Absorption upgrade tag")
+    );
+
+  // Lightning
+
+  GameplayTags.Upgrades_Lightning = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Upgrades.Lightning"),
+    FString("Lightning upgrades tags")
+    );
+
+  GameplayTags.Upgrades_Lightning_Absorption = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Upgrades.Lightning.Absorption"),
+    FString("Lightning Absorption upgrade tag")
+    );
+
+  // Necrotic
+
+  GameplayTags.Upgrades_Necrotic = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Upgrades.Necrotic"),
+    FString("Necrotic upgrades tags")
+    );
+
+  GameplayTags.Upgrades_Necrotic_Absorption = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Upgrades.Necrotic.Absorption"),
+    FString("Necrotic Absorption upgrade tag")
+    );
+
+  // Arcane
+
+  GameplayTags.Upgrades_Arcane = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Upgrades.Arcane"),
+    FString("Arcane upgrades tags")
+    );
+
+  GameplayTags.Upgrades_Arcane_Absorption = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Upgrades.Arcane.Absorption"),
+    FString("Arcane Absorption upgrade tag")
+    );
+
+  // Physical
+
+  GameplayTags.Upgrades_Physical = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Upgrades.Physical"),
+    FString("Physical upgrades tags")
+    );
+
+  GameplayTags.Upgrades_Physical_Absorption = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Upgrades.Physical.Absorption"),
+    FString("Physical Absorption upgrade tag")
+    );
+
 	/*
 	 * Player Resources
 	 */

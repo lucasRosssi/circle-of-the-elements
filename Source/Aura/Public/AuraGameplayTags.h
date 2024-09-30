@@ -74,6 +74,8 @@ public:
 
 	TMap<FGameplayTag, FGameplayTag> DamageTypesToResistances;
 
+  /* STATUS EFFECTS */
+
 	FGameplayTag StatusEffects;
   FGameplayTag StatusEffects_Duration;
   FGameplayTag StatusEffects_Stacks;
@@ -81,9 +83,13 @@ public:
 	FGameplayTag StatusEffects_Invulnerable;
 	FGameplayTag StatusEffects_ManaRegenOff;
 
+  // Buffs
+
 	FGameplayTag StatusEffects_Buff;
 	FGameplayTag StatusEffects_Buff_Shield;
 	FGameplayTag StatusEffects_Buff_Haste;
+
+  // Debuffs
 	
 	FGameplayTag StatusEffects_Debuff;
 	FGameplayTag StatusEffects_Debuff_Bleeding;
@@ -95,6 +101,8 @@ public:
 	FGameplayTag StatusEffects_Debuff_Root;
 	FGameplayTag StatusEffects_Debuff_Shock;
 
+  // Incapacitations
+
 	FGameplayTag StatusEffects_Incapacitation;
 	FGameplayTag StatusEffects_Incapacitation_HitReact;
 	FGameplayTag StatusEffects_Incapacitation_Knockback;
@@ -103,11 +111,15 @@ public:
 	FGameplayTag StatusEffects_Incapacitation_Sleep;
 	FGameplayTag StatusEffects_Incapacitation_Paralysis;
 
+  // Conditions
+
 	FGameplayTag StatusEffects_Condition;
 	FGameplayTag StatusEffects_Condition_Alive;
 	FGameplayTag StatusEffects_Condition_Dead;
 	FGameplayTag StatusEffects_Condition_Reanimated;
 	FGameplayTag StatusEffects_Condition_Possessed;
+
+  // Immunities
 
 	FGameplayTag Immunities;
 
@@ -122,6 +134,8 @@ public:
 	FGameplayTag Immunities_Incapacitation_Knockback;
 	FGameplayTag Immunities_Incapacitation_Freeze;
 
+  /* BOSS */
+
 	FGameplayTag Boss;
 	FGameplayTag Boss_State;
 	FGameplayTag Boss_State_1st;
@@ -129,6 +143,8 @@ public:
 	FGameplayTag Boss_State_3rd;
 	FGameplayTag Boss_State_4th;
 	FGameplayTag Boss_State_Ability;
+
+  /* INPUTS */
 
 	FGameplayTag InputTag;
 	FGameplayTag InputTag_Primary;
@@ -144,6 +160,8 @@ public:
 	
 	FGameplayTag InputTag_AttributesMenu;
 	FGameplayTag InputTag_SkillsMenu;
+
+  /* ABILITIES */
 
 	FGameplayTag Abilities;
 	FGameplayTag Abilities_NONE;
@@ -285,6 +303,35 @@ public:
 	FGameplayTag Abilities_Passive_Aura_SpiritSiphon;
 
 	FGameplayTag Abilities_Passive_Vilkar;
+
+  /* UPGRADES */
+
+  FGameplayTag Upgrades;
+  
+  FGameplayTag Upgrades_Soul;
+  FGameplayTag Upgrades_Soul_Absorption;
+  FGameplayTag Upgrades_Soul_HealthRegeneration;
+  FGameplayTag Upgrades_Soul_ManaRegeneration;
+  
+  FGameplayTag Upgrades_Fire;
+  FGameplayTag Upgrades_Fire_Absorption;
+  
+  FGameplayTag Upgrades_Ice;
+  FGameplayTag Upgrades_Ice_Absorption;
+  
+  FGameplayTag Upgrades_Lightning;
+  FGameplayTag Upgrades_Lightning_Absorption;
+  
+  FGameplayTag Upgrades_Necrotic;
+  FGameplayTag Upgrades_Necrotic_Absorption;
+  
+  FGameplayTag Upgrades_Arcane;
+  FGameplayTag Upgrades_Arcane_Absorption;
+  
+  FGameplayTag Upgrades_Physical;
+  FGameplayTag Upgrades_Physical_Absorption;
+
+  /* RESOURCES */
 	
 	FGameplayTag Resources;
 
