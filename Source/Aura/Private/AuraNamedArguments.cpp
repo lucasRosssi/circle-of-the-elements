@@ -135,4 +135,40 @@ void FAuraNamedArguments::InitializeNamedArguments()
   NamedArguments.StatusEffectsArgs.Add(StatusEffectsArgs1);
   NamedArguments.StatusEffectsArgs.Add(StatusEffectsArgs2);
   NamedArguments.StatusEffectsArgs.Add(StatusEffectsArgs3);
+
+  FUpgradeArgs UpgradeArgs1;
+  UpgradeArgs1.Percent_0 = FString("$Percent_0");
+  UpgradeArgs1.Percent_1 = FString("$Percent_1");
+  UpgradeArgs1.Value_0 = FString("$Value_0");
+  UpgradeArgs1.Value_1 = FString("$Value_1");
+
+  FUpgradeArgs UpgradeArgs2;
+  UpgradeArgs2.Percent_0 = FString("$2Percent_0");
+  UpgradeArgs2.Percent_1 = FString("$2Percent_1");
+  UpgradeArgs2.Value_0 = FString("$2Value_0");
+  UpgradeArgs2.Value_1 = FString("$2Value_1");
+
+  FUpgradeArgs UpgradeArgs3;
+  UpgradeArgs3.Percent_0 = FString("$3Percent_0");
+  UpgradeArgs3.Percent_1 = FString("$3Percent_1");
+  UpgradeArgs3.Value_0 = FString("$3Value_0");
+  UpgradeArgs3.Value_1 = FString("$3Value_1");
+
+  FUpgradeArgs UpgradeArgs4;
+  UpgradeArgs4.Percent_0 = FString("$4Percent_0");
+  UpgradeArgs4.Percent_1 = FString("$4Percent_1");
+  UpgradeArgs4.Value_0 = FString("$4Value_0");
+  UpgradeArgs4.Value_1 = FString("$4Value_1");
+
+  FUpgradeArgs UpgradeArgs5;
+  UpgradeArgs5.Percent_0 = FString("$5Percent_0");
+  UpgradeArgs5.Percent_1 = FString("$5Percent_1");
+  UpgradeArgs5.Value_0 = FString("$5Value_0");
+  UpgradeArgs5.Value_1 = FString("$5Value_1");
+
+  NamedArguments.UpgradeArgs.Add(UpgradeArgs1);
+  NamedArguments.UpgradeArgs.Add(UpgradeArgs2);
+  NamedArguments.UpgradeArgs.Add(UpgradeArgs3);
+  NamedArguments.UpgradeArgs.Add(UpgradeArgs4);
+  NamedArguments.UpgradeArgs.Add(UpgradeArgs4);
 }

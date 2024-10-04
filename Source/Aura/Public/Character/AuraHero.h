@@ -42,9 +42,9 @@ public:
 	virtual void AddToXP_Implementation(int32 InXP) override;
 	virtual int32 GetXP_Implementation() const override;
 	virtual int32 GetAttributePoints_Implementation() const override;
+	virtual void AddAttributePoints_Implementation(int32 Amount) override;
 	virtual int32 GetSkillPoints_Implementation() const override;
-	virtual void SpendAttributePoints_Implementation(int32 Amount) override;
-	virtual void SpendSkillPoints_Implementation(int32 Amount) override;
+	virtual void AddSkillPoints_Implementation(int32 Amount) override;
 	virtual void ShowTargetingActor_Implementation(
 		TSubclassOf<ATargetingActor> TargetingActorClass,
 		ETargetTeam TargetTeam,

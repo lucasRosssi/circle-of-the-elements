@@ -7,6 +7,8 @@
 #include "Engine/DataAsset.h"
 #include "RewardsInfo.generated.h"
 
+class UGameplayAbility;
+class UGameplayEffect;
 class ALocationReward;
 
 USTRUCT(BlueprintType)

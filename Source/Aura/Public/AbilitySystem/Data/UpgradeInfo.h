@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
+#include "ScalableFloat.h"
 #include "Engine/DataAsset.h"
 #include "UpgradeInfo.generated.h"
 
@@ -21,11 +22,20 @@ struct FAuraUpgradeInfo
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
   int32 MaxLevel = 1;
   
-  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-  TMap<FGameplayTag, float> Cost;
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(Categories="Resources", ForceInlineRow))
+  TMap<FGameplayTag, FScalableFloat> Cost;
 
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
   FGameplayTagContainer Requirements;
+
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+  FText Name = FText();
+
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(MultiLine=true))
+  FText Description = FText();
+	
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(MultiLine=true))
+  FText NextLevelDescription = FText();
   
 };
 

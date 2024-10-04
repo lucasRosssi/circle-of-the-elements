@@ -53,6 +53,7 @@ public:
 	void AddXP(int32 InXP);
 	FORCEINLINE int32 GetAttributePoints() const { return AttributePoints; }
 	void SetAttributePoints(int32 InAttributePoints);
+  UFUNCTION(BlueprintCallable)
 	void AddAttributePoints(int32 InAttributePoints);
 	FORCEINLINE int32 GetSkillPoints() const { return SkillPoints; }
 	void SetSkillPoints(int32 InSkillPoints);

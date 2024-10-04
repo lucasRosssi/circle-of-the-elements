@@ -855,6 +855,23 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FString("Dodge ability charges")
 		);
 
+  // Interactions
+
+  GameplayTags.Abilities_Interaction = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Abilities.Interaction"),
+    FString("Interaction ability tags")
+    );
+
+  GameplayTags.Abilities_Interaction_SoulEssence = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Abilities.Interaction.SoulEssence"),
+    FString("SoulEssence interaction ability")
+    );
+
+  GameplayTags.Abilities_Interaction_ElementalEssence = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Abilities.Interaction.ElementalEssence"),
+    FString("ElementalEssence interaction ability")
+    );
+
 	// Attacks
 	
 	GameplayTags.Abilities_Active = UGameplayTagsManager::Get().AddNativeGameplayTag(

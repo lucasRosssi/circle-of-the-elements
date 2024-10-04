@@ -107,6 +107,10 @@ public:
 	FGameplayAttributeData Armor;
 	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Armor);
 
+  UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_CooldownReduction, Category = "Secondary Attributes")
+  FGameplayAttributeData CooldownReduction;
+  ATTRIBUTE_ACCESSORS(UAuraAttributeSet, CooldownReduction);
+
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_CriticalDamage, Category = "Secondary Attributes")
 	FGameplayAttributeData CriticalDamage;
 	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, CriticalDamage);
@@ -123,13 +127,17 @@ public:
 	FGameplayAttributeData ManaRegeneration;
 	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, ManaRegeneration);
 
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_MaxHealth, Category = "Vital Attributes")
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_MaxHealth, Category = "Secondary Attributes")
 	FGameplayAttributeData MaxHealth;
 	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, MaxHealth);
 
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_MaxMana, Category = "Vital Attributes")
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_MaxMana, Category = "Secondary Attributes")
 	FGameplayAttributeData MaxMana;
 	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, MaxMana);
+
+  UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_ParryChance, Category = "Secondary Attributes")
+  FGameplayAttributeData ParryChance;
+  ATTRIBUTE_ACCESSORS(UAuraAttributeSet, ParryChance);
 	
 	/*
 	 * Vital attributes
@@ -176,14 +184,6 @@ public:
 	/*
 	 * Special attributes
 	 */
-
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_ParryChance, Category = "Special Attributes")
-	FGameplayAttributeData ParryChance;
-	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, ParryChance);
-
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_CooldownReduction, Category = "Special Attributes")
-	FGameplayAttributeData CooldownReduction;
-	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, CooldownReduction);
 	
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Power, Category = "Special Attributes")
 	FGameplayAttributeData Power;
@@ -192,6 +192,36 @@ public:
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_TimeDilation, Category = "Special Attributes")
 	FGameplayAttributeData TimeDilation;
 	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, TimeDilation);
+
+  // Resources
+
+  UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_SoulEssenceMultiplier, Category = "Special Attributes")
+  FGameplayAttributeData SoulEssenceMultiplier;
+  ATTRIBUTE_ACCESSORS(UAuraAttributeSet, SoulEssenceMultiplier);
+
+  UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_FireEssenceMultiplier, Category = "Special Attributes")
+  FGameplayAttributeData FireEssenceMultiplier;
+  ATTRIBUTE_ACCESSORS(UAuraAttributeSet, FireEssenceMultiplier);
+
+  UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_IceEssenceMultiplier, Category = "Special Attributes")
+  FGameplayAttributeData IceEssenceMultiplier;
+  ATTRIBUTE_ACCESSORS(UAuraAttributeSet, IceEssenceMultiplier);
+
+  UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_LightningEssenceMultiplier, Category = "Special Attributes")
+  FGameplayAttributeData LightningEssenceMultiplier;
+  ATTRIBUTE_ACCESSORS(UAuraAttributeSet, LightningEssenceMultiplier);
+  
+  UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_NecroticEssenceMultiplier, Category = "Special Attributes")
+  FGameplayAttributeData NecroticEssenceMultiplier;
+  ATTRIBUTE_ACCESSORS(UAuraAttributeSet, NecroticEssenceMultiplier);
+
+  UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_ArcaneEssenceMultiplier, Category = "Special Attributes")
+  FGameplayAttributeData ArcaneEssenceMultiplier;
+  ATTRIBUTE_ACCESSORS(UAuraAttributeSet, ArcaneEssenceMultiplier);
+
+  UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_PhysicalEssenceMultiplier, Category = "Special Attributes")
+  FGameplayAttributeData PhysicalEssenceMultiplier;
+  ATTRIBUTE_ACCESSORS(UAuraAttributeSet, PhysicalEssenceMultiplier);
 
 	/*
 	 * Meta attributes
@@ -263,6 +293,9 @@ public:
 	UFUNCTION()
 	void OnRep_Armor(const FGameplayAttributeData& OldArmor) const;
 
+  UFUNCTION()
+  void OnRep_CooldownReduction(const FGameplayAttributeData& OldCooldownReduction) const;
+
 	UFUNCTION()
 	void OnRep_CriticalDamage(const FGameplayAttributeData& OldCriticalDamage) const;
 	
@@ -274,6 +307,9 @@ public:
 
 	UFUNCTION()
 	void OnRep_ManaRegeneration(const FGameplayAttributeData& OldManaRegeneration) const;
+
+  UFUNCTION()
+  void OnRep_ParryChance(const FGameplayAttributeData& OldParryChance) const;
 
 	/*
 	 * Resistance
@@ -302,16 +338,31 @@ public:
 	 */
 
 	UFUNCTION()
-	void OnRep_ParryChance(const FGameplayAttributeData& OldParryChance) const;
-
-	UFUNCTION()
-	void OnRep_CooldownReduction(const FGameplayAttributeData& OldCooldownReduction) const;
-
-	UFUNCTION()
 	void OnRep_Power(const FGameplayAttributeData& OldDamageMultiplier) const;
 
 	UFUNCTION()
 	void OnRep_TimeDilation(const FGameplayAttributeData& OldTimeDilation) const;
+
+  UFUNCTION()
+  void OnRep_SoulEssenceMultiplier(const FGameplayAttributeData& OldSoulEssenceMultiplier) const;
+
+  UFUNCTION()
+  void OnRep_FireEssenceMultiplier(const FGameplayAttributeData& OldFireEssenceMultiplier) const;
+
+  UFUNCTION()
+  void OnRep_IceEssenceMultiplier(const FGameplayAttributeData& OldIceEssenceMultiplier) const;
+
+  UFUNCTION()
+  void OnRep_LightningEssenceMultiplier(const FGameplayAttributeData& OldLightningEssenceMultiplier) const;
+
+  UFUNCTION()
+  void OnRep_NecroticEssenceMultiplier(const FGameplayAttributeData& OldNecroticEssenceMultiplier) const;
+  
+  UFUNCTION()
+  void OnRep_ArcaneEssenceMultiplier(const FGameplayAttributeData& OldArcaneEssenceMultiplier) const;
+
+  UFUNCTION()
+  void OnRep_PhysicalEssenceMultiplier(const FGameplayAttributeData& OldPhysicalEssenceMultiplier) const;
 
 private:
 	void HandleIncomingDamage(const FEffectProperties& Props, const FGameplayAttribute& Attribute);

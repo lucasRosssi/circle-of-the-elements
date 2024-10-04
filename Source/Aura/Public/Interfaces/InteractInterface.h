@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
+#include "Abilities/GameplayAbilityTypes.h"
+
 #include "InteractInterface.generated.h"
 
 class UInteractComponent;
@@ -32,4 +34,8 @@ public:
   UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
   UInteractComponent* GetInteractComponent() const;
   static UInteractComponent* Safe_GetInteractComponent(const UObject* Object);
+
+  UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+  FGameplayEventData GetAbilityEventData() const;
+  static FGameplayEventData Safe_GetAbilityEventData(const UObject* Object);
 };

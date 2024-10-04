@@ -27,6 +27,7 @@ public:
   /* Interact Interface */
   virtual void Interact_Implementation(const AController* Controller) override;
   virtual UInteractComponent* GetInteractComponent_Implementation() const override;
+  virtual FGameplayEventData GetAbilityEventData_Implementation() const override;
   /* END Interact Interface */
 protected:
   virtual void BeginPlay() override;

@@ -217,6 +217,12 @@ public:
 	FGameplayTag Cooldown_Action_Dodge;
 	FGameplayTag Charges_Action_Dodge;
 
+  // Interactions
+
+  FGameplayTag Abilities_Interaction;
+  FGameplayTag Abilities_Interaction_SoulEssence;
+  FGameplayTag Abilities_Interaction_ElementalEssence;
+
 	// Common Active
 	
 	FGameplayTag Abilities_Active;

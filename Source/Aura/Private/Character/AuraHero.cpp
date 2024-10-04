@@ -143,14 +143,14 @@ int32 AAuraHero::GetSkillPoints_Implementation() const
   return GetAuraPlayerState()->GetSkillPoints();
 }
 
-void AAuraHero::SpendAttributePoints_Implementation(int32 Amount)
+void AAuraHero::AddAttributePoints_Implementation(int32 Amount)
 {
-  GetAuraPlayerState()->AddAttributePoints(-Amount);
+  GetAuraPlayerState()->AddAttributePoints(Amount);
 }
 
-void AAuraHero::SpendSkillPoints_Implementation(int32 Amount)
+void AAuraHero::AddSkillPoints_Implementation(int32 Amount)
 {
-  GetAuraPlayerState()->AddSkillPoints(-Amount);
+  GetAuraPlayerState()->AddSkillPoints(Amount);
 }
 
 void AAuraHero::ShowTargetingActor_Implementation(

@@ -13,5 +13,7 @@ UCLASS()
 class AURA_API UUpgradeEffect : public UGameplayEffect
 {
 	GENERATED_BODY()
-	
+
+public:
+  UUpgradeEffect();
 };

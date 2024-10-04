@@ -41,17 +41,15 @@ public:
 	UFUNCTION(BlueprintNativeEvent)
 	void LevelUp();
 
-	UFUNCTION(BlueprintNativeEvent)
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	int32 GetAttributePoints() const;
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void AddAttributePoints(int32 Amount);
 
-	UFUNCTION(BlueprintNativeEvent)
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	int32 GetSkillPoints() const;
-
-	UFUNCTION(BlueprintNativeEvent)
-	void SpendAttributePoints(int32 Amount);
-
-	UFUNCTION(BlueprintNativeEvent)
-	void SpendSkillPoints(int32 Amount);
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void AddSkillPoints(int32 Amount);
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void ShowTargetingActor(
