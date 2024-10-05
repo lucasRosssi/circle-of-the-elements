@@ -45,5 +45,8 @@ public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	bool IsDamageAbility() const;
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	bool IsAreaEffectActorAbility() const;	
+	bool IsAreaEffectActorAbility() const;
+
+  UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+  int32 GetRoundedHealAtLevel(int32 Level) const;
 };

@@ -47,6 +47,7 @@ void UAuraAttributeSet::GetLifetimeReplicatedProps(
   DOREPLIFETIME_CONDITION_NOTIFY(UAuraAttributeSet, HealthRegeneration, COND_None, REPNOTIFY_Always);
   DOREPLIFETIME_CONDITION_NOTIFY(UAuraAttributeSet, ManaRegeneration, COND_None, REPNOTIFY_Always);
   DOREPLIFETIME_CONDITION_NOTIFY(UAuraAttributeSet, ParryChance, COND_None, REPNOTIFY_Always);
+  DOREPLIFETIME_CONDITION_NOTIFY(UAuraAttributeSet, Restoration, COND_None, REPNOTIFY_Always);
 
   // Vital
   DOREPLIFETIME_CONDITION_NOTIFY(UAuraAttributeSet, Health, COND_None, REPNOTIFY_Always);
@@ -277,7 +278,7 @@ void UAuraAttributeSet::HandleIncomingDamage(
     }
   }
 
-  ShowFloatingText(Props, LocalIncomingDamage, bParried, bCriticalHit);
+  ShowDamageFloatingText(Props, LocalIncomingDamage, bParried, bCriticalHit);
 }
 
 void UAuraAttributeSet::HandleIncomingXP(const FEffectProperties& Props)
@@ -331,6 +332,20 @@ void UAuraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
   {
     HandleKnockback(Props);
   }
+
+  if (Data.EvaluatedData.Attribute == GetIncomingHealAttribute())
+  {
+    if (GetIncomingHeal() < 1.f) return;
+    
+    const float LocalIncomingHeal = GetIncomingHeal();
+    
+    SetIncomingHeal(0.f);
+    
+    const float NewHealth = GetHealth() + LocalIncomingHeal;
+    SetHealth(FMath::Clamp(NewHealth, 0.f, GetMaxHealth()));
+
+    ShowHealFloatingText(Props, LocalIncomingHeal);
+  }
 }
 
 void UAuraAttributeSet::AssignPrimeAttribute(const FGameplayTag& InAttributeTag)
@@ -363,7 +378,7 @@ void UAuraAttributeSet::AssignPrimeAttribute(const FGameplayTag& InAttributeTag)
   }
 }
 
-void UAuraAttributeSet::ShowFloatingText(
+void UAuraAttributeSet::ShowDamageFloatingText(
   const FEffectProperties& Props,
   float Damage,
   bool bParried,
@@ -384,6 +399,22 @@ void UAuraAttributeSet::ShowFloatingText(
     {
       TargetPC->ShowDamageNumber(Damage, Props.TargetCharacter, bParried, bCriticalHit, true);
     }
+  }
+}
+
+void UAuraAttributeSet::ShowHealFloatingText(const FEffectProperties& Props, float Heal) const
+{
+  AAuraPlayerController* SourcePC = Cast<AAuraPlayerController>(Props.SourceController);
+
+  if (SourcePC)
+  {
+    SourcePC->ShowHealNumber(Heal, Props.TargetCharacter, false);
+  }
+  else if (AAuraPlayerController* TargetPC =
+    Cast<AAuraPlayerController>(Props.TargetController)
+  )
+  {
+    TargetPC->ShowHealNumber(Heal, Props.TargetCharacter, true);
   }
 }
 
@@ -556,6 +587,11 @@ void UAuraAttributeSet::OnRep_NecroticResistance(
 void UAuraAttributeSet::OnRep_ParryChance(const FGameplayAttributeData& OldParryChance) const
 {
   GAMEPLAYATTRIBUTE_REPNOTIFY(UAuraAttributeSet, ParryChance, OldParryChance);
+}
+
+void UAuraAttributeSet::OnRep_Restoration(const FGameplayAttributeData& OldRestoration) const
+{
+  GAMEPLAYATTRIBUTE_REPNOTIFY(UAuraAttributeSet, Restoration, OldRestoration);
 }
 
 void UAuraAttributeSet::OnRep_CooldownReduction(

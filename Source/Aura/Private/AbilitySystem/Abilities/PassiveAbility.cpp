@@ -7,6 +7,7 @@ UPassiveAbility::UPassiveAbility()
 {
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 	NetExecutionPolicy = EGameplayAbilityNetExecutionPolicy::ServerInitiated;
+  AbilityTargetTeam = ETargetTeam::Self;
 }
 
 void UPassiveAbility::OnGiveAbility(

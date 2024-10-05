@@ -267,6 +267,12 @@ FAbilityParams UBaseAbility::MakeAbilityParamsFromDefaults(AActor* TargetActor) 
 	    AbilityParams.EffectParams.Add(EffectParams);
 	  }
 	}
+
+  if (HealEffectClass != nullptr && GetHealAtLevel(GetAbilityLevel()) > 0.f)
+  {
+    AbilityParams.HealParams.HealEffectClass = HealEffectClass;
+    AbilityParams.HealParams.BaseHeal = GetHealAtLevel(GetAbilityLevel());
+  }
 	
 	return AbilityParams;
 }
@@ -390,4 +396,14 @@ void UBaseAbility::HandleCooldownRecharge(
 bool UBaseAbility::IsChargesModeActive() const
 {
 	return bUseCharges && MaxCharges.GetValueAtLevel(GetAbilityLevel()) > 1 && IsValid(ChargesEffectClass);
+}
+
+float UBaseAbility::GetHealAtLevel(int32 Level) const
+{
+  return Heal.GetValueAtLevel(Level);
+}
+
+int32 UBaseAbility::GetRoundedHealAtLevel_Implementation(int32 Level) const
+{
+  return FMath::RoundToInt32(GetHealAtLevel(Level));
 }

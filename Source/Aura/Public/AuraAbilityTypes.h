@@ -28,6 +28,23 @@ struct FDamageParams
 };
 
 USTRUCT(BlueprintType)
+struct FHealParams
+{
+  GENERATED_BODY()
+	
+  UPROPERTY(BlueprintReadWrite)
+  TSubclassOf<UGameplayEffect> HealEffectClass = nullptr;
+	
+  UPROPERTY(BlueprintReadWrite)
+  float BaseHeal = 0.f;
+
+  bool IsValid() const
+  {
+    return HealEffectClass != nullptr && BaseHeal > 0.f;
+  }
+};
+
+USTRUCT(BlueprintType)
 struct FEffectParams
 {
 	GENERATED_BODY()
@@ -96,6 +113,9 @@ struct FAbilityParams
 
 	UPROPERTY(BlueprintReadWrite)
 	FDamageParams DamageParams = FDamageParams();
+
+  UPROPERTY(BlueprintReadWrite)
+  FHealParams HealParams = FHealParams();
 
 	UPROPERTY(BlueprintReadWrite)
 	TArray<FEffectParams> EffectParams = TArray<FEffectParams>();

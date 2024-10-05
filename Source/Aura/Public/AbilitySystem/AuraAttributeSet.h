@@ -138,6 +138,10 @@ public:
   UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_ParryChance, Category = "Secondary Attributes")
   FGameplayAttributeData ParryChance;
   ATTRIBUTE_ACCESSORS(UAuraAttributeSet, ParryChance);
+
+  UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Restoration, Category = "Secondary Attributes")
+  FGameplayAttributeData Restoration;
+  ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Restoration);
 	
 	/*
 	 * Vital attributes
@@ -238,6 +242,10 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category = "Meta Attributes")
 	FGameplayAttributeData IncomingForce;
 	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, IncomingForce);
+  
+  UPROPERTY(BlueprintReadOnly, Category = "Meta Attributes")
+  FGameplayAttributeData IncomingHeal;
+  ATTRIBUTE_ACCESSORS(UAuraAttributeSet, IncomingHeal);
 
 	UPROPERTY(BlueprintReadOnly, Category = "Meta Attributes")
 	FGameplayAttributeData IncomingXP;
@@ -304,12 +312,15 @@ public:
 
 	UFUNCTION()
 	void OnRep_HealthRegeneration(const FGameplayAttributeData& OldHealthRegeneration) const;
-
+  
 	UFUNCTION()
 	void OnRep_ManaRegeneration(const FGameplayAttributeData& OldManaRegeneration) const;
 
   UFUNCTION()
   void OnRep_ParryChance(const FGameplayAttributeData& OldParryChance) const;
+  
+  UFUNCTION()
+  void OnRep_Restoration(const FGameplayAttributeData& OldRestoration) const;
 
 	/*
 	 * Resistance
@@ -372,12 +383,16 @@ private:
 		const FGameplayEffectModCallbackData& Data,
 		FEffectProperties& Props
 		) const;
-	void ShowFloatingText(
+	void ShowDamageFloatingText(
 		const FEffectProperties& Props,
 		float Damage,
 		bool bParried,
 		bool bCriticalHit
 		)	const;
+  void ShowHealFloatingText(
+    const FEffectProperties& Props,
+    float Heal
+    )	const;
 	void SendXPEvent(const FEffectProperties& Props);
 
 	ICombatInterface* GetAvatarCombatInterface();

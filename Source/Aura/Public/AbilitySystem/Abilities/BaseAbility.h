@@ -79,6 +79,11 @@ public:
 	UFUNCTION(BlueprintPure, Category="Ability Effect", meta=(HidePin="Target", DefaultToSelf="Target"))
 	virtual FAbilityParams MakeAbilityParamsFromDefaults(AActor* TargetActor = nullptr) const;
 
+  UFUNCTION(BlueprintPure, Category="Ability Defaults|Heal")
+  float GetHealAtLevel(int32 Level) const;
+  UFUNCTION(BlueprintPure, Category="Ability Defaults|Heal")
+  virtual int32 GetRoundedHealAtLevel_Implementation(int32 Level) const override;
+
 protected:
 #if WITH_EDITORONLY_DATA
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Debug")
@@ -187,6 +192,14 @@ OnEndAbility event. Or make the ability not constantly dependent on variables.
 	UPROPERTY(EditDefaultsOnly, Category="Cooldowns")
 	FScalableFloat Cooldown;
 
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Heal")
+  TSubclassOf<UGameplayEffect> HealEffectClass;
+  UPROPERTY(EditDefaultsOnly, Category="Heal")
+  ETargetTeam HealTarget = ETargetTeam::Friends;
+  UPROPERTY(EditDefaultsOnly, Category="Heal")
+  FScalableFloat Heal;
+
+
 private:
 	void HandleCooldownRecharge(
 		FGameplayAbilitySpecHandle Handle,
@@ -195,8 +208,8 @@ private:
 		);
 	
 	bool IsChargesModeActive() const;
-	
-	UPROPERTY()
+
+  UPROPERTY()
 	FGameplayTag AbilityTag = FGameplayTag();
 
 	UPROPERTY()

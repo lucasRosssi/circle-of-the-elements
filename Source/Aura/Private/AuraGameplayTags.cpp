@@ -153,7 +153,7 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 
 	GameplayTags.Attributes_Secondary_HealthRegeneration = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Attributes.Secondary.HealthRegeneration"),
-		FString("Amount of health recovered over time")
+		FString("Amount of health recovered after each fight")
 		);
 	
 	GameplayTags.Attributes_Secondary_ManaRegeneration = UGameplayTagsManager::Get()
@@ -166,6 +166,11 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	FName("Attributes.Secondary.ParryChance"),
 	FString("Chance to parry an attack and negate damage")
 	);
+
+  GameplayTags.Attributes_Secondary_Restoration = UGameplayTagsManager::Get().AddNativeGameplayTag(
+  FName("Attributes.Secondary.Restoration"),
+  FString("Magnitude of any healing received")
+  );
 	
 	/*
 	 * SPECIAL ATTRIBUTES
@@ -301,7 +306,16 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FName("Damage.Necrotic"),
 		FString("Necrotic damage type")
 		);
-	
+
+  /*
+   * Heal Tags
+   */
+
+  GameplayTags.Heal = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Heal"),
+    FString("Heal tag")
+    );
+  
 	/*
 	 * Resistances Tags
 	 */
@@ -684,6 +698,13 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FName("Abilities.Mobility"),
 		FString("Mobility ability.")
 		);
+
+  // Health Regen
+
+  GameplayTags.Abilities_HealthRegeneration = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Abilities.HealthRegeneration"),
+    FString("HealthRegeneration ability.")
+    );
 
 	// Tiers
 
@@ -1143,6 +1164,21 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FName("Abilities.Passive"),
 		FString("Passive abilities")
 		);
+
+  GameplayTags.Abilities_Passive_Common = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Abilities.Passive.Common"),
+    FString("Common passive abilities")
+    );
+
+  GameplayTags.Abilities_Passive_Common_SoulAbsorption = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Abilities.Passive.Common.SoulAbsorption"),
+    FString("SoulAbsorption ability")
+    );
+
+  GameplayTags.Abilities_Passive_Common_Respite = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Abilities.Passive.Common.Respite"),
+    FString("Respite ability")
+    );
 
 	// Aura passive abilities
 

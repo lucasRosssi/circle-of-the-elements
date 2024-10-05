@@ -20,6 +20,7 @@
 #include "Managers/UIManager.h"
 #include "Materials/MaterialParameterCollectionInstance.h"
 #include "UI/Widget/DamageTextComponent.h"
+#include "UI/Widget/HealTextComponent.h"
 
 AAuraPlayerController::AAuraPlayerController()
 {
@@ -282,6 +283,24 @@ void AAuraPlayerController::DisableController()
 	DisableInput(this);
 	LastActor = nullptr;
 	ThisActor = nullptr;
+}
+
+void AAuraPlayerController::ShowHealNumber_Implementation(float HealAmount, ACharacter* TargetCharacter, bool bIsPlayer)
+{
+  if (IsValid(TargetCharacter) && HealTextComponentClass && IsLocalController())
+  {
+    UHealTextComponent* HealText = NewObject<UHealTextComponent>(
+      TargetCharacter,
+      HealTextComponentClass
+    );
+    HealText->RegisterComponent();
+    HealText->AttachToComponent(
+      TargetCharacter->GetRootComponent(),
+      FAttachmentTransformRules::KeepRelativeTransform
+    );
+    HealText->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
+    HealText->SetHealText(HealAmount, bIsPlayer);
+  }
 }
 
 void AAuraPlayerController::ShowDamageNumber_Implementation(

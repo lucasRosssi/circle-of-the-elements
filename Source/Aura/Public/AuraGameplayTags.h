@@ -47,7 +47,8 @@ public:
 	FGameplayTag Attributes_Secondary_CriticalDamage;
 	FGameplayTag Attributes_Secondary_HealthRegeneration;
 	FGameplayTag Attributes_Secondary_ManaRegeneration;
-	FGameplayTag Attributes_Secondary_ParryChance;
+  FGameplayTag Attributes_Secondary_ParryChance;
+  FGameplayTag Attributes_Secondary_Restoration;
 
 	FGameplayTag Attributes_Resistance;
 	FGameplayTag Attributes_Resistance_Physical;
@@ -71,6 +72,8 @@ public:
 	FGameplayTag Damage_Ice;
 	FGameplayTag Damage_Lightning;
 	FGameplayTag Damage_Necrotic;
+
+  FGameplayTag Heal;
 
 	TMap<FGameplayTag, FGameplayTag> DamageTypesToResistances;
 
@@ -175,6 +178,8 @@ public:
 	FGameplayTag Abilities_Type_None;
 
 	FGameplayTag Abilities_Mobility;
+  
+  FGameplayTag Abilities_HealthRegeneration;
 
 	FGameplayTag Abilities_Tier;
 	FGameplayTag Abilities_Tier_I;
@@ -199,7 +204,7 @@ public:
 	FGameplayTag Abilities_Element_Lightning;
 	FGameplayTag Abilities_Element_Necrotic;
 	FGameplayTag Abilities_Element_Duo;
-
+  
 	// Reactions
 	
 	FGameplayTag Abilities_Reaction;
@@ -300,7 +305,10 @@ public:
 
 	FGameplayTag Abilities_Active_Summon;
 
-	FGameplayTag Abilities_Passive;
+  FGameplayTag Abilities_Passive;
+  FGameplayTag Abilities_Passive_Common;
+  FGameplayTag Abilities_Passive_Common_SoulAbsorption;
+  FGameplayTag Abilities_Passive_Common_Respite;
 	
 	FGameplayTag Abilities_Passive_Aura;
 	FGameplayTag Abilities_Passive_Aura_EnergyShield;
