@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
-#include "Enums/GatePosition.h"
 #include "Enums/Region.h"
 #include "Interfaces/InteractInterface.h"
 #include "Gate.generated.h"
@@ -60,8 +59,6 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Location|Gate")
 	ERegion Region = ERegion::Undefined;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Location|Gate")
-	EGatePosition NextGatePosition = EGatePosition::BottomLeft;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Location|Gate")
 	FGameplayTag RewardTag = FGameplayTag();
 private:

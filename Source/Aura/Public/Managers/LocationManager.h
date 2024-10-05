@@ -20,7 +20,7 @@ class AURA_API ULocationManager : public UAuraSystemComponent
 
 public:
   UFUNCTION(BlueprintPure)
-  TSoftObjectPtr<UWorld> GetNextLocation(ERegion InRegion, EGatePosition InEntrancePosition);
+  TSoftObjectPtr<UWorld> GetNextLocation(ERegion InRegion);
   UFUNCTION(BlueprintPure)
   TSoftObjectPtr<UWorld> GetInitialLocation(ERegion InRegion);
 
@@ -29,7 +29,7 @@ public:
   UFUNCTION(BlueprintCallable)
   void InitLocation();
   UFUNCTION(BlueprintCallable)
-  void ExitLocation(EGatePosition NextGatePosition);
+  void ExitLocation();
 
   UFUNCTION(BlueprintPure)
   TSoftObjectPtr<UWorld> GetCurrentLocation() const { return CurrentLocation; }

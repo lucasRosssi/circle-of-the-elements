@@ -9,17 +9,7 @@
 #include "RegionInfo.generated.h"
 
 struct FAvailableLevels;
-enum class EGatePosition : uint8;
 class AAuraEnemy;
-
-USTRUCT(BlueprintType)
-struct FAvailableLevels
-{
-	GENERATED_BODY()
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	TArray<TSoftObjectPtr<UWorld>> Levels;
-};
 
 USTRUCT(BlueprintType)
 struct FEnemyWave
@@ -54,7 +44,7 @@ struct FRegionData
 	TMap<FGameplayTag, FEncounter> Encounters;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	TMap<EGatePosition, FAvailableLevels> Locations;
+	TArray<TSoftObjectPtr<UWorld>> Locations;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TArray<TSoftObjectPtr<UWorld>> InitialLocations;
@@ -88,13 +78,11 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	TArray<TSoftObjectPtr<UWorld>> GetRegionLocations(
-		ERegion Region,
-		EGatePosition EntrancePosition
+		ERegion Region
 		);
 	UFUNCTION(BlueprintCallable)
 	TSoftObjectPtr<UWorld> GetRandomizedRegionLocation(
 		ERegion Region,
-		EGatePosition EntrancePosition,
 		TArray<TSoftObjectPtr<UWorld>> LevelsToExclude
 		);
 	UFUNCTION(BlueprintCallable)

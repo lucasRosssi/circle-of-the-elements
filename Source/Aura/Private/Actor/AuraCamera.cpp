@@ -51,13 +51,13 @@ void AAuraCamera::BeginPlay()
   }
 }
 
-void AAuraCamera::OnLocationUpdate(EGatePosition GatePosition)
+void AAuraCamera::OnLocationUpdate()
 {
   SetCameraBoundaries();
   MovementLagSpeed = 12.f;
 }
 
-void AAuraCamera::OnExitLocation(EGatePosition NextGatePosition)
+void AAuraCamera::OnExitLocation()
 {
   RemoveCameraBoundaries();
   MovementLagSpeed = 0.f;

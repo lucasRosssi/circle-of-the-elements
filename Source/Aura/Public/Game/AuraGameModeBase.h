@@ -28,8 +28,8 @@ class UStatusEffectInfo;
 class UAbilityInfo;
 class UCharacterInfo;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnInitLocation, EGatePosition, GatePosition);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnExitLocation, EGatePosition, NextGatePosition);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnInitLocation);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnExitLocation);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnEncounterFinished);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnRewardTaken);
 

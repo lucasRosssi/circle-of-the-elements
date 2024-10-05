@@ -32,7 +32,7 @@ protected:
 
 private:
 	UFUNCTION()
-	void OnLocationUpdate(EGatePosition GatePosition);
+	void OnLocationUpdate();
 	UFUNCTION()
-	void OnExitLocation(EGatePosition NextGatePosition);
+	void OnExitLocation();
 };
