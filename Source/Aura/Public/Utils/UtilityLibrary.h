@@ -6,6 +6,7 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "UtilityLibrary.generated.h"
 
+struct FScalableFloat;
 /**
  * 
  */
@@ -19,4 +20,9 @@ public:
 
 	UFUNCTION(BlueprintPure, Category="Vectors")
 	static FVector GetMiddlePoint(const FVector& V1, const FVector& V2);
+
+  UFUNCTION(BlueprintPure, Category="Numbers|Scalable")
+  static float GetScalableFloatAtLevel(const FScalableFloat& ScalableFloat, int32 Level);
+  UFUNCTION(BlueprintPure, Category="Numbers|Scalable")
+  static int32 GetScalableIntegerAtLevel(const FScalableFloat& ScalableFloat, int32 Level);
 };

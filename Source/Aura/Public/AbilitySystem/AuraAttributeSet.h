@@ -379,7 +379,8 @@ private:
 	void HandleIncomingDamage(const FEffectProperties& Props, const FGameplayAttribute& Attribute);
 	void HandleIncomingXP(const FEffectProperties& Props);
 	void HandleKnockback(const FEffectProperties& Props);
-	void SetEffectProperties(
+	void HandleHeal(const FEffectProperties& Props);
+  void SetEffectProperties(
 		const FGameplayEffectModCallbackData& Data,
 		FEffectProperties& Props
 		) const;

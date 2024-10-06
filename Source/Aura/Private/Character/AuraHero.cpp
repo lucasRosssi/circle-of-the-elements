@@ -4,7 +4,6 @@
 #include "Character/AuraHero.h"
 
 #include "AbilitySystemComponent.h"
-#include "AuraGameplayTags.h"
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
@@ -95,10 +94,10 @@ void AAuraHero::AddCharacterAbilities()
 {
   Super::AddCharacterAbilities();
 
-  GetAuraASC()->AddCharacterAbilities(
-    EligibleAbilities,
-    FAuraGameplayTags::Get().Abilities_Status_Eligible
-  );
+  // GetAuraASC()->AddCharacterAbilities(
+  //   EligibleAbilities,
+  //   FAuraGameplayTags::Get().Abilities_Status_Eligible
+  // );
 
   if (UAbilityManager* AbilityManager = UAuraSystemsLibrary::GetAbilityManager(this))
   {

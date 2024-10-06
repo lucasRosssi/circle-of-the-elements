@@ -834,11 +834,6 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FString("Get stunned ability")
 		);
 
-	GameplayTags.Abilities_Reaction_ShieldStackRemove = UGameplayTagsManager::Get().AddNativeGameplayTag(
-		FName("Abilities.Reaction.ShieldStackRemove"),
-		FString("Removes stacks of shield if applicable")
-		);
-
 	GameplayTags.Abilities_Reaction_Charm = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Abilities.Reaction.Charm"),
 		FString("Get charmed ability")
@@ -853,6 +848,17 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FName("Abilities.Reaction.Paralysis"),
 		FString("Get paralyzed ability")
 		);
+
+
+  GameplayTags.Abilities_Reaction_ShieldStackRemove = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Abilities.Reaction.ShieldStackRemove"),
+    FString("Removes stacks of shield if applicable")
+    );
+
+  GameplayTags.Abilities_Reaction_SecondWind = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Abilities.Reaction.SecondWind"),
+    FString("Activated on death if character has at least 1 stack")
+    );
 
 	// Actions
 
@@ -1180,6 +1186,11 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
     FString("Respite ability")
     );
 
+  GameplayTags.Abilities_Passive_Common_SecondWind = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Abilities.Passive.Common.SecondWind"),
+    FString("SecondWind ability")
+    );
+
 	// Aura passive abilities
 
 	GameplayTags.Abilities_Passive_Aura = UGameplayTagsManager::Get().AddNativeGameplayTag(
@@ -1245,6 +1256,11 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
   GameplayTags.Upgrades_Soul_ManaRegeneration = UGameplayTagsManager::Get().AddNativeGameplayTag(
     FName("Upgrades.Soul.ManaRegeneration"),
     FString("Mana Regeneration upgrade tag")
+    );
+
+  GameplayTags.Upgrades_Soul_SecondWind = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Upgrades.Soul.SecondWind"),
+    FString("SecondWind upgrade tag")
     );
 
   // Fire

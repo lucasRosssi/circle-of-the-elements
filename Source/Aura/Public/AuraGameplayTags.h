@@ -208,12 +208,15 @@ public:
 	// Reactions
 	
 	FGameplayTag Abilities_Reaction;
+  
 	FGameplayTag Abilities_Reaction_HitReact;
 	FGameplayTag Abilities_Reaction_Stun;
-	FGameplayTag Abilities_Reaction_ShieldStackRemove;
 	FGameplayTag Abilities_Reaction_Charm;
 	FGameplayTag Abilities_Reaction_Shock;
-	FGameplayTag Abilities_Reaction_Paralysis;
+  FGameplayTag Abilities_Reaction_Paralysis;
+  
+	FGameplayTag Abilities_Reaction_ShieldStackRemove;
+  FGameplayTag Abilities_Reaction_SecondWind;
 
 	// Actions
 	
@@ -309,6 +312,7 @@ public:
   FGameplayTag Abilities_Passive_Common;
   FGameplayTag Abilities_Passive_Common_SoulAbsorption;
   FGameplayTag Abilities_Passive_Common_Respite;
+  FGameplayTag Abilities_Passive_Common_SecondWind;
 	
 	FGameplayTag Abilities_Passive_Aura;
 	FGameplayTag Abilities_Passive_Aura_EnergyShield;
@@ -326,6 +330,7 @@ public:
   FGameplayTag Upgrades_Soul_Absorption;
   FGameplayTag Upgrades_Soul_HealthRegeneration;
   FGameplayTag Upgrades_Soul_ManaRegeneration;
+  FGameplayTag Upgrades_Soul_SecondWind;
   
   FGameplayTag Upgrades_Fire;
   FGameplayTag Upgrades_Fire_Absorption;

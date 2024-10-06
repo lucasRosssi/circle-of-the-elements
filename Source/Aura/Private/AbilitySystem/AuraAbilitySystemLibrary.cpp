@@ -1155,6 +1155,32 @@ void UAuraAbilitySystemLibrary::MakeManaAndCooldownTextNextLevel(
   }
 }
 
+bool UAuraAbilitySystemLibrary::IsAbilityGranted(const UAbilitySystemComponent* ASC, const FGameplayTag& AbilityTag)
+{
+  TArray<FGameplayAbilitySpec*> SpecArray;
+  ASC->GetActivatableGameplayAbilitySpecsByAllMatchingTags(
+    FGameplayTagContainer({ AbilityTag }),
+    SpecArray
+    );
+
+  return !SpecArray.IsEmpty();
+}
+
+bool UAuraAbilitySystemLibrary::IsAbilityActive(const UAbilitySystemComponent* ASC, const FGameplayTag& AbilityTag)
+{
+  TArray<FGameplayAbilitySpec*> SpecArray;
+  ASC->GetActivatableGameplayAbilitySpecsByAllMatchingTags(
+    FGameplayTagContainer({ AbilityTag }),
+    SpecArray
+    );
+
+  if (SpecArray.IsEmpty()) return false;
+
+  const FGameplayAbilitySpec* AbilitySpec = SpecArray[0];
+
+  return AbilitySpec->IsActive();
+}
+
 void UAuraAbilitySystemLibrary::AddOverlappedCharactersByTeam(
   const AActor* ContextActor,
   TArray<AActor*>& OutOverlappingActors,
@@ -1303,6 +1329,27 @@ FGameplayEffectContextHandle UAuraAbilitySystemLibrary::ApplyAbilityEffect(
                                                      .SourceASC->MakeEffectContext();
   EffectContextHandle.AddSourceObject(SourceAvatarActor);
 
+  const FHealParams& HealParams = AbilityParams.HealParams;
+  
+  if (HealParams.IsValid())
+  {
+    const FGameplayEffectSpecHandle HealSpecHandle = AbilityParams.SourceASC->MakeOutgoingSpec(
+      HealParams.HealEffectClass,
+      AbilityParams.AbilityLevel,
+      EffectContextHandle
+    );
+
+    UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(
+      HealSpecHandle,
+      AuraTags.Heal,
+      HealParams.BaseHeal
+    );
+
+    AbilityParams.SourceASC
+                 ->ApplyGameplayEffectSpecToTarget(*HealSpecHandle.Data, AbilityParams.TargetASC);
+    bSuccess = true;
+  }
+
   if (HasAnyHarmfulEffectBlockTag(AbilityParams.TargetASC))
   {
     if (HasAnyParryTag(AbilityParams.TargetASC))
@@ -1317,7 +1364,6 @@ FGameplayEffectContextHandle UAuraAbilitySystemLibrary::ApplyAbilityEffect(
 
   const FDamageParams& DamageParams = AbilityParams.DamageParams;
   const TArray<FEffectParams>& EffectParams = AbilityParams.EffectParams;
-  const FHealParams& HealParams = AbilityParams.HealParams;
 
   SetForwardVector(EffectContextHandle, AbilityParams.ForwardVector);
   SetIsAreaAbility(EffectContextHandle, AbilityParams.bIsAreaAbility);
@@ -1378,25 +1424,6 @@ FGameplayEffectContextHandle UAuraAbilitySystemLibrary::ApplyAbilityEffect(
       }
     }
 
-    bSuccess = true;
-  }
-
-  if (HealParams.IsValid())
-  {
-    const FGameplayEffectSpecHandle HealSpecHandle = AbilityParams.SourceASC->MakeOutgoingSpec(
-      HealParams.HealEffectClass,
-      AbilityParams.AbilityLevel,
-      EffectContextHandle
-    );
-
-    UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(
-      HealSpecHandle,
-      AuraTags.Heal,
-      HealParams.BaseHeal
-    );
-
-    AbilityParams.SourceASC
-                 ->ApplyGameplayEffectSpecToTarget(*HealSpecHandle.Data, AbilityParams.TargetASC);
     bSuccess = true;
   }
 

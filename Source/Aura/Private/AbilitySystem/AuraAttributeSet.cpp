@@ -235,6 +235,8 @@ void UAuraAttributeSet::HandleIncomingDamage(
 {
   if (GetIncomingDamage() + GetIncomingDoT() <= 0.f) return;
 
+  const FAuraGameplayTags& AuraTags = FAuraGameplayTags::Get();
+
   const bool bDoT = Attribute == GetIncomingDoTAttribute();
   float LocalIncomingDamage;
   bool bParried;
@@ -261,8 +263,21 @@ void UAuraAttributeSet::HandleIncomingDamage(
   const bool bFatal = NewHealth <= 0.f;
   if (bFatal)
   {
-    const float DeathImpulseMagnitude = bDoT ? 0.f : FMath::Min(250 * LocalIncomingDamage, 20000.f);
-    HandleDeath(Props, DeathImpulseMagnitude);
+    UAbilitySystemComponent* ASC = GetOwningAbilitySystemComponent();
+    if (ASC->HasMatchingGameplayTag(AuraTags.Upgrades_Soul_SecondWind))
+    {
+      const FGameplayEffectQuery& Query = FGameplayEffectQuery::MakeQuery_MatchAllOwningTags(
+        FGameplayTagContainer({ AuraTags.Upgrades_Soul_SecondWind })
+        );
+      ASC->RemoveActiveEffects(Query, 1);
+      ASC->TryActivateAbilitiesByTag(FGameplayTagContainer({ AuraTags.Abilities_Passive_Common_SecondWind }));
+    }
+    else
+    {
+      const float DeathImpulseMagnitude = bDoT ? 0.f : FMath::Min(250 * LocalIncomingDamage, 20000.f);
+      HandleDeath(Props, DeathImpulseMagnitude);
+    }
+    
   }
   else if (!bDoT && UAuraAbilitySystemLibrary::GetApplyHitReact(Props.EffectContextHandle))
   {
@@ -305,6 +320,20 @@ void UAuraAttributeSet::HandleKnockback(const FEffectProperties& Props)
   }
 }
 
+void UAuraAttributeSet::HandleHeal(const FEffectProperties& Props)
+{
+  if (GetIncomingHeal() < 1.f) return;
+    
+  const float LocalIncomingHeal = GetIncomingHeal();
+    
+  SetIncomingHeal(0.f);
+    
+  const float NewHealth = GetHealth() + LocalIncomingHeal;
+  SetHealth(FMath::Clamp(NewHealth, 0.f, GetMaxHealth()));
+
+  ShowHealFloatingText(Props, LocalIncomingHeal);
+}
+
 void UAuraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
 {
   Super::PostGameplayEffectExecute(Data);
@@ -335,16 +364,7 @@ void UAuraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 
   if (Data.EvaluatedData.Attribute == GetIncomingHealAttribute())
   {
-    if (GetIncomingHeal() < 1.f) return;
-    
-    const float LocalIncomingHeal = GetIncomingHeal();
-    
-    SetIncomingHeal(0.f);
-    
-    const float NewHealth = GetHealth() + LocalIncomingHeal;
-    SetHealth(FMath::Clamp(NewHealth, 0.f, GetMaxHealth()));
-
-    ShowHealFloatingText(Props, LocalIncomingHeal);
+    HandleHeal(Props);
   }
 }
 

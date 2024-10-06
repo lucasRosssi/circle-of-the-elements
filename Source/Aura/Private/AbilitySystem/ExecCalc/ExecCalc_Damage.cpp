@@ -110,7 +110,7 @@ struct AuraDamageStatics
 	}
 };
 
-static const AuraDamageStatics& HealStatics()
+static const AuraDamageStatics& DamageStatics()
 {
 	static AuraDamageStatics DStatics;
 	return DStatics;
@@ -118,17 +118,17 @@ static const AuraDamageStatics& HealStatics()
 
 UExecCalc_Damage::UExecCalc_Damage()
 {
-	RelevantAttributesToCapture.Add(HealStatics().ArmorDef);
-	RelevantAttributesToCapture.Add(HealStatics().PowerDef);
-	RelevantAttributesToCapture.Add(HealStatics().ParryChanceDef);
-	RelevantAttributesToCapture.Add(HealStatics().CriticalRateDef);
-	RelevantAttributesToCapture.Add(HealStatics().CriticalDamageDef);
-	RelevantAttributesToCapture.Add(HealStatics().PhysicalResistanceDef);
-	RelevantAttributesToCapture.Add(HealStatics().EnergyResistanceDef);
-	RelevantAttributesToCapture.Add(HealStatics().FireResistanceDef);
-	RelevantAttributesToCapture.Add(HealStatics().IceResistanceDef);
-	RelevantAttributesToCapture.Add(HealStatics().LightningResistanceDef);
-	RelevantAttributesToCapture.Add(HealStatics().NecroticResistanceDef);
+	RelevantAttributesToCapture.Add(DamageStatics().ArmorDef);
+	RelevantAttributesToCapture.Add(DamageStatics().PowerDef);
+	RelevantAttributesToCapture.Add(DamageStatics().ParryChanceDef);
+	RelevantAttributesToCapture.Add(DamageStatics().CriticalRateDef);
+	RelevantAttributesToCapture.Add(DamageStatics().CriticalDamageDef);
+	RelevantAttributesToCapture.Add(DamageStatics().PhysicalResistanceDef);
+	RelevantAttributesToCapture.Add(DamageStatics().EnergyResistanceDef);
+	RelevantAttributesToCapture.Add(DamageStatics().FireResistanceDef);
+	RelevantAttributesToCapture.Add(DamageStatics().IceResistanceDef);
+	RelevantAttributesToCapture.Add(DamageStatics().LightningResistanceDef);
+	RelevantAttributesToCapture.Add(DamageStatics().NecroticResistanceDef);
 }
 
 void UExecCalc_Damage::Execute_Implementation(
@@ -215,7 +215,7 @@ void UExecCalc_Damage::Execute_Implementation(
 	float TargetParryChance = 0.f;
 	
 	ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(
-		HealStatics().ParryChanceDef,
+		DamageStatics().ParryChanceDef,
 		EvaluationParams,
 		TargetParryChance
 	);
@@ -232,7 +232,7 @@ void UExecCalc_Damage::Execute_Implementation(
 	{
 		float SourcePower = 0.f;
 		ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(
-			HealStatics().PowerDef,
+			DamageStatics().PowerDef,
 			EvaluationParams,
 			SourcePower
 		);
@@ -241,7 +241,7 @@ void UExecCalc_Damage::Execute_Implementation(
 		
 		float SourceCriticalRate = 0.f;
 		ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(
-			HealStatics().CriticalRateDef,
+			DamageStatics().CriticalRateDef,
 			EvaluationParams,
 			SourceCriticalRate
 		);
@@ -254,7 +254,7 @@ void UExecCalc_Damage::Execute_Implementation(
 		{
 			float SourceCriticalDamage = 0.f;
 			ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(
-				HealStatics().CriticalDamageDef,
+				DamageStatics().CriticalDamageDef,
 				EvaluationParams,
 				SourceCriticalDamage
 			);
@@ -266,7 +266,7 @@ void UExecCalc_Damage::Execute_Implementation(
 		
 		float TargetArmor = 0.f;
 		ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(
-			HealStatics().ArmorDef,
+			DamageStatics().ArmorDef,
 			EvaluationParams,
 			TargetArmor
 		);

@@ -22,7 +22,7 @@ AActor* UActiveAbility::GetNextBounceTarget(AActor* HitTarget)
 
 int32 UActiveAbility::GetMaxHitCountAtLevel_Implementation(int32 Level) const
 {
-	return FMath::RoundToInt32(MaxHitCount.GetValueAtLevel(Level));
+	return MaxHitCount.AsInteger(Level);
 }
 
 float UActiveAbility::GetEffectChangePerHitAtLevel_Implementation(int32 Level) const
@@ -58,7 +58,7 @@ float UActiveAbility::GetAnimRootMotionTranslateScale() const
 
 int32 UActiveAbility::GetMaxHitCount() const
 {
-	return FMath::RoundToInt32(MaxHitCount.GetValueAtLevel(GetAbilityLevel())); 
+	return MaxHitCount.AsInteger(GetAbilityLevel()); 
 }
 
 float UActiveAbility::GetEffectChangePerHit() const

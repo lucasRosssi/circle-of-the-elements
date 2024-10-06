@@ -432,6 +432,11 @@ public:
 		FString& OutCooldownText
 		);
 
+  UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|Ability")
+  static bool IsAbilityGranted(const UAbilitySystemComponent* ASC, const FGameplayTag& AbilityTag);
+  UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|Ability")
+  static bool IsAbilityActive(const UAbilitySystemComponent* ASC, const FGameplayTag& AbilityTag);
+
 private:
 	static void AddOverlappedCharactersByTeam(
 		const AActor* ContextActor,

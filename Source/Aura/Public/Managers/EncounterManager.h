@@ -33,6 +33,8 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FOnEncounterFinished OnEncounterFinishedDelegate;
+  UPROPERTY(BlueprintAssignable)
+  FOnLastEnemyKilled OnLastEnemyKilledDelegate;
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Location")

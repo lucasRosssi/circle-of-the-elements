@@ -66,9 +66,6 @@ public:
 	UFUNCTION(BlueprintPure, meta=(DefaultToSelf="Target", HidePin="Target"))
 	AAuraPlayerController* GetAuraPlayerController();
 
-	UPROPERTY(EditDefaultsOnly, Category="Character Defaults|Abilities|Startup")
-	TArray<TSubclassOf<UGameplayAbility>> EligibleAbilities;
-
 protected:
 	virtual void BeginPlay() override;
 

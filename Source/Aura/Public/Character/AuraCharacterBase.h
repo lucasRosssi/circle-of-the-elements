@@ -95,11 +95,11 @@ public:
 	UPROPERTY(BlueprintReadWrite, Category="Combat")
 	TObjectPtr<AActor> CombatTarget;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Character Defaults|Abilities|Startup")
+	UPROPERTY(EditDefaultsOnly, Category = "Character Defaults|Abilities|Startup", meta=(DisplayPriority=0))
 	TArray<TSubclassOf<UGameplayAbility>> NativeBaseAbilities;
-	UPROPERTY(EditDefaultsOnly, Category="Character Defaults|Abilities|Startup")
+	UPROPERTY(EditDefaultsOnly, Category="Character Defaults|Abilities|Startup", meta=(DisplayPriority=1))
 	TArray<TSubclassOf<UGameplayAbility>> NativeCharacterAbilities;
-	UPROPERTY(EditDefaultsOnly, Category="Character Defaults|Effects|Startup")
+	UPROPERTY(EditDefaultsOnly, Category="Character Defaults|Effects|Startup", meta=(DisplayPriority=3))
 	TArray<TSubclassOf<UGameplayEffect>> NativeEffects;
 
 	UPROPERTY(

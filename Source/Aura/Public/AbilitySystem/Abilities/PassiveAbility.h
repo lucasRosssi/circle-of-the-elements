@@ -20,5 +20,5 @@ public:
 
 private:
 	UPROPERTY(EditDefaultsOnly)
-	bool bActivatesOnGranted = false;
+	bool bActivatesOnGranted = true;
 };
