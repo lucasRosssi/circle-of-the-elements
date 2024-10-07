@@ -8,6 +8,7 @@
 #include "Engine/DataAsset.h"
 #include "UpgradeInfo.generated.h"
 
+class UGameplayAbility;
 class UUpgradeEffect;
 enum class ECharacterName : uint8;
 
@@ -17,7 +18,10 @@ struct FAuraUpgradeInfo
   GENERATED_BODY()
 
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-  TSubclassOf<UUpgradeEffect> UpgradeClass;
+  TSubclassOf<UUpgradeEffect> UpgradeEffect;
+
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+  TSubclassOf<UGameplayAbility> UpgradeAbility;
 
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
   int32 MaxLevel = 1;

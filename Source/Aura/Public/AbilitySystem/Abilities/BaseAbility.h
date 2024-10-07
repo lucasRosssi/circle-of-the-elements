@@ -10,6 +10,8 @@
 #include "Interfaces/AbilityInterface.h"
 #include "BaseAbility.generated.h"
 
+class AAuraCamera;
+class AAuraHero;
 class AAuraCharacterBase;
 struct FAuraAbilityInfo;
 
@@ -104,8 +106,14 @@ protected:
 	FColor DrawShapeColor = FColor::Green;
 #endif
   
-	UFUNCTION(BlueprintPure, Category="Ability")
+	UFUNCTION(BlueprintPure, Category="Ability|Avatar")
 	AAuraCharacterBase* GetAvatarCharacter();
+
+  UFUNCTION(BlueprintPure, Category="Ability|Avatar")
+  AAuraHero* GetAvatarHero();
+
+  UFUNCTION(BlueprintPure, Category="Ability|Avatar")
+  AAuraCamera* GetPlayerCamera();
 	
 	UFUNCTION(BlueprintPure, Category="Ability Info")
 	FGameplayTag GetAbilityTag();
@@ -217,5 +225,8 @@ private:
 
 	UPROPERTY()
 	AAuraCharacterBase* AvatarCharacter = nullptr;
+
+  UPROPERTY()
+  AAuraHero* AvatarHero = nullptr;
 	
 };

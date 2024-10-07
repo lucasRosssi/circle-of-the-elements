@@ -26,7 +26,6 @@ class AURA_API AAuraHero : public AAuraCharacterBase, public IPlayerInterface
 public:
 	AAuraHero();
 
-	virtual void Tick(float DeltaSeconds) override;
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void OnRep_PlayerState() override;
 
@@ -35,6 +34,7 @@ public:
 	/** Combat Interface */
 	virtual int32 GetCharacterLevel_Implementation() const override;
 	virtual void Die(const FVector& DeathImpulse) override;
+  virtual void SetCustomDepth_Implementation(int32 Value) override;
 	/** end Combat Interface */
 	void DeathMontageEndRagdoll();
 
@@ -65,6 +65,8 @@ public:
 	AAuraPlayerState* GetAuraPlayerState() const;
 	UFUNCTION(BlueprintPure, meta=(DefaultToSelf="Target", HidePin="Target"))
 	AAuraPlayerController* GetAuraPlayerController();
+
+  AAuraCamera* GetActiveCamera() const { return ActiveCamera; }
 
 protected:
 	virtual void BeginPlay() override;

@@ -11,6 +11,7 @@
 #include "AbilitySystem/GameplayEffects/StatusEffect.h"
 #include "Aura/AuraLogChannels.h"
 #include "Character/AuraCharacterBase.h"
+#include "Character/AuraHero.h"
 #include "Kismet/KismetMathLibrary.h"
 
 UBaseAbility::UBaseAbility()
@@ -285,6 +286,27 @@ AAuraCharacterBase* UBaseAbility::GetAvatarCharacter()
 	}
 
 	return AvatarCharacter;
+}
+
+AAuraHero* UBaseAbility::GetAvatarHero()
+{
+  if (AvatarHero == nullptr)
+  {
+    AvatarHero = Cast<AAuraHero>(GetAvatarActorFromActorInfo());
+  }
+
+  return AvatarHero;
+}
+
+AAuraCamera* UBaseAbility::GetPlayerCamera()
+{
+  if (GetAvatarHero() == nullptr)
+  {
+    UE_LOG(LogAura, Error, TEXT("Avatar is not of the AuraHero class, can't get player camera!"));
+    return nullptr;
+  }
+
+  return AvatarHero->GetActiveCamera();
 }
 
 FGameplayTag UBaseAbility::GetAbilityTag()

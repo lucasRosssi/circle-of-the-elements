@@ -279,6 +279,12 @@ bool AAuraCharacterBase::IsEnemy_Implementation(AActor* Actor)
 	return UAuraAbilitySystemLibrary::AreActorsEnemies(this, Actor);
 }
 
+void AAuraCharacterBase::SetCustomDepth_Implementation(int32 Value)
+{
+  GetMesh()->SetRenderCustomDepth(Value > 0);
+  GetMesh()->SetCustomDepthStencilValue(Value);
+}
+
 void AAuraCharacterBase::InitAbilityActorInfo()
 {
 }

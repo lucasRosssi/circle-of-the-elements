@@ -20,6 +20,9 @@ class AURA_API UEncounterManager : public UAuraSystemComponent
 
 public:	
 	int32 GetEnemiesLevel() const { return EnemiesLevel; }
+  AActor* GetCurrentBoss() const { return CurrentBoss.Get(); }
+
+  void SetCurrentBoss(AActor* InBoss) { CurrentBoss = InBoss; }
 
 	void SetCurrentEncounterData();
 	
@@ -99,4 +102,6 @@ private:
 	int32 CurrentWave = 0;
 	UPROPERTY()
 	TArray<AEnemySpawner*> EnemySpawners;
+
+  TWeakObjectPtr<AActor> CurrentBoss;
 };
