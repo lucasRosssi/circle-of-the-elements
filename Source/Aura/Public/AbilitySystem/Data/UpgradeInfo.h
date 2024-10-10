@@ -6,11 +6,12 @@
 #include "GameplayTagContainer.h"
 #include "ScalableFloat.h"
 #include "Engine/DataAsset.h"
+#include "Enums/CharacterName.h"
 #include "UpgradeInfo.generated.h"
 
+class UUpgradeAbility;
 class UGameplayAbility;
 class UUpgradeEffect;
-enum class ECharacterName : uint8;
 
 USTRUCT(BlueprintType)
 struct FAuraUpgradeInfo
@@ -18,10 +19,10 @@ struct FAuraUpgradeInfo
   GENERATED_BODY()
 
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-  TSubclassOf<UUpgradeEffect> UpgradeEffect;
+  TSubclassOf<UUpgradeEffect> GameplayEffect;
 
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-  TSubclassOf<UGameplayAbility> UpgradeAbility;
+  TSubclassOf<UUpgradeAbility> Ability;
 
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
   int32 MaxLevel = 1;
@@ -33,6 +34,12 @@ struct FAuraUpgradeInfo
   FGameplayTagContainer Requirements;
 
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+  TObjectPtr<const UTexture2D> Icon = nullptr;
+
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+  TObjectPtr<const UMaterialInterface> BackgroundMaterial = nullptr;
+
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
   FText Name = FText();
 
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(MultiLine=true))
@@ -41,6 +48,21 @@ struct FAuraUpgradeInfo
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(MultiLine=true))
   FText NextLevelDescription = FText();
   
+};
+
+USTRUCT(BlueprintType)
+struct FUpgradeInfoParams
+{
+  GENERATED_BODY()
+
+  UPROPERTY(BlueprintReadWrite)
+  FGameplayTag UpgradeTag = FGameplayTag();
+
+  UPROPERTY(BlueprintReadWrite)
+  FGameplayTag ElementTag = FGameplayTag();
+
+  UPROPERTY(BlueprintReadWrite)
+  ECharacterName CharacterName = ECharacterName::Undefined;
 };
 
 USTRUCT(BlueprintType)
@@ -86,6 +108,27 @@ class AURA_API UUpgradeInfo : public UDataAsset
 {
 	GENERATED_BODY()
 public:
+  FAuraUpgradeInfo FindUpgradeInfoByTag(
+    const FGameplayTag& UpgradeTag,
+    bool bLogNotFound = false
+  ) const;
+
+  FUpgradesMapStruct FindCharacterUpgrades(
+    ECharacterName CharacterName,
+    bool bLogNotFound = false
+  ) const;
+
+  TMap<FGameplayTag, FAuraUpgradeInfo> FindCharacterUpgradesOfElement(
+    ECharacterName CharacterName,
+    const FGameplayTag& ElementTag,
+    bool bLogNotFound = false
+  ) const;
+
+  FAuraUpgradeInfo FindUpgradeInfoWithParams(
+    const FUpgradeInfoParams& Params,
+    bool bLogNotFound = false
+    ) const;
+  
   UPROPERTY(
     EditDefaultsOnly,
     BlueprintReadOnly,

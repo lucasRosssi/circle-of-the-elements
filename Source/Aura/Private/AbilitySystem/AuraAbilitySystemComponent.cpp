@@ -267,6 +267,16 @@ FGameplayTag UAuraAbilitySystemComponent::GetInputTagFromAbilityTag(
 	return FGameplayTag();
 }
 
+int32 UAuraAbilitySystemComponent::GetAbilityLevelFromTag(const FGameplayTag& AbilityTag)
+{
+  if (const FGameplayAbilitySpec* Spec = GetSpecFromAbilityTag(AbilityTag))
+  {
+    return Spec->Level;
+  }
+
+  return 0;
+}
+
 FGameplayAbilitySpec* UAuraAbilitySystemComponent::GetSpecFromAbilityTag(
 	const FGameplayTag& AbilityTag
 	)

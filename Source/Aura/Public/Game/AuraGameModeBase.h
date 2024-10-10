@@ -8,6 +8,7 @@
 #include "Level/RewardsInfo.h"
 #include "AuraGameModeBase.generated.h"
 
+class UUpgradeManager;
 class UUIManager;
 class AAuraHUD;
 enum class ECharacterName : uint8;
@@ -48,7 +49,8 @@ public:
 	UAbilityManager* GetAbilityManager() const { return AbilityManager; }
 	ULocationManager* GetLocationManager() const { return LocationManager; }
 	UEncounterManager* GetEncounterManager() const { return EncounterManager; }
-	URewardManager* GetRewardManager() const { return RewardManager; }
+  URewardManager* GetRewardManager() const { return RewardManager; }
+  UUpgradeManager* GetUpgradeManager() const { return UpgradeManager; }
 
   void OnNoAbilitiesLeft(const FGameplayTag& ElementTag);
 
@@ -89,8 +91,10 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Managers|Ability")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Managers|Character|Ability")
 	TObjectPtr<UAbilityManager> AbilityManager;
+  UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Managers|Character|Upgrade")
+  TObjectPtr<UUpgradeManager> UpgradeManager;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Managers|Location")
 	TObjectPtr<ULocationManager> LocationManager;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Managers|Location|Encounter")

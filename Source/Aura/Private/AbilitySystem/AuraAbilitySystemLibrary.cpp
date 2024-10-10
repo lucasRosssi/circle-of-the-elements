@@ -1001,6 +1001,36 @@ void UAuraAbilitySystemLibrary::FormatAbilityDescriptionAtLevel(
       );
     }
   }
+
+  const TArray<FScalableFloat>& Percents = Ability->GetPercents();
+  if (Percents.Num() > 0)
+  {
+    for (int32 i = 0; i < Percents.Num(); i++)
+    {
+      OutDescription = FText::FormatNamed(
+        OutDescription,
+        Args.UpgradeArgs[i].Percent_0,
+        Percents[i].GetValueAtLevel(Level),
+        Args.UpgradeArgs[i].Percent_1,
+        Percents[i].GetValueAtLevel(Level + 1)
+      );
+    }
+  }
+
+  const TArray<FScalableFloat>& Values = Ability->GetValues();
+  if (Values.Num() > 0)
+  {
+    for (int32 i = 0; i < Values.Num(); i++)
+    {
+      OutDescription = FText::FormatNamed(
+        OutDescription,
+        Args.UpgradeArgs[i].Value_0,
+        Values[i].GetValueAtLevel(Level),
+        Args.UpgradeArgs[i].Value_1,
+        Values[i].GetValueAtLevel(Level + 1)
+      );
+    }
+  }
 }
 
 FString UAuraAbilitySystemLibrary::GetAbilityLockedDescription(
@@ -1095,6 +1125,27 @@ void UAuraAbilitySystemLibrary::MakeAbilityDetailsText(
       Charges
     );
   }
+}
+
+void UAuraAbilitySystemLibrary::MakeUpgradeDetailsText(
+  const UGameplayAbility* Ability,
+  int32 Level,
+  FString& OutCostText,
+  FString& OutRequirementsText
+)
+{
+  const int32 Cost = 0;
+  const FGameplayTagContainer Requirements = FGameplayTagContainer();
+  
+  OutCostText = FString::Printf(
+    TEXT("\n<Info>Cost - </><Mana>%d</>"),
+    Cost
+  );
+  
+  OutRequirementsText = FString::Printf(
+    TEXT("\n<Info>Requirements - </>%ss"),
+    *Requirements.First().GetTagName().ToString()
+  );
 }
 
 void UAuraAbilitySystemLibrary::MakeManaAndCooldownTextNextLevel(
@@ -1346,7 +1397,7 @@ FGameplayEffectContextHandle UAuraAbilitySystemLibrary::ApplyAbilityEffect(
     );
 
     AbilityParams.SourceASC
-                 ->ApplyGameplayEffectSpecToTarget(*HealSpecHandle.Data, AbilityParams.TargetASC);
+      ->ApplyGameplayEffectSpecToTarget(*HealSpecHandle.Data, AbilityParams.TargetASC);
     bSuccess = true;
   }
 

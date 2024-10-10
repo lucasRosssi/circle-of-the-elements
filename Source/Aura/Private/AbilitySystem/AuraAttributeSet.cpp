@@ -266,11 +266,23 @@ void UAuraAttributeSet::HandleIncomingDamage(
     UAbilitySystemComponent* ASC = GetOwningAbilitySystemComponent();
     if (ASC->HasMatchingGameplayTag(AuraTags.Upgrades_Soul_SecondWind))
     {
-      const FGameplayEffectQuery& Query = FGameplayEffectQuery::MakeQuery_MatchAllOwningTags(
+      const FGameplayEffectQuery& DebuffsQuery = FGameplayEffectQuery::MakeQuery_MatchAnyOwningTags(
+        FGameplayTagContainer({ AuraTags.StatusEffects_Debuff })
+        );
+      ASC->RemoveActiveEffects(DebuffsQuery, -1);
+      
+      const FGameplayEffectQuery& SecondWindQuery = FGameplayEffectQuery::MakeQuery_MatchAllOwningTags(
         FGameplayTagContainer({ AuraTags.Upgrades_Soul_SecondWind })
         );
-      ASC->RemoveActiveEffects(Query, 1);
-      ASC->TryActivateAbilitiesByTag(FGameplayTagContainer({ AuraTags.Abilities_Passive_Common_SecondWind }));
+      ASC->RemoveActiveEffects(SecondWindQuery, 1);
+
+      FGameplayEventData EventData;
+      EventData.Instigator = Props.SourceAvatarActor;
+      EventData.Target = Props.TargetAvatarActor;
+      EventData.ContextHandle = Props.EffectContextHandle;
+      Props.SourceASC->GetOwnedGameplayTags(EventData.InstigatorTags);
+      Props.TargetASC->GetOwnedGameplayTags(EventData.TargetTags);
+      ASC->HandleGameplayEvent(AuraTags.Abilities_Passive_Common_SecondWind, &EventData);
     }
     else
     {

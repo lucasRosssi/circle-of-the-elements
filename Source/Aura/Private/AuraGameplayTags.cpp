@@ -1248,14 +1248,14 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
     FString("Soul Absorption upgrade tag")
     );
 
-  GameplayTags.Upgrades_Soul_HealthRegeneration = UGameplayTagsManager::Get().AddNativeGameplayTag(
-    FName("Upgrades.Soul.HealthRegeneration"),
-    FString("Health Regeneration upgrade tag")
+  GameplayTags.Upgrades_Soul_Respite = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Upgrades.Soul.Respite"),
+    FString("Respite upgrade tag")
     );
 
-  GameplayTags.Upgrades_Soul_ManaRegeneration = UGameplayTagsManager::Get().AddNativeGameplayTag(
-    FName("Upgrades.Soul.ManaRegeneration"),
-    FString("Mana Regeneration upgrade tag")
+  GameplayTags.Upgrades_Soul_Brilliance = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Upgrades.Soul.Brilliance"),
+    FString("Brilliance upgrade tag")
     );
 
   GameplayTags.Upgrades_Soul_SecondWind = UGameplayTagsManager::Get().AddNativeGameplayTag(

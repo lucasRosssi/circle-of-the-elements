@@ -17,6 +17,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Managers/AbilityManager.h"
+#include "Managers/UpgradeManager.h"
 #include "Player/AuraPlayerState.h"
 #include "Player/AuraPlayerController.h"
 #include "UI/HUD/AuraHUD.h"
@@ -86,6 +87,10 @@ void AAuraHero::AddCharacterAbilities()
   if (UAbilityManager* AbilityManager = UAuraSystemsLibrary::GetAbilityManager(this))
   {
     AbilityManager->GiveAcquiredAbilities(this);
+  }
+  if (UUpgradeManager* UpgradeManager = UAuraSystemsLibrary::GetUpgradeManager(this))
+  {
+    UpgradeManager->GiveAcquiredUpgrades(this);
   }
 }
 

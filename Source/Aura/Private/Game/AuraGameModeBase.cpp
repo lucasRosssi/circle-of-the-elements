@@ -11,6 +11,7 @@
 #include "Managers/EncounterManager.h"
 #include "Managers/LocationManager.h"
 #include "Managers/RewardManager.h"
+#include "Managers/UpgradeManager.h"
 #include "UI/HUD/AuraHUD.h"
 
 AAuraGameModeBase::AAuraGameModeBase()
@@ -26,6 +27,8 @@ AAuraGameModeBase::AAuraGameModeBase()
 
   RewardManager = CreateDefaultSubobject<URewardManager>("RewardManager");
   RewardManager->SetGameMode(this);
+
+  UpgradeManager = CreateDefaultSubobject<UUpgradeManager>("UpgradeManager");
 }
 
 void AAuraGameModeBase::OnNoAbilitiesLeft(const FGameplayTag& ElementTag)

@@ -328,8 +328,8 @@ public:
   
   FGameplayTag Upgrades_Soul;
   FGameplayTag Upgrades_Soul_Absorption;
-  FGameplayTag Upgrades_Soul_HealthRegeneration;
-  FGameplayTag Upgrades_Soul_ManaRegeneration;
+  FGameplayTag Upgrades_Soul_Respite;
+  FGameplayTag Upgrades_Soul_Brilliance;
   FGameplayTag Upgrades_Soul_SecondWind;
   
   FGameplayTag Upgrades_Fire;
