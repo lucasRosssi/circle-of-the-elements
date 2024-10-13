@@ -4,12 +4,17 @@
 
 #include "CoreMinimal.h"
 #include "AuraSystemComponent.h"
+#include "AbilitySystem/Data/UpgradeInfo.h"
 #include "UpgradeManager.generated.h"
 
+class AAuraPlayerState;
 class UAuraAbilitySystemComponent;
 class UUpgradeInfo;
 struct FUpgradeInfoParams;
 struct FAuraUpgradeInfo;
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnUpgradeUnlock, const FAuraUpgradeInfo&, UpgradeInfo, int32, Level);
+
 /**
  * 
  */
@@ -19,7 +24,7 @@ class AURA_API UUpgradeManager : public UAuraSystemComponent
 	GENERATED_BODY()
 
 public:
-  void GiveAcquiredUpgrades(AActor* Actor);
+  void GiveAcquiredUpgrades();
 
   UFUNCTION(BlueprintPure, Category="Manager|Upgrade")
 	TMap<FGameplayTag, FAuraUpgradeInfo> GetElementUpgrades(
@@ -32,10 +37,26 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Manager|Upgrade|Description")
 	void GetUpgradeFormattedTexts(
 		const FAuraUpgradeInfo& AuraUpgradeInfo,
+		int32 Level,
+		bool bNextLevel,
 		FText& UpgradeName,
 		FText& UpgradeDescription,
 		FText& UpgradeDetails
 		);
+  UFUNCTION(BlueprintPure, Category="Manager|Upgrade|Description")
+  FString GetUpgradeDescription(
+    const FUpgradeInfoParams& Params,
+    int32 Level,
+    bool bNextLevel
+  );
+
+  bool HasResourcesToUnlock(const FGameplayTag& UpgradeTag, int32 Level = 1);
+  bool HasRequiredUpgrades(const FGameplayTag& UpgradeTag);
+
+  void UnlockUpgrade(const FGameplayTag& UpgradeTag);
+
+  UPROPERTY(BlueprintAssignable, Category="Manager|Upgrade")
+  FOnUpgradeUnlock OnUpgradeUnlockDelegate;
 
 protected:
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Game|Info")
@@ -57,5 +78,8 @@ protected:
 	FGameplayTagContainer BlockedUpgrades;
 
 private:
+  AAuraPlayerState* GetAuraPlayerState();
   void GiveUpgrade(const FAuraUpgradeInfo& AuraUpgradeInfo, UAuraAbilitySystemComponent* AuraASC);
+
+  TWeakObjectPtr<AAuraPlayerState> AuraPlayerState;
 };

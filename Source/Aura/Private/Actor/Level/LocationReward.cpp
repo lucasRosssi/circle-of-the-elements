@@ -10,10 +10,11 @@
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "Aura/AuraLogChannels.h"
 #include "Components/InteractComponent.h"
-#include "Game/AuraGameInstance.h"
 #include "Game/AuraGameModeBase.h"
+#include "Kismet/GameplayStatics.h"
 #include "Level/RewardsInfo.h"
 #include "Managers/RewardManager.h"
+#include "Player/AuraPlayerState.h"
 #include "Utils/AuraSystemsLibrary.h"
 
 ALocationReward::ALocationReward()
@@ -119,12 +120,15 @@ void ALocationReward::SpawnNiagaraEffects()
   }
 }
 
-UAuraGameInstance* ALocationReward::GetAuraGameInstance()
+AAuraPlayerState* ALocationReward::GetAuraGameInstance()
 {
-  if (AuraGameInstance == nullptr)
+  if (AuraPlayerState == nullptr)
   {
-    AuraGameInstance = Cast<UAuraGameInstance>(GetGameInstance());
+    AuraPlayerState = Cast<AAuraPlayerState>(UGameplayStatics::GetPlayerState(
+      this,
+      0)
+      );
   }
 
-  return AuraGameInstance.Get();
+  return AuraPlayerState.Get();
 }

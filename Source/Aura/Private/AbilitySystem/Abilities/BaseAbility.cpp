@@ -5,6 +5,7 @@
 #include "AbilitySystem/Abilities/BaseAbility.h"
 
 #include "AbilitySystemBlueprintLibrary.h"
+#include "AIController.h"
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "AbilitySystem/AuraAttributeSet.h"
 #include "AbilitySystem/Data/StatusEffectInfo.h"
@@ -214,6 +215,22 @@ float UBaseAbility::GetAreaOuterRadius() const
 int32 UBaseAbility::GetMaxCharges() const
 {
 	return FMath::RoundToInt32(MaxCharges.GetValueAtLevel(GetAbilityLevel()));
+}
+
+void UBaseAbility::DisablePlayerInput()
+{
+  if (APlayerController* PlayerController = Cast<APlayerController>(GetAvatarCharacter()->GetController()))
+  {
+    PlayerController->DisableInput(PlayerController);
+  }
+}
+
+void UBaseAbility::EnablePlayerInput()
+{
+  if (APlayerController* PlayerController = Cast<APlayerController>(GetAvatarCharacter()->GetController()))
+  {
+    PlayerController->EnableInput(PlayerController);
+  }
 }
 
 UGameplayEffect* UBaseAbility::GetChargesEffect()

@@ -128,6 +128,11 @@ protected:
 	UFUNCTION(BlueprintPure, Category="Cooldowns")
 	int32 GetMaxCharges() const;
 
+  UFUNCTION(BlueprintCallable)
+  void DisablePlayerInput();
+  UFUNCTION(BlueprintCallable)
+  void EnablePlayerInput();
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Status Effects")
 	TArray<FStatusEffectApplicationData> StatusEffectData;
 

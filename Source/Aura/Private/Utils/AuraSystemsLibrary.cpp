@@ -36,7 +36,7 @@ UUpgradeManager* UAuraSystemsLibrary::GetUpgradeManager(const UObject* WorldCont
   }
 
   UE_LOG(LogAura, Warning, TEXT(
-    "Current world doesn't have an Ability Manager. "
+    "Current world doesn't have an Upgrade Manager. "
     "Trying to access from object: %s"),
     *WorldContextObject->GetName()
     );

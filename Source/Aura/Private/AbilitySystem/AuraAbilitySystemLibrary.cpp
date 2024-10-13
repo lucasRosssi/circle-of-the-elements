@@ -82,6 +82,19 @@ USkillMenuWidgetController* UAuraAbilitySystemLibrary::GetSkillMenuWidgetControl
   return AuraHUD->GetSkillMenuWidgetController(WidgetControllerParams);
 }
 
+UUpgradeMenuWidgetController* UAuraAbilitySystemLibrary::GetUpgradeMenuWidgetController(
+  const UObject* WorldContextObject
+)
+{
+  const FWidgetControllerParams WidgetControllerParams = MakeWidgetControllerParams(WorldContextObject);
+  if (!WidgetControllerParams.IsValid()) return nullptr;
+
+  AAuraHUD* AuraHUD = WidgetControllerParams.PlayerController->GetHUD<AAuraHUD>();
+  if (!AuraHUD) return nullptr;
+
+  return AuraHUD->GetUpgradeMenuWidgetController(WidgetControllerParams);
+}
+
 UCharacterInfo* UAuraAbilitySystemLibrary::GetCharacterClassInfo(
   const UObject* WorldContextObject)
 {
@@ -1010,9 +1023,9 @@ void UAuraAbilitySystemLibrary::FormatAbilityDescriptionAtLevel(
       OutDescription = FText::FormatNamed(
         OutDescription,
         Args.UpgradeArgs[i].Percent_0,
-        Percents[i].GetValueAtLevel(Level),
+        Percents[i].GetValueAtLevel(Level) * 100,
         Args.UpgradeArgs[i].Percent_1,
-        Percents[i].GetValueAtLevel(Level + 1)
+        Percents[i].GetValueAtLevel(Level + 1) * 100
       );
     }
   }
@@ -1442,7 +1455,7 @@ FGameplayEffectContextHandle UAuraAbilitySystemLibrary::ApplyAbilityEffect(
     );
 
     AbilityParams.SourceASC
-                 ->ApplyGameplayEffectSpecToTarget(*DamageSpecHandle.Data, AbilityParams.TargetASC);
+      ->ApplyGameplayEffectSpecToTarget(*DamageSpecHandle.Data, AbilityParams.TargetASC);
     bSuccess = true;
   }
 

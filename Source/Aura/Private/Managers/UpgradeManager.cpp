@@ -8,16 +8,16 @@
 #include "AbilitySystem/Abilities/UpgradeAbility.h"
 #include "AbilitySystem/Data/UpgradeInfo.h"
 #include "AbilitySystem/GameplayEffects/UpgradeEffect.h"
+#include "Kismet/GameplayStatics.h"
+#include "Player/AuraPlayerState.h"
 
-void UUpgradeManager::GiveAcquiredUpgrades(AActor* Actor)
+void UUpgradeManager::GiveAcquiredUpgrades()
 {
   if (AcquiredUpgrades.Num() > 0)
   {
     for (auto UpgradeTagIterator = AcquiredUpgrades.CreateConstIterator(); UpgradeTagIterator; ++UpgradeTagIterator)
     {
-      const FAuraUpgradeInfo& Info = UpgradeInfo->FindUpgradeInfoByTag(*UpgradeTagIterator);
-      UAuraAbilitySystemComponent* AuraASC = UAuraAbilitySystemLibrary::GetAuraAbilitySystemComponent(Actor);
-      GiveUpgrade(Info, AuraASC);
+      UnlockUpgrade(*UpgradeTagIterator);
     }
   }
 }
@@ -37,21 +37,23 @@ FAuraUpgradeInfo UUpgradeManager::GetUpgradeInfo(const FUpgradeInfoParams& Param
 
 void UUpgradeManager::GetUpgradeFormattedTexts(
   const FAuraUpgradeInfo& AuraUpgradeInfo,
+  int32 Level,
+  bool bNextLevel,
   FText& UpgradeName,
   FText& UpgradeDescription,
   FText& UpgradeDetails
 )
 {
   UpgradeName = FText::FromString(FString::Printf(
-    TEXT("<Title>%s</>"),
+    TEXT("<Title>%s</>\n\n"),
     *AuraUpgradeInfo.Name.ToString()
     ));
 
-  UpgradeDescription = AuraUpgradeInfo.Description;
+  UpgradeDescription = bNextLevel ? AuraUpgradeInfo.NextLevelDescription : AuraUpgradeInfo.Description;
   const UUpgradeAbility* Ability = AuraUpgradeInfo.Ability.GetDefaultObject();
   UAuraAbilitySystemLibrary::FormatAbilityDescriptionAtLevel(
     Ability,
-    1,
+    Level,
     UpgradeDescription
     );
 
@@ -59,20 +61,110 @@ void UUpgradeManager::GetUpgradeFormattedTexts(
   FString RequirementsText;
   UAuraAbilitySystemLibrary::MakeUpgradeDetailsText(
     Ability,
-    1,
+    Level,
     CostText,
     RequirementsText
     );
-  UpgradeDetails = FText::FromString(FString::Printf(TEXT(
-      "%s"
-      "%s"
-      ),
-    *CostText,
-    *RequirementsText
-  ));
+
+  if (AuraUpgradeInfo.Requirements.Num() > 0)
+  {
+    UpgradeDetails = FText::FromString(FString::Printf(TEXT(
+        "\n\n%s"
+        "%s"
+        ),
+      *CostText,
+      *RequirementsText
+    ));
+  }
+  else
+  {
+    UpgradeDetails = FText::FromString(FString::Printf(TEXT(
+        "\n\n%s"
+        ),
+      *CostText
+    ));
+  }
 }
 
-void UUpgradeManager::GiveUpgrade(const FAuraUpgradeInfo& AuraUpgradeInfo, UAuraAbilitySystemComponent* AuraASC)
+FString UUpgradeManager::GetUpgradeDescription(
+  const FUpgradeInfoParams& Params,
+  int32 Level,
+  bool bNextLevel
+  )
+{
+  const FAuraUpgradeInfo& Info = GetUpgradeInfo(Params);
+
+  if (!Info.Ability) return FString();
+
+  FText Name;
+  FText Description;
+  FText Details;
+  GetUpgradeFormattedTexts(Info, Level, bNextLevel, Name, Description, Details);
+
+  return Name.ToString() + Description.ToString() + Details.ToString();
+}
+
+bool UUpgradeManager::HasResourcesToUnlock(const FGameplayTag& UpgradeTag, int32 Level)
+{
+  if (!GetAuraPlayerState()) return false;
+
+  const FAuraUpgradeInfo& Info = UpgradeInfo->FindUpgradeInfoByTag(UpgradeTag);
+
+  TMap<FGameplayTag, int32> CostMap;
+  for (const auto& [Resource, ScalableCost] : Info.Cost)
+  {
+    CostMap.Add(Resource, ScalableCost.AsInteger(Level));
+  }
+
+  return AuraPlayerState.Get()->CanAffordResourceCost(CostMap);
+}
+
+bool UUpgradeManager::HasRequiredUpgrades(const FGameplayTag& UpgradeTag)
+{
+  if (!GetAuraPlayerState()) return false;
+
+  const FAuraUpgradeInfo& Info = UpgradeInfo->FindUpgradeInfoByTag(UpgradeTag);
+
+  const UAuraAbilitySystemComponent* AuraASC = GetAuraPlayerState()->GetAuraASC();
+
+  if (!AuraASC) return false;
+  
+  TArray<FGameplayAbilitySpecHandle> AbilitiesHandles;
+  AuraASC->FindAllAbilitiesWithTags(AbilitiesHandles, Info.Requirements);
+
+  return AbilitiesHandles.Num() == Info.Requirements.Num();
+}
+
+void UUpgradeManager::UnlockUpgrade(const FGameplayTag& UpgradeTag)
+{
+  const FAuraUpgradeInfo& Info = UpgradeInfo->FindUpgradeInfoByTag(UpgradeTag);
+  UAuraAbilitySystemComponent* AuraASC = GetAuraPlayerState()->GetAuraASC();
+
+  if (FGameplayAbilitySpec* AbilitySpec = AuraASC->GetSpecFromAbilityTag(UpgradeTag))
+  {
+    AbilitySpec->Level += 1;
+    AuraASC->MarkAbilitySpecDirty(*AbilitySpec);
+  }
+  else
+  {
+    GiveUpgrade(Info, AuraASC);
+  }
+}
+
+AAuraPlayerState* UUpgradeManager::GetAuraPlayerState()
+{
+  if (AuraPlayerState == nullptr)
+  {
+    AuraPlayerState = Cast<AAuraPlayerState>(UGameplayStatics::GetPlayerState(this, 0));
+  }
+
+  return AuraPlayerState.Get();
+}
+
+void UUpgradeManager::GiveUpgrade(
+  const FAuraUpgradeInfo& AuraUpgradeInfo,
+  UAuraAbilitySystemComponent* AuraASC
+  )
 {
   if (AuraUpgradeInfo.Ability)
   {

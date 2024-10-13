@@ -90,7 +90,7 @@ void AAuraHero::AddCharacterAbilities()
   }
   if (UUpgradeManager* UpgradeManager = UAuraSystemsLibrary::GetUpgradeManager(this))
   {
-    UpgradeManager->GiveAcquiredUpgrades(this);
+    UpgradeManager->GiveAcquiredUpgrades();
   }
 }
 

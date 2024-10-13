@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "AbilitySystemInterface.h"
+#include "GameplayTagContainer.h"
 #include "GameFramework/PlayerState.h"
 #include "Interfaces/AttributeSetInterface.h"
 #include "AuraPlayerState.generated.h"
@@ -45,22 +46,26 @@ public:
 	FOnPlayerStatChanged OnSkillPointsChangedDelegate;
 	FOnPlayerStatChanged OnPerkPointsChangedDelegate;
 	
-	FORCEINLINE int32 GetCharacterLevel() const { return Level; }
+	int32 GetCharacterLevel() const { return Level; }
 	void SetLevel(int32 InLevel);
 	void AddLevel(int32 InLevel);
-	FORCEINLINE int32 GetXP() const { return XP; }
+	int32 GetXP() const { return XP; }
 	void SetXP(int32 InXP);
 	void AddXP(int32 InXP);
-	FORCEINLINE int32 GetAttributePoints() const { return AttributePoints; }
+	int32 GetAttributePoints() const { return AttributePoints; }
 	void SetAttributePoints(int32 InAttributePoints);
   UFUNCTION(BlueprintCallable)
 	void AddAttributePoints(int32 InAttributePoints);
-	FORCEINLINE int32 GetSkillPoints() const { return SkillPoints; }
+	int32 GetSkillPoints() const { return SkillPoints; }
 	void SetSkillPoints(int32 InSkillPoints);
 	void AddSkillPoints(int32 InSkillPoints);
-	FORCEINLINE int32 GetPerkPoints() const { return PerkPoints; }
+	int32 GetPerkPoints() const { return PerkPoints; }
 	void SetPerkPoints(int32 InPerkPoints);
 	void AddPerkPoints(int32 InPerkPoints);
+
+  void AddPlayerResource(const FGameplayTag& ResourceTag, int32 Amount);
+  int32 GetPlayerResourceByTag(const FGameplayTag& ResourceTag);
+  bool CanAffordResourceCost(const TMap<FGameplayTag, int32>& CostMap) const;
 
 protected:
 	UPROPERTY(VisibleAnywhere)
@@ -68,6 +73,14 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<UAuraAttributeSet> AttributeSet;
+
+  UPROPERTY(
+    EditDefaultsOnly,
+    BlueprintReadWrite,
+    Category="Player",
+    meta=(Categories="Resources", ForceInlineRow)
+    )
+  TMap<FGameplayTag, int32> PlayerResources;
 
 private:
 	AAuraCharacterBase* GetCharacterBase();

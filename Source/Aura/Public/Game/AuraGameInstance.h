@@ -23,17 +23,10 @@ public:
 
 	ECharacterName GetCurrentCharacterName() const { return CurrentCharacterName; };
 
-	void AddPlayerResource(const FGameplayTag& ResourceTag, int32 Amount);
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Player")
 	ECharacterName CurrentCharacterName = ECharacterName::Aura;
-	UPROPERTY(
-		EditDefaultsOnly,
-		BlueprintReadWrite,
-		Category="Player",
-		meta=(Categories="Resources", ForceInlineRow)
-		)
-	TMap<FGameplayTag, int32> PlayerResources;
+
 
 private:
 };

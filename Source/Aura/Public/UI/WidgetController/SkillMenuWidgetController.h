@@ -8,7 +8,7 @@
 #include "SkillMenuWidgetController.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(
-	FSkillGlobeSelectedSignature,
+	FSkillGlobeSelected,
 	bool,
 	bCanSpendPoint,
 	bool,
@@ -33,7 +33,7 @@ public:
 	FOnPlayerStatChangedSignature SkillPointsChanged;
 	
 	UPROPERTY(BlueprintAssignable)
-	FSkillGlobeSelectedSignature SkillGlobeSelectedDelegate;
+	FSkillGlobeSelected SkillGlobeSelectedDelegate;
 
 	UFUNCTION(BlueprintCallable)
 	void SkillGlobeSelected(const FGameplayTag& AbilityTag);

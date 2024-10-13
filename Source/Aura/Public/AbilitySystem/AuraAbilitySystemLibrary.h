@@ -10,6 +10,7 @@
 #include "UI/WidgetController/AuraWidgetController.h"
 #include "AuraAbilitySystemLibrary.generated.h"
 
+class UUpgradeMenuWidgetController;
 class URewardsInfo;
 struct FEffectParams;
 class URegionInfo;
@@ -60,14 +61,12 @@ public:
 		meta = (HidePin = "WorldContextObject", DefaultToSelf = "WorldContextObject")
 	)
 	static FWidgetControllerParams MakeWidgetControllerParams(const UObject* WorldContextObject);
-	
 	UFUNCTION(
 		BlueprintPure,
 		Category = "AuraAbilitySystemLibrary|WidgetController",
 		meta = (HidePin = "WorldContextObject", DefaultToSelf = "WorldContextObject")
 	)
 	static UOverlayWidgetController* GetOverlayWidgetController(const UObject* WorldContextObject);
-
 	UFUNCTION(
 		BlueprintPure,
 		Category = "AuraAbilitySystemLibrary|WidgetController",
@@ -76,7 +75,6 @@ public:
 	static UAttributeMenuWidgetController* GetAttributeMenuWidgetController(
 		const UObject* WorldContextObject
 	);
-
 	UFUNCTION(
 		BlueprintPure,
 		Category = "AuraAbilitySystemLibrary|WidgetController",
@@ -85,6 +83,14 @@ public:
 	static USkillMenuWidgetController* GetSkillMenuWidgetController(
 		const UObject* WorldContextObject
 	);
+  UFUNCTION(
+    BlueprintPure,
+    Category = "AuraAbilitySystemLibrary|WidgetController",
+    meta = (HidePin = "WorldContextObject", DefaultToSelf = "WorldContextObject")
+  )
+  static UUpgradeMenuWidgetController* GetUpgradeMenuWidgetController(
+    const UObject* WorldContextObject
+  );
 
 	/*
 	 * DEFAULTS
