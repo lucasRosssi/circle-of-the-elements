@@ -66,7 +66,7 @@ void UUpgradeManager::GetUpgradeFormattedTexts(
       TEXT("<%s>%s Essence</> - %d\n"),
       *Element,
       *Element,
-      Resource.Value.AsInteger(Level)
+      Resource.Value.AsInteger(Level + 1)
       );
   }
   const FString ResourcesText = FString::Printf(
