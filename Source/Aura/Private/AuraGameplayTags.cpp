@@ -1176,18 +1176,23 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
     FString("Common passive abilities")
     );
 
-  GameplayTags.Abilities_Passive_Common_SoulAbsorption = UGameplayTagsManager::Get().AddNativeGameplayTag(
-    FName("Abilities.Passive.Common.SoulAbsorption"),
+  GameplayTags.Abilities_Passive_Upgrade = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Abilities.Passive.Upgrade"),
+    FString("Upgrade passive abilities")
+    );
+
+  GameplayTags.Abilities_Passive_Upgrade_SoulAbsorption = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Abilities.Passive.Upgrade.SoulAbsorption"),
     FString("SoulAbsorption ability")
     );
 
-  GameplayTags.Abilities_Passive_Common_Respite = UGameplayTagsManager::Get().AddNativeGameplayTag(
-    FName("Abilities.Passive.Common.Respite"),
+  GameplayTags.Abilities_Passive_Upgrade_Respite = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Abilities.Passive.Upgrade.Respite"),
     FString("Respite ability")
     );
 
-  GameplayTags.Abilities_Passive_Common_SecondWind = UGameplayTagsManager::Get().AddNativeGameplayTag(
-    FName("Abilities.Passive.Common.SecondWind"),
+  GameplayTags.Abilities_Passive_Upgrade_SecondWind = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Abilities.Passive.Upgrade.SecondWind"),
     FString("SecondWind ability")
     );
 
@@ -1226,6 +1231,18 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FName("Abilities.Passive.Vilkar"),
 		FString("Vilkar passive abilities")
 		);
+
+  // Ability Events
+
+  GameplayTags.Abilities_Event = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Abilities.Event"),
+    FString("Ability events tags")
+    );
+
+  GameplayTags.Abilities_Event_SecondWindTrigger = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Abilities.Event.SecondWindTrigger"),
+    FString("SecondWind trigger event")
+    );
 
   /*
    * Player Upgrades
@@ -1499,6 +1516,18 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	});
 
 	GameplayTags.ParentsToChildren.Add(GameplayTags.Abilities_Tier, TierTags);
+
+  const TArray EssenceTags = TArray({
+    GameplayTags.Resources_Essence_Soul,
+    GameplayTags.Resources_Essence_Fire,
+    GameplayTags.Resources_Essence_Ice,
+    GameplayTags.Resources_Essence_Lightning,
+    GameplayTags.Resources_Essence_Necrotic,
+    GameplayTags.Resources_Essence_Arcane,
+    GameplayTags.Resources_Essence_Physical,
+  });
+
+  GameplayTags.ParentsToChildren.Add(GameplayTags.Resources_Essence, EssenceTags);
 
 	GameplayTags.bIsValid = true;
 }

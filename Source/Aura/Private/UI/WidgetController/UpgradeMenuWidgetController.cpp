@@ -8,69 +8,71 @@
 #include "AbilitySystem/Data/AbilityInfo.h"
 #include "AbilitySystem/Data/UpgradeInfo.h"
 #include "Managers/UpgradeManager.h"
+#include "Player/AuraPlayerState.h"
 #include "Utils/AuraSystemsLibrary.h"
 
 void UUpgradeMenuWidgetController::BroadcastInitialValues()
 {
-	BroadcastAbilityInfo();
+  BroadcastAbilityInfo();
 }
 
 void UUpgradeMenuWidgetController::BindCallbacksToDependencies()
 {
-	GetAuraAbilitySystemComponent()->AbilityStateChanged.AddLambda(
-		[this](
-			const FGameplayTag& AbilityTag,
-			const FGameplayTag& StatusTag,
-			const FGameplayTag& InputTag,
-			int32 NewLevel
-			)
-		{
-			if (AbilityInfo)
-			{
-				FAuraAbilityInfo Info = AbilityInfo->FindAbilityInfoByTag(AbilityTag);
-				Info.StatusTag = StatusTag;
-				Info.InputTag = InputTag;
-				AbilityInfoDelegate.Broadcast(Info);
-			}
-		}
-	);
+  GetAuraAbilitySystemComponent()->AbilityStateChanged.AddLambda(
+    [this](
+    const FGameplayTag& AbilityTag,
+    const FGameplayTag& StatusTag,
+    const FGameplayTag& InputTag,
+    int32 NewLevel
+  )
+    {
+      if (AbilityInfo)
+      {
+        FAuraAbilityInfo Info = AbilityInfo->FindAbilityInfoByTag(AbilityTag);
+        Info.StatusTag = StatusTag;
+        Info.InputTag = InputTag;
+        AbilityInfoDelegate.Broadcast(Info);
+      }
+    }
+  );
 }
 
-void UUpgradeMenuWidgetController::OnUpgradeGlobeSelected(
-  const FGameplayTag& UpgradeTag,
-  ECharacterName CharacterName
-  )
+void UUpgradeMenuWidgetController::UpgradeGlobeSelected(const FAuraUpgradeInfo& AuraUpgradeInfo)
 {
-  const bool bCanUnlock = GetUpgradeManager()->HasResourcesToUnlock(UpgradeTag) &&
-                          UpgradeManager->HasRequiredUpgrades(UpgradeTag);
+  if (!AuraUpgradeInfo.IsValid()) return;
+  
+  const bool bCanUnlock = GetUpgradeManager()->HasResourcesToUnlock(AuraUpgradeInfo.UpgradeTag) &&
+    UpgradeManager->HasRequiredUpgrades(AuraUpgradeInfo.UpgradeTag);
 
-  UAuraAbilitySystemComponent* AuraASC = GetAuraAbilitySystemComponent();
-  const int32 Level = AuraASC->GetAbilityLevelFromTag(UpgradeTag);
+  UAuraAbilitySystemComponent* AuraASC = GetAuraPlayerState()->GetAuraASC();
+
+  if (!IsValid(AuraASC)) return;
+
+  const int32 Level = AuraASC->GetAbilityLevelFromTag(AuraUpgradeInfo.AbilityTag);
   
-  FUpgradeInfoParams Params;
-  Params.UpgradeTag = UpgradeTag;
-  Params.ElementTag = UpgradeTag.RequestDirectParent();
-  Params.CharacterName = CharacterName;
-  
-	const FString Description = GetUpgradeDescription(Params, Level > 1 ? Level : 1);
-  
-	OnUpgradeGlobeSelectedDelegate.Broadcast(bCanUnlock, Description);
+  OnUpgradeGlobeSelectedDelegate.Broadcast(AuraUpgradeInfo, Level, bCanUnlock);
 }
 
 void UUpgradeMenuWidgetController::UnlockUpgrade(
-	const FGameplayTag& UpgradeTag
-	)
+  const FGameplayTag& UpgradeTag
+)
 {
-	if (!GetUpgradeManager()) return;
+  if (!GetUpgradeManager()) return;
 
   UpgradeManager->UnlockUpgrade(UpgradeTag);
 }
 
-FString UUpgradeMenuWidgetController::GetUpgradeDescription(const FUpgradeInfoParams& Params, int32 Level)
+FString UUpgradeMenuWidgetController::GetUpgradeDescription(const FAuraUpgradeInfo& AuraUpgradeInfo, int32 Level)
 {
-  const bool bNextLevel = Level > 1 && GetUpgradeManager()->HasResourcesToUnlock(Params.UpgradeTag, Level);
-  
-	return UpgradeManager->GetUpgradeDescription(Params, Level, bNextLevel);
+  const bool bNextLevel = Level > 0 && GetUpgradeManager()->HasResourcesToUnlock(AuraUpgradeInfo.UpgradeTag);
+
+  return UpgradeManager->GetUpgradeDescription(AuraUpgradeInfo, Level, bNextLevel);
+}
+
+bool UUpgradeMenuWidgetController::CanBeUnlocked(const FUpgradeInfoParams& Params)
+{
+  return GetUpgradeManager()->HasResourcesToUnlock(Params.UpgradeTag) && UpgradeManager->HasRequiredUpgrades(
+    Params.UpgradeTag);
 }
 
 UUpgradeManager* UUpgradeMenuWidgetController::GetUpgradeManager()

@@ -8,6 +8,7 @@
 #include "AuraGameplayTags.h"
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "AbilitySystem/AuraAttributeSet.h"
+#include "Aura/AuraLogChannels.h"
 
 struct AuraDamageStatics
 {
@@ -172,11 +173,19 @@ void UExecCalc_Damage::Execute_Implementation(
 	{
 		const FGameplayTag DamageTypeTag = Pair.Key;
 		const FGameplayTag ResistanceTag = Pair.Value;
-		checkf(
-			AuraDamageStatics().TagsToCaptureDefs.Contains(ResistanceTag),
-			TEXT("TagsToCaptureDefs doesn't contain Tag: [%s] in ExecCalc_Damage"),
-			*ResistanceTag.ToString()
-		);
+
+	  if (!AuraDamageStatics().TagsToCaptureDefs.Contains(ResistanceTag))
+	  {
+	    UE_LOG(
+	      LogAura,
+	      Warning,
+	      TEXT("TagsToCaptureDefs doesn't contain Tag: [%s] in ExecCalc_Damage"),
+        *ResistanceTag.ToString()
+        );
+      
+	    continue;
+	  }
+		
 		const FGameplayEffectAttributeCaptureDefinition CaptureDef = AuraDamageStatics()
 			.TagsToCaptureDefs[ResistanceTag];
 

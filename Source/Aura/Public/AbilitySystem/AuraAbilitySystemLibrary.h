@@ -10,6 +10,7 @@
 #include "UI/WidgetController/AuraWidgetController.h"
 #include "AuraAbilitySystemLibrary.generated.h"
 
+struct FAuraUpgradeInfo;
 class UUpgradeMenuWidgetController;
 class URewardsInfo;
 struct FEffectParams;
@@ -430,12 +431,6 @@ public:
 		FString& OutCooldownText,
 		FString& OutChargesText
 		);
-  static void MakeUpgradeDetailsText(
-    const UGameplayAbility* Ability,
-    int32 Level,
-    FString& OutCostText,
-    FString& OutRequirementsText
-    );
 	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|UI")
 	static void MakeManaAndCooldownTextNextLevel(
 		const UBaseAbility* Ability,

@@ -282,7 +282,7 @@ void UAuraAttributeSet::HandleIncomingDamage(
       EventData.ContextHandle = Props.EffectContextHandle;
       Props.SourceASC->GetOwnedGameplayTags(EventData.InstigatorTags);
       Props.TargetASC->GetOwnedGameplayTags(EventData.TargetTags);
-      ASC->HandleGameplayEvent(AuraTags.Abilities_Passive_Common_SecondWind, &EventData);
+      ASC->HandleGameplayEvent(AuraTags.Abilities_Event_SecondWindTrigger, &EventData);
     }
     else
     {
@@ -407,6 +407,48 @@ void UAuraAttributeSet::AssignPrimeAttribute(const FGameplayTag& InAttributeTag)
   else if (InAttributeTag.MatchesTagExact(GameplayTags.Attributes_Primary_Charisma))
   {
     PrimeAttribute = GetCharismaAttribute();
+  }
+}
+
+float UAuraAttributeSet::GetEssenceMultiplierByTag(const FGameplayTag& EssenceTag)
+{
+  const FAuraGameplayTags AuraTags = FAuraGameplayTags::Get();
+
+  const int32 EssenceIndex = AuraTags.ParentsToChildren[AuraTags.Resources_Essence].IndexOfByKey(EssenceTag);
+  switch (EssenceIndex)
+  {
+    case 0:
+      {
+        return GetSoulEssenceMultiplier();
+      }
+  case 1:
+      {
+        return GetFireEssenceMultiplier();
+      }
+  case 2:
+      {
+        return GetIceEssenceMultiplier();
+      }
+  case 3:
+      {
+        return GetLightningEssenceMultiplier();
+      }
+  case 4:
+      {
+        return GetNecroticEssenceMultiplier();
+      }
+  case 5:
+      {
+        return GetArcaneEssenceMultiplier();
+      }
+  case 6:
+      {
+        return GetPhysicalEssenceMultiplier();
+      }
+  default:
+      {
+        return 1.f;
+      }
   }
 }
 

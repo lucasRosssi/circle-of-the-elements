@@ -310,9 +310,10 @@ public:
 
   FGameplayTag Abilities_Passive;
   FGameplayTag Abilities_Passive_Common;
-  FGameplayTag Abilities_Passive_Common_SoulAbsorption;
-  FGameplayTag Abilities_Passive_Common_Respite;
-  FGameplayTag Abilities_Passive_Common_SecondWind;
+  FGameplayTag Abilities_Passive_Upgrade;
+  FGameplayTag Abilities_Passive_Upgrade_SoulAbsorption;
+  FGameplayTag Abilities_Passive_Upgrade_Respite;
+  FGameplayTag Abilities_Passive_Upgrade_SecondWind;
 	
 	FGameplayTag Abilities_Passive_Aura;
 	FGameplayTag Abilities_Passive_Aura_EnergyShield;
@@ -321,6 +322,9 @@ public:
 	FGameplayTag Abilities_Passive_Aura_SpiritSiphon;
 
 	FGameplayTag Abilities_Passive_Vilkar;
+
+  FGameplayTag Abilities_Event;
+  FGameplayTag Abilities_Event_SecondWindTrigger;
 
   /* UPGRADES */
 

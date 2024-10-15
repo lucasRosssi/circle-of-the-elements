@@ -7,15 +7,18 @@
 
 #include "UpgradeMenuWidgetController.generated.h"
 
+struct FAuraUpgradeInfo;
 enum class ECharacterName : uint8;
 class UUpgradeManager;
 struct FUpgradeInfoParams;
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(
   FOnUpgradeGlobeSelected,
+  const FAuraUpgradeInfo&,
+  UpgradeInfo,
+  int32,
+  Level,
   bool,
-  bCanUnlock,
-  FString,
-  DescriptionString
+  bCanUnlock
 );
 
 /**
@@ -27,17 +30,20 @@ class AURA_API UUpgradeMenuWidgetController : public UAuraWidgetController
 	GENERATED_BODY()
 
 public:
-	virtual void BroadcastInitialValues() override;
-	virtual void BindCallbacksToDependencies() override;
+  virtual void BroadcastInitialValues() override;
+  virtual void BindCallbacksToDependencies() override;
 
-	UFUNCTION(BlueprintCallable)
-	void OnUpgradeGlobeSelected(const FGameplayTag& UpgradeTag, ECharacterName CharacterName);
+  UFUNCTION(BlueprintCallable)
+  void UpgradeGlobeSelected(const FAuraUpgradeInfo& AuraUpgradeInfo);
 
-	UFUNCTION(BlueprintCallable)
-	void UnlockUpgrade(const FGameplayTag& UpgradeTag);
+  UFUNCTION(BlueprintCallable)
+  void UnlockUpgrade(const FGameplayTag& UpgradeTag);
 
-	UFUNCTION(BlueprintCallable)
-	FString GetUpgradeDescription(const FUpgradeInfoParams& Params, int32 Level);
+  UFUNCTION(BlueprintCallable)
+  FString GetUpgradeDescription(const FAuraUpgradeInfo& AuraUpgradeInfo, int32 Level);
+
+  UFUNCTION(BlueprintPure)
+  bool CanBeUnlocked(const FUpgradeInfoParams& Params);
 
   UPROPERTY(BlueprintAssignable)
   FOnUpgradeGlobeSelected OnUpgradeGlobeSelectedDelegate;

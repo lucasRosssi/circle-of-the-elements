@@ -63,6 +63,8 @@ public:
 	
 	void AssignPrimeAttribute(const FGameplayTag& InAttributeTag);
 
+  float GetEssenceMultiplierByTag(const FGameplayTag& EssenceTag);
+
 	/*
 	 * Primary attributes
 	 */

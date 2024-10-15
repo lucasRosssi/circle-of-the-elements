@@ -8,6 +8,7 @@
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
+#include "AbilitySystem/AuraAttributeSet.h"
 #include "Aura/AuraLogChannels.h"
 #include "Components/InteractComponent.h"
 #include "Game/AuraGameModeBase.h"
@@ -35,7 +36,8 @@ void ALocationReward::Interact_Implementation(const AController* Controller)
   const FAuraGameplayTags& GameplayTags = FAuraGameplayTags::Get();
   if (RewardTag.MatchesTag(GameplayTags.Resources_Essence))
   {
-    GetAuraGameInstance()->AddPlayerResource(RewardTag, RewardInfo.Amount);
+    const float Multiplier = GetAuraPlayerState()->GetAttributeSet()->GetEssenceMultiplierByTag(RewardTag);
+    GetAuraPlayerState()->AddPlayerResource(RewardTag, RewardInfo.Amount * Multiplier);
   }
 
   const URewardManager* RewardManager = UAuraSystemsLibrary::GetRewardManager(this);
@@ -120,7 +122,7 @@ void ALocationReward::SpawnNiagaraEffects()
   }
 }
 
-AAuraPlayerState* ALocationReward::GetAuraGameInstance()
+AAuraPlayerState* ALocationReward::GetAuraPlayerState()
 {
   if (AuraPlayerState == nullptr)
   {

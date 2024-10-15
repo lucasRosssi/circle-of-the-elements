@@ -19,13 +19,22 @@ struct FAuraUpgradeInfo
   GENERATED_BODY()
 
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-  TSubclassOf<UUpgradeEffect> GameplayEffect;
+  TSubclassOf<UUpgradeEffect> UpgradeEffect;
+
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+  FGameplayTag UpgradeTag = FGameplayTag();
 
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
   TSubclassOf<UUpgradeAbility> Ability;
 
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(Categories="Abilities.Passive.Upgrade"))
+  FGameplayTag AbilityTag = FGameplayTag();
+
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-  int32 MaxLevel = 1;
+  ECharacterName Hero = ECharacterName::Undefined;
+
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+  int32 MaxLevel = 5;
   
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(Categories="Resources", ForceInlineRow))
   TMap<FGameplayTag, FScalableFloat> Cost;
@@ -47,7 +56,8 @@ struct FAuraUpgradeInfo
 	
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(MultiLine=true))
   FText NextLevelDescription = FText();
-  
+
+  bool IsValid() const { return AbilityTag.IsValid(); }
 };
 
 USTRUCT(BlueprintType)
@@ -62,7 +72,7 @@ struct FUpgradeInfoParams
   FGameplayTag ElementTag = FGameplayTag();
 
   UPROPERTY(BlueprintReadWrite)
-  ECharacterName CharacterName = ECharacterName::Undefined;
+  ECharacterName Hero = ECharacterName::Undefined;
 };
 
 USTRUCT(BlueprintType)
@@ -107,7 +117,12 @@ UCLASS()
 class AURA_API UUpgradeInfo : public UDataAsset
 {
 	GENERATED_BODY()
+  
 public:
+#if WITH_EDITOR
+  virtual void PostEditChangeChainProperty(struct FPropertyChangedChainEvent& PropertyChangedEvent) override;
+#endif
+  
   FAuraUpgradeInfo FindUpgradeInfoByTag(
     const FGameplayTag& UpgradeTag,
     bool bLogNotFound = false

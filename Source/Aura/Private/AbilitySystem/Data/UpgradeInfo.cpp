@@ -5,6 +5,42 @@
 
 #include "Aura/AuraLogChannels.h"
 
+#if WITH_EDITOR
+void UUpgradeInfo::PostEditChangeChainProperty(FPropertyChangedChainEvent& PropertyChangedEvent)
+{
+  Super::PostEditChangeChainProperty(PropertyChangedEvent);
+
+  // Get the name of the property that changed
+  const FName PropertyName = PropertyChangedEvent.PropertyChain.GetActiveNode()->GetValue()->GetFName();
+
+  // Check if the UpgradeList has been modified
+  if (PropertyName == GET_MEMBER_NAME_CHECKED(FUpgradeListMapStruct, UpgradeList))
+  {
+    // Iterate over the Upgrades map
+    for (auto& CharacterEntry : Upgrades)
+    {
+      const ECharacterName HeroName = CharacterEntry.Key;
+      FUpgradesMapStruct& UpgradeMap = CharacterEntry.Value;
+
+      // Iterate over the Elements and their corresponding UpgradeLists
+      for (auto& ElementEntry : UpgradeMap.Elements)
+      {
+        FUpgradeListMapStruct& UpgradeListStruct = ElementEntry.Value;
+
+        // Iterate over the UpgradeList
+        for (auto& UpgradeEntry : UpgradeListStruct.UpgradeList)
+        {
+          FAuraUpgradeInfo& UpgradeInfo = UpgradeEntry.Value;
+
+          // Set the Hero variable to the map key (CharacterName)
+          UpgradeInfo.Hero = HeroName;
+        }
+      }
+    }
+  }
+}
+#endif
+
 FAuraUpgradeInfo UUpgradeInfo::FindUpgradeInfoByTag(const FGameplayTag& UpgradeTag, bool bLogNotFound) const
 {
   for (const auto Data : Upgrades)
@@ -85,7 +121,7 @@ TMap<FGameplayTag, FAuraUpgradeInfo> UUpgradeInfo::FindCharacterUpgradesOfElemen
 FAuraUpgradeInfo UUpgradeInfo::FindUpgradeInfoWithParams(const FUpgradeInfoParams& Params, bool bLogNotFound) const
 {
   TMap<FGameplayTag, FAuraUpgradeInfo> AbilityInfos = FindCharacterUpgradesOfElement(
-    Params.CharacterName,
+    Params.Hero,
     Params.ElementTag,
     bLogNotFound
     );

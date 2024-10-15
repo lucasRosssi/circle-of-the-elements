@@ -15,7 +15,8 @@ class AAuraCharacterBase;
 class ULevelInfo;
 class UAbilitySystemComponent;
 
-DECLARE_MULTICAST_DELEGATE_OneParam(FOnPlayerStatChanged, int32 /* StatValue */)
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnPlayerStatChanged, int32 /* StatValue */);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnResourceChanged, FGameplayTag, ResourceTag, int32, Amount);
 
 /**
  * 
@@ -36,15 +37,6 @@ public:
 	virtual float GetPower_Implementation() override;
 	virtual void SetTimeDilation_Implementation(float InTimeDilation) override;
 	/* END Attribute Set Interface */
-
-	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<ULevelInfo> LevelInfo;
-	
-	FOnPlayerStatChanged OnXPChangedDelegate;
-	FOnPlayerStatChanged OnLevelChangedDelegate;
-	FOnPlayerStatChanged OnAttributePointsChangedDelegate;
-	FOnPlayerStatChanged OnSkillPointsChangedDelegate;
-	FOnPlayerStatChanged OnPerkPointsChangedDelegate;
 	
 	int32 GetCharacterLevel() const { return Level; }
 	void SetLevel(int32 InLevel);
@@ -66,6 +58,18 @@ public:
   void AddPlayerResource(const FGameplayTag& ResourceTag, int32 Amount);
   int32 GetPlayerResourceByTag(const FGameplayTag& ResourceTag);
   bool CanAffordResourceCost(const TMap<FGameplayTag, int32>& CostMap) const;
+	
+  FOnPlayerStatChanged OnXPChangedDelegate;
+  FOnPlayerStatChanged OnLevelChangedDelegate;
+  FOnPlayerStatChanged OnAttributePointsChangedDelegate;
+  FOnPlayerStatChanged OnSkillPointsChangedDelegate;
+  FOnPlayerStatChanged OnPerkPointsChangedDelegate;
+
+  UPROPERTY(BlueprintAssignable)
+  FOnResourceChanged OnResourceChangedDelegate;
+
+  UPROPERTY(EditDefaultsOnly)
+  TObjectPtr<ULevelInfo> LevelInfo;
 
 protected:
 	UPROPERTY(VisibleAnywhere)
@@ -75,7 +79,7 @@ protected:
 	TObjectPtr<UAuraAttributeSet> AttributeSet;
 
   UPROPERTY(
-    EditDefaultsOnly,
+    EditAnywhere,
     BlueprintReadWrite,
     Category="Player",
     meta=(Categories="Resources", ForceInlineRow)

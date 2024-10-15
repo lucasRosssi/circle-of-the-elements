@@ -1140,27 +1140,6 @@ void UAuraAbilitySystemLibrary::MakeAbilityDetailsText(
   }
 }
 
-void UAuraAbilitySystemLibrary::MakeUpgradeDetailsText(
-  const UGameplayAbility* Ability,
-  int32 Level,
-  FString& OutCostText,
-  FString& OutRequirementsText
-)
-{
-  const int32 Cost = 0;
-  const FGameplayTagContainer Requirements = FGameplayTagContainer();
-  
-  OutCostText = FString::Printf(
-    TEXT("\n<Info>Cost - </><Mana>%d</>"),
-    Cost
-  );
-  
-  OutRequirementsText = FString::Printf(
-    TEXT("\n<Info>Requirements - </>%ss"),
-    *Requirements.First().GetTagName().ToString()
-  );
-}
-
 void UAuraAbilitySystemLibrary::MakeManaAndCooldownTextNextLevel(
   const UBaseAbility* Ability,
   int32 Level,

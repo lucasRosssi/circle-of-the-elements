@@ -13,7 +13,11 @@ class UUpgradeInfo;
 struct FUpgradeInfoParams;
 struct FAuraUpgradeInfo;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnUpgradeUnlock, const FAuraUpgradeInfo&, UpgradeInfo, int32, Level);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(
+  FOnUpgradeUnlock,
+  const FAuraUpgradeInfo&, AuraUpgradeInfo,
+  int32, Level
+  );
 
 /**
  * 
@@ -45,12 +49,12 @@ public:
 		);
   UFUNCTION(BlueprintPure, Category="Manager|Upgrade|Description")
   FString GetUpgradeDescription(
-    const FUpgradeInfoParams& Params,
+    const FAuraUpgradeInfo& AuraUpgradeInfo,
     int32 Level,
     bool bNextLevel
   );
 
-  bool HasResourcesToUnlock(const FGameplayTag& UpgradeTag, int32 Level = 1);
+  bool HasResourcesToUnlock(const FGameplayTag& UpgradeTag);
   bool HasRequiredUpgrades(const FGameplayTag& UpgradeTag);
 
   void UnlockUpgrade(const FGameplayTag& UpgradeTag);

@@ -73,6 +73,6 @@ protected:
 private:
   void SpawnNiagaraEffects();
 
-	AAuraPlayerState* GetAuraGameInstance();
+	AAuraPlayerState* GetAuraPlayerState();
 	TWeakObjectPtr<AAuraPlayerState> AuraPlayerState = nullptr;
 };
