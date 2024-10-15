@@ -168,6 +168,8 @@ void AAuraPlayerState::AddPlayerResource(const FGameplayTag& ResourceTag, int32 
   if (int32* CurrentAmount = PlayerResources.Find(ResourceTag))
   {
     *CurrentAmount += Amount;
+    if (*CurrentAmount < 0) *CurrentAmount = 0;
+    
     OnResourceChangedDelegate.Broadcast(ResourceTag, Amount);
   }
   else
