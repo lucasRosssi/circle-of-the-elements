@@ -69,10 +69,11 @@ FString UUpgradeMenuWidgetController::GetUpgradeDescription(const FAuraUpgradeIn
   return UpgradeManager->GetUpgradeDescription(AuraUpgradeInfo, Level, bNextLevel);
 }
 
-bool UUpgradeMenuWidgetController::CanBeUnlocked(const FUpgradeInfoParams& Params)
+bool UUpgradeMenuWidgetController::CanBeUnlocked(const FGameplayTag& UpgradeTag)
 {
-  return GetUpgradeManager()->HasResourcesToUnlock(Params.UpgradeTag) && UpgradeManager->HasRequiredUpgrades(
-    Params.UpgradeTag);
+  return GetUpgradeManager()->HasResourcesToUnlock(UpgradeTag) &&
+    UpgradeManager->HasRequiredUpgrades(UpgradeTag) &&
+    !UpgradeManager->IsMaxed(UpgradeTag);
 }
 
 UUpgradeManager* UUpgradeMenuWidgetController::GetUpgradeManager()

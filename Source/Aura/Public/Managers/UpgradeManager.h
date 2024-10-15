@@ -56,6 +56,8 @@ public:
 
   bool HasResourcesToUnlock(const FGameplayTag& UpgradeTag);
   bool HasRequiredUpgrades(const FGameplayTag& UpgradeTag);
+  bool IsMaxed(const FGameplayTag& UpgradeTag);
+  bool IsMaxed(const FAuraUpgradeInfo& AuraUpgradeInfo);
 
   void UnlockUpgrade(const FGameplayTag& UpgradeTag);
 

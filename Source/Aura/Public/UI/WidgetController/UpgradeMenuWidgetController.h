@@ -43,7 +43,7 @@ public:
   FString GetUpgradeDescription(const FAuraUpgradeInfo& AuraUpgradeInfo, int32 Level);
 
   UFUNCTION(BlueprintPure)
-  bool CanBeUnlocked(const FUpgradeInfoParams& Params);
+  bool CanBeUnlocked(const FGameplayTag& UpgradeTag);
 
   UPROPERTY(BlueprintAssignable)
   FOnUpgradeGlobeSelected OnUpgradeGlobeSelectedDelegate;

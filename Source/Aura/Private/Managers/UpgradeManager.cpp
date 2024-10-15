@@ -99,17 +99,16 @@ void UUpgradeManager::GetUpgradeFormattedTexts(
   if (AuraUpgradeInfo.Requirements.Num() > 0)
   {
     UpgradeDetails = FText::FromString(FString::Printf(TEXT(
-        "\n\n%s"
-        "%s"
+        "\n%s"
         ),
-      *RequirementsText,
-      *ResourcesText
+      *RequirementsText
     ));
   }
-  else
+
+  if (!IsMaxed(AuraUpgradeInfo))
   {
-    UpgradeDetails = FText::FromString(FString::Printf(TEXT(
-        "\n\n%s"
+    UpgradeDetails = FText::FromString(UpgradeDetails.ToString() + FString::Printf(TEXT(
+        "\n%s"
         ),
       *ResourcesText
     ));
@@ -157,6 +156,31 @@ bool UUpgradeManager::HasRequiredUpgrades(const FGameplayTag& UpgradeTag)
   return AcquiredUpgrades.HasAllExact(Info.Requirements);
 }
 
+bool UUpgradeManager::IsMaxed(const FGameplayTag& UpgradeTag)
+{
+  const FAuraUpgradeInfo& Info = UpgradeInfo->FindUpgradeInfoByTag(UpgradeTag);
+  UAuraAbilitySystemComponent* AuraASC = GetAuraPlayerState()->GetAuraASC();
+  
+  if (const FGameplayAbilitySpec* AbilitySpec = AuraASC->GetSpecFromAbilityTag(Info.AbilityTag))
+  {
+    return AbilitySpec->Level >= Info.MaxLevel;
+  }
+
+  return false;
+}
+
+bool UUpgradeManager::IsMaxed(const FAuraUpgradeInfo& AuraUpgradeInfo)
+{
+  UAuraAbilitySystemComponent* AuraASC = GetAuraPlayerState()->GetAuraASC();
+
+  if (const FGameplayAbilitySpec* AbilitySpec = AuraASC->GetSpecFromAbilityTag(AuraUpgradeInfo.AbilityTag))
+  {
+    return AbilitySpec->Level >= AuraUpgradeInfo.MaxLevel;
+  }
+
+  return false;
+}
+
 void UUpgradeManager::UnlockUpgrade(const FGameplayTag& UpgradeTag)
 {
   const FAuraUpgradeInfo& Info = UpgradeInfo->FindUpgradeInfoByTag(UpgradeTag);
@@ -165,6 +189,8 @@ void UUpgradeManager::UnlockUpgrade(const FGameplayTag& UpgradeTag)
   int32 Level;
   if (FGameplayAbilitySpec* AbilitySpec = AuraASC->GetSpecFromAbilityTag(Info.AbilityTag))
   {
+    if (AbilitySpec->Level >= Info.MaxLevel) return;
+    
     AbilitySpec->Level += 1;
     AuraASC->MarkAbilitySpecDirty(*AbilitySpec);
 
