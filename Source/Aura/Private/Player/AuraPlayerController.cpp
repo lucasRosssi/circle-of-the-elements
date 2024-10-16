@@ -20,6 +20,7 @@
 #include "Managers/UIManager.h"
 #include "Materials/MaterialParameterCollectionInstance.h"
 #include "UI/Widget/DamageTextComponent.h"
+#include "UI/Widget/HealTextComponent.h"
 
 AAuraPlayerController::AAuraPlayerController()
 {
@@ -284,6 +285,24 @@ void AAuraPlayerController::DisableController()
 	ThisActor = nullptr;
 }
 
+void AAuraPlayerController::ShowHealNumber_Implementation(float HealAmount, ACharacter* TargetCharacter, bool bIsPlayer)
+{
+  if (IsValid(TargetCharacter) && HealTextComponentClass && IsLocalController())
+  {
+    UHealTextComponent* HealText = NewObject<UHealTextComponent>(
+      TargetCharacter,
+      HealTextComponentClass
+    );
+    HealText->RegisterComponent();
+    HealText->AttachToComponent(
+      TargetCharacter->GetRootComponent(),
+      FAttachmentTransformRules::KeepRelativeTransform
+    );
+    HealText->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
+    HealText->SetHealText(HealAmount, bIsPlayer);
+  }
+}
+
 void AAuraPlayerController::ShowDamageNumber_Implementation(
 		float DamageAmount,
 		ACharacter* TargetCharacter,
@@ -371,7 +390,7 @@ void AAuraPlayerController::SetupInputComponent()
 void AAuraPlayerController::Move(const FInputActionValue& InputActionValue)
 {
 	const FVector2D InputAxisVector = InputActionValue.Get<FVector2D>();
-	const FRotator Rotation = GetControlRotation();
+	const FRotator Rotation = PlayerCamera.IsValid() ? PlayerCamera.Get()->GetComponentRotation() : FRotator::ZeroRotator;
 	const FRotator YawRotation(0.f, Rotation.Yaw, 0.f);
 
 	const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);

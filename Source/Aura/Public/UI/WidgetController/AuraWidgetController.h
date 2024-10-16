@@ -6,6 +6,7 @@
 #include "AbilitySystemComponent.h"
 #include "AuraWidgetController.generated.h"
 
+class UUpgradeInfo;
 class AAuraHUD;
 class UAbilityInfo;
 class UAuraAbilitySystemComponent;
@@ -110,5 +111,7 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Data")
 	TObjectPtr<UAbilityInfo> AbilityInfo;
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Data")
+  TObjectPtr<UUpgradeInfo> UpgradeInfo;
 	
 };

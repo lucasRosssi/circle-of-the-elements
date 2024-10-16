@@ -22,6 +22,11 @@ void UAuraUserWidget::NativeConstruct()
 	}
 }
 
+void UAuraUserWidget::AssignWidgetController_Implementation(UObject* InWidgetController)
+{
+  SetWidgetController(InWidgetController);
+}
+
 void UAuraUserWidget::SetWidgetController(UObject* InWidgetController)
 {
 	WidgetController = InWidgetController;
@@ -31,9 +36,9 @@ void UAuraUserWidget::SetWidgetController(UObject* InWidgetController)
 	WidgetTree->ForEachWidget(
 		[&](UWidget* Widget)
 		{
-			if (UAuraUserWidget* AuraWidget = Cast<UAuraUserWidget>(Widget))
+			if (Widget->Implements<UWidgetControllerInterface>())
 			{
-					AuraWidget->SetWidgetController(InWidgetController);
+					Execute_AssignWidgetController(Widget, InWidgetController);
 			}
 		}
 	);

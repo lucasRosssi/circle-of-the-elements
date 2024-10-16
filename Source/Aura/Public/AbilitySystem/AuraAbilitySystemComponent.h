@@ -83,7 +83,9 @@ public:
 		);
 	void RemoveInputTagFromAbilities(const FGameplayTag& InputTag);
 	FGameplayTag GetStatusFromAbilityTag(const FGameplayTag& AbilityTag);
-	FGameplayTag GetInputTagFromAbilityTag(const FGameplayTag& AbilityTag);
+  FGameplayTag GetInputTagFromAbilityTag(const FGameplayTag& AbilityTag);
+  UFUNCTION(BlueprintPure)
+  int32 GetAbilityLevelFromTag(const FGameplayTag& AbilityTag);
 
 	FGameplayAbilitySpec* GetSpecFromAbilityTag(const FGameplayTag& AbilityTag);
 

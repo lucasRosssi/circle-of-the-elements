@@ -153,7 +153,7 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 
 	GameplayTags.Attributes_Secondary_HealthRegeneration = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Attributes.Secondary.HealthRegeneration"),
-		FString("Amount of health recovered over time")
+		FString("Amount of health recovered after each fight")
 		);
 	
 	GameplayTags.Attributes_Secondary_ManaRegeneration = UGameplayTagsManager::Get()
@@ -166,6 +166,11 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	FName("Attributes.Secondary.ParryChance"),
 	FString("Chance to parry an attack and negate damage")
 	);
+
+  GameplayTags.Attributes_Secondary_Restoration = UGameplayTagsManager::Get().AddNativeGameplayTag(
+  FName("Attributes.Secondary.Restoration"),
+  FString("Magnitude of any healing received")
+  );
 	
 	/*
 	 * SPECIAL ATTRIBUTES
@@ -301,7 +306,16 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FName("Damage.Necrotic"),
 		FString("Necrotic damage type")
 		);
-	
+
+  /*
+   * Heal Tags
+   */
+
+  GameplayTags.Heal = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Heal"),
+    FString("Heal tag")
+    );
+  
 	/*
 	 * Resistances Tags
 	 */
@@ -685,6 +699,13 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FString("Mobility ability.")
 		);
 
+  // Health Regen
+
+  GameplayTags.Abilities_HealthRegeneration = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Abilities.HealthRegeneration"),
+    FString("HealthRegeneration ability.")
+    );
+
 	// Tiers
 
 	GameplayTags.Abilities_Tier = UGameplayTagsManager::Get().AddNativeGameplayTag(
@@ -813,11 +834,6 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FString("Get stunned ability")
 		);
 
-	GameplayTags.Abilities_Reaction_ShieldStackRemove = UGameplayTagsManager::Get().AddNativeGameplayTag(
-		FName("Abilities.Reaction.ShieldStackRemove"),
-		FString("Removes stacks of shield if applicable")
-		);
-
 	GameplayTags.Abilities_Reaction_Charm = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Abilities.Reaction.Charm"),
 		FString("Get charmed ability")
@@ -832,6 +848,17 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FName("Abilities.Reaction.Paralysis"),
 		FString("Get paralyzed ability")
 		);
+
+
+  GameplayTags.Abilities_Reaction_ShieldStackRemove = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Abilities.Reaction.ShieldStackRemove"),
+    FString("Removes stacks of shield if applicable")
+    );
+
+  GameplayTags.Abilities_Reaction_SecondWind = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Abilities.Reaction.SecondWind"),
+    FString("Activated on death if character has at least 1 stack")
+    );
 
 	// Actions
 
@@ -854,6 +881,23 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FName("Charges.Action.Dodge"),
 		FString("Dodge ability charges")
 		);
+
+  // Interactions
+
+  GameplayTags.Abilities_Interaction = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Abilities.Interaction"),
+    FString("Interaction ability tags")
+    );
+
+  GameplayTags.Abilities_Interaction_SoulEssence = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Abilities.Interaction.SoulEssence"),
+    FString("SoulEssence interaction ability")
+    );
+
+  GameplayTags.Abilities_Interaction_ElementalEssence = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Abilities.Interaction.ElementalEssence"),
+    FString("ElementalEssence interaction ability")
+    );
 
 	// Attacks
 	
@@ -1127,6 +1171,31 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FString("Passive abilities")
 		);
 
+  GameplayTags.Abilities_Passive_Common = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Abilities.Passive.Common"),
+    FString("Common passive abilities")
+    );
+
+  GameplayTags.Abilities_Passive_Upgrade = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Abilities.Passive.Upgrade"),
+    FString("Upgrade passive abilities")
+    );
+
+  GameplayTags.Abilities_Passive_Upgrade_SoulAbsorption = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Abilities.Passive.Upgrade.SoulAbsorption"),
+    FString("SoulAbsorption ability")
+    );
+
+  GameplayTags.Abilities_Passive_Upgrade_Respite = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Abilities.Passive.Upgrade.Respite"),
+    FString("Respite ability")
+    );
+
+  GameplayTags.Abilities_Passive_Upgrade_SecondWind = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Abilities.Passive.Upgrade.SecondWind"),
+    FString("SecondWind ability")
+    );
+
 	// Aura passive abilities
 
 	GameplayTags.Abilities_Passive_Aura = UGameplayTagsManager::Get().AddNativeGameplayTag(
@@ -1162,6 +1231,126 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FName("Abilities.Passive.Vilkar"),
 		FString("Vilkar passive abilities")
 		);
+
+  // Ability Events
+
+  GameplayTags.Abilities_Event = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Abilities.Event"),
+    FString("Ability events tags")
+    );
+
+  GameplayTags.Abilities_Event_SecondWindTrigger = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Abilities.Event.SecondWindTrigger"),
+    FString("SecondWind trigger event")
+    );
+
+  /*
+   * Player Upgrades
+   */
+
+  GameplayTags.Upgrades = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Upgrades"),
+    FString("Upgrades tags")
+    );
+
+  // Soul
+
+  GameplayTags.Upgrades_Soul = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Upgrades.Soul"),
+    FString("Soul upgrades tags")
+    );
+
+  GameplayTags.Upgrades_Soul_Absorption = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Upgrades.Soul.Absorption"),
+    FString("Soul Absorption upgrade tag")
+    );
+
+  GameplayTags.Upgrades_Soul_Respite = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Upgrades.Soul.Respite"),
+    FString("Respite upgrade tag")
+    );
+
+  GameplayTags.Upgrades_Soul_Brilliance = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Upgrades.Soul.Brilliance"),
+    FString("Brilliance upgrade tag")
+    );
+
+  GameplayTags.Upgrades_Soul_SecondWind = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Upgrades.Soul.SecondWind"),
+    FString("SecondWind upgrade tag")
+    );
+
+  // Fire
+
+  GameplayTags.Upgrades_Fire = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Upgrades.Fire"),
+    FString("Fire upgrades tags")
+    );
+
+  GameplayTags.Upgrades_Fire_Absorption = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Upgrades.Fire.Absorption"),
+    FString("Fire Absorption upgrade tag")
+    );
+
+  // Ice
+
+  GameplayTags.Upgrades_Ice = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Upgrades.Ice"),
+    FString("Ice upgrades tags")
+    );
+
+  GameplayTags.Upgrades_Ice_Absorption = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Upgrades.Ice.Absorption"),
+    FString("Ice Absorption upgrade tag")
+    );
+
+  // Lightning
+
+  GameplayTags.Upgrades_Lightning = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Upgrades.Lightning"),
+    FString("Lightning upgrades tags")
+    );
+
+  GameplayTags.Upgrades_Lightning_Absorption = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Upgrades.Lightning.Absorption"),
+    FString("Lightning Absorption upgrade tag")
+    );
+
+  // Necrotic
+
+  GameplayTags.Upgrades_Necrotic = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Upgrades.Necrotic"),
+    FString("Necrotic upgrades tags")
+    );
+
+  GameplayTags.Upgrades_Necrotic_Absorption = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Upgrades.Necrotic.Absorption"),
+    FString("Necrotic Absorption upgrade tag")
+    );
+
+  // Arcane
+
+  GameplayTags.Upgrades_Arcane = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Upgrades.Arcane"),
+    FString("Arcane upgrades tags")
+    );
+
+  GameplayTags.Upgrades_Arcane_Absorption = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Upgrades.Arcane.Absorption"),
+    FString("Arcane Absorption upgrade tag")
+    );
+
+  // Physical
+
+  GameplayTags.Upgrades_Physical = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Upgrades.Physical"),
+    FString("Physical upgrades tags")
+    );
+
+  GameplayTags.Upgrades_Physical_Absorption = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Upgrades.Physical.Absorption"),
+    FString("Physical Absorption upgrade tag")
+    );
 
 	/*
 	 * Player Resources
@@ -1327,6 +1516,18 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	});
 
 	GameplayTags.ParentsToChildren.Add(GameplayTags.Abilities_Tier, TierTags);
+
+  const TArray EssenceTags = TArray({
+    GameplayTags.Resources_Essence_Soul,
+    GameplayTags.Resources_Essence_Fire,
+    GameplayTags.Resources_Essence_Ice,
+    GameplayTags.Resources_Essence_Lightning,
+    GameplayTags.Resources_Essence_Necrotic,
+    GameplayTags.Resources_Essence_Arcane,
+    GameplayTags.Resources_Essence_Physical,
+  });
+
+  GameplayTags.ParentsToChildren.Add(GameplayTags.Resources_Essence, EssenceTags);
 
 	GameplayTags.bIsValid = true;
 }

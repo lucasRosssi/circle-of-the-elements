@@ -4,6 +4,8 @@
 #include "Managers/EncounterManager.h"
 
 #include "AuraGameplayTags.h"
+#include "Actor/AreaEffectActor.h"
+#include "Actor/AuraProjectile.h"
 #include "Actor/Level/EnemySpawner.h"
 #include "Aura/AuraLogChannels.h"
 #include "Kismet/GameplayStatics.h"
@@ -110,6 +112,30 @@ void UEncounterManager::PostFinishEncounter()
 	UGameplayStatics::SetGlobalTimeDilation(GetOwner(), 1.0f);
 
 	OnEncounterFinishedDelegate.Broadcast();
+  
+  TArray<AActor*> Projectiles;
+  UGameplayStatics::GetAllActorsOfClass(
+    this,
+    AAuraProjectile::StaticClass(),
+    Projectiles
+    );
+
+  TArray<AActor*> AreaEffectActors;
+  UGameplayStatics::GetAllActorsOfClass(
+    this,
+    AAreaEffectActor::StaticClass(),
+    AreaEffectActors
+    );
+
+  for (const auto Projectile : Projectiles)
+  {
+    if (IsValid(Projectile)) Projectile->Destroy();
+  }
+  
+  for (const auto Actor : AreaEffectActors)
+  {
+    if (IsValid(Actor)) Actor->Destroy();
+  }
 }
 
 void UEncounterManager::GetAvailableSpawners()
@@ -158,6 +184,7 @@ void UEncounterManager::OnEnemyKilled(AActor* Enemy)
 	{
 		if (CurrentWave == TotalWaves)
 		{
+		  OnLastEnemyKilledDelegate.Broadcast();
 			FinishEncounter();
 		}
 		else

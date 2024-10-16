@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "InteractComponent.generated.h"
 
+class UInteractionAbility;
+class UGameplayEffect;
 class UNiagaraSystem;
 class UNiagaraComponent;
 enum class ECharacterName : uint8;
@@ -22,6 +24,8 @@ public:
 
   bool IsEnabled() const { return bInteractionEnabled; }
   FText GetInteractText() const { return InteractText; }
+  TSubclassOf<UInteractionAbility> GetInteractAbility() const { return InteractAbility; }
+  TSubclassOf<UGameplayEffect> GetInteractEffect() const { return InteractEffect; }
   
   void SetupInteractAreaAttachment(USceneComponent* Component);
 
@@ -41,6 +45,12 @@ protected:
 
   UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Interaction")
   TObjectPtr<USphereComponent> InteractArea;
+
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Interaction")
+  TSubclassOf<UInteractionAbility> InteractAbility;
+
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Interaction")
+  TSubclassOf<UGameplayEffect> InteractEffect;
 
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Interaction")
   bool bInteractionEnabled = false;

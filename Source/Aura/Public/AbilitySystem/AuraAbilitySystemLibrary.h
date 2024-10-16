@@ -10,6 +10,8 @@
 #include "UI/WidgetController/AuraWidgetController.h"
 #include "AuraAbilitySystemLibrary.generated.h"
 
+struct FAuraUpgradeInfo;
+class UUpgradeMenuWidgetController;
 class URewardsInfo;
 struct FEffectParams;
 class URegionInfo;
@@ -60,14 +62,12 @@ public:
 		meta = (HidePin = "WorldContextObject", DefaultToSelf = "WorldContextObject")
 	)
 	static FWidgetControllerParams MakeWidgetControllerParams(const UObject* WorldContextObject);
-	
 	UFUNCTION(
 		BlueprintPure,
 		Category = "AuraAbilitySystemLibrary|WidgetController",
 		meta = (HidePin = "WorldContextObject", DefaultToSelf = "WorldContextObject")
 	)
 	static UOverlayWidgetController* GetOverlayWidgetController(const UObject* WorldContextObject);
-
 	UFUNCTION(
 		BlueprintPure,
 		Category = "AuraAbilitySystemLibrary|WidgetController",
@@ -76,7 +76,6 @@ public:
 	static UAttributeMenuWidgetController* GetAttributeMenuWidgetController(
 		const UObject* WorldContextObject
 	);
-
 	UFUNCTION(
 		BlueprintPure,
 		Category = "AuraAbilitySystemLibrary|WidgetController",
@@ -85,6 +84,14 @@ public:
 	static USkillMenuWidgetController* GetSkillMenuWidgetController(
 		const UObject* WorldContextObject
 	);
+  UFUNCTION(
+    BlueprintPure,
+    Category = "AuraAbilitySystemLibrary|WidgetController",
+    meta = (HidePin = "WorldContextObject", DefaultToSelf = "WorldContextObject")
+  )
+  static UUpgradeMenuWidgetController* GetUpgradeMenuWidgetController(
+    const UObject* WorldContextObject
+  );
 
 	/*
 	 * DEFAULTS
@@ -431,6 +438,11 @@ public:
 		FString& OutManaText,
 		FString& OutCooldownText
 		);
+
+  UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|Ability")
+  static bool IsAbilityGranted(const UAbilitySystemComponent* ASC, const FGameplayTag& AbilityTag);
+  UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|Ability")
+  static bool IsAbilityActive(const UAbilitySystemComponent* ASC, const FGameplayTag& AbilityTag);
 
 private:
 	static void AddOverlappedCharactersByTeam(

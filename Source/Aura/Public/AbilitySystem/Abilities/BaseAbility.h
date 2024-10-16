@@ -10,6 +10,8 @@
 #include "Interfaces/AbilityInterface.h"
 #include "BaseAbility.generated.h"
 
+class AAuraCamera;
+class AAuraHero;
 class AAuraCharacterBase;
 struct FAuraAbilityInfo;
 
@@ -76,8 +78,16 @@ public:
 
 	TArray<FStatusEffectApplicationData> GetStatusEffectData() const { return StatusEffectData; }
 
+  TArray<FScalableFloat> GetPercents() const { return Percents; }
+  TArray<FScalableFloat> GetValues() const { return Values; }
+
 	UFUNCTION(BlueprintPure, Category="Ability Effect", meta=(HidePin="Target", DefaultToSelf="Target"))
 	virtual FAbilityParams MakeAbilityParamsFromDefaults(AActor* TargetActor = nullptr) const;
+
+  UFUNCTION(BlueprintPure, Category="Ability Defaults|Heal")
+  float GetHealAtLevel(int32 Level) const;
+  UFUNCTION(BlueprintPure, Category="Ability Defaults|Heal")
+  virtual int32 GetRoundedHealAtLevel_Implementation(int32 Level) const override;
 
 protected:
 #if WITH_EDITORONLY_DATA
@@ -99,8 +109,14 @@ protected:
 	FColor DrawShapeColor = FColor::Green;
 #endif
   
-	UFUNCTION(BlueprintPure, Category="Ability")
+	UFUNCTION(BlueprintPure, Category="Ability|Avatar")
 	AAuraCharacterBase* GetAvatarCharacter();
+
+  UFUNCTION(BlueprintPure, Category="Ability|Avatar")
+  AAuraHero* GetAvatarHero();
+
+  UFUNCTION(BlueprintPure, Category="Ability|Avatar")
+  AAuraCamera* GetPlayerCamera();
 	
 	UFUNCTION(BlueprintPure, Category="Ability Info")
 	FGameplayTag GetAbilityTag();
@@ -111,6 +127,11 @@ protected:
 	float GetAreaOuterRadius() const;
 	UFUNCTION(BlueprintPure, Category="Cooldowns")
 	int32 GetMaxCharges() const;
+
+  UFUNCTION(BlueprintCallable)
+  void DisablePlayerInput();
+  UFUNCTION(BlueprintCallable)
+  void EnablePlayerInput();
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Status Effects")
 	TArray<FStatusEffectApplicationData> StatusEffectData;
@@ -187,6 +208,18 @@ OnEndAbility event. Or make the ability not constantly dependent on variables.
 	UPROPERTY(EditDefaultsOnly, Category="Cooldowns")
 	FScalableFloat Cooldown;
 
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Heal")
+  TSubclassOf<UGameplayEffect> HealEffectClass;
+  UPROPERTY(EditDefaultsOnly, Category="Heal")
+  ETargetTeam HealTarget = ETargetTeam::Friends;
+  UPROPERTY(EditDefaultsOnly, Category="Heal")
+  FScalableFloat Heal;
+
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Description")
+  TArray<FScalableFloat> Percents;
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Description")
+  TArray<FScalableFloat> Values;
+
 private:
 	void HandleCooldownRecharge(
 		FGameplayAbilitySpecHandle Handle,
@@ -195,8 +228,8 @@ private:
 		);
 	
 	bool IsChargesModeActive() const;
-	
-	UPROPERTY()
+
+  UPROPERTY()
 	FGameplayTag AbilityTag = FGameplayTag();
 
 	UPROPERTY()
@@ -204,5 +237,8 @@ private:
 
 	UPROPERTY()
 	AAuraCharacterBase* AvatarCharacter = nullptr;
+
+  UPROPERTY()
+  AAuraHero* AvatarHero = nullptr;
 	
 };

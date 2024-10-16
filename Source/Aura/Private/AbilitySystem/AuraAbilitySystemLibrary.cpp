@@ -82,6 +82,19 @@ USkillMenuWidgetController* UAuraAbilitySystemLibrary::GetSkillMenuWidgetControl
   return AuraHUD->GetSkillMenuWidgetController(WidgetControllerParams);
 }
 
+UUpgradeMenuWidgetController* UAuraAbilitySystemLibrary::GetUpgradeMenuWidgetController(
+  const UObject* WorldContextObject
+)
+{
+  const FWidgetControllerParams WidgetControllerParams = MakeWidgetControllerParams(WorldContextObject);
+  if (!WidgetControllerParams.IsValid()) return nullptr;
+
+  AAuraHUD* AuraHUD = WidgetControllerParams.PlayerController->GetHUD<AAuraHUD>();
+  if (!AuraHUD) return nullptr;
+
+  return AuraHUD->GetUpgradeMenuWidgetController(WidgetControllerParams);
+}
+
 UCharacterInfo* UAuraAbilitySystemLibrary::GetCharacterClassInfo(
   const UObject* WorldContextObject)
 {
@@ -1001,6 +1014,36 @@ void UAuraAbilitySystemLibrary::FormatAbilityDescriptionAtLevel(
       );
     }
   }
+
+  const TArray<FScalableFloat>& Percents = Ability->GetPercents();
+  if (Percents.Num() > 0)
+  {
+    for (int32 i = 0; i < Percents.Num(); i++)
+    {
+      OutDescription = FText::FormatNamed(
+        OutDescription,
+        Args.UpgradeArgs[i].Percent_0,
+        Percents[i].GetValueAtLevel(Level) * 100,
+        Args.UpgradeArgs[i].Percent_1,
+        Percents[i].GetValueAtLevel(Level + 1) * 100
+      );
+    }
+  }
+
+  const TArray<FScalableFloat>& Values = Ability->GetValues();
+  if (Values.Num() > 0)
+  {
+    for (int32 i = 0; i < Values.Num(); i++)
+    {
+      OutDescription = FText::FormatNamed(
+        OutDescription,
+        Args.UpgradeArgs[i].Value_0,
+        Values[i].GetValueAtLevel(Level),
+        Args.UpgradeArgs[i].Value_1,
+        Values[i].GetValueAtLevel(Level + 1)
+      );
+    }
+  }
 }
 
 FString UAuraAbilitySystemLibrary::GetAbilityLockedDescription(
@@ -1155,6 +1198,32 @@ void UAuraAbilitySystemLibrary::MakeManaAndCooldownTextNextLevel(
   }
 }
 
+bool UAuraAbilitySystemLibrary::IsAbilityGranted(const UAbilitySystemComponent* ASC, const FGameplayTag& AbilityTag)
+{
+  TArray<FGameplayAbilitySpec*> SpecArray;
+  ASC->GetActivatableGameplayAbilitySpecsByAllMatchingTags(
+    FGameplayTagContainer({ AbilityTag }),
+    SpecArray
+    );
+
+  return !SpecArray.IsEmpty();
+}
+
+bool UAuraAbilitySystemLibrary::IsAbilityActive(const UAbilitySystemComponent* ASC, const FGameplayTag& AbilityTag)
+{
+  TArray<FGameplayAbilitySpec*> SpecArray;
+  ASC->GetActivatableGameplayAbilitySpecsByAllMatchingTags(
+    FGameplayTagContainer({ AbilityTag }),
+    SpecArray
+    );
+
+  if (SpecArray.IsEmpty()) return false;
+
+  const FGameplayAbilitySpec* AbilitySpec = SpecArray[0];
+
+  return AbilitySpec->IsActive();
+}
+
 void UAuraAbilitySystemLibrary::AddOverlappedCharactersByTeam(
   const AActor* ContextActor,
   TArray<AActor*>& OutOverlappingActors,
@@ -1294,6 +1363,8 @@ FGameplayEffectContextHandle UAuraAbilitySystemLibrary::ApplyAbilityEffect(
 )
 {
   bSuccess = false;
+  
+  const FAuraGameplayTags& AuraTags = FAuraGameplayTags::Get();
 
   const AActor* SourceAvatarActor = AbilityParams.SourceASC->GetAvatarActor();
 
@@ -1301,12 +1372,33 @@ FGameplayEffectContextHandle UAuraAbilitySystemLibrary::ApplyAbilityEffect(
                                                      .SourceASC->MakeEffectContext();
   EffectContextHandle.AddSourceObject(SourceAvatarActor);
 
+  const FHealParams& HealParams = AbilityParams.HealParams;
+  
+  if (HealParams.IsValid())
+  {
+    const FGameplayEffectSpecHandle HealSpecHandle = AbilityParams.SourceASC->MakeOutgoingSpec(
+      HealParams.HealEffectClass,
+      AbilityParams.AbilityLevel,
+      EffectContextHandle
+    );
+
+    UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(
+      HealSpecHandle,
+      AuraTags.Heal,
+      HealParams.BaseHeal
+    );
+
+    AbilityParams.SourceASC
+      ->ApplyGameplayEffectSpecToTarget(*HealSpecHandle.Data, AbilityParams.TargetASC);
+    bSuccess = true;
+  }
+
   if (HasAnyHarmfulEffectBlockTag(AbilityParams.TargetASC))
   {
     if (HasAnyParryTag(AbilityParams.TargetASC))
     {
       const FGameplayTagContainer TagContainer({
-        FAuraGameplayTags::Get().Abilities_Reaction_ShieldStackRemove
+        AuraTags.Abilities_Reaction_ShieldStackRemove
       });
       AbilityParams.TargetASC->TryActivateAbilitiesByTag(TagContainer);
     }
@@ -1342,7 +1434,7 @@ FGameplayEffectContextHandle UAuraAbilitySystemLibrary::ApplyAbilityEffect(
     );
 
     AbilityParams.SourceASC
-                 ->ApplyGameplayEffectSpecToTarget(*DamageSpecHandle.Data, AbilityParams.TargetASC);
+      ->ApplyGameplayEffectSpecToTarget(*DamageSpecHandle.Data, AbilityParams.TargetASC);
     bSuccess = true;
   }
 

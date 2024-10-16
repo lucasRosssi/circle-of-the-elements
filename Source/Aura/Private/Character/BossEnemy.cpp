@@ -8,6 +8,8 @@
 #include "Aura/AuraLogChannels.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Components/WidgetComponent.h"
+#include "Managers/EncounterManager.h"
+#include "Utils/AuraSystemsLibrary.h"
 
 ABossEnemy::ABossEnemy()
 {
@@ -40,6 +42,8 @@ void ABossEnemy::BeginPlay()
 	Super::BeginPlay();
 
 	if (!BossStateHealthThresholds.IsEmpty()) OnHealthChanged.AddDynamic(this, &ABossEnemy::CheckHealth);
+  
+  UAuraSystemsLibrary::GetEncounterManager(this)->SetCurrentBoss(this);
 }
 
 void ABossEnemy::PossessedBy(AController* NewController)

@@ -27,6 +27,23 @@ UAbilityManager* UAuraSystemsLibrary::GetAbilityManager(const UObject* WorldCont
 	return nullptr;
 }
 
+UUpgradeManager* UAuraSystemsLibrary::GetUpgradeManager(const UObject* WorldContextObject)
+{
+  AGameModeBase* GameMode = UGameplayStatics::GetGameMode(WorldContextObject);
+  if (const AAuraGameModeBase* AuraGameMode = Cast<AAuraGameModeBase>(GameMode))
+  {
+    return AuraGameMode->GetUpgradeManager();
+  }
+
+  UE_LOG(LogAura, Warning, TEXT(
+    "Current world doesn't have an Upgrade Manager. "
+    "Trying to access from object: %s"),
+    *WorldContextObject->GetName()
+    );
+
+  return nullptr;
+}
+
 ULocationManager* UAuraSystemsLibrary::GetLocationManager(const UObject* WorldContextObject)
 {
 	AGameModeBase* GameMode = UGameplayStatics::GetGameMode(WorldContextObject);

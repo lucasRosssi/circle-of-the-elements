@@ -70,6 +70,7 @@ public:
 	virtual UBoxComponent* EnableWeaponCollision_Implementation(bool bEnable) override;
 	virtual bool IsFriend_Implementation(AActor* Actor) override;
 	virtual bool IsEnemy_Implementation(AActor* Actor) override;
+  virtual void SetCustomDepth_Implementation(int32 Value) override;
 	/** END Combat Interface */
 
 	void InitSummon(int32 TeamID);
@@ -95,11 +96,11 @@ public:
 	UPROPERTY(BlueprintReadWrite, Category="Combat")
 	TObjectPtr<AActor> CombatTarget;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Character Defaults|Abilities|Startup")
+	UPROPERTY(EditDefaultsOnly, Category = "Character Defaults|Abilities|Startup", meta=(DisplayPriority=0))
 	TArray<TSubclassOf<UGameplayAbility>> NativeBaseAbilities;
-	UPROPERTY(EditDefaultsOnly, Category="Character Defaults|Abilities|Startup")
+	UPROPERTY(EditDefaultsOnly, Category="Character Defaults|Abilities|Startup", meta=(DisplayPriority=1))
 	TArray<TSubclassOf<UGameplayAbility>> NativeCharacterAbilities;
-	UPROPERTY(EditDefaultsOnly, Category="Character Defaults|Effects|Startup")
+	UPROPERTY(EditDefaultsOnly, Category="Character Defaults|Effects|Startup", meta=(DisplayPriority=3))
 	TArray<TSubclassOf<UGameplayEffect>> NativeEffects;
 
 	UPROPERTY(

@@ -97,12 +97,12 @@ float UActiveDamageAbility::GetDamageAtLevel(int32 Level) const
 
 int32 UActiveDamageAbility::GetRoundedDamageAtLevel_Implementation(int32 Level) const
 {
-	return FMath::RoundToInt32(GetDamageAtLevel(Level));
+	return Damage.AsInteger(Level);
 }
 
 void UActiveDamageAbility::HandleComboSequence()
 {
-	if (!bComboInputPressed) return;
+	if (bIsPlayerAbility && !bComboInputPressed) return;
 
 	ComboIndex += 1;
 	bComboInputPressed = false;

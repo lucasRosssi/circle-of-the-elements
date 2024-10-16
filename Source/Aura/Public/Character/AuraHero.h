@@ -26,7 +26,6 @@ class AURA_API AAuraHero : public AAuraCharacterBase, public IPlayerInterface
 public:
 	AAuraHero();
 
-	virtual void Tick(float DeltaSeconds) override;
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void OnRep_PlayerState() override;
 
@@ -35,6 +34,7 @@ public:
 	/** Combat Interface */
 	virtual int32 GetCharacterLevel_Implementation() const override;
 	virtual void Die(const FVector& DeathImpulse) override;
+  virtual void SetCustomDepth_Implementation(int32 Value) override;
 	/** end Combat Interface */
 	void DeathMontageEndRagdoll();
 
@@ -42,9 +42,9 @@ public:
 	virtual void AddToXP_Implementation(int32 InXP) override;
 	virtual int32 GetXP_Implementation() const override;
 	virtual int32 GetAttributePoints_Implementation() const override;
+	virtual void AddAttributePoints_Implementation(int32 Amount) override;
 	virtual int32 GetSkillPoints_Implementation() const override;
-	virtual void SpendAttributePoints_Implementation(int32 Amount) override;
-	virtual void SpendSkillPoints_Implementation(int32 Amount) override;
+	virtual void AddSkillPoints_Implementation(int32 Amount) override;
 	virtual void ShowTargetingActor_Implementation(
 		TSubclassOf<ATargetingActor> TargetingActorClass,
 		ETargetTeam TargetTeam,
@@ -66,8 +66,7 @@ public:
 	UFUNCTION(BlueprintPure, meta=(DefaultToSelf="Target", HidePin="Target"))
 	AAuraPlayerController* GetAuraPlayerController();
 
-	UPROPERTY(EditDefaultsOnly, Category="Character Defaults|Abilities|Startup")
-	TArray<TSubclassOf<UGameplayAbility>> EligibleAbilities;
+  AAuraCamera* GetActiveCamera() const { return ActiveCamera; }
 
 protected:
 	virtual void BeginPlay() override;

@@ -12,6 +12,7 @@
 
 #include "AuraPlayerController.generated.h"
 
+class UHealTextComponent;
 class UInteractComponent;
 class AAuraHUD;
 class UUIManager;
@@ -55,6 +56,12 @@ public:
     ACharacter* TargetCharacter,
     bool bParried,
     bool bCriticalHit,
+    bool bIsPlayer = false
+  );
+  UFUNCTION(Client, Reliable)
+  void ShowHealNumber(
+    float HealAmount,
+    ACharacter* TargetCharacter,
     bool bIsPlayer = false
   );
 
@@ -187,6 +194,8 @@ private:
 
   UPROPERTY(EditDefaultsOnly)
   TSubclassOf<UDamageTextComponent> DamageTextComponentClass;
+  UPROPERTY(EditDefaultsOnly)
+  TSubclassOf<UHealTextComponent> HealTextComponentClass;
 
   UPROPERTY()
   TObjectPtr<ATargetingActor> TargetingActor;

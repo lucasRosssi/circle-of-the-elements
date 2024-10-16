@@ -5,12 +5,14 @@
 #include "AbilitySystem/Abilities/BaseAbility.h"
 
 #include "AbilitySystemBlueprintLibrary.h"
+#include "AIController.h"
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "AbilitySystem/AuraAttributeSet.h"
 #include "AbilitySystem/Data/StatusEffectInfo.h"
 #include "AbilitySystem/GameplayEffects/StatusEffect.h"
 #include "Aura/AuraLogChannels.h"
 #include "Character/AuraCharacterBase.h"
+#include "Character/AuraHero.h"
 #include "Kismet/KismetMathLibrary.h"
 
 UBaseAbility::UBaseAbility()
@@ -215,6 +217,22 @@ int32 UBaseAbility::GetMaxCharges() const
 	return FMath::RoundToInt32(MaxCharges.GetValueAtLevel(GetAbilityLevel()));
 }
 
+void UBaseAbility::DisablePlayerInput()
+{
+  if (APlayerController* PlayerController = Cast<APlayerController>(GetAvatarCharacter()->GetController()))
+  {
+    PlayerController->DisableInput(PlayerController);
+  }
+}
+
+void UBaseAbility::EnablePlayerInput()
+{
+  if (APlayerController* PlayerController = Cast<APlayerController>(GetAvatarCharacter()->GetController()))
+  {
+    PlayerController->EnableInput(PlayerController);
+  }
+}
+
 UGameplayEffect* UBaseAbility::GetChargesEffect()
 {
 	if (ChargesEffect == nullptr)
@@ -267,6 +285,12 @@ FAbilityParams UBaseAbility::MakeAbilityParamsFromDefaults(AActor* TargetActor) 
 	    AbilityParams.EffectParams.Add(EffectParams);
 	  }
 	}
+
+  if (HealEffectClass != nullptr && GetHealAtLevel(GetAbilityLevel()) > 0.f)
+  {
+    AbilityParams.HealParams.HealEffectClass = HealEffectClass;
+    AbilityParams.HealParams.BaseHeal = GetHealAtLevel(GetAbilityLevel());
+  }
 	
 	return AbilityParams;
 }
@@ -279,6 +303,27 @@ AAuraCharacterBase* UBaseAbility::GetAvatarCharacter()
 	}
 
 	return AvatarCharacter;
+}
+
+AAuraHero* UBaseAbility::GetAvatarHero()
+{
+  if (AvatarHero == nullptr)
+  {
+    AvatarHero = Cast<AAuraHero>(GetAvatarActorFromActorInfo());
+  }
+
+  return AvatarHero;
+}
+
+AAuraCamera* UBaseAbility::GetPlayerCamera()
+{
+  if (GetAvatarHero() == nullptr)
+  {
+    UE_LOG(LogAura, Error, TEXT("Avatar is not of the AuraHero class, can't get player camera!"));
+    return nullptr;
+  }
+
+  return AvatarHero->GetActiveCamera();
 }
 
 FGameplayTag UBaseAbility::GetAbilityTag()
@@ -390,4 +435,14 @@ void UBaseAbility::HandleCooldownRecharge(
 bool UBaseAbility::IsChargesModeActive() const
 {
 	return bUseCharges && MaxCharges.GetValueAtLevel(GetAbilityLevel()) > 1 && IsValid(ChargesEffectClass);
+}
+
+float UBaseAbility::GetHealAtLevel(int32 Level) const
+{
+  return Heal.GetValueAtLevel(Level);
+}
+
+int32 UBaseAbility::GetRoundedHealAtLevel_Implementation(int32 Level) const
+{
+  return FMath::RoundToInt32(GetHealAtLevel(Level));
 }

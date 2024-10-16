@@ -95,6 +95,9 @@ public:
 	bool IsFriend(AActor* Actor);
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	bool IsEnemy(AActor* Actor);
+
+  UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+  void SetCustomDepth(int32 Value);
 	
 	virtual FOnASCRegistered& GetOnASCRegisteredDelegate() = 0;
 	virtual FOnDeath& GetOnDeathDelegate() = 0;

@@ -9,6 +9,7 @@
 #include "UI/WidgetController/AttributeMenuWidgetController.h"
 #include "UI/WidgetController/OverlayWidgetController.h"
 #include "UI/WidgetController/SkillMenuWidgetController.h"
+#include "UI/WidgetController/UpgradeMenuWidgetController.h"
 
 UOverlayWidgetController* AAuraHUD::GetOverlayWidgetController(
 	const FWidgetControllerParams& WCParams)
@@ -56,6 +57,21 @@ USkillMenuWidgetController* AAuraHUD::GetSkillMenuWidgetController(
 	}
 
 	return SkillMenuWidgetController;
+}
+
+UUpgradeMenuWidgetController* AAuraHUD::GetUpgradeMenuWidgetController(const FWidgetControllerParams& WCParams)
+{
+  if (UpgradeMenuWidgetController == nullptr)
+  {
+    UpgradeMenuWidgetController = NewObject<UUpgradeMenuWidgetController>(
+      this,
+      UpgradeMenuWidgetControllerClass
+      );
+    UpgradeMenuWidgetController->SetWidgetControllerParams(WCParams);
+    UpgradeMenuWidgetController->BindCallbacksToDependencies();
+  }
+
+  return UpgradeMenuWidgetController;
 }
 
 void AAuraHUD::InitOverlay(APlayerController* PC, APlayerState* PS, UAbilitySystemComponent* ASC,

@@ -19,6 +19,14 @@ struct FStatusEffectsArgs
   FString Stacks_1;
 };
 
+struct FUpgradeArgs
+{
+  FString Percent_0;
+  FString Percent_1;
+  FString Value_0;
+  FString Value_1;
+};
+
 /**
  * AuraNamedArguments
  *
@@ -54,6 +62,11 @@ public:
 	FString ActorPeriod_0;
 	FString ActorPeriod_1;
 
+  /* UPGRADE */
+
+  FString Percent_0;
+  FString Percent_1;
+
 	/* HELPERS - Common used texts */
 
 	FString FireDmg;
@@ -73,6 +86,7 @@ public:
 	TMap<FGameplayTag, TTuple<FString, FText>> NextDamageTypeTexts;
 
   TArray<FStatusEffectsArgs> StatusEffectsArgs;
+  TArray<FUpgradeArgs> UpgradeArgs;
 
 private:
 	static FAuraNamedArguments NamedArguments;

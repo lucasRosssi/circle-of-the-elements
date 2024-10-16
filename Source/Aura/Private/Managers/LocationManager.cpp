@@ -10,8 +10,7 @@
 #include "Level/RegionInfo.h"
 
 TSoftObjectPtr<UWorld> ULocationManager::GetNextLocation(
-  ERegion InRegion,
-  EGatePosition InEntrancePosition
+  ERegion InRegion
 )
 {
   GetAuraGameMode()->GetAuraGameInstance()->SaveHeroData();
@@ -27,7 +26,6 @@ TSoftObjectPtr<UWorld> ULocationManager::GetNextLocation(
   {
     Location = RegionInfo->GetRandomizedRegionLocation(
       InRegion,
-      InEntrancePosition,
       SelectedLocations
     );
   }
@@ -40,8 +38,6 @@ TSoftObjectPtr<UWorld> ULocationManager::GetNextLocation(
   SelectedLocations.Add(Location);
   PrevLocation = CurrentLocation;
   CurrentLocation = Location;
-
-  EntrancePosition = InEntrancePosition;
 
   return Location;
 }
@@ -80,11 +76,11 @@ void ULocationManager::PlacePlayerInStartingPoint()
 void ULocationManager::InitLocation()
 {
   PlacePlayerInStartingPoint();
-  OnInitLocationDelegate.Broadcast(EntrancePosition);
+  OnInitLocationDelegate.Broadcast();
 }
 
-void ULocationManager::ExitLocation(EGatePosition NextGatePosition)
+void ULocationManager::ExitLocation()
 {
   CameraBoundaryActors.Empty();
-  OnExitLocationDelegate.Broadcast(NextGatePosition);
+  OnExitLocationDelegate.Broadcast();
 }

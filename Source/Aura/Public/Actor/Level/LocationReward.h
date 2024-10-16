@@ -7,6 +7,7 @@
 #include "Interfaces/InteractInterface.h"
 #include "LocationReward.generated.h"
 
+class AAuraPlayerState;
 class AAuraPlayerController;
 class UNiagaraComponent;
 class UNiagaraSystem;
@@ -27,6 +28,7 @@ public:
   /* Interact Interface */
   virtual void Interact_Implementation(const AController* Controller) override;
   virtual UInteractComponent* GetInteractComponent_Implementation() const override;
+  virtual FGameplayEventData GetAbilityEventData_Implementation() const override;
   /* END Interact Interface */
 protected:
   virtual void BeginPlay() override;
@@ -71,6 +73,6 @@ protected:
 private:
   void SpawnNiagaraEffects();
 
-	UAuraGameInstance* GetAuraGameInstance();
-	TWeakObjectPtr<UAuraGameInstance> AuraGameInstance = nullptr;
+	AAuraPlayerState* GetAuraPlayerState();
+	TWeakObjectPtr<AAuraPlayerState> AuraPlayerState = nullptr;
 };

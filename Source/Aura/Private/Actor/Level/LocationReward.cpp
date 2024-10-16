@@ -3,18 +3,18 @@
 
 #include "Actor/Level/LocationReward.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
 #include "AuraGameplayTags.h"
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
+#include "AbilitySystem/AuraAttributeSet.h"
 #include "Aura/AuraLogChannels.h"
 #include "Components/InteractComponent.h"
-#include "Game/AuraGameInstance.h"
 #include "Game/AuraGameModeBase.h"
+#include "Kismet/GameplayStatics.h"
 #include "Level/RewardsInfo.h"
 #include "Managers/RewardManager.h"
-#include "Managers/UIManager.h"
-#include "Player/AuraPlayerController.h"
 #include "Player/AuraPlayerState.h"
 #include "Utils/AuraSystemsLibrary.h"
 
@@ -36,18 +36,8 @@ void ALocationReward::Interact_Implementation(const AController* Controller)
   const FAuraGameplayTags& GameplayTags = FAuraGameplayTags::Get();
   if (RewardTag.MatchesTag(GameplayTags.Resources_Essence))
   {
-    AAuraPlayerState* AuraPS = Controller->GetPlayerState<AAuraPlayerState>();
-
-    if (RewardTag.MatchesTagExact(GameplayTags.Resources_Essence_Soul))
-    {
-      AuraPS->AddAttributePoints(RewardInfo.Amount);
-    }
-    else if (const AAuraPlayerController* AuraPC = Cast<AAuraPlayerController>(Controller))
-    {
-      AuraPC->GetUIManager()->OpenSkillSelectionMenu.Broadcast(GetAbilityElement());
-    }
-
-    GetAuraGameInstance()->AddPlayerResource(RewardTag, RewardInfo.Amount);
+    const float Multiplier = GetAuraPlayerState()->GetAttributeSet()->GetEssenceMultiplierByTag(RewardTag);
+    GetAuraPlayerState()->AddPlayerResource(RewardTag, RewardInfo.Amount * Multiplier);
   }
 
   const URewardManager* RewardManager = UAuraSystemsLibrary::GetRewardManager(this);
@@ -59,6 +49,15 @@ void ALocationReward::Interact_Implementation(const AController* Controller)
 UInteractComponent* ALocationReward::GetInteractComponent_Implementation() const
 {
   return InteractComponent;
+}
+
+FGameplayEventData ALocationReward::GetAbilityEventData_Implementation() const
+{
+  FGameplayEventData Data;
+  const FGameplayTag& ElementTag = GetAbilityElement();
+  Data.EventTag = ElementTag.IsValid() ? ElementTag : RewardTag;
+
+  return Data;
 }
 
 void ALocationReward::BeginPlay()
@@ -95,7 +94,12 @@ FGameplayTag ALocationReward::GetAbilityElement() const
     return FGameplayTag();
   }
 
-  return AuraTags.EssenceToAbility[RewardTag];
+  if (const FGameplayTag* ElementTag = AuraTags.EssenceToAbility.Find(RewardTag))
+  {
+    return *ElementTag;
+  }
+
+  return FGameplayTag();
 }
 
 void ALocationReward::SpawnNiagaraEffects()
@@ -118,12 +122,15 @@ void ALocationReward::SpawnNiagaraEffects()
   }
 }
 
-UAuraGameInstance* ALocationReward::GetAuraGameInstance()
+AAuraPlayerState* ALocationReward::GetAuraPlayerState()
 {
-  if (AuraGameInstance == nullptr)
+  if (AuraPlayerState == nullptr)
   {
-    AuraGameInstance = Cast<UAuraGameInstance>(GetGameInstance());
+    AuraPlayerState = Cast<AAuraPlayerState>(UGameplayStatics::GetPlayerState(
+      this,
+      0)
+      );
   }
 
-  return AuraGameInstance.Get();
+  return AuraPlayerState.Get();
 }

@@ -21,3 +21,10 @@ UInteractComponent* IInteractInterface::Safe_GetInteractComponent(const UObject*
 
   return Execute_GetInteractComponent(Object);
 }
+
+FGameplayEventData IInteractInterface::Safe_GetAbilityEventData(const UObject* Object)
+{
+  if (!Implements(Object)) return FGameplayEventData();
+
+  return Execute_GetAbilityEventData(Object);
+}

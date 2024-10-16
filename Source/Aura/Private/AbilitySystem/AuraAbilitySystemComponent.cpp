@@ -267,6 +267,16 @@ FGameplayTag UAuraAbilitySystemComponent::GetInputTagFromAbilityTag(
 	return FGameplayTag();
 }
 
+int32 UAuraAbilitySystemComponent::GetAbilityLevelFromTag(const FGameplayTag& AbilityTag)
+{
+  if (const FGameplayAbilitySpec* Spec = GetSpecFromAbilityTag(AbilityTag))
+  {
+    return Spec->Level;
+  }
+
+  return 0;
+}
+
 FGameplayAbilitySpec* UAuraAbilitySystemComponent::GetSpecFromAbilityTag(
 	const FGameplayTag& AbilityTag
 	)
@@ -306,7 +316,7 @@ void UAuraAbilitySystemComponent::ServerUpgradeAttribute_Implementation(
 		Payload
 	);
 
-	IPlayerInterface::Execute_SpendAttributePoints(GetAvatarActor(), 1);
+	IPlayerInterface::Execute_AddAttributePoints(GetAvatarActor(), -1);
 }
 
 // void UAuraAbilitySystemComponent::UpdateAbilityStatuses(int32 Level)
@@ -485,7 +495,7 @@ void UAuraAbilitySystemComponent::ServerSpendSkillPoint_Implementation(
 
 		if (GetAvatarCharacter())
 		{
-			IPlayerInterface::Execute_SpendSkillPoints(AvatarCharacter, 1);
+			IPlayerInterface::Execute_AddSkillPoints(AvatarCharacter, -1);
 		}
 	}
 }

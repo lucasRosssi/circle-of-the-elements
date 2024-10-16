@@ -60,7 +60,7 @@ TSoftObjectPtr<UWorld> AGate::GetCurrentLocation()
 
 TSoftObjectPtr<UWorld> AGate::GetRandomLocation()
 {
-	return GetLocationManager()->GetNextLocation(Region, NextGatePosition);
+	return GetLocationManager()->GetNextLocation(Region);
 }
 
 void AGate::Enable()

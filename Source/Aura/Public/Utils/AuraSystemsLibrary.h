@@ -6,6 +6,7 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "AuraSystemsLibrary.generated.h"
 
+class UUpgradeManager;
 class AAuraHUD;
 class UUIManager;
 class UAbilityManager;
@@ -23,10 +24,16 @@ class AURA_API UAuraSystemsLibrary : public UBlueprintFunctionLibrary
 public:
 	UFUNCTION(
 		BlueprintPure,
-		Category="Aura Systems|Managers|Ability",
+		Category="Aura Systems|Managers|Character",
 		meta=(HidePin="WorldContextObject", DefaultToSelf="WorldContextObject")
 		)
 	static UAbilityManager* GetAbilityManager(const UObject* WorldContextObject);
+  UFUNCTION(
+    BlueprintPure,
+    Category="Aura Systems|Managers|Character",
+    meta=(HidePin="WorldContextObject", DefaultToSelf="WorldContextObject")
+    )
+  static UUpgradeManager* GetUpgradeManager(const UObject* WorldContextObject);
 	UFUNCTION(
 		BlueprintPure,
 		Category="Aura Systems|Managers|Location",

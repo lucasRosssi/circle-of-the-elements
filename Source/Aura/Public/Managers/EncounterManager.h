@@ -20,6 +20,9 @@ class AURA_API UEncounterManager : public UAuraSystemComponent
 
 public:	
 	int32 GetEnemiesLevel() const { return EnemiesLevel; }
+  AActor* GetCurrentBoss() const { return CurrentBoss.Get(); }
+
+  void SetCurrentBoss(AActor* InBoss) { CurrentBoss = InBoss; }
 
 	void SetCurrentEncounterData();
 	
@@ -33,6 +36,8 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FOnEncounterFinished OnEncounterFinishedDelegate;
+  UPROPERTY(BlueprintAssignable)
+  FOnLastEnemyKilled OnLastEnemyKilledDelegate;
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Location")
@@ -97,4 +102,6 @@ private:
 	int32 CurrentWave = 0;
 	UPROPERTY()
 	TArray<AEnemySpawner*> EnemySpawners;
+
+  TWeakObjectPtr<AActor> CurrentBoss;
 };

@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Interfaces/WidgetControllerInterface.h"
 #include "UINavigation/Public/UINavWidget.h"
 #include "AuraUserWidget.generated.h"
 
@@ -17,11 +18,15 @@ class AAuraHero;
  * 
  */
 UCLASS()
-class AURA_API UAuraUserWidget : public UUINavWidget
+class AURA_API UAuraUserWidget : public UUINavWidget, public IWidgetControllerInterface
 {
 	GENERATED_BODY()
 public:
 	virtual void NativeConstruct() override;
+
+  // Widget Controller Interface
+  virtual void AssignWidgetController_Implementation(UObject* InWidgetController) override;
+  // END Widget Controller Interface
 	
 	UFUNCTION(BlueprintCallable)
 	void SetWidgetController(UObject* InWidgetController);
