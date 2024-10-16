@@ -45,8 +45,13 @@ void UUpgradeManager::GetUpgradeFormattedTexts(
 )
 {
   UpgradeName = FText::FromString(FString::Printf(
-    TEXT("<Title>%s</>\n\n"),
-    *AuraUpgradeInfo.Name.ToString()
+    TEXT(
+      "<Title>%s</>\n"
+      "<Title18> Level</> <Level>%d/%d</>\n"
+      ),
+    *AuraUpgradeInfo.Name.ToString(),
+    Level,
+    AuraUpgradeInfo.MaxLevel
     ));
 
   UpgradeDescription = bNextLevel ? AuraUpgradeInfo.NextLevelDescription : AuraUpgradeInfo.Description;
