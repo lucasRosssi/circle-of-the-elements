@@ -9,27 +9,17 @@ FAuraNamedArguments FAuraNamedArguments::NamedArguments;
 
 void FAuraNamedArguments::InitializeNamedArguments()
 {
-	NamedArguments.Level_0 = FString("$Level_0");
-	NamedArguments.Level_1 = FString("$Level_1");
+	NamedArguments.Level = FString("$Level");
+	NamedArguments.Level_ = FString("$Level_");
 	
-	NamedArguments.Mana_0 = FString("$Mana_0");
-	NamedArguments.Mana_1 = FString("$Mana_1");
-	NamedArguments.CD_0 = FString("$CD_0");
-	NamedArguments.CD_1 = FString("$CD_1");
+	NamedArguments.Mana = FString("$Mana");
+	NamedArguments.Mana_ = FString("$Mana_");
+	NamedArguments.CD = FString("$CD");
+	NamedArguments.CD_ = FString("$CD_");
 
 	
-	NamedArguments.Dmg_0 = FString("$Dmg_0");
-	NamedArguments.Dmg_1 = FString("$Dmg_1");
-
-	NamedArguments.Period = FString("$Period");
-	NamedArguments.AdditionalHitCount_0 = FString("$AdditionalHitCount_0");
-	NamedArguments.AdditionalHitCount_1 = FString("$AdditionalHitCount_1");
-	NamedArguments.HitEffectChange_0 = FString("$HitEffectChange_0");
-	NamedArguments.HitEffectChange_1 = FString("$HitEffectChange_1");
-	NamedArguments.ActorDuration_0 = FString("$ActorDuration_0");
-	NamedArguments.ActorDuration_1 = FString("$ActorDuration_1");
-	NamedArguments.ActorPeriod_0 = FString("$ActorPeriod_0");
-	NamedArguments.ActorPeriod_1 = FString("$ActorPeriod_1");
+	NamedArguments.Dmg = FString("$Dmg");
+	NamedArguments.Dmg_ = FString("$Dmg_");
 
 	NamedArguments.FireDmg = FString("$FireDmg");
 	NamedArguments.IceDmg = FString("$IceDmg");
@@ -48,127 +38,87 @@ void FAuraNamedArguments::InitializeNamedArguments()
 
 	NamedArguments.DamageTypeTexts.Add(
 		AuraTags.Damage_Fire,
-		{NamedArguments.FireDmg, FText::FromString("<Fire>{$Dmg_0} fire</> damage")}
+		{NamedArguments.FireDmg, FText::FromString("<Fire>{$Dmg} fire</> damage")}
 		);
 	NamedArguments.DamageTypeTexts.Add(
 		AuraTags.Damage_Ice,
-		{NamedArguments.IceDmg, FText::FromString("<Ice>{$Dmg_0} ice</> damage")}
+		{NamedArguments.IceDmg, FText::FromString("<Ice>{$Dmg} ice</> damage")}
 		);
 	NamedArguments.DamageTypeTexts.Add(
 		AuraTags.Damage_Lightning,
-		{NamedArguments.LightningDmg, FText::FromString("<Lightning>{$Dmg_0} lightning</> damage")}
+		{NamedArguments.LightningDmg, FText::FromString("<Lightning>{$Dmg} lightning</> damage")}
 		);
 	NamedArguments.DamageTypeTexts.Add(
 		AuraTags.Damage_Energy,
-		{NamedArguments.ArcaneDmg, FText::FromString("<Arcane>{$Dmg_0} arcane</> damage")}
+		{NamedArguments.ArcaneDmg, FText::FromString("<Arcane>{$Dmg} arcane</> damage")}
 		);
 	NamedArguments.DamageTypeTexts.Add(
 		AuraTags.Damage_Necrotic,
-		{NamedArguments.NecroticDmg, FText::FromString("<Necrotic>{$Dmg_0} necrotic</> damage")}
+		{NamedArguments.NecroticDmg, FText::FromString("<Necrotic>{$Dmg} necrotic</> damage")}
 		);
 	NamedArguments.DamageTypeTexts.Add(
 		AuraTags.Damage_Physical,
-		{NamedArguments.PhysicalDmg, FText::FromString("<Physical>{$Dmg_0} physical</> damage")}
+		{NamedArguments.PhysicalDmg, FText::FromString("<Physical>{$Dmg} physical</> damage")}
 		);
 	
 	NamedArguments.NextDamageTypeTexts.Add(
 		AuraTags.Damage_Fire,
-		{NamedArguments.NextFireDmg, FText::FromString("<Old>{$Dmg_0}</> > <Fire>{$Dmg_1} fire</> damage")}
+		{NamedArguments.NextFireDmg, FText::FromString("<Old>{$Dmg}</> > <Fire>{$Dmg_} fire</> damage")}
 		);
 	NamedArguments.NextDamageTypeTexts.Add(
 		AuraTags.Damage_Ice,
-		{NamedArguments.NextIceDmg, FText::FromString("<Old>{$Dmg_0}</> > <Ice>{$Dmg_1} ice</> damage")}
+		{NamedArguments.NextIceDmg, FText::FromString("<Old>{$Dmg}</> > <Ice>{$Dmg_} ice</> damage")}
 		);
 	NamedArguments.NextDamageTypeTexts.Add(
 		AuraTags.Damage_Lightning,
-		{NamedArguments.NextLightningDmg, FText::FromString("<Old>{$Dmg_0}</> > <Lightning>{$Dmg_1} lightning</> damage")}
+		{NamedArguments.NextLightningDmg, FText::FromString("<Old>{$Dmg}</> > <Lightning>{$Dmg_} lightning</> damage")}
 		);
 	NamedArguments.NextDamageTypeTexts.Add(
 		AuraTags.Damage_Energy,
-		{NamedArguments.NextArcaneDmg, FText::FromString("<Old>{$Dmg_0}</> > <Arcane>{$Dmg_1} arcane</> damage")}
+		{NamedArguments.NextArcaneDmg, FText::FromString("<Old>{$Dmg}</> > <Arcane>{$Dmg_} arcane</> damage")}
 		);
 	NamedArguments.NextDamageTypeTexts.Add(
 		AuraTags.Damage_Necrotic,
-		{NamedArguments.NextNecroticDmg, FText::FromString("<Old>{$Dmg_0}</> > <Necrotic>{$Dmg_1} necrotic</> damage")}
+		{NamedArguments.NextNecroticDmg, FText::FromString("<Old>{$Dmg}</> > <Necrotic>{$Dmg_} necrotic</> damage")}
 		);
 	NamedArguments.NextDamageTypeTexts.Add(
 		AuraTags.Damage_Physical,
-		{NamedArguments.NextPhysicalDmg, FText::FromString("<Old>{$Dmg_0}</> > <Physical>{$Dmg_1} physical</> damage")}
+		{NamedArguments.NextPhysicalDmg, FText::FromString("<Old>{$Dmg}</> > <Physical>{$Dmg_} physical</> damage")}
 		);
 
-  FStatusEffectsArgs StatusEffectsArgs1;
-  StatusEffectsArgs1.Effect_0 = FString("$Effect_0");
-  StatusEffectsArgs1.Effect_1 = FString("$Effect_1");
-  StatusEffectsArgs1.EffectPercent_0 = FString("$EffectPercent_0");
-  StatusEffectsArgs1.EffectPercent_1 = FString("$EffectPercent_1");
-  StatusEffectsArgs1.EffectPercentFromResult_0 = FString("$EffectPercentFromResult_0");
-  StatusEffectsArgs1.EffectPercentFromResult_1 = FString("$EffectPercentFromResult_1");
-  StatusEffectsArgs1.Duration_0 = FString("$Duration_0");
-  StatusEffectsArgs1.Duration_1 = FString("$Duration_1");
-  StatusEffectsArgs1.Stacks_0 = FString("$Stacks_0");
-  StatusEffectsArgs1.Stacks_1 = FString("$Stacks_1");
+  FAbilityGenericArgs AbilityArgs1;
+  AbilityArgs1.Percent = FString("$Percent");
+  AbilityArgs1.Percent_ = FString("$Percent_");
+  AbilityArgs1.Value = FString("$Value");
+  AbilityArgs1.Value_ = FString("$Value_");
 
-  FStatusEffectsArgs StatusEffectsArgs2;
-  StatusEffectsArgs2.Effect_0 = FString("$2Effect_0");
-  StatusEffectsArgs2.Effect_1 = FString("$2Effect_1");
-  StatusEffectsArgs2.EffectPercent_0 = FString("$2EffectPercent_0");
-  StatusEffectsArgs2.EffectPercent_1 = FString("$2EffectPercent_1");
-  StatusEffectsArgs2.EffectPercentFromResult_0 = FString("$2EffectPercentFromResult_0");
-  StatusEffectsArgs2.EffectPercentFromResult_1 = FString("$2EffectPercentFromResult_1");
-  StatusEffectsArgs2.Duration_0 = FString("$2Duration_0");
-  StatusEffectsArgs2.Duration_1 = FString("$2Duration_1");
-  StatusEffectsArgs2.Stacks_0 = FString("$2Stacks_0");
-  StatusEffectsArgs2.Stacks_1 = FString("$2Stacks_1");
+  FAbilityGenericArgs AbilityArgs2;
+  AbilityArgs2.Percent = FString("$2Percent");
+  AbilityArgs2.Percent_ = FString("$2Percent_");
+  AbilityArgs2.Value = FString("$2Value");
+  AbilityArgs2.Value_ = FString("$2Value_");
 
-  FStatusEffectsArgs StatusEffectsArgs3;
-  StatusEffectsArgs3.Effect_0 = FString("$3Effect_0");
-  StatusEffectsArgs3.Effect_1 = FString("$3Effect_1");
-  StatusEffectsArgs3.EffectPercent_0 = FString("$3EffectPercent_0");
-  StatusEffectsArgs3.EffectPercent_1 = FString("$3EffectPercent_1");
-  StatusEffectsArgs3.EffectPercentFromResult_0 = FString("$3EffectPercentFromResult_0");
-  StatusEffectsArgs3.EffectPercentFromResult_1 = FString("$3EffectPercentFromResult_1");
-  StatusEffectsArgs3.Duration_0 = FString("$3Duration_0");
-  StatusEffectsArgs3.Duration_1 = FString("$3Duration_1");
-  StatusEffectsArgs3.Stacks_0 = FString("$3Stacks_0");
-  StatusEffectsArgs3.Stacks_1 = FString("$3Stacks_1");
+  FAbilityGenericArgs AbilityArgs3;
+  AbilityArgs3.Percent = FString("$3Percent");
+  AbilityArgs3.Percent_ = FString("$3Percent_");
+  AbilityArgs3.Value = FString("$3Value");
+  AbilityArgs3.Value_ = FString("$3Value_");
 
-  NamedArguments.StatusEffectsArgs.Add(StatusEffectsArgs1);
-  NamedArguments.StatusEffectsArgs.Add(StatusEffectsArgs2);
-  NamedArguments.StatusEffectsArgs.Add(StatusEffectsArgs3);
+  FAbilityGenericArgs AbilityArgs4;
+  AbilityArgs4.Percent = FString("$4Percent");
+  AbilityArgs4.Percent_ = FString("$4Percent_");
+  AbilityArgs4.Value = FString("$4Value");
+  AbilityArgs4.Value_ = FString("$4Value_");
 
-  FUpgradeArgs UpgradeArgs1;
-  UpgradeArgs1.Percent_0 = FString("$Percent_0");
-  UpgradeArgs1.Percent_1 = FString("$Percent_1");
-  UpgradeArgs1.Value_0 = FString("$Value_0");
-  UpgradeArgs1.Value_1 = FString("$Value_1");
+  FAbilityGenericArgs AbilityArgs5;
+  AbilityArgs5.Percent = FString("$5Percent");
+  AbilityArgs5.Percent_ = FString("$5Percent_");
+  AbilityArgs5.Value = FString("$5Value");
+  AbilityArgs5.Value_ = FString("$5Value_");
 
-  FUpgradeArgs UpgradeArgs2;
-  UpgradeArgs2.Percent_0 = FString("$2Percent_0");
-  UpgradeArgs2.Percent_1 = FString("$2Percent_1");
-  UpgradeArgs2.Value_0 = FString("$2Value_0");
-  UpgradeArgs2.Value_1 = FString("$2Value_1");
-
-  FUpgradeArgs UpgradeArgs3;
-  UpgradeArgs3.Percent_0 = FString("$3Percent_0");
-  UpgradeArgs3.Percent_1 = FString("$3Percent_1");
-  UpgradeArgs3.Value_0 = FString("$3Value_0");
-  UpgradeArgs3.Value_1 = FString("$3Value_1");
-
-  FUpgradeArgs UpgradeArgs4;
-  UpgradeArgs4.Percent_0 = FString("$4Percent_0");
-  UpgradeArgs4.Percent_1 = FString("$4Percent_1");
-  UpgradeArgs4.Value_0 = FString("$4Value_0");
-  UpgradeArgs4.Value_1 = FString("$4Value_1");
-
-  FUpgradeArgs UpgradeArgs5;
-  UpgradeArgs5.Percent_0 = FString("$5Percent_0");
-  UpgradeArgs5.Percent_1 = FString("$5Percent_1");
-  UpgradeArgs5.Value_0 = FString("$5Value_0");
-  UpgradeArgs5.Value_1 = FString("$5Value_1");
-
-  NamedArguments.UpgradeArgs.Add(UpgradeArgs1);
-  NamedArguments.UpgradeArgs.Add(UpgradeArgs2);
-  NamedArguments.UpgradeArgs.Add(UpgradeArgs3);
-  NamedArguments.UpgradeArgs.Add(UpgradeArgs4);
-  NamedArguments.UpgradeArgs.Add(UpgradeArgs4);
+  NamedArguments.AbilityGenericArgs.Add(AbilityArgs1);
+  NamedArguments.AbilityGenericArgs.Add(AbilityArgs2);
+  NamedArguments.AbilityGenericArgs.Add(AbilityArgs3);
+  NamedArguments.AbilityGenericArgs.Add(AbilityArgs4);
+  NamedArguments.AbilityGenericArgs.Add(AbilityArgs5);
 }

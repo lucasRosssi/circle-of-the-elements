@@ -46,7 +46,7 @@ void UProjectileAbility::SpawnProjectile(
 		Forward,
 		FVector::UpVector,
 		ProjectileSpread, 
-		ProjectileCount
+		ProjectileCount.AsInteger(GetAbilityLevel())
 		);
 
 	for (const auto& Rotator : Rotators)
