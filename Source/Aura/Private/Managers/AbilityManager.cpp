@@ -139,7 +139,7 @@ void UAbilityManager::GetAbilityFormattedTexts(
 
 	AbilityDescription = AbilityInfo.Description;
 	UAuraAbilitySystemLibrary::FormatAbilityDescriptionAtLevel(
-		BaseAbility,
+		AbilityInfo,
 		1,
 		AbilityDescription
 		);

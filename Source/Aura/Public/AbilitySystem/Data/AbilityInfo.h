@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
+#include "ScalableFloat.h"
 #include "Engine/DataAsset.h"
 #include "Enums/CharacterName.h"
 #include "AbilityInfo.generated.h"
@@ -53,6 +54,12 @@ struct FAuraAbilityInfo
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(MultiLine=true))
 	FText NextLevelDescription = FText();
+  
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+  TArray<FScalableFloat> DescriptionValues;
+  
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+  TArray<FScalableFloat> DescriptionPercents;
 };
 
 USTRUCT(BlueprintType)

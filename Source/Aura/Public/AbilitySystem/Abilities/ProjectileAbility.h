@@ -31,9 +31,14 @@ protected:
 	TSubclassOf<AAuraProjectile> ProjectileClass;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Projectile")
-	int32 ProjectileCount = 1;
+	FScalableFloat ProjectileCount = 1;
 	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Projectile")
+	UPROPERTY(
+	  EditDefaultsOnly,
+	  BlueprintReadWrite,
+	  Category="Projectile",
+	  meta=(ClampMin=0.f, UIMin=0.f, ClampMax=360.f, UIMax=360.f)
+	  )
 	float ProjectileSpread = 0.f;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Projectile")

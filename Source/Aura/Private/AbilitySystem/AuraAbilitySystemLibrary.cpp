@@ -11,6 +11,7 @@
 #include "AbilitySystem/AuraAttributeSet.h"
 #include "AbilitySystem/Abilities/BaseAbility.h"
 #include "AbilitySystem/Data/AbilityInfo.h"
+#include "AbilitySystem/Data/UpgradeInfo.h"
 #include "Aura/Aura.h"
 #include "Character/AuraCharacterBase.h"
 #include "Components/TeamComponent.h"
@@ -859,7 +860,7 @@ FString UAuraAbilitySystemLibrary::GetAbilityDescription(
 {
   FAuraAbilityInfo Info = AbilityInfo->FindAbilityInfoByTag(AbilityTag);
   const UBaseAbility* Ability = Info.Ability.GetDefaultObject();
-  FormatAbilityDescriptionAtLevel(Ability, Level, Info.Description);
+  FormatAbilityDescriptionAtLevel(Info, Level, Info.Description);
 
   FString ManaCostText;
   FString CooldownText;
@@ -893,7 +894,7 @@ FString UAuraAbilitySystemLibrary::GetAbilityNextLevelDescription(
 {
   FAuraAbilityInfo Info = AbilityInfo->FindAbilityInfoByTag(AbilityTag);
   const UBaseAbility* Ability = Info.Ability.GetDefaultObject();
-  FormatAbilityDescriptionAtLevel(Ability, Level, Info.NextLevelDescription);
+  FormatAbilityDescriptionAtLevel(Info, Level, Info.NextLevelDescription);
 
   FString ManaCostText;
   FString CooldownText;
@@ -919,26 +920,13 @@ FString UAuraAbilitySystemLibrary::GetAbilityNextLevelDescription(
 }
 
 void UAuraAbilitySystemLibrary::FormatAbilityDescriptionAtLevel(
-  const UBaseAbility* Ability,
+  const FAuraAbilityInfo& AbilityInfo,
   int32 Level,
   FText& OutDescription
 )
 {
   const FAuraNamedArguments& Args = FAuraNamedArguments::Get();
-
-  OutDescription = FText::FormatNamed(
-    OutDescription,
-    Args.AdditionalHitCount_0,
-    IAbilityInterface::Execute_GetMaxHitCountAtLevel(Ability, Level) - 1,
-    Args.AdditionalHitCount_1,
-    IAbilityInterface::Execute_GetMaxHitCountAtLevel(Ability, Level + 1) - 1,
-    Args.HitEffectChange_0,
-    FMath::Abs(IAbilityInterface::Execute_GetEffectChangePerHitAtLevel(Ability, Level)) * 100,
-    Args.HitEffectChange_1,
-    FMath::Abs(IAbilityInterface::Execute_GetEffectChangePerHitAtLevel(Ability, Level + 1)) * 100,
-    Args.Period,
-    IAbilityInterface::Execute_GetBeamTickPeriod(Ability)
-  );
+  const UBaseAbility* Ability = AbilityInfo.Ability.GetDefaultObject();
 
   if (IAbilityInterface::Execute_IsDamageAbility(Ability))
   {
@@ -962,84 +950,75 @@ void UAuraAbilitySystemLibrary::FormatAbilityDescriptionAtLevel(
 
     OutDescription = FText::FormatNamed(
       OutDescription,
-      Args.Dmg_0,
+      Args.Dmg,
       IAbilityInterface::Execute_GetRoundedDamageAtLevel(Ability, Level),
-      Args.Dmg_1,
+      Args.Dmg_,
       IAbilityInterface::Execute_GetRoundedDamageAtLevel(Ability, Level + 1)
     );
   }
 
-  if (IAbilityInterface::Execute_IsAreaEffectActorAbility(Ability))
-  {
-    OutDescription = FText::FormatNamed(
-      OutDescription,
-      Args.ActorDuration_0,
-      IAbilityInterface::Execute_GetAreaEffectDurationAtLevel(Ability, Level),
-      Args.ActorDuration_1,
-      IAbilityInterface::Execute_GetAreaEffectDurationAtLevel(Ability, Level + 1),
-      Args.ActorPeriod_0,
-      IAbilityInterface::Execute_GetPeriodAtLevel(Ability, Level),
-      Args.ActorPeriod_1,
-      IAbilityInterface::Execute_GetPeriodAtLevel(Ability, Level + 1)
-    );
-  }
-
-  TArray<FStatusEffectApplicationData> StatusEffects = Ability->GetStatusEffectData();
-  if (StatusEffects.Num() > 0)
-  {
-    for (int32 i = 0; i < StatusEffects.Num(); i++)
-    {
-      OutDescription = FText::FormatNamed(
-        OutDescription,
-        Args.StatusEffectsArgs[i].Effect_0,
-        StatusEffects[i].Value.GetValueAtLevel(Level),
-        Args.StatusEffectsArgs[i].Effect_1,
-        StatusEffects[i].Value.GetValueAtLevel(Level + 1),
-        Args.StatusEffectsArgs[i].EffectPercent_0,
-        FMath::Abs(StatusEffects[i].Value.GetValueAtLevel(Level) * 100),
-        Args.StatusEffectsArgs[i].EffectPercent_1,
-        FMath::Abs(StatusEffects[i].Value.GetValueAtLevel(Level + 1) * 100),
-        Args.StatusEffectsArgs[i].EffectPercentFromResult_0,
-        FMath::Abs((1.f - StatusEffects[i].Value.GetValueAtLevel(Level)) * 100),
-        Args.StatusEffectsArgs[i].EffectPercentFromResult_1,
-        FMath::Abs((1.f - StatusEffects[i].Value.GetValueAtLevel(Level + 1)) * 100),
-        Args.StatusEffectsArgs[i].Duration_0,
-        StatusEffects[i].Duration.GetValueAtLevel(Level),
-        Args.StatusEffectsArgs[i].Duration_1,
-        StatusEffects[i].Duration.GetValueAtLevel(Level + 1),
-        Args.StatusEffectsArgs[i].Stacks_0,
-        StatusEffects[i].Stacks.GetValueAtLevel(Level),
-        Args.StatusEffectsArgs[i].Stacks_1,
-        StatusEffects[i].Stacks.GetValueAtLevel(Level + 1)
-      );
-    }
-  }
-
-  const TArray<FScalableFloat>& Percents = Ability->GetPercents();
+  const TArray<FScalableFloat>& Percents = AbilityInfo.DescriptionPercents;
   if (Percents.Num() > 0)
   {
     for (int32 i = 0; i < Percents.Num(); i++)
     {
       OutDescription = FText::FormatNamed(
         OutDescription,
-        Args.UpgradeArgs[i].Percent_0,
+        Args.AbilityGenericArgs[i].Percent,
         Percents[i].GetValueAtLevel(Level) * 100,
-        Args.UpgradeArgs[i].Percent_1,
+        Args.AbilityGenericArgs[i].Percent_,
         Percents[i].GetValueAtLevel(Level + 1) * 100
       );
     }
   }
 
-  const TArray<FScalableFloat>& Values = Ability->GetValues();
+  const TArray<FScalableFloat>& Values = AbilityInfo.DescriptionValues;
   if (Values.Num() > 0)
   {
     for (int32 i = 0; i < Values.Num(); i++)
     {
       OutDescription = FText::FormatNamed(
         OutDescription,
-        Args.UpgradeArgs[i].Value_0,
+        Args.AbilityGenericArgs[i].Value,
         Values[i].GetValueAtLevel(Level),
-        Args.UpgradeArgs[i].Value_1,
+        Args.AbilityGenericArgs[i].Value_,
+        Values[i].GetValueAtLevel(Level + 1)
+      );
+    }
+  }
+}
+
+void UAuraAbilitySystemLibrary::FormatUpgradeDescriptionAtLevel(
+  const FAuraUpgradeInfo& UpgradeInfo, int32 Level, FText& OutDescription
+)
+{
+  const FAuraNamedArguments& Args = FAuraNamedArguments::Get();
+
+  const TArray<FScalableFloat>& Percents = UpgradeInfo.DescriptionPercents;
+  if (Percents.Num() > 0)
+  {
+    for (int32 i = 0; i < Percents.Num(); i++)
+    {
+      OutDescription = FText::FormatNamed(
+        OutDescription,
+        Args.AbilityGenericArgs[i].Percent,
+        Percents[i].GetValueAtLevel(Level) * 100,
+        Args.AbilityGenericArgs[i].Percent_,
+        Percents[i].GetValueAtLevel(Level + 1) * 100
+      );
+    }
+  }
+
+  const TArray<FScalableFloat>& Values = UpgradeInfo.DescriptionValues;
+  if (Values.Num() > 0)
+  {
+    for (int32 i = 0; i < Values.Num(); i++)
+    {
+      OutDescription = FText::FormatNamed(
+        OutDescription,
+        Args.AbilityGenericArgs[i].Value,
+        Values[i].GetValueAtLevel(Level),
+        Args.AbilityGenericArgs[i].Value_,
         Values[i].GetValueAtLevel(Level + 1)
       );
     }
@@ -1533,7 +1512,16 @@ TArray<FRotator> UAuraAbilitySystemLibrary::EvenlySpacedRotators(
   if (Count > 1)
   {
     const FVector LeftOfSpread = Forward.RotateAngleAxis(-Spread / 2.f, Axis);
-    const float DeltaSpread = Spread / (Count - 1);
+
+    float DeltaSpread;
+    if (Spread > 359.f)
+    {
+      DeltaSpread = Spread / Count;
+    }
+    else
+    {
+      DeltaSpread = Spread / (Count - 1);
+    }
 
     for (int32 i = 0; i < Count; i++)
     {

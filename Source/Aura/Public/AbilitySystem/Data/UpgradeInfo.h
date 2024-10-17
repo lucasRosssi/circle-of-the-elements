@@ -57,6 +57,12 @@ struct FAuraUpgradeInfo
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(MultiLine=true))
   FText NextLevelDescription = FText();
 
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+  TArray<FScalableFloat> DescriptionValues;
+  
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+  TArray<FScalableFloat> DescriptionPercents;
+
   bool IsValid() const { return AbilityTag.IsValid(); }
 };
 

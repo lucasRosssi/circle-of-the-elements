@@ -10,6 +10,7 @@
 #include "UI/WidgetController/AuraWidgetController.h"
 #include "AuraAbilitySystemLibrary.generated.h"
 
+struct FAuraAbilityInfo;
 struct FAuraUpgradeInfo;
 class UUpgradeMenuWidgetController;
 class URewardsInfo;
@@ -414,10 +415,16 @@ public:
 		);
 	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|UI")
 	static void FormatAbilityDescriptionAtLevel(
-		const UBaseAbility* Ability,
+		const FAuraAbilityInfo& AbilityInfo,
 		int32 Level,
 		FText& OutDescription
 		);
+  UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|UI")
+  static void FormatUpgradeDescriptionAtLevel(
+    const FAuraUpgradeInfo& UpgradeInfo,
+    int32 Level,
+    FText& OutDescription
+    );
 	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|UI")
 	static FString GetAbilityLockedDescription(
 		int32 Level,

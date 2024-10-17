@@ -78,9 +78,6 @@ public:
 
 	TArray<FStatusEffectApplicationData> GetStatusEffectData() const { return StatusEffectData; }
 
-  TArray<FScalableFloat> GetPercents() const { return Percents; }
-  TArray<FScalableFloat> GetValues() const { return Values; }
-
 	UFUNCTION(BlueprintPure, Category="Ability Effect", meta=(HidePin="Target", DefaultToSelf="Target"))
 	virtual FAbilityParams MakeAbilityParamsFromDefaults(AActor* TargetActor = nullptr) const;
 
@@ -214,11 +211,6 @@ OnEndAbility event. Or make the ability not constantly dependent on variables.
   ETargetTeam HealTarget = ETargetTeam::Friends;
   UPROPERTY(EditDefaultsOnly, Category="Heal")
   FScalableFloat Heal;
-
-  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Description")
-  TArray<FScalableFloat> Percents;
-  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Description")
-  TArray<FScalableFloat> Values;
 
 private:
 	void HandleCooldownRecharge(
