@@ -50,8 +50,8 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Projectile|Homing", meta=(EditCondition="bHoming"))
 	float HomingActivationDelay = 0.f;
 
-	// Homing Targeting Mode, only available when bHoming is true and when the ability spawns more then 1 projectile
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Projectile|Homing", meta=(EditCondition="bHoming && ProjectileCount > 1"))
+	// Homing Targeting Mode, only available when bHoming is true
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Projectile|Homing", meta=(EditCondition="bHoming"))
 	EProjectileHomingMode HomingMode = EProjectileHomingMode::OneTarget;
 
 private:

@@ -209,11 +209,12 @@ public:
 	
 	FGameplayTag Abilities_Reaction;
   
-	FGameplayTag Abilities_Reaction_HitReact;
-	FGameplayTag Abilities_Reaction_Stun;
 	FGameplayTag Abilities_Reaction_Charm;
-	FGameplayTag Abilities_Reaction_Shock;
+	FGameplayTag Abilities_Reaction_HitReact;
+	FGameplayTag Abilities_Reaction_KnockbackEnd;
   FGameplayTag Abilities_Reaction_Paralysis;
+	FGameplayTag Abilities_Reaction_Stun;
+	FGameplayTag Abilities_Reaction_Shock;
   
 	FGameplayTag Abilities_Reaction_ShieldStackRemove;
   FGameplayTag Abilities_Reaction_SecondWind;

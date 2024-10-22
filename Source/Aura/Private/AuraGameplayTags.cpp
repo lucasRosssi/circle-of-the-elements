@@ -829,6 +829,11 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FString("Hit reaction ability")
 		);
 
+  GameplayTags.Abilities_Reaction_KnockbackEnd = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Abilities.Reaction.KnockbackEnd"),
+    FString("End knockback effect ability")
+    );
+
 	GameplayTags.Abilities_Reaction_Stun = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Abilities.Reaction.Stun"),
 		FString("Get stunned ability")

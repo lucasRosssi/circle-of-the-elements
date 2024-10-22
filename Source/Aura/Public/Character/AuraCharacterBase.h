@@ -64,7 +64,7 @@ public:
 	virtual ECharacterType GetCharacterType_Implementation() override;
 	virtual FOnASCRegistered& GetOnASCRegisteredDelegate() override;
 	virtual FOnDeath& GetOnDeathDelegate() override;
-	virtual void ApplyForce_Implementation(const FVector& InForce) override;
+	virtual void ApplyKnockback_Implementation(const FVector& KnockbackForce) override;
 	virtual USceneComponent* GetTopStatusEffectSceneComponent_Implementation() override;
 	virtual USceneComponent* GetBottomStatusEffectSceneComponent_Implementation() override;
 	virtual UBoxComponent* EnableWeaponCollision_Implementation(bool bEnable) override;
@@ -195,6 +195,11 @@ protected:
 	TObjectPtr<USceneComponent> BottomStatusEffectSceneComponent;
 
 private:
+  void CheckVelocityNearStop();
+
+  FTimerHandle VelocityCheckTimer;
+  
 	UPROPERTY()
 	UAuraAbilitySystemComponent* AuraASC = nullptr;
+
 };

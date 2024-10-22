@@ -90,7 +90,7 @@ private:
 	void ApplyProjectileEffect(bool& bSuccess);
 	
 	UPROPERTY(EditDefaultsOnly)
-	float LifeSpan = 5.f;
+	float LifeSpan = 4.f;
 	
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<USphereComponent> Sphere;

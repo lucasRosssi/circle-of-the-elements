@@ -7,6 +7,8 @@
 
 AActor* UActiveAbility::GetNextBounceTarget(AActor* HitTarget)
 {
+  if (!IsValid(HitTarget)) return nullptr;
+  
 	TArray ActorsToIgnore({GetAvatarActorFromActorInfo()});
 	ActorsToIgnore.Append(BounceHitActors);
 	AActor* NextTarget = UAuraAbilitySystemLibrary::GetClosestActorToTarget(

@@ -323,12 +323,13 @@ void UAuraAttributeSet::HandleKnockback(const FEffectProperties& Props)
   {
     SetIncomingForce(0.f);
 
+    if (!Props.TargetCharacter->Implements<UCombatInterface>()) return;
+    
     const FVector ForwardVector =
       UAuraAbilitySystemLibrary::GetForwardVector(Props.EffectContextHandle);
     const FVector KnockbackForce = ForwardVector * LocalIncomingForce;
 
-    Props.TargetCharacter->GetCharacterMovement()->StopMovementImmediately();
-    Props.TargetCharacter->LaunchCharacter(KnockbackForce, true, true);
+    ICombatInterface::Execute_ApplyKnockback(Props.TargetCharacter, KnockbackForce);
   }
 }
 
