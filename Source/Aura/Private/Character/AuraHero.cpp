@@ -15,6 +15,7 @@
 #include "Enums/CameraState.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Level/RegionInfo.h"
 #include "Managers/AbilityManager.h"
 #include "Managers/UpgradeManager.h"
 #include "Player/AuraPlayerState.h"
@@ -258,6 +259,21 @@ void AAuraHero::EndDeath()
   {
     Super::Die();
   }
+
+  FTimerHandle BackToHomeTimer;
+  GetWorld()->GetTimerManager().SetTimer(
+      BackToHomeTimer,
+      this,
+      &AAuraHero::BackToHome,
+      BackToHomeDelay,
+      false
+      );
+}
+
+void AAuraHero::BackToHome()
+{
+  const TSoftObjectPtr<UWorld> HomeLevel = UAuraSystemsLibrary::GetRegionInfo(this)->GetHomeLevel();
+  UGameplayStatics::OpenLevelBySoftObjectPtr(this, HomeLevel);
 }
 
 AAuraPlayerState* AAuraHero::GetAuraPlayerState() const

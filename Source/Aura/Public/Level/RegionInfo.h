@@ -61,6 +61,8 @@ class AURA_API URegionInfo : public UDataAsset
 {
 	GENERATED_BODY()
 public:
+  TSoftObjectPtr<UWorld> GetHomeLevel() const { return HomeLevel; }
+  
 	FRegionData* GetRegionData(ERegion Region);
 
 	UFUNCTION(BlueprintCallable)
@@ -99,6 +101,8 @@ protected:
 		)
 	TMap<ERegion, FRegionData> RegionData;
 
-private:
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+  TSoftObjectPtr<UWorld> HomeLevel;
 
+private:
 };

@@ -58,8 +58,9 @@ public:
 	/** end Player Interface */
 	
 	void StartDeath();
-
 	void EndDeath();
+
+  void BackToHome();
 
 	UFUNCTION(BlueprintCallable)
 	AAuraPlayerState* GetAuraPlayerState() const;
@@ -87,9 +88,12 @@ protected:
 	TObjectPtr<USoundBase> DeathSound1;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Death")
 	TObjectPtr<USoundBase> DeathSound2;
+  UPROPERTY(EditDefaultsOnly, Category="Death")
+  float BackToHomeDelay = 5.f;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Interaction")
 	TObjectPtr<UWidgetComponent> InteractWidgetComponent;
+
 
 private:
 	virtual void InitAbilityActorInfo() override;
