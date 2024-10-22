@@ -3,26 +3,27 @@
 
 #include "Managers/LocationManager.h"
 
-#include "Game/AuraGameInstance.h"
-#include "Game/AuraGameModeBase.h"
 #include "GameFramework/PlayerStart.h"
 #include "Kismet/GameplayStatics.h"
 #include "Level/RegionInfo.h"
+#include "Managers/CombatManager.h"
+#include "Utils/AuraSystemsLibrary.h"
 
 TSoftObjectPtr<UWorld> ULocationManager::GetNextLocation(
   ERegion InRegion
 )
 {
-  GetAuraGameMode()->GetAuraGameInstance()->SaveHeroData();
+  UAuraSystemsLibrary::SaveHeroData(this);
 
   if (bWillExitRegion)
   {
     return nullptr;
   }
 
-  URegionInfo* RegionInfo = GetAuraGameMode()->RegionInfo;
+  URegionInfo* RegionInfo = UAuraSystemsLibrary::GetRegionInfo(this);
+  const int32 CombatsCount = UAuraSystemsLibrary::GetCombatManager(this)->GetCombatsCount();
   TSoftObjectPtr<UWorld> Location;
-  if (GetAuraGameMode()->EncountersCount < RegionInfo->GetRegionData(InRegion)->MaxEncounters)
+  if (CombatsCount < RegionInfo->GetRegionData(InRegion)->MaxCombats)
   {
     Location = RegionInfo->GetRandomizedRegionLocation(
       InRegion,
@@ -44,8 +45,8 @@ TSoftObjectPtr<UWorld> ULocationManager::GetNextLocation(
 
 TSoftObjectPtr<UWorld> ULocationManager::GetInitialLocation(ERegion InRegion)
 {
-  const TSoftObjectPtr<UWorld> Location = GetAuraGameMode()->RegionInfo
-                                                           ->GetRandomizedInitialLocation(InRegion);
+  const TSoftObjectPtr<UWorld> Location = UAuraSystemsLibrary::GetRegionInfo(this)
+    ->GetRandomizedInitialLocation(InRegion);
 
   CurrentLocation = Location;
   return Location;

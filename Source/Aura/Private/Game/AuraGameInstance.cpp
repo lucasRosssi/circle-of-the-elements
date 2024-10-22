@@ -3,9 +3,13 @@
 
 #include "Game/AuraGameInstance.h"
 
-#include "AuraGameplayTags.h"
-#include "Aura/AuraLogChannels.h"
+#include "Character/Data/HeroInfo.h"
 
 void UAuraGameInstance::SaveHeroData()
 {
+}
+
+FHeroData UAuraGameInstance::GetCurrentHeroData() const
+{
+  return HeroInfo->GetHeroData(CurrentHeroName);
 }

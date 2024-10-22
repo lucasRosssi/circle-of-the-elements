@@ -10,12 +10,12 @@
 #include "AbilitySystem/AuraAttributeSet.h"
 #include "Aura/Aura.h"
 #include "Components/AuraCamera.h"
-#include "Components/SpotLightComponent.h"
 #include "Components/TeamComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Enums/CameraState.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Level/RegionInfo.h"
 #include "Managers/AbilityManager.h"
 #include "Managers/UpgradeManager.h"
 #include "Player/AuraPlayerState.h"
@@ -25,15 +25,6 @@
 
 AAuraHero::AAuraHero()
 {
-  SpotLight = CreateDefaultSubobject<USpotLightComponent>("SpotLight");
-  SpotLight->SetupAttachment(GetRootComponent());
-  SpotLight->Intensity = 50000.f;
-  SpotLight->AttenuationRadius = 3000.f;
-  SpotLight->SetUseTemperature(true);
-  SpotLight->Temperature = 5000.f;
-  SpotLight->CastShadows = false;
-  SpotLight->SetVisibility(false);
-  
   InteractWidgetComponent = CreateDefaultSubobject<UWidgetComponent>("InteractMessage");
   InteractWidgetComponent->SetupAttachment(GetRootComponent());
   InteractWidgetComponent->SetVisibility(false);
@@ -199,9 +190,7 @@ void AAuraHero::StartDeath()
 
   GetMovementComponent()->Deactivate();
   GetAuraPlayerController()->DisableController();
-
-  SpotLight->SetVisibility(true);
-
+  
   UGameplayStatics::SetGlobalTimeDilation(this, 0.25f);
   PlayAnimMontage(HitReactMontage, 0.66f);
 
@@ -270,6 +259,21 @@ void AAuraHero::EndDeath()
   {
     Super::Die();
   }
+
+  FTimerHandle BackToHomeTimer;
+  GetWorld()->GetTimerManager().SetTimer(
+      BackToHomeTimer,
+      this,
+      &AAuraHero::BackToHome,
+      BackToHomeDelay,
+      false
+      );
+}
+
+void AAuraHero::BackToHome()
+{
+  const TSoftObjectPtr<UWorld> HomeLevel = UAuraSystemsLibrary::GetRegionInfo(this)->GetHomeLevel();
+  UGameplayStatics::OpenLevelBySoftObjectPtr(this, HomeLevel);
 }
 
 AAuraPlayerState* AAuraHero::GetAuraPlayerState() const

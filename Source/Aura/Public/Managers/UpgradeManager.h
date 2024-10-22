@@ -36,7 +36,7 @@ public:
 		const FGameplayTag ElementTag
 		);
 	UFUNCTION(BlueprintPure, Category="Manager|Upgrade")
-	FAuraUpgradeInfo GetUpgradeInfo(const FUpgradeInfoParams& Params);
+	FAuraUpgradeInfo GetAuraUpgradeInfo(const FUpgradeInfoParams& Params);
 
 	UFUNCTION(BlueprintCallable, Category="Manager|Upgrade|Description")
 	void GetUpgradeFormattedTexts(
@@ -65,9 +65,6 @@ public:
   FOnUpgradeUnlock OnUpgradeUnlockDelegate;
 
 protected:
-  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Game|Info")
-  TObjectPtr<UUpgradeInfo> UpgradeInfo;
-	
 	UPROPERTY(
 		EditDefaultsOnly,
 		BlueprintReadWrite,
@@ -87,5 +84,10 @@ private:
   AAuraPlayerState* GetAuraPlayerState();
   void GiveUpgrade(const FAuraUpgradeInfo& AuraUpgradeInfo, UAuraAbilitySystemComponent* AuraASC);
 
+  UUpgradeInfo* GetUpgradeInfo();
+
   TWeakObjectPtr<AAuraPlayerState> AuraPlayerState;
+
+  UPROPERTY()
+  TObjectPtr<UUpgradeInfo> UpgradeInfo;
 };

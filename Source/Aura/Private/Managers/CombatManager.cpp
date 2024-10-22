@@ -1,7 +1,7 @@
 // Copyright Lucas Rossi
 
 
-#include "Managers/EncounterManager.h"
+#include "Managers/CombatManager.h"
 
 #include "AuraGameplayTags.h"
 #include "Actor/AreaEffectActor.h"
@@ -10,11 +10,11 @@
 #include "Aura/AuraLogChannels.h"
 #include "Kismet/GameplayStatics.h"
 #include "Level/RegionInfo.h"
+#include "Utils/AuraSystemsLibrary.h"
 
-void UEncounterManager::SetEncounterDifficulty()
+void UCombatManager::SetCombatDifficulty()
 {
-	const int32 EncountersCount = GetAuraGameMode()->EncountersCount;
-	EnemiesLevel = FMath::Max(1, FMath::Floor(EncountersCount / 3));
+	EnemiesLevel = FMath::Max(1, FMath::Floor(CombatsCount / 3));
 
 	if (bOverrideEnemyWaves)
 	{
@@ -23,17 +23,17 @@ void UEncounterManager::SetEncounterDifficulty()
 	else
 	{
 		const FAuraGameplayTags& GameplayTags = FAuraGameplayTags::Get();
-		if (EncountersCount == 0)
+		if (CombatsCount == 0)
 		{
 			TotalWaves = 1;
 			DifficultyClass = GameplayTags.DifficultyClass_Initial;
 		}
-		else if (EncountersCount < 4)
+		else if (CombatsCount < 4)
 		{
 			TotalWaves = FMath::RandRange(2, 3);
 			DifficultyClass = GameplayTags.DifficultyClass_Easy;
 		}
-		else if (EncountersCount < 7)
+		else if (CombatsCount < 7)
 		{
 			TotalWaves = 3;
 			DifficultyClass = GameplayTags.DifficultyClass_Normal;
@@ -46,33 +46,33 @@ void UEncounterManager::SetEncounterDifficulty()
 	}
 }
 
-void UEncounterManager::SetCurrentEncounterData()
+void UCombatManager::SetCurrentCombatData()
 {
 	CurrentWave = 0;
-	SetEncounterDifficulty();
+	SetCombatDifficulty();
 	GetEnemySpawns();
 	GetAvailableSpawners();
 }
 
-void UEncounterManager::StartEncounter()
+void UCombatManager::StartCombat()
 {
-	GetAuraGameMode()->EncountersCount += 1;
+	CombatsCount += 1;
 	
 	NextWave();
 }
 
-void UEncounterManager::NextWave()
+void UCombatManager::NextWave()
 {
 	if (EnemyWaves.IsEmpty())
 	{
 		UE_LOG(LogAura, Error, TEXT("No enemy waves to spawn!"));
-		FinishEncounter();
+		FinishCombat();
 		return;
 	}
 	if (EnemySpawners.Num() < EnemyWaves[0].Enemies.Num())
 	{
 		UE_LOG(LogAura, Error, TEXT("Trying to spawn more enemies than there is available spawners!"));
-		FinishEncounter();
+		FinishCombat();
 		return;
 	}
 
@@ -93,25 +93,25 @@ void UEncounterManager::NextWave()
 	if (!bOverrideEnemyWaves) EnemyWaves.RemoveAt(0);
 }
 
-void UEncounterManager::FinishEncounter()
+void UCombatManager::FinishCombat()
 {
-	UGameplayStatics::SetGlobalTimeDilation(this, TimeDilationOnFinishEncounter);
+	UGameplayStatics::SetGlobalTimeDilation(this, TimeDilationOnFinishCombat);
 	
 	FTimerHandle SlowMotionTimerHandle;
 	GetWorld()->GetTimerManager().SetTimer(
 		SlowMotionTimerHandle,
 		this,
-		&UEncounterManager::PostFinishEncounter,
+		&UCombatManager::PostFinishCombat,
 		TimeDilationResetDelay * UGameplayStatics::GetGlobalTimeDilation(this),
 		false
 		);
 }
 
-void UEncounterManager::PostFinishEncounter()
+void UCombatManager::PostFinishCombat()
 {
 	UGameplayStatics::SetGlobalTimeDilation(GetOwner(), 1.0f);
 
-	OnEncounterFinishedDelegate.Broadcast();
+	OnCombatFinishedDelegate.Broadcast();
   
   TArray<AActor*> Projectiles;
   UGameplayStatics::GetAllActorsOfClass(
@@ -138,7 +138,7 @@ void UEncounterManager::PostFinishEncounter()
   }
 }
 
-void UEncounterManager::GetAvailableSpawners()
+void UCombatManager::GetAvailableSpawners()
 {
 	EnemySpawners.Empty();
 	
@@ -154,17 +154,17 @@ void UEncounterManager::GetAvailableSpawners()
 		if (AEnemySpawner* EnemySpawner = Cast<AEnemySpawner>(Spawner))
 		{
 			EnemySpawners.Add(EnemySpawner);
-			EnemySpawner->EnemySpawnedDelegate.AddDynamic(this, &UEncounterManager::OnEnemySpawned);
-			EnemySpawner->SpawnedEnemyDeathDelegate.AddDynamic(this, &UEncounterManager::OnEnemyKilled);
+			EnemySpawner->EnemySpawnedDelegate.AddDynamic(this, &UCombatManager::OnEnemySpawned);
+			EnemySpawner->SpawnedEnemyDeathDelegate.AddDynamic(this, &UCombatManager::OnEnemyKilled);
 		}
 	}
 }
 
-void UEncounterManager::GetEnemySpawns()
+void UCombatManager::GetEnemySpawns()
 {
 	if (!bOverrideEnemyWaves)
 	{
-		EnemyWaves = GetAuraGameMode()->RegionInfo->GetRandomizedEnemyWaves(
+		EnemyWaves = UAuraSystemsLibrary::GetRegionInfo(this)->GetRandomizedEnemyWaves(
 			Region, 
 			DifficultyClass,
 			TotalWaves
@@ -172,12 +172,12 @@ void UEncounterManager::GetEnemySpawns()
 	}
 }
 
-void UEncounterManager::OnEnemySpawned(AActor* Enemy)
+void UCombatManager::OnEnemySpawned(AActor* Enemy)
 {
 	EnemyCount += 1;
 }
 
-void UEncounterManager::OnEnemyKilled(AActor* Enemy)
+void UCombatManager::OnEnemyKilled(AActor* Enemy)
 {
 	EnemyCount -= 1;
 	if (EnemyCount <= 0)
@@ -185,7 +185,7 @@ void UEncounterManager::OnEnemyKilled(AActor* Enemy)
 		if (CurrentWave == TotalWaves)
 		{
 		  OnLastEnemyKilledDelegate.Broadcast();
-			FinishEncounter();
+			FinishCombat();
 		}
 		else
 		{
@@ -195,7 +195,7 @@ void UEncounterManager::OnEnemyKilled(AActor* Enemy)
 				GetWorld()->GetTimerManager().SetTimer(
 					WaveTransitionTimerHandle,
 					this,
-					&UEncounterManager::NextWave,
+					&UCombatManager::NextWave,
 					WaveTransitionDelay,
 					false
 					);

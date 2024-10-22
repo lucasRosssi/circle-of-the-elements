@@ -17,7 +17,6 @@
 #include "Components/TeamComponent.h"
 #include "Engine/DamageEvents.h"
 #include "Enums/TargetTeam.h"
-#include "Game/AuraGameModeBase.h"
 #include "Kismet/GameplayStatics.h"
 #include "Player/AuraPlayerState.h"
 #include "Player/AuraPlayerController.h"
@@ -96,74 +95,28 @@ UUpgradeMenuWidgetController* UAuraAbilitySystemLibrary::GetUpgradeMenuWidgetCon
   return AuraHUD->GetUpgradeMenuWidgetController(WidgetControllerParams);
 }
 
-UCharacterInfo* UAuraAbilitySystemLibrary::GetCharacterClassInfo(
-  const UObject* WorldContextObject)
-{
-  const AAuraGameModeBase* AuraGameMode = CastChecked<AAuraGameModeBase>(
-    UGameplayStatics::GetGameMode(WorldContextObject)
-  );
-
-  return AuraGameMode->CharacterClassInfo;
-}
-
-UAbilityInfo* UAuraAbilitySystemLibrary::GetAbilitiesInfo(const UObject* WorldContextObject)
-{
-  const AAuraGameModeBase* AuraGameMode = CastChecked<AAuraGameModeBase>(
-    UGameplayStatics::GetGameMode(WorldContextObject)
-  );
-
-  return AuraGameMode->AbilityInfo;
-}
-
-UStatusEffectInfo* UAuraAbilitySystemLibrary::GetStatusEffectInfo(const UObject* WorldContextObject)
-{
-  const AAuraGameModeBase* AuraGameMode = CastChecked<AAuraGameModeBase>(
-    UGameplayStatics::GetGameMode(WorldContextObject)
-  );
-
-  return AuraGameMode->StatusEffectInfo;
-}
-
-URegionInfo* UAuraAbilitySystemLibrary::GetRegionInfo(const UObject* WorldContextObject)
-{
-  const AAuraGameModeBase* AuraGameMode = CastChecked<AAuraGameModeBase>(
-    UGameplayStatics::GetGameMode(WorldContextObject)
-  );
-
-  return AuraGameMode->RegionInfo;
-}
-
-URewardsInfo* UAuraAbilitySystemLibrary::GetRewardsInfo(const UObject* WorldContextObject)
-{
-  const AAuraGameModeBase* AuraGameMode = CastChecked<AAuraGameModeBase>(
-    UGameplayStatics::GetGameMode(WorldContextObject)
-  );
-
-  return AuraGameMode->RewardsInfo;
-}
-
-void UAuraAbilitySystemLibrary::GiveStartupAbilities(
-  const UObject* WorldContextObject,
-  UAbilitySystemComponent* ASC
-)
-{
-  UCharacterInfo* CharacterClassInfo = GetCharacterClassInfo(WorldContextObject);
-  for (const auto AbilityClass : CharacterClassInfo->CommonAbilities)
-  {
-    FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(AbilityClass, 1);
-    ASC->GiveAbility(AbilitySpec);
-  }
-
-  AAuraCharacterBase* Character = Cast<AAuraCharacterBase>(ASC->GetAvatarActor());
-  if (Character)
-  {
-    for (const auto AbilityClass : Character->NativeCharacterAbilities)
-    {
-      FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(AbilityClass, 1);
-      ASC->GiveAbility(AbilitySpec);
-    }
-  }
-}
+// void UAuraAbilitySystemLibrary::GiveStartupAbilities(
+//   const UObject* WorldContextObject,
+//   UAbilitySystemComponent* ASC
+// )
+// {
+//   UCharacterInfo* CharacterClassInfo = GetCharacterClassInfo(WorldContextObject);
+//   for (const auto AbilityClass : CharacterClassInfo->CommonAbilities)
+//   {
+//     FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(AbilityClass, 1);
+//     ASC->GiveAbility(AbilitySpec);
+//   }
+//
+//   AAuraCharacterBase* Character = Cast<AAuraCharacterBase>(ASC->GetAvatarActor());
+//   if (Character)
+//   {
+//     for (const auto AbilityClass : Character->NativeCharacterAbilities)
+//     {
+//       FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(AbilityClass, 1);
+//       ASC->GiveAbility(AbilitySpec);
+//     }
+//   }
+// }
 
 bool UAuraAbilitySystemLibrary::IsParried(const FGameplayEffectContextHandle& EffectContextHandle)
 {
@@ -441,15 +394,6 @@ void UAuraAbilitySystemLibrary::SetAreaOrigin(
   {
     AuraEffectContext->SetAreaOrigin(InOrigin);
   }
-}
-
-void UAuraAbilitySystemLibrary::StackEncounterXP(const UObject* WorldContextObject, int32 InXP)
-{
-  AAuraGameModeBase* AuraGameMode = CastChecked<AAuraGameModeBase>(
-    UGameplayStatics::GetGameMode(WorldContextObject)
-  );
-
-  AuraGameMode->AddToXPStack(InXP);
 }
 
 void UAuraAbilitySystemLibrary::GetAliveCharactersWithinRadius(
@@ -1619,23 +1563,4 @@ AActor* UAuraAbilitySystemLibrary::GetActiveEffectCauser(
 
   return AbilitySystemComponent
          ->GetEffectContextFromActiveGEHandle(ActiveEffects[0]).GetEffectCauser();
-}
-
-int32 UAuraAbilitySystemLibrary::GetXPRewardForTypeAndLevel(
-  const UObject* WorldContextObject,
-  ECharacterType CharacterType,
-  int32 Level
-)
-{
-  const UCharacterInfo* CharacterClassInfo = GetCharacterClassInfo(WorldContextObject);
-  if (!CharacterClassInfo) return 0;
-
-  const FScalableFloat* XPCurve = CharacterClassInfo->XPReward.Find(CharacterType);
-  checkf(
-    XPCurve,
-    TEXT("XP Curve not found for this CharacterType, fill in its XP Curve in the DA_CharacterClassInfo Blueprint"),
-  );
-  const float XPReward = XPCurve->GetValueAtLevel(Level);
-
-  return static_cast<int32>(XPReward);
 }

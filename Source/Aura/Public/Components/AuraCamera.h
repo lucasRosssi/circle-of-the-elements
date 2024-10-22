@@ -21,6 +21,8 @@ class AURA_API AAuraCamera : public AUniversalCamera
 public:
 	AAuraCamera();
 
+  UFUNCTION(BlueprintCallable)
+	void SetCameraBoundaries(const TArray<AActor*>& BoundaryActors);
 	void SetCameraBoundaries();
 	void RemoveCameraBoundaries();
 	
@@ -55,6 +57,9 @@ protected:
   UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Camera")
   float SecondWindInterpSpeed = 40.f;
 
+  UPROPERTY(BlueprintReadWrite, Category="Camera|PostProcess")
+  APostProcessVolume* PostProcessVolume;
+
 private:
 	UFUNCTION()
 	void OnLocationUpdate();
@@ -71,9 +76,6 @@ private:
   void InterpToSecondWindFOV(float DeltaSeconds);
 
   ECameraState CameraState;
-
-  UPROPERTY()
-  APostProcessVolume* PostProcessVolume;
 
   TWeakObjectPtr<AActor> PlayerActor;
 };

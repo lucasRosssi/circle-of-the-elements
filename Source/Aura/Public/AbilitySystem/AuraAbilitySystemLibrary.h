@@ -3,8 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Enums/CharacterType.h"
-#include "Data/CharacterInfo.h"
 #include "Enums/TargetTeam.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "UI/WidgetController/AuraWidgetController.h"
@@ -16,7 +14,6 @@ class UUpgradeMenuWidgetController;
 class URewardsInfo;
 struct FEffectParams;
 class URegionInfo;
-enum class ECharacterName : uint8;
 enum class ETargetTeam : uint8;
 class UStatusEffectInfo;
 struct FAbilityParams;
@@ -98,22 +95,11 @@ public:
 	 * DEFAULTS
 	 */
 
-	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|Info")
-	static UCharacterInfo* GetCharacterClassInfo(const UObject* WorldContextObject);
-	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|Info")
-	static UAbilityInfo* GetAbilitiesInfo(const UObject* WorldContextObject);
-	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|Info")
-	static UStatusEffectInfo* GetStatusEffectInfo(const UObject* WorldContextObject);
-	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|Info")
-	static URegionInfo* GetRegionInfo(const UObject* WorldContextObject);
-  UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|Info")
-  static URewardsInfo* GetRewardsInfo(const UObject* WorldContextObject);
-
-	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|CharacterClassDefaults")
-	static void GiveStartupAbilities(
-		const UObject* WorldContextObject,
-		UAbilitySystemComponent* ASC
-	);
+	// UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|CharacterClassDefaults")
+	// static void GiveStartupAbilities(
+	// 	const UObject* WorldContextObject,
+	// 	UAbilitySystemComponent* ASC
+	// );
 
 	/*
 	 * GAMEPLAY EFFECTS
@@ -219,9 +205,6 @@ public:
 	/*
 	 * GAMEPLAY MECHANICS
 	 */
-
-	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|GameplayMechanics")
-	static void StackEncounterXP(const UObject* WorldContextObject, int32 InXP);
 
 	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|GameplayMechanics")
 	static FGameplayEffectContextHandle ApplyAbilityEffect(
@@ -343,12 +326,6 @@ public:
 
 	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|GameplayMechanics")
 	static bool IsTargetInvulnerable(AActor* TargetActor);
-	
-	static int32 GetXPRewardForTypeAndLevel(
-		const UObject* WorldContextObject,
-		ECharacterType CharacterType,
-		int32 Level
-	);
 
 	// If it has ANY tag that prevents harmful effects
 	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|GameplayMechanics")

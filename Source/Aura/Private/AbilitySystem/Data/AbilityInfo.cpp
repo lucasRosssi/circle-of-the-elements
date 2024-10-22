@@ -88,7 +88,7 @@ TMap<FGameplayTag, FAuraAbilityInfo> UAbilityInfo::FindCharacterAbilitiesOfEleme
 FAuraAbilityInfo UAbilityInfo::FindAbilityInfoWithParams(const FAbilityInfoParams& Params, bool bLogNotFound) const
 {
 	TMap<FGameplayTag, FAuraAbilityInfo> AbilityInfos = FindCharacterAbilitiesOfElement(
-		Params.CharacterName,
+		Params.HeroName,
 		Params.ElementTag,
 		bLogNotFound
 		);
