@@ -21,7 +21,7 @@ struct FEnemyWave
 };
 
 USTRUCT(BlueprintType)
-struct FEncounter
+struct FCombat
 {
 	GENERATED_BODY()
 
@@ -35,13 +35,13 @@ struct FRegionData
 	GENERATED_BODY()
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	int32 MaxEncounters = 1;
+	int32 MaxCombats = 1;
 	UPROPERTY(
 		EditDefaultsOnly,
 		BlueprintReadOnly,
 		meta=(Categories="DifficultyClass",	ForceInlineRow)
 		)
-	TMap<FGameplayTag, FEncounter> Encounters;
+	TMap<FGameplayTag, FCombat> Combats;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TArray<TSoftObjectPtr<UWorld>> Locations;
@@ -95,7 +95,7 @@ protected:
 	UPROPERTY(
 		EditDefaultsOnly,
 		BlueprintReadOnly,
-		meta=(Categories="Encounter",	ForceInlineRow)
+		meta=(Categories="Combat",	ForceInlineRow)
 		)
 	TMap<ERegion, FRegionData> RegionData;
 

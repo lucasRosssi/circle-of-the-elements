@@ -8,10 +8,10 @@
 #include "AuraGameplayTags.h"
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
-#include "AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "AbilitySystem/Data/StatusEffectInfo.h"
 #include "Enums/StatusEffectPosition.h"
 #include "Interfaces/CombatInterface.h"
+#include "Utils/AuraSystemsLibrary.h"
 
 class ICombatInterface;
 
@@ -72,7 +72,7 @@ void UStatusEffectsManager::OnActivateStatusEffect(const FGameplayTag& StatusEff
 
 	if (!GetOwner()->HasAuthority() || ICombatInterface::Execute_IsDead(GetOwner())) return;
 		
-	const UStatusEffectInfo* StatusEffectInfo = UAuraAbilitySystemLibrary
+	const UStatusEffectInfo* StatusEffectInfo = UAuraSystemsLibrary
 		::GetStatusEffectInfo(GetOwner());
 	if (!StatusEffectInfo->StatusEffects.Contains(StatusEffectTag)) return;
 	

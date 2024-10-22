@@ -10,7 +10,6 @@
 #include "AbilitySystem/AuraAttributeSet.h"
 #include "Aura/Aura.h"
 #include "Components/AuraCamera.h"
-#include "Components/SpotLightComponent.h"
 #include "Components/TeamComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Enums/CameraState.h"
@@ -25,15 +24,6 @@
 
 AAuraHero::AAuraHero()
 {
-  SpotLight = CreateDefaultSubobject<USpotLightComponent>("SpotLight");
-  SpotLight->SetupAttachment(GetRootComponent());
-  SpotLight->Intensity = 50000.f;
-  SpotLight->AttenuationRadius = 3000.f;
-  SpotLight->SetUseTemperature(true);
-  SpotLight->Temperature = 5000.f;
-  SpotLight->CastShadows = false;
-  SpotLight->SetVisibility(false);
-  
   InteractWidgetComponent = CreateDefaultSubobject<UWidgetComponent>("InteractMessage");
   InteractWidgetComponent->SetupAttachment(GetRootComponent());
   InteractWidgetComponent->SetVisibility(false);
@@ -199,9 +189,7 @@ void AAuraHero::StartDeath()
 
   GetMovementComponent()->Deactivate();
   GetAuraPlayerController()->DisableController();
-
-  SpotLight->SetVisibility(true);
-
+  
   UGameplayStatics::SetGlobalTimeDilation(this, 0.25f);
   PlayAnimMontage(HitReactMontage, 0.66f);
 

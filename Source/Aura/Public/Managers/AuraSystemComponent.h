@@ -16,11 +16,7 @@ class AURA_API UAuraSystemComponent : public UActorComponent
 public:	
 	UAuraSystemComponent();
 
-	void SetGameMode(AAuraGameModeBase* InGameMode) { AuraGameMode = InGameMode; }
-
 protected:
-	AAuraGameModeBase* GetAuraGameMode();
-	TWeakObjectPtr<AAuraGameModeBase> AuraGameMode;
 
 private:
 		

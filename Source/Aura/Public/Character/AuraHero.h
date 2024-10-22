@@ -78,8 +78,6 @@ protected:
 	TSubclassOf<AAuraCamera> CameraClass;
 	UPROPERTY(BlueprintReadOnly, Category="Camera")
 	TObjectPtr<AAuraCamera> ActiveCamera;
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Camera")
-	TObjectPtr<USpotLightComponent> SpotLight;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Death")
 	TObjectPtr<UNiagaraSystem> DeathBloodEffect;

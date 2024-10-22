@@ -9,7 +9,9 @@
 #include "Aura/AuraLogChannels.h"
 #include "Enums/CharacterName.h"
 #include "AbilitySystem/Abilities/BaseAbility.h"
+#include "Managers/RewardManager.h"
 #include "UI/WidgetController/OverlayWidgetController.h"
+#include "Utils/AuraSystemsLibrary.h"
 
 UAbilityManager::UAbilityManager()
 {
@@ -34,7 +36,7 @@ void UAbilityManager::GiveAcquiredAbilities(AActor* Actor)
   {
     for (auto AbilityTagIterator = AcquiredAbilities.CreateConstIterator(); AbilityTagIterator; ++AbilityTagIterator)
     {
-      const FAuraAbilityInfo& AbilityInfo = GetAuraGameMode()->AbilityInfo->FindAbilityInfoByTag(*AbilityTagIterator);
+      const FAuraAbilityInfo& AbilityInfo = UAuraSystemsLibrary::GetAbilitiesInfo(this)->FindAbilityInfoByTag(*AbilityTagIterator);
       UAuraAbilitySystemComponent* AuraASC = UAuraAbilitySystemLibrary::GetAuraAbilitySystemComponent(Actor);
       GiveAbility(AbilityInfo, AuraASC);
     }
@@ -44,6 +46,8 @@ void UAbilityManager::GiveAcquiredAbilities(AActor* Actor)
 void UAbilityManager::BeginPlay()
 {
 	Super::BeginPlay();
+
+  if (!bInitializeOnBeginPlay) return;
 
   if (bOverrideAbilitiesContainer)
   {
@@ -59,12 +63,12 @@ TMap<FGameplayTag, FAuraAbilityInfo> UAbilityManager::GetElementAbilities(
 	const FGameplayTag ElementTag
 	)
 {
-	return GetAuraGameMode()->AbilityInfo->FindCharacterAbilitiesOfElement(CharacterName,	ElementTag);
+	return UAuraSystemsLibrary::GetAbilitiesInfo(this)->FindCharacterAbilitiesOfElement(CharacterName,	ElementTag);
 }
 
 FAuraAbilityInfo UAbilityManager::GetAbilityInfo(const FAbilityInfoParams& Params)
 {
-	return GetAuraGameMode()->AbilityInfo->FindAbilityInfoWithParams(Params);
+	return UAuraSystemsLibrary::GetAbilitiesInfo(this)->FindAbilityInfoWithParams(Params);
 }
 
 TArray<FAuraAbilityInfo> UAbilityManager::RandomizeElementAbilities(
@@ -114,7 +118,7 @@ TArray<FAuraAbilityInfo> UAbilityManager::GetAbilitiesFromBag(const FGameplayTag
 		{
 			FAbilityInfoParams Params;
 			Params.ElementTag = ElementTag;
-			Params.CharacterName = GetAuraGameMode()->CurrentCharacterName;
+			Params.HeroName = GetHeroName();
 			Params.AbilityTag = *AbilityTagIterator;
 			AbilitiesInfos.Add(GetAbilityInfo(Params));
 		}
@@ -180,7 +184,7 @@ void UAbilityManager::SelectAbilityReward(
   {
 	  AbilitiesContainer[ElementTag].Reset();
 	  RandomizeElementAbilities(
-		  GetAuraGameMode()->CurrentCharacterName,
+		  GetHeroName(),
 		  ElementTag
 		  );
   }
@@ -191,18 +195,16 @@ void UAbilityManager::SelectAbilityReward(
 
   if (AbilitiesContainer[ElementTag].IsEmpty())
   {
-    GetAuraGameMode()->OnNoAbilitiesLeft(ElementTag);
+    OnNoAbilitiesLeft(ElementTag);
   }
 }
 
 void UAbilityManager::AssignInitialAbilities()
 {
-	const ECharacterName CharacterName = GetAuraGameMode()->CurrentCharacterName;
-	
 	const FAuraGameplayTags& Tags = FAuraGameplayTags::Get();
 	for (const FGameplayTag& ElementTag : Tags.ParentsToChildren[Tags.Abilities_Element])
 	{
-		RandomizeElementAbilities(CharacterName, ElementTag);
+		RandomizeElementAbilities(GetHeroName(), ElementTag);
 	}
 }
 
@@ -272,11 +274,32 @@ TMap<FGameplayTag, int32> UAbilityManager::GetAvailableTiers(const FGameplayTag&
 
 	if (TierPool == nullptr) return TMap<FGameplayTag, int32>();
 	
-	return GetAuraGameMode()->AbilityInfo->TierDropProbability
+	return UAuraSystemsLibrary::GetAbilitiesInfo(this)->TierDropProbability
 	  .FilterByPredicate([TierPool](const TTuple<FGameplayTag, int32>& TierInfo)
 	  {
 	    return TierPool->HasTagExact(TierInfo.Key);
 	  });
+}
+
+void UAbilityManager::OnNoAbilitiesLeft(const FGameplayTag& ElementTag)
+{
+  if (const FGameplayTag* EssenceTag = FAuraGameplayTags::Get().EssenceToAbility.FindKey(ElementTag))
+  {
+    URewardManager* RewardManager = UAuraSystemsLibrary::GetRewardManager(this);
+    if (RewardManager)
+    {
+      RewardManager->RemoveRewardFromPool(*EssenceTag);
+    }
+  }
+  else
+  {
+    UE_LOG(
+      LogAura,
+      Error,
+      TEXT("Matching Essence Tag for %s not found! Failed to remove essence from the reward pool."),
+      *ElementTag.ToString()
+      )
+  }
 }
 
 FGameplayTag UAbilityManager::GetAvailableInputTag(UAuraAbilitySystemComponent* AuraASC)
@@ -303,4 +326,14 @@ void UAbilityManager::GiveAbility(const FAuraAbilityInfo& AbilityInfo, UAuraAbil
       AuraASC->ServerEquipAbility(AbilityInfo.AbilityTag, AvailableInputTag);
     }
   }
+}
+
+ECharacterName UAbilityManager::GetHeroName()
+{
+  if (HeroName == ECharacterName::Undefined)
+  {
+    HeroName = UAuraSystemsLibrary::GetCurrentHeroData(this).HeroName;
+  }
+
+  return HeroName;
 }

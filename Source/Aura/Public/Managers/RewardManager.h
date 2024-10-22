@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "AuraSystemComponent.h"
 #include "GameplayTagContainer.h"
-#include "Game/AuraGameModeBase.h"
 #include "Level/RewardsInfo.h"
 #include "RewardManager.generated.h"
 
@@ -29,7 +28,6 @@ public:
   
 	UPROPERTY(BlueprintAssignable)
 	FOnRewardTaken OnRewardTakenDelegate;
-
 
 protected:
   virtual void BeginPlay() override;

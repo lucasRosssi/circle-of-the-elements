@@ -8,7 +8,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/TeamComponent.h"
 #include "Kismet/KismetMathLibrary.h"
-#include "Managers/EncounterManager.h"
+#include "Managers/CombatManager.h"
 #include "Utils/AuraSystemsLibrary.h"
 
 TArray<FVector> USummonAbility::GetSpawnLocations()
@@ -109,9 +109,9 @@ AAuraCharacterBase* USummonAbility::SpawnMinion(FVector Location)
 
 		if (TeamComponent->TeamID != PLAYER_TEAM)
 		{
-			UEncounterManager* EncounterManager =	UAuraSystemsLibrary::GetEncounterManager(GetAvatarActorFromActorInfo());
-			EncounterManager->OnEnemySpawned(Minion);
-			Minion->OnDeath.AddDynamic(EncounterManager, &UEncounterManager::OnEnemyKilled);
+			UCombatManager* CombatManager =	UAuraSystemsLibrary::GetCombatManager(GetAvatarActorFromActorInfo());
+			CombatManager->OnEnemySpawned(Minion);
+			Minion->OnDeath.AddDynamic(CombatManager, &UCombatManager::OnEnemyKilled);
 		}
 	}
 	

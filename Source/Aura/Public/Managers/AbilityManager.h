@@ -63,7 +63,9 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
-	
+
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Manager|Ability")
+  bool bInitializeOnBeginPlay = false;
 	UPROPERTY(
 		EditDefaultsOnly,
 		BlueprintReadWrite,
@@ -107,10 +109,15 @@ private:
 		const TMap<FGameplayTag, FAuraAbilityInfo>& ElementAbilities 
 		);
 	TMap<FGameplayTag, int32> GetAvailableTiers(const FGameplayTag& ElementTag);
+  void OnNoAbilitiesLeft(const FGameplayTag& ElementTag);
 
 	FGameplayTag GetAvailableInputTag(UAuraAbilitySystemComponent* AuraASC);
 
   void GiveAbility(const FAuraAbilityInfo& AbilityInfo, UAuraAbilitySystemComponent* AuraASC);
 
+  ECharacterName GetHeroName();
+  
   TMap<FGameplayTag, FGameplayTagContainer> OverridenAbilitiesContainer;
+
+  ECharacterName HeroName = ECharacterName::Undefined;
 };

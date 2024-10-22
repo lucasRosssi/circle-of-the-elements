@@ -50,7 +50,7 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 			);
 	GameplayTags.DifficultyClass_Special = UGameplayTagsManager::Get().AddNativeGameplayTag(
 			FName("DifficultyClass.Special"),
-			FString("Special encounters")
+			FString("Special combats")
 			);
 	
 	/*

@@ -74,7 +74,7 @@ struct FAbilityInfoParams
 	FGameplayTag ElementTag = FGameplayTag();
 
 	UPROPERTY(BlueprintReadWrite)
-	ECharacterName CharacterName = ECharacterName::Undefined;
+	ECharacterName HeroName = ECharacterName::Undefined;
 };
 
 USTRUCT(BlueprintType)

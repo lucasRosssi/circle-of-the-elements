@@ -8,6 +8,8 @@
 #include "Components/CapsuleComponent.h"
 #include "Game/AuraGameModeBase.h"
 #include "Kismet/GameplayStatics.h"
+#include "Managers/CombatManager.h"
+#include "Utils/AuraSystemsLibrary.h"
 
 AEnemySpawner::AEnemySpawner()
 {
@@ -129,11 +131,7 @@ void AEnemySpawner::BeginPlay()
 	}
 	else
 	{
-		const AAuraGameModeBase* AuraGM = Cast<AAuraGameModeBase>(
-			UGameplayStatics::GetGameMode(this)
-			);
-		
-		EnemyLevel = AuraGM->GetEnemiesLevel();
+		EnemyLevel = UAuraSystemsLibrary::GetCombatManager(this)->GetEnemiesLevel();
 	}
 }
 

@@ -3,60 +3,14 @@
 
 #include "Game/AuraGameModeBase.h"
 
-#include "AuraGameplayTags.h"
-#include "Aura/AuraLogChannels.h"
+#include "Character/AuraHero.h"
 #include "Game/AuraGameInstance.h"
 #include "Kismet/GameplayStatics.h"
-#include "Managers/AbilityManager.h"
-#include "Managers/EncounterManager.h"
-#include "Managers/LocationManager.h"
-#include "Managers/RewardManager.h"
-#include "Managers/UpgradeManager.h"
 #include "UI/HUD/AuraHUD.h"
 
 AAuraGameModeBase::AAuraGameModeBase()
 {
-  AbilityManager = CreateDefaultSubobject<UAbilityManager>("Ability Manager");
-  AbilityManager->SetGameMode(this);
-
-  LocationManager = CreateDefaultSubobject<ULocationManager>("LocationManager");
-  LocationManager->SetGameMode(this);
-
-  EncounterManager = CreateDefaultSubobject<UEncounterManager>("EncounterManager");
-  EncounterManager->SetGameMode(this);
-
-  RewardManager = CreateDefaultSubobject<URewardManager>("RewardManager");
-  RewardManager->SetGameMode(this);
-
-  UpgradeManager = CreateDefaultSubobject<UUpgradeManager>("UpgradeManager");
-}
-
-void AAuraGameModeBase::OnNoAbilitiesLeft(const FGameplayTag& ElementTag)
-{
-  if (const FGameplayTag* EssenceTag = FAuraGameplayTags::Get().EssenceToAbility.FindKey(ElementTag))
-  {
-    RewardManager->RemoveRewardFromPool(*EssenceTag);
-  }
-  else
-  {
-    UE_LOG(
-      LogAura,
-      Warning,
-      TEXT("Matching Essence Tag for %s not found! Failed to remove essence from the reward pool."),
-      *ElementTag.ToString()
-      )
-  }
-}
-
-void AAuraGameModeBase::AddToXPStack(float InXP)
-{
-}
-
-void AAuraGameModeBase::BeginPlay()
-{
-  Super::BeginPlay();
-
-  GetOnEncounterFinishedDelegate().AddDynamic(RewardManager, &URewardManager::SpawnReward);
+  
 }
 
 UAuraGameInstance* AAuraGameModeBase::GetAuraGameInstance()
@@ -78,29 +32,39 @@ AAuraHUD* AAuraGameModeBase::GetAuraHUD(int32 PlayerIndex)
   return AuraHUDs[PlayerIndex];
 }
 
-void AAuraGameModeBase::LoadLevelInfo()
+FHeroData AAuraGameModeBase::GetCurrentHeroData()
 {
-  LocationManager->InitLocation();
-  EncounterManager->SetCurrentEncounterData();
-  RewardManager->SetGatesRewards();
+  if (!CurrentHeroData.IsValid())
+  {
+    const UAuraGameInstance* AuraGI = GetAuraGameInstance();
+
+    if (!AuraGI) return FHeroData();
+
+    CurrentHeroData = AuraGI->GetCurrentHeroData();
+  }
+
+  return CurrentHeroData;
 }
 
-int32 AAuraGameModeBase::GetEnemiesLevel() const
+void AAuraGameModeBase::SpawnAndPossessSelectedHero()
 {
-  return EncounterManager->GetEnemiesLevel();
-}
+  APlayerController* PlayerController = UGameplayStatics::GetPlayerController(this, 0);
+  const AActor* PlayerStart = FindPlayerStart(PlayerController);
 
-FOnExitLocation& AAuraGameModeBase::GetOnExitLocationDelegate()
-{
-  return LocationManager->OnExitLocationDelegate;
-}
+  FActorSpawnParameters SpawnParameters;
+  SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+  AAuraHero* Hero = Cast<AAuraHero>(GetWorld()->SpawnActor(
+    GetCurrentHeroData().HeroClass,
+    &PlayerStart->GetActorTransform(),
+    SpawnParameters
+  ));
 
-FOnEncounterFinished& AAuraGameModeBase::GetOnEncounterFinishedDelegate()
-{
-  return EncounterManager->OnEncounterFinishedDelegate;
-}
+  if (!Hero)
+  {
+    UE_LOG(LogTemp, Error, TEXT("Unable to spawn Hero %hhd!"), GetCurrentHeroData().HeroName);
+    return;
+  }
 
-FOnRewardTaken& AAuraGameModeBase::GetOnRewardTakenDelegate()
-{
-  return RewardManager->OnRewardTakenDelegate;
+  PlayerController->Possess(Hero);
+  PlayerController->SetActorTickEnabled(true);
 }

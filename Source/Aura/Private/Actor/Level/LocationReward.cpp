@@ -30,7 +30,7 @@ ALocationReward::ALocationReward()
 
 void ALocationReward::Interact_Implementation(const AController* Controller)
 {
-  const FRewardInfo& RewardInfo = UAuraAbilitySystemLibrary::GetRewardsInfo(this)
+  const FRewardInfo& RewardInfo = UAuraSystemsLibrary::GetRewardsInfo(this)
     ->GetRewardInfo(RewardTag);
 
   const FAuraGameplayTags& GameplayTags = FAuraGameplayTags::Get();

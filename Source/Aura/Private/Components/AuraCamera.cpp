@@ -10,7 +10,7 @@
 #include "Enums/CameraState.h"
 #include "Interfaces/CombatInterface.h"
 #include "Kismet/GameplayStatics.h"
-#include "Managers/EncounterManager.h"
+#include "Managers/CombatManager.h"
 #include "Managers/LocationManager.h"
 #include "Utils/AuraSystemsLibrary.h"
 
@@ -41,6 +41,11 @@ AAuraCamera::AAuraCamera()
   SpotLight->Temperature = 5000.f;
   SpotLight->CastShadows = false;
   SpotLight->SetVisibility(false);
+}
+
+void AAuraCamera::SetCameraBoundaries(const TArray<AActor*>& BoundaryActors)
+{
+  SetConstrainDots(GetActorsLocation2D(BoundaryActors));
 }
 
 void AAuraCamera::SetCameraBoundaries()
@@ -162,9 +167,12 @@ void AAuraCamera::HandleDefaultState()
     FConstrainVector2(),
     FBoolRotation());
 
-  GetPostProcessVolume()->Settings.WeightedBlendables.Array[0].Weight = 1.f;
-  GetPostProcessVolume()->Settings.WeightedBlendables.Array[1].Weight = 0.f;
-  GetPostProcessVolume()->Settings.WeightedBlendables.Array[2].Weight = 0.f;
+  if (GetPostProcessVolume()->Settings.WeightedBlendables.Array.Num() >= 3)
+  {
+    GetPostProcessVolume()->Settings.WeightedBlendables.Array[0].Weight = 1.f;
+    GetPostProcessVolume()->Settings.WeightedBlendables.Array[1].Weight = 0.f;
+    GetPostProcessVolume()->Settings.WeightedBlendables.Array[2].Weight = 0.f;
+  }
 
   ICombatInterface::Execute_SetCustomDepth(PlayerActor.Get(), 0);
 
@@ -210,7 +218,7 @@ void AAuraCamera::HandlePlayerDeathState()
 
 void AAuraCamera::HandleBossDeathState()
 {
-  AActor* Boss = UAuraSystemsLibrary::GetEncounterManager(this)->GetCurrentBoss();
+  AActor* Boss = UAuraSystemsLibrary::GetCombatManager(this)->GetCurrentBoss();
   if (!Boss) return;
 
   bFollowActorIgnoreRestrictions = true;

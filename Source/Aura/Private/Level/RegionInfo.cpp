@@ -19,9 +19,9 @@ TArray<FEnemyWave> URegionInfo::GetEnemyWaves(
 
 	if (!Data) return TArray<FEnemyWave>();
 
-	if (const auto Encounter = Data->Encounters.Find(DifficultyClass))
+	if (const auto Combat = Data->Combats.Find(DifficultyClass))
 	{
-		return Encounter->EnemyWaves;
+		return Combat->EnemyWaves;
 	}
 
 	return TArray<FEnemyWave>();

@@ -5,8 +5,6 @@
 #include "AbilitySystem/Abilities/BaseAbility.h"
 
 #include "AbilitySystemBlueprintLibrary.h"
-#include "AIController.h"
-#include "AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "AbilitySystem/AuraAttributeSet.h"
 #include "AbilitySystem/Data/StatusEffectInfo.h"
 #include "AbilitySystem/GameplayEffects/StatusEffect.h"
@@ -14,6 +12,7 @@
 #include "Character/AuraCharacterBase.h"
 #include "Character/AuraHero.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Utils/AuraSystemsLibrary.h"
 
 UBaseAbility::UBaseAbility()
 {
@@ -272,7 +271,7 @@ FAbilityParams UBaseAbility::MakeAbilityParamsFromDefaults(AActor* TargetActor) 
 	{
 	  for (const auto& Effect : StatusEffectData)
 	  {
-		  UStatusEffectInfo* StatusEffectInfo = UAuraAbilitySystemLibrary
+		  UStatusEffectInfo* StatusEffectInfo = UAuraSystemsLibrary
 			  ::GetStatusEffectInfo(AbilityParams.WorldContextObject);
 	    FEffectParams EffectParams;
 		  EffectParams.GameplayEffectClass = StatusEffectInfo

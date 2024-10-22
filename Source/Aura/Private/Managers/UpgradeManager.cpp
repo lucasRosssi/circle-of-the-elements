@@ -10,6 +10,7 @@
 #include "AbilitySystem/GameplayEffects/UpgradeEffect.h"
 #include "Kismet/GameplayStatics.h"
 #include "Player/AuraPlayerState.h"
+#include "Utils/AuraSystemsLibrary.h"
 
 void UUpgradeManager::GiveAcquiredUpgrades()
 {
@@ -27,12 +28,12 @@ TMap<FGameplayTag, FAuraUpgradeInfo> UUpgradeManager::GetElementUpgrades(
   const FGameplayTag ElementTag
 )
 {
-  return UpgradeInfo->FindCharacterUpgradesOfElement(CharacterName, ElementTag);
+  return GetUpgradeInfo()->FindCharacterUpgradesOfElement(CharacterName, ElementTag);
 }
 
-FAuraUpgradeInfo UUpgradeManager::GetUpgradeInfo(const FUpgradeInfoParams& Params)
+FAuraUpgradeInfo UUpgradeManager::GetAuraUpgradeInfo(const FUpgradeInfoParams& Params)
 {
-  return UpgradeInfo->FindUpgradeInfoWithParams(Params);
+  return GetUpgradeInfo()->FindUpgradeInfoWithParams(Params);
 }
 
 void UUpgradeManager::GetUpgradeFormattedTexts(
@@ -81,7 +82,7 @@ void UUpgradeManager::GetUpgradeFormattedTexts(
   FString RequirementsString;
   for (auto Tag : AuraUpgradeInfo.Requirements)
   {
-    const FAuraUpgradeInfo& Info = UpgradeInfo->FindUpgradeInfoByTag(Tag);
+    const FAuraUpgradeInfo& Info = GetUpgradeInfo()->FindUpgradeInfoByTag(Tag);
 
     if (!Info.Ability) continue;
 
@@ -139,7 +140,7 @@ bool UUpgradeManager::HasResourcesToUnlock(const FGameplayTag& UpgradeTag)
 {
   if (!GetAuraPlayerState()) return false;
 
-  const FAuraUpgradeInfo& Info = UpgradeInfo->FindUpgradeInfoByTag(UpgradeTag);
+  const FAuraUpgradeInfo& Info = GetUpgradeInfo()->FindUpgradeInfoByTag(UpgradeTag);
   const int32 Level = AuraPlayerState->GetAuraASC()->GetAbilityLevelFromTag(Info.AbilityTag);
   
   TMap<FGameplayTag, int32> CostMap;
@@ -155,14 +156,14 @@ bool UUpgradeManager::HasRequiredUpgrades(const FGameplayTag& UpgradeTag)
 {
   if (!GetAuraPlayerState()) return false;
 
-  const FAuraUpgradeInfo& Info = UpgradeInfo->FindUpgradeInfoByTag(UpgradeTag);
+  const FAuraUpgradeInfo& Info = GetUpgradeInfo()->FindUpgradeInfoByTag(UpgradeTag);
   
   return AcquiredUpgrades.HasAllExact(Info.Requirements);
 }
 
 bool UUpgradeManager::IsMaxed(const FGameplayTag& UpgradeTag)
 {
-  const FAuraUpgradeInfo& Info = UpgradeInfo->FindUpgradeInfoByTag(UpgradeTag);
+  const FAuraUpgradeInfo& Info = GetUpgradeInfo()->FindUpgradeInfoByTag(UpgradeTag);
   UAuraAbilitySystemComponent* AuraASC = GetAuraPlayerState()->GetAuraASC();
   
   if (const FGameplayAbilitySpec* AbilitySpec = AuraASC->GetSpecFromAbilityTag(Info.AbilityTag))
@@ -187,7 +188,7 @@ bool UUpgradeManager::IsMaxed(const FAuraUpgradeInfo& AuraUpgradeInfo)
 
 void UUpgradeManager::UnlockUpgrade(const FGameplayTag& UpgradeTag)
 {
-  const FAuraUpgradeInfo& Info = UpgradeInfo->FindUpgradeInfoByTag(UpgradeTag);
+  const FAuraUpgradeInfo& Info = GetUpgradeInfo()->FindUpgradeInfoByTag(UpgradeTag);
   UAuraAbilitySystemComponent* AuraASC = GetAuraPlayerState()->GetAuraASC();
 
   int32 Level;
@@ -246,4 +247,14 @@ void UUpgradeManager::GiveUpgrade(
     const FGameplayEffectContextHandle ContextHandle = AuraASC->MakeEffectContext();
     AuraASC->ApplyGameplayEffectToSelf(AuraUpgradeInfo.UpgradeEffect.GetDefaultObject(), 1, ContextHandle);
   }
+}
+
+UUpgradeInfo* UUpgradeManager::GetUpgradeInfo()
+{
+  if (!UpgradeInfo)
+  {
+    UpgradeInfo = UAuraSystemsLibrary::GetUpgradeInfo(this);
+  }
+
+  return UpgradeInfo;
 }

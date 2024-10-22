@@ -10,10 +10,10 @@
 #include "Aura/AuraLogChannels.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/InteractComponent.h"
-#include "Game/AuraGameModeBase.h"
 #include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Utils/AuraSystemsLibrary.h"
 
 void URewardManager::BeginPlay()
 {
@@ -31,7 +31,7 @@ void URewardManager::BeginPlay()
 
 FRewardInfo URewardManager::GetRewardInfo(const FGameplayTag& RewardTag)
 {
-  return GetAuraGameMode()->RewardsInfo->GetRewardInfo(RewardTag);
+  return UAuraSystemsLibrary::GetRewardsInfo(this)->GetRewardInfo(RewardTag);
 }
 
 void URewardManager::SetGatesRewards()
@@ -158,13 +158,13 @@ void URewardManager::FillAndShuffleRewardBag()
     {
       UE_LOG(LogAura, Warning,
              TEXT("Trying to override Reward Bag with invalid data! Falling back to randomizing items."))
-      GetAuraGameMode()->RewardsInfo->FillRewardBag(RewardBag, BlockedRewards);
+      UAuraSystemsLibrary::GetRewardsInfo(this)->FillRewardBag(RewardBag, BlockedRewards);
       Algo::RandomShuffle(RewardBag);
     }
   }
   else
   {
-    GetAuraGameMode()->RewardsInfo->FillRewardBag(RewardBag, BlockedRewards);
+    UAuraSystemsLibrary::GetRewardsInfo(this)->FillRewardBag(RewardBag, BlockedRewards);
     Algo::RandomShuffle(RewardBag);
   }
 }
@@ -176,5 +176,5 @@ FRewardInfo URewardManager::GetNextRewardInfo()
     NextRewardTag = GetNextRewardInBag();
   }
 
-  return GetAuraGameMode()->RewardsInfo->GetRewardInfo(NextRewardTag);
+  return UAuraSystemsLibrary::GetRewardsInfo(this)->GetRewardInfo(NextRewardTag);
 }

@@ -11,7 +11,6 @@ class UGameplayEffect;
 class UNiagaraSystem;
 class UNiagaraComponent;
 enum class ECharacterName : uint8;
-class AAuraGameModeBase;
 class USphereComponent;
 
 UCLASS()
@@ -40,9 +39,7 @@ public:
 
 protected:
   virtual void BeginPlay() override;
-
-  TWeakObjectPtr<AAuraGameModeBase> AuraGameMode = nullptr;
-
+  
   UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Interaction")
   TObjectPtr<USphereComponent> InteractArea;
 

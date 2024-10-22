@@ -496,16 +496,16 @@ void UAuraAttributeSet::SendXPEvent(const FEffectProperties& Props)
 {
   if (Props.TargetCharacter->Implements<UCombatInterface>())
   {
-    const int32 TargetLevel = ICombatInterface::Execute_GetCharacterLevel(Props.TargetCharacter);
-    const ECharacterType TargetType = ICombatInterface::Execute_GetCharacterType(Props.TargetCharacter);
-    const int32 XPReward = UAuraAbilitySystemLibrary::GetXPRewardForTypeAndLevel(
-      Props.TargetCharacter,
-      TargetType,
-      TargetLevel
-    );
+    // const int32 TargetLevel = ICombatInterface::Execute_GetCharacterLevel(Props.TargetCharacter);
+    // const ECharacterType TargetType = ICombatInterface::Execute_GetCharacterType(Props.TargetCharacter);
+    // const int32 XPReward = UAuraAbilitySystemLibrary::GetXPRewardForTypeAndLevel(
+    //   Props.TargetCharacter,
+    //   TargetType,
+    //   TargetLevel
+    // );
 
     // Stacks XP until the room is cleared
-    UAuraAbilitySystemLibrary::StackEncounterXP(Props.TargetCharacter, XPReward);
+    // UAuraAbilitySystemLibrary::StackEncounterXP(Props.TargetCharacter, XPReward);
 
     /*
      * Old logic. Gives XP instantly on enemy death, only to the killer
