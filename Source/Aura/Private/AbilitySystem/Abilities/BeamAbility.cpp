@@ -43,15 +43,15 @@ void UBeamAbility::TraceFirstTarget(const FVector& BeamTargetLocation)
 	UAuraAbilitySystemLibrary::GetFriendsWithinRadius(
 		AvatarActor,
 		ActorsToIgnore,
-		UUtilityLibrary::GetDistance(SocketLocation, MouseHitLocation),
-		UUtilityLibrary::GetMiddlePoint(SocketLocation, MouseHitLocation)
+		UUtilityLibrary::GetDistance(SocketLocation, BeamTargetLocation),
+		UUtilityLibrary::GetMiddlePoint(SocketLocation, BeamTargetLocation)
 		);
 
 	FHitResult HitResult;
 	UKismetSystemLibrary::SphereTraceSingle(
 		AvatarActor,
 		SocketLocation,
-		MouseHitLocation,
+		BeamTargetLocation,
 		BeamTraceRadius,
 		TraceTypeQuery1,
 		false,

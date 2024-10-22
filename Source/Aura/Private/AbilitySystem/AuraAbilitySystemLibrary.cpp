@@ -1177,10 +1177,12 @@ void UAuraAbilitySystemLibrary::AddOverlappedCharactersByTeam(
         {
           OutOverlappingActors.AddUnique(OverlappedActor);
         }
+        break;
       }
     case ETargetTeam::Both:
       {
         OutOverlappingActors.AddUnique(OverlappedActor);
+        break;
       }
     default:
       {

@@ -81,7 +81,7 @@ public:
 	ECharacterType GetCharacterType();
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	void ApplyForce(const FVector& InForce);
+	void ApplyKnockback(const FVector& KnockbackForce);
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	USceneComponent* GetTopStatusEffectSceneComponent();

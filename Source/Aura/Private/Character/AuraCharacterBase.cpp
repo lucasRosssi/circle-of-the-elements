@@ -2,6 +2,8 @@
 
 
 #include "Character/AuraCharacterBase.h"
+
+#include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
 #include "Aura/Aura.h"
@@ -56,6 +58,7 @@ AAuraCharacterBase::AAuraCharacterBase()
 
 	CurrentWalkSpeed = DefaultWalkSpeed;
 	GetCharacterMovement()->MaxWalkSpeed = CurrentWalkSpeed;
+  GetCharacterMovement()->BrakingFriction = 1.f;
 }
 
 UAbilitySystemComponent* AAuraCharacterBase::GetAbilitySystemComponent() const
@@ -240,9 +243,20 @@ FOnDeath& AAuraCharacterBase::GetOnDeathDelegate()
 	return OnDeath;
 }
 
-void AAuraCharacterBase::ApplyForce_Implementation(const FVector& InForce)
+void AAuraCharacterBase::ApplyKnockback_Implementation(const FVector& KnockbackForce)
 {
-	LaunchCharacter(InForce, true, true);
+  GetCharacterMovement()->StopMovementImmediately();
+  GetCharacterMovement()->bUseSeparateBrakingFriction = true;
+  LaunchCharacter(KnockbackForce, true, true);
+  
+  GetWorld()->GetTimerManager().SetTimer(
+    VelocityCheckTimer,
+    this,
+    &AAuraCharacterBase::CheckVelocityNearStop,
+    0.2f,
+    true,
+    0.2f
+  );
 }
 
 USceneComponent* AAuraCharacterBase::GetTopStatusEffectSceneComponent_Implementation()
@@ -362,6 +376,21 @@ void AAuraCharacterBase::DissolveCharacter()
 
 		StartWeaponDissolveTimeline(DynamicMatInst);
 	}
+}
+
+void AAuraCharacterBase::CheckVelocityNearStop()
+{
+  if (GetVelocity().Length() > 1.f) return;
+
+  const FGameplayEventData EventData = FGameplayEventData();
+  GetAuraASC()->HandleGameplayEvent(
+    FAuraGameplayTags::Get().StatusEffects_Incapacitation_Knockback,
+    &EventData
+    );
+  
+  GetCharacterMovement()->bUseSeparateBrakingFriction = false;
+
+  GetWorld()->GetTimerManager().ClearTimer(VelocityCheckTimer);
 }
 
 void AAuraCharacterBase::ChangeActionSpeed(float InActionSpeed)
