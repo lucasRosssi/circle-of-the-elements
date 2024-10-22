@@ -7,7 +7,7 @@
 
 float UUtilityLibrary::GetDistance(const FVector& V1, const FVector& V2)
 {
-	return (V1 - V2).Length() / 2;
+	return (V1 - V2).Size();
 }
 
 FVector UUtilityLibrary::GetMiddlePoint(const FVector& V1, const FVector& V2)

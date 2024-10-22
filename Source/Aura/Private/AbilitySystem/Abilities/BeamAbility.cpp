@@ -12,8 +12,58 @@ void UBeamAbility::StoreMouseDataInfo(const FHitResult& HitResult)
 {
 	if (!HitResult.bBlockingHit) return;
 
-	MouseHitLocation = HitResult.ImpactPoint;
-	MouseHitActor = HitResult.GetActor();
+  AActor* AvatarActor = GetAvatarActorFromActorInfo();
+  const FVector SocketLocation = ICombatInterface::Execute_GetAbilitySocketLocation(
+    AvatarActor,
+    AbilitySocketName,
+    bUseWeaponSocket
+    );
+
+  const float AttemptedDistance = FVector::Distance(SocketLocation, HitResult.ImpactPoint);
+  const float CurrentBeamRange = BeamRange.GetValueAtLevel(GetAbilityLevel());
+  
+  if (AttemptedDistance > CurrentBeamRange)
+  {
+    FVector Direction = HitResult.ImpactPoint - SocketLocation;
+    Direction.Normalize();
+    MouseHitLocation = SocketLocation + Direction * CurrentBeamRange;
+    MouseHitActor = nullptr;
+
+    if (bDebugAbility)
+    {
+      DrawDebugDirectionalArrow(
+        GetWorld(),
+        MouseHitLocation,
+        HitResult.ImpactPoint,
+        1000.f,
+        FColor::Red,
+        false,
+        DrawShapeDuration,
+        0,
+        3.f
+      );
+    }
+  }
+  else
+  {
+    MouseHitLocation = HitResult.ImpactPoint;
+	  MouseHitActor = HitResult.GetActor();
+  }
+
+  if (bDebugAbility)
+  {
+    DrawDebugDirectionalArrow(
+      GetWorld(),
+      SocketLocation,
+      MouseHitLocation,
+      1000.f,
+      FColor::Green,
+      false,
+      DrawShapeDuration,
+      0,
+      3.f
+    );
+  }
 }
 
 USceneComponent* UBeamAbility::GetComponentToAttachGameplayCue()
@@ -43,8 +93,14 @@ void UBeamAbility::TraceFirstTarget(const FVector& BeamTargetLocation)
 	UAuraAbilitySystemLibrary::GetFriendsWithinRadius(
 		AvatarActor,
 		ActorsToIgnore,
-		UUtilityLibrary::GetDistance(SocketLocation, BeamTargetLocation),
-		UUtilityLibrary::GetMiddlePoint(SocketLocation, BeamTargetLocation)
+		UUtilityLibrary::GetDistance(
+		  SocketLocation,
+		  BeamTargetLocation
+		  ),
+		UUtilityLibrary::GetMiddlePoint(
+		  SocketLocation,
+		  BeamTargetLocation
+		  )
 		);
 
 	FHitResult HitResult;

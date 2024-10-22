@@ -7,6 +7,7 @@
 #include "AbilitySystem/Abilities/ActiveAbility.h"
 #include "Actor/TargetingActor.h"
 #include "Aura/Aura.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "Player/AuraPlayerController.h"
 
 UTargetData* UTargetData::
@@ -57,7 +58,7 @@ void UTargetData::SendMouseOrGamepadData()
 	FHitResult HitResult;
 	if (AuraAbility->bUsesMovementInputDirection)
 	{
-		HitResult.Location = AvatarLocation + AuraPC->GetInputDirection() * 10000;
+		HitResult.Location = AvatarLocation + AuraPC->GetInputDirection() * 5000.f;
 		HitResult.ImpactPoint = HitResult.Location;
 	}
 	else
@@ -67,14 +68,25 @@ void UTargetData::SendMouseOrGamepadData()
 			if (AuraPC->IsTargeting())
 			{
 				HitResult.Location = AuraPC->GetTargetingActor()->GetActorLocation();
+			  HitResult.ImpactPoint = HitResult.Location;
 			}
 			else
 			{
-				HitResult.Location = AvatarLocation + AuraPC->GetInputDirection() * 2000;
+				const TArray ActorsToIgnore({ GetAvatarActor() });
+			  UKismetSystemLibrary::LineTraceSingle(
+          GetAvatarActor(),
+          AvatarLocation,
+          AvatarLocation + AuraPC->GetInputDirection() * 5000.f,
+          TraceTypeQuery1,
+          false,
+          ActorsToIgnore,
+          EDrawDebugTrace::Type::None,
+          HitResult,
+          true
+			  );
+			  
 				AuraPC->AimAbilityGamepad(GetAvatarActor(), HitResult);
-				
 			}
-			HitResult.ImpactPoint = HitResult.Location;
 		}
 		else
 		{

@@ -7,7 +7,6 @@
 #include "Components/BoxComponent.h"
 #include "Enums/MeleeHitMode.h"
 #include "Interfaces/CombatInterface.h"
-#include "Utils/UtilityLibrary.h"
 
 #if WITH_EDITOR
 void UMeleeAttackAbility::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
@@ -164,7 +163,7 @@ void UMeleeAttackAbility::DrawDebugMeleeHitShape(const FVector& AbilitySocketLoc
         GetWorld(),
         GetAvatarActorFromActorInfo()->GetActorLocation(),
         AbilitySocketLocation,
-        UUtilityLibrary::GetDistance(AbilitySocketLocation, GetAvatarActorFromActorInfo()->GetActorLocation()),
+        FVector::Distance(AbilitySocketLocation, GetAvatarActorFromActorInfo()->GetActorLocation()),
         FMath::DegreesToRadians(GetAngleWidth()),
         FMath::DegreesToRadians(GetAngleHeight()),
         12,

@@ -42,4 +42,7 @@ protected:
 	// Time between each damage tick
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Ability Defaults|Beam")
 	float BeamTickPeriod = 0.2f;
+
+  UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Ability Defaults|Beam")
+  FScalableFloat BeamRange = 800.f;
 };
