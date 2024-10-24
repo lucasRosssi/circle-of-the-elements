@@ -48,6 +48,11 @@ UAuraAbilitySystemComponent* AAuraPlayerState::GetAuraASC()
   return AuraASC;
 }
 
+float AAuraPlayerState::GetActionSpeed_Implementation()
+{
+  return AttributeSet->GetActionSpeed();
+}
+
 void AAuraPlayerState::SetActionSpeed_Implementation(float InActionSpeed)
 {
   if (const auto Character = GetCharacterBase())

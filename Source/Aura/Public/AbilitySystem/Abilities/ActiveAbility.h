@@ -40,7 +40,8 @@ public:
 
 protected:
 	UFUNCTION(BlueprintPure, Category="Ability Defaults")
-	virtual void GetMontageParams(UAnimMontage*& Montage, float& PlayRate, float& RootMotionScale) const;
+	void GetMontageParams(UAnimMontage*& Montage, float& PlayRate, float& RootMotionScale) const;
+  virtual UAnimMontage* GetAnimMontage() const;
 	UFUNCTION(BlueprintPure, Category="Ability Defaults")
 	float GetMontagePlayRate() const;
 	UFUNCTION(BlueprintPure, Category="Ability Defaults")

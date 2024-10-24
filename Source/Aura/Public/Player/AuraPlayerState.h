@@ -33,6 +33,7 @@ public:
 	UAuraAttributeSet* GetAttributeSet() const { return AttributeSet; }
 
 	/* Attribute Set Interface */
+  virtual float GetActionSpeed_Implementation() override;
 	virtual void SetActionSpeed_Implementation(float InActionSpeed) override;
 	virtual float GetPower_Implementation() override;
 	virtual void SetTimeDilation_Implementation(float InTimeDilation) override;
