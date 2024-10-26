@@ -13,7 +13,7 @@ TSoftObjectPtr<UWorld> ULocationManager::GetNextLocation(
   ERegion InRegion
 )
 {
-  UAuraSystemsLibrary::SaveHeroData(this);
+  // UAuraSystemsLibrary::SaveGameData(this);
 
   if (bWillExitRegion)
   {

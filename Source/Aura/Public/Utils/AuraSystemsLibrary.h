@@ -23,6 +23,7 @@ class UAbilityManager;
 class ULocationManager;
 class URewardManager;
 class UCombatManager;
+class UAuraSaveGame;
 /**
  * 
  */
@@ -113,7 +114,29 @@ public:
     Category="Aura Systems|Save",
     meta=(HidePin="WorldContextObject", DefaultToSelf="WorldContextObject")
     )
-  static void SaveHeroData(const UObject* WorldContextObject);
+  static void SaveGameData(
+    const UObject* WorldContextObject,
+    const FString& PlayerName,
+    int32 SlotIndex
+    );
+  UFUNCTION(
+    BlueprintPure,
+    Category="Aura Systems|Save",
+    meta=(HidePin="WorldContextObject", DefaultToSelf="WorldContextObject")
+    )
+  static UAuraSaveGame* LoadGameData(
+    const UObject* WorldContextObject,
+    int32 SlotIndex
+    );
+  UFUNCTION(
+    BlueprintCallable,
+    Category="Aura Systems|Save",
+    meta=(HidePin="WorldContextObject", DefaultToSelf="WorldContextObject")
+    )
+  static void DeleteGameData(
+    const UObject* WorldContextObject,
+    int32 SlotIndex
+    );
 
 private:
   static AGameModeBase* GetManagerInterfaceGameMode(const UObject* WorldContextObject);

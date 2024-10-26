@@ -7,6 +7,7 @@
 #include "Enums/CharacterName.h"
 #include "AuraGameInstance.generated.h"
 
+class UAuraSaveGame;
 struct FHeroData;
 class UHeroInfo;
 class AAuraHero;
@@ -27,7 +28,9 @@ class AURA_API UAuraGameInstance : public UGameInstance
 	GENERATED_BODY()
 
 public:
-	void SaveHeroData();
+	void SaveGameData(const FString& InPlayerName, int32 SlotIndex);
+  UAuraSaveGame* LoadGameData(int32 SlotIndex);
+  void DeleteGameData(int32 SlotIndex);
 
   ECharacterName GetCurrentCharacterName() const { return CurrentHeroName; }
   FHeroData GetCurrentHeroData() const;
@@ -39,6 +42,9 @@ public:
   URewardsInfo* GetRewardsInfo() const { return RewardsInfo; }
   UStatusEffectInfo* GetStatusEffectInfo() const { return StatusEffectInfo; }
   UUpgradeInfo* GetUpgradeInfo() const { return UpgradeInfo; }
+
+  UAuraSaveGame* GetCurrentSaveGameObject() const { return SaveGame; }
+  FString GetPlayerName() const { return PlayerName; }
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Player|Hero")
@@ -66,4 +72,10 @@ protected:
   TObjectPtr<UUpgradeInfo> UpgradeInfo;
   
 private:
+  FString GetSlotName(int32 SlotIndex) const;
+  
+  UPROPERTY()
+  TObjectPtr<UAuraSaveGame> SaveGame;
+  
+  FString PlayerName;
 };

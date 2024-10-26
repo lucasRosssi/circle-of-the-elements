@@ -47,11 +47,11 @@ void UAuraWidgetController::BroadcastAbilityInfo()
 
 AAuraPlayerController* UAuraWidgetController::GetMainPlayerController()
 {
-	if (MainPlayerController == nullptr)
+	if (AuraPlayerController == nullptr)
 	{
-		MainPlayerController = Cast<AAuraPlayerController>(PlayerController);
+		AuraPlayerController = Cast<AAuraPlayerController>(PlayerController);
 	}
-	return MainPlayerController;
+	return AuraPlayerController;
 }
 
 AAuraPlayerState* UAuraWidgetController::GetAuraPlayerState()

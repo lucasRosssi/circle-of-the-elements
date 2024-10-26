@@ -21,6 +21,8 @@
 #include "Player/AuraPlayerState.h"
 #include "Player/AuraPlayerController.h"
 #include "UI/HUD/AuraHUD.h"
+#include "UI/HUD/MainMenuHUD.h"
+#include "UI/WidgetController/MainMenuWidgetController.h"
 
 UAuraAbilitySystemComponent* UAuraAbilitySystemLibrary::GetAuraAbilitySystemComponent(
   AActor* Actor
@@ -93,6 +95,14 @@ UUpgradeMenuWidgetController* UAuraAbilitySystemLibrary::GetUpgradeMenuWidgetCon
   if (!AuraHUD) return nullptr;
 
   return AuraHUD->GetUpgradeMenuWidgetController(WidgetControllerParams);
+}
+
+UMainMenuWidgetController* UAuraAbilitySystemLibrary::GetMainMenuWidgetController(const UObject* WorldContextObject)
+{
+  AMainMenuHUD* MainMenuHUD = WorldContextObject->GetWorld()->GetFirstPlayerController()->GetHUD<AMainMenuHUD>();
+  if (!MainMenuHUD) return nullptr;
+
+  return MainMenuHUD->GetMainMenuWidgetController();
 }
 
 // void UAuraAbilitySystemLibrary::GiveStartupAbilities(

@@ -97,6 +97,11 @@ float AAuraEnemy::GetHealth_Implementation()
 	return AttributeSet->GetHealth();
 }
 
+float AAuraEnemy::GetActionSpeed_Implementation()
+{
+  return AttributeSet->GetActionSpeed();
+}
+
 void AAuraEnemy::SetTimeDilation_Implementation(float InTimeDilation)
 {
 	CustomTimeDilation = InTimeDilation;
