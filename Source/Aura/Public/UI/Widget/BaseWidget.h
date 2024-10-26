@@ -26,6 +26,20 @@ public:
 protected:
   UFUNCTION(BlueprintImplementableEvent)
   void WidgetControllerSet();
+
+  UFUNCTION(BlueprintCallable, meta=(DeterminesOutputType="NewWidgetClass"))
+  UUINavWidget* GoToControlledWidget(
+    TSubclassOf<UUINavWidget> NewWidgetClass,
+    UObject* InWidgetController,
+    const bool bRemoveParent = true,
+    const bool bDestroyParent = false,
+    const int ZOrder = 0
+    );
+  UFUNCTION(BlueprintCallable, meta=(DeterminesOutputType="NewWidgetClass"))
+  UUINavWidget* CreateControlledWidget(
+    TSubclassOf<UUINavWidget> NewWidgetClass,
+    UObject* InWidgetController
+    );
   
   UPROPERTY(BlueprintReadOnly)
   TObjectPtr<UObject> WidgetController;

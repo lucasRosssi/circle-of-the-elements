@@ -61,7 +61,12 @@ class AURA_API URegionInfo : public UDataAsset
 {
 	GENERATED_BODY()
 public:
+  UFUNCTION(BlueprintPure)
+  TSoftObjectPtr<UWorld> GetNewGameLevel() const { return NewGameLevel; }
+  UFUNCTION(BlueprintPure)
   TSoftObjectPtr<UWorld> GetHomeLevel() const { return HomeLevel; }
+  UFUNCTION(BlueprintPure)
+  TMap<ERegion, TSoftObjectPtr<UWorld>> GetLevels() { return Levels; }
   
 	FRegionData* GetRegionData(ERegion Region);
 
@@ -94,6 +99,15 @@ public:
 	TSoftObjectPtr<UWorld> GetBossArena(ERegion Region);
 	
 protected:
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+  TSoftObjectPtr<UWorld> HomeLevel;
+
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+  TSoftObjectPtr<UWorld> NewGameLevel;
+
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+  TMap<ERegion, TSoftObjectPtr<UWorld>> Levels;
+  
 	UPROPERTY(
 		EditDefaultsOnly,
 		BlueprintReadOnly,
@@ -101,8 +115,6 @@ protected:
 		)
 	TMap<ERegion, FRegionData> RegionData;
 
-  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-  TSoftObjectPtr<UWorld> HomeLevel;
 
 private:
 };

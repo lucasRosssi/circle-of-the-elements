@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "MainMenuWidgetController.generated.h"
 
+struct FSaveInfo;
 class UAuraSaveGame;
 class UMainMenuWidget;
 /**
@@ -19,16 +20,26 @@ public:
   void InitializeSaveSlots();
 
   UFUNCTION(BlueprintCallable)
-  void NewSlotPressed(const FString& EnteredName, int32 SlotIndex);
+  void NewGameStart(const FSaveInfo& SaveData);
   UFUNCTION(BlueprintCallable)
   void DeleteSlotConfirmed(int32 SlotIndex);
+  UFUNCTION(BlueprintCallable)
+  void LoadSlotAndPlay(int32 SlotIndex);
 
   UFUNCTION(BlueprintPure)
   UAuraSaveGame* GetSaveSlotData(int32 SlotIndex);
+
+  UFUNCTION(BlueprintPure)
+  void GetSelectedSaveData(FString& OutPlayerName, int32& OutSlotIndex);
+  UFUNCTION(BlueprintCallable)
+  void SetSelectedSaveData(const FString& InPlayerName, int32 InSlotIndex);
   
 protected:
 
 private:
   UPROPERTY()
   TArray<UAuraSaveGame*> SaveSlots;
+
+  FString SelectedPlayerName = FString();
+  int32 SelectedSlotIndex = -1;
 };

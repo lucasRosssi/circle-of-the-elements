@@ -7,6 +7,7 @@
 #include "Enums/CharacterName.h"
 #include "AuraGameInstance.generated.h"
 
+struct FSaveInfo;
 class UAuraSaveGame;
 struct FHeroData;
 class UHeroInfo;
@@ -28,9 +29,10 @@ class AURA_API UAuraGameInstance : public UGameInstance
 	GENERATED_BODY()
 
 public:
-	void SaveGameData(const FString& InPlayerName, int32 SlotIndex);
+	void SaveGameData(const FSaveInfo& SaveData);
   UAuraSaveGame* LoadGameData(int32 SlotIndex);
   void DeleteGameData(int32 SlotIndex);
+  void LoadAndPlay(int32 SlotIndex);
 
   ECharacterName GetCurrentCharacterName() const { return CurrentHeroName; }
   FHeroData GetCurrentHeroData() const;

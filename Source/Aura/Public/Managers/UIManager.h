@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/ActorComponent.h"
+#include "AuraSystemComponent.h"
 #include "UIManager.generated.h"
 
 class AAuraHUD;
@@ -16,20 +16,18 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOpenSkillSelectionMenu, const FGame
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOpenCharacterMenu, int32, ActiveTabIndex);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class AURA_API UUIManager : public UActorComponent
+class AURA_API UUIManager : public UAuraSystemComponent
 {
 	GENERATED_BODY()
 
 public:	
-	UUIManager();
-
-	void SetPlayerController(APlayerController* InController) { PlayerController = InController; }
+	void SetPlayerController(APlayerController* InPlayerController);
+	void SetOverlayWidget(UAuraUserWidget* InWidget);
+	void SetAuraHUD(AAuraHUD* InHUD);
 	UFUNCTION(BlueprintPure)
-	AAuraHUD* GetAuraHUD() const { return AuraHUD; }
-	void SetAuraHUD(AAuraHUD* InHUD) { AuraHUD = InHUD; }
+	UAuraUserWidget* GetOverlayWidget() const { return OverlayWidget.Get(); }
 	UFUNCTION(BlueprintPure)
-	UAuraUserWidget* GetOverlayWidget() const { return OverlayWidget; }
-	void SetOverlayWidget(UAuraUserWidget* InWidget) { OverlayWidget = InWidget; }
+	AAuraHUD* GetAuraHUD() const { return AuraHUD.Get(); }
 
 	UFUNCTION(BlueprintCallable, meta=(DeterminesOutputType="WidgetClass"))
 	UAuraUserWidget* BuildWidget(TSubclassOf<UAuraUserWidget> WidgetClass);
@@ -49,7 +47,7 @@ protected:
 	
 
 private:
-	APlayerController* PlayerController = nullptr;
-	UAuraUserWidget* OverlayWidget = nullptr;
-	AAuraHUD* AuraHUD = nullptr;
+	TWeakObjectPtr<APlayerController> PlayerController;
+	TWeakObjectPtr<UAuraUserWidget> OverlayWidget;
+	TWeakObjectPtr<AAuraHUD> AuraHUD;
 };

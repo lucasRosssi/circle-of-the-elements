@@ -8,22 +8,22 @@
 #include "Character/Data/HeroInfo.h"
 #include "Game/AuraSaveGame.h"
 #include "Kismet/GameplayStatics.h"
+#include "Level/RegionInfo.h"
 
-void UAuraGameInstance::SaveGameData(const FString& InPlayerName, int32 SlotIndex)
+void UAuraGameInstance::SaveGameData(const FSaveInfo& SaveData)
 {
-  const FString SlotName = GetSlotName(SlotIndex);
-  if (UGameplayStatics::DoesSaveGameExist(SlotName, SlotIndex))
+  const FString SlotName = GetSlotName(SaveData.SlotIndex);
+  if (UGameplayStatics::DoesSaveGameExist(SlotName, SaveData.SlotIndex))
   {
-    UGameplayStatics::DeleteGameInSlot(SlotName, SlotIndex);
+    UGameplayStatics::DeleteGameInSlot(SlotName, SaveData.SlotIndex);
   }
   
   USaveGame* SaveGameObject = UGameplayStatics::CreateSaveGameObject(UAuraSaveGame::StaticClass());
   UAuraSaveGame* AuraSaveGame = Cast<UAuraSaveGame>(SaveGameObject);
-  AuraSaveGame->PlayerName = InPlayerName;
-  AuraSaveGame->SlotName = SlotName;
-  AuraSaveGame->SlotIndex = SlotIndex;
+  AuraSaveGame->SaveInfo = SaveData;
+  AuraSaveGame->SaveInfo.SlotName = SlotName;
 
-  UGameplayStatics::SaveGameToSlot(AuraSaveGame, SlotName, SlotIndex);
+  UGameplayStatics::SaveGameToSlot(AuraSaveGame, SlotName, SaveData.SlotIndex);
 
   if (!SaveGame) SaveGame = AuraSaveGame;
 }
@@ -56,6 +56,27 @@ void UAuraGameInstance::DeleteGameData(int32 SlotIndex)
   }
 
   UGameplayStatics::DeleteGameInSlot(SlotName, SlotIndex);
+}
+
+void UAuraGameInstance::LoadAndPlay(int32 SlotIndex)
+{
+  const UAuraSaveGame* AuraSave = LoadGameData(SlotIndex);
+
+  if (!AuraSave)
+  {
+    const FString SlotName = GetSlotName(SlotIndex);
+    UE_LOG(
+      LogAura,
+      Error,
+      TEXT("Trying to load a nonexistent save file: %s."),
+      *SlotName
+    )
+    return;
+  }
+
+  const TSoftObjectPtr<UWorld> Level = RegionInfo->GetLevels()[AuraSave->SaveInfo.RegionName];
+
+  UGameplayStatics::OpenLevelBySoftObjectPtr(this, Level);
 }
 
 FHeroData UAuraGameInstance::GetCurrentHeroData() const

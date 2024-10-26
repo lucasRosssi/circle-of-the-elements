@@ -6,6 +6,7 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "AuraSystemsLibrary.generated.h"
 
+struct FSaveInfo;
 class ACameraManager;
 struct FHeroData;
 class UHeroInfo;
@@ -34,56 +35,56 @@ class AURA_API UAuraSystemsLibrary : public UBlueprintFunctionLibrary
 
 public:
   // Data Assets
-  UFUNCTION(BlueprintPure, Category="Aura Systems|Info", meta=(DefaultsToSelf="WorldContextObject", HidePin="WorldContextObject"))
-  static UAbilityInfo* GetAbilitiesInfo(const UObject* WorldContextObject);
-  UFUNCTION(BlueprintPure, Category="Aura Systems|Info", meta=(DefaultsToSelf="WorldContextObject", HidePin="WorldContextObject"))
-  static UCharacterInfo* GetCharacterClassInfo(const UObject* WorldContextObject);
-  UFUNCTION(BlueprintPure, Category="Aura Systems|Info", meta=(DefaultsToSelf="WorldContextObject", HidePin="WorldContextObject"))
-  static UHeroInfo* GetHeroInfo(const UObject* WorldContextObject);
-  UFUNCTION(BlueprintPure, Category="Aura Systems|Info", meta=(DefaultsToSelf="WorldContextObject", HidePin="WorldContextObject"))
-  static URegionInfo* GetRegionInfo(const UObject* WorldContextObject);
-  UFUNCTION(BlueprintPure, Category="Aura Systems|Info", meta=(DefaultsToSelf="WorldContextObject", HidePin="WorldContextObject"))
-  static URewardsInfo* GetRewardsInfo(const UObject* WorldContextObject);
-  UFUNCTION(BlueprintPure, Category="Aura Systems|Info", meta=(DefaultsToSelf="WorldContextObject", HidePin="WorldContextObject"))
-  static UStatusEffectInfo* GetStatusEffectInfo(const UObject* WorldContextObject);
-  UFUNCTION(BlueprintPure, Category="Aura Systems|Info", meta=(DefaultsToSelf="WorldContextObject", HidePin="WorldContextObject"))
-  static UUpgradeInfo* GetUpgradeInfo(const UObject* WorldContextObject);
+  UFUNCTION(BlueprintPure, Category="Aura Systems|Info", meta=(DefaultToSelf="WorldContextObject"))
+  static UAbilityInfo* GetAbilitiesInfo(UPARAM(DisplayName="Target")const UObject* WorldContextObject);
+  UFUNCTION(BlueprintPure, Category="Aura Systems|Info", meta=(DefaultToSelf="WorldContextObject"))
+  static UCharacterInfo* GetCharacterClassInfo(UPARAM(DisplayName="Target")const UObject* WorldContextObject);
+  UFUNCTION(BlueprintPure, Category="Aura Systems|Info", meta=(DefaultToSelf="WorldContextObject"))
+  static UHeroInfo* GetHeroInfo(UPARAM(DisplayName="Target")const UObject* WorldContextObject);
+  UFUNCTION(BlueprintPure, Category="Aura Systems|Info", meta=(DefaultToSelf="WorldContextObject"))
+  static URegionInfo* GetRegionInfo(UPARAM(DisplayName="Target")const UObject* WorldContextObject);
+  UFUNCTION(BlueprintPure, Category="Aura Systems|Info", meta=(DefaultToSelf="WorldContextObject"))
+  static URewardsInfo* GetRewardsInfo(UPARAM(DisplayName="Target")const UObject* WorldContextObject);
+  UFUNCTION(BlueprintPure, Category="Aura Systems|Info", meta=(DefaultToSelf="WorldContextObject"))
+  static UStatusEffectInfo* GetStatusEffectInfo(UPARAM(DisplayName="Target")const UObject* WorldContextObject);
+  UFUNCTION(BlueprintPure, Category="Aura Systems|Info", meta=(DefaultToSelf="WorldContextObject"))
+  static UUpgradeInfo* GetUpgradeInfo(UPARAM(DisplayName="Target") const UObject* WorldContextObject);
   // END Data Assets
 
   // Managers
 	UFUNCTION(
 		BlueprintPure,
-		Category="Aura Systems|Managers|Hero",
+		Category="Aura Systems|Hero",
 		meta=(HidePin="WorldContextObject", DefaultToSelf="WorldContextObject")
 		)
 	static UAbilityManager* GetAbilityManager(const UObject* WorldContextObject);
   UFUNCTION(
     BlueprintPure,
-    Category="Aura Systems|Managers|Camera",
+    Category="Aura Systems|Camera",
     meta=(HidePin="WorldContextObject", DefaultToSelf="WorldContextObject")
     )
   static ACameraManager* GetCameraManager(const UObject* WorldContextObject);
   UFUNCTION(
     BlueprintPure,
-    Category="Aura Systems|Managers|Hero",
+    Category="Aura Systems|Hero",
     meta=(HidePin="WorldContextObject", DefaultToSelf="WorldContextObject")
     )
   static UUpgradeManager* GetUpgradeManager(const UObject* WorldContextObject);
 	UFUNCTION(
 		BlueprintPure,
-		Category="Aura Systems|Managers|Location",
+		Category="Aura Systems|Location",
 		meta=(HidePin="WorldContextObject", DefaultToSelf="WorldContextObject")
 		)
 	static ULocationManager* GetLocationManager(const UObject* WorldContextObject);
 	UFUNCTION(
 		BlueprintPure,
-		Category="Aura Systems|Managers|Combat",
+		Category="Aura Systems|Combat",
 		meta=(HidePin="WorldContextObject", DefaultToSelf="WorldContextObject")
 		)
 	static UCombatManager* GetCombatManager(const UObject* WorldContextObject);
 	UFUNCTION(
 		BlueprintPure,
-		Category="Aura Systems|Managers|Location",
+		Category="Aura Systems|Location",
 		meta=(HidePin="WorldContextObject", DefaultToSelf="WorldContextObject")
 		)
 	static URewardManager* GetRewardManager(const UObject* WorldContextObject);
@@ -116,8 +117,7 @@ public:
     )
   static void SaveGameData(
     const UObject* WorldContextObject,
-    const FString& PlayerName,
-    int32 SlotIndex
+    const FSaveInfo& SaveData
     );
   UFUNCTION(
     BlueprintPure,
@@ -134,6 +134,15 @@ public:
     meta=(HidePin="WorldContextObject", DefaultToSelf="WorldContextObject")
     )
   static void DeleteGameData(
+    const UObject* WorldContextObject,
+    int32 SlotIndex
+    );
+  UFUNCTION(
+    BlueprintCallable,
+    Category="Aura Systems|Save",
+    meta=(HidePin="WorldContextObject", DefaultToSelf="WorldContextObject")
+    )
+  static void LoadGameAndPlay(
     const UObject* WorldContextObject,
     int32 SlotIndex
     );

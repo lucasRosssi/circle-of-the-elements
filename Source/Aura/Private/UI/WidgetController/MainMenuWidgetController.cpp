@@ -4,8 +4,6 @@
 #include "UI/WidgetController/MainMenuWidgetController.h"
 
 #include "Aura/Aura.h"
-#include "Game/AuraGameInstance.h"
-#include "Kismet/GameplayStatics.h"
 #include "Utils/AuraSystemsLibrary.h"
 
 void UMainMenuWidgetController::InitializeSaveSlots()
@@ -22,9 +20,9 @@ void UMainMenuWidgetController::InitializeSaveSlots()
   }
 }
 
-void UMainMenuWidgetController::NewSlotPressed(const FString& EnteredName, int32 SlotIndex)
+void UMainMenuWidgetController::NewGameStart(const FSaveInfo& SaveData)
 {
-  UAuraSystemsLibrary::SaveGameData(this, EnteredName, SlotIndex);
+  UAuraSystemsLibrary::SaveGameData(this, SaveData);
 }
 
 void UMainMenuWidgetController::DeleteSlotConfirmed(int32 SlotIndex)
@@ -32,7 +30,24 @@ void UMainMenuWidgetController::DeleteSlotConfirmed(int32 SlotIndex)
   UAuraSystemsLibrary::DeleteGameData(this, SlotIndex);
 }
 
+void UMainMenuWidgetController::LoadSlotAndPlay(int32 SlotIndex)
+{
+  UAuraSystemsLibrary::LoadGameAndPlay(this, SlotIndex);
+}
+
 UAuraSaveGame* UMainMenuWidgetController::GetSaveSlotData(int32 SlotIndex)
 {
   return SaveSlots[SlotIndex];
+}
+
+void UMainMenuWidgetController::GetSelectedSaveData(FString& OutPlayerName, int32& OutSlotIndex)
+{
+  OutPlayerName = SelectedPlayerName;
+  OutSlotIndex = SelectedSlotIndex;
+}
+
+void UMainMenuWidgetController::SetSelectedSaveData(const FString& InPlayerName, int32 InSlotIndex)
+{
+  SelectedPlayerName = InPlayerName;
+  SelectedSlotIndex = InSlotIndex;
 }

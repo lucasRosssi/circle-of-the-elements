@@ -8,6 +8,8 @@
 #include "Level/RewardsInfo.h"
 #include "RewardManager.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnRewardTaken);
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class AURA_API URewardManager : public UAuraSystemComponent
 {

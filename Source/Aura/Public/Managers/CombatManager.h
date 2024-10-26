@@ -8,6 +8,8 @@
 #include "Enums/Region.h"
 #include "CombatManager.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnCombatFinished);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnLastEnemyKilled);
 
 class AEnemySpawner;
 struct FEnemyWave;

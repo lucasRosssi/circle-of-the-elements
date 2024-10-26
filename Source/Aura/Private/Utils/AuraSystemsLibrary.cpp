@@ -243,15 +243,14 @@ FHeroData UAuraSystemsLibrary::GetCurrentHeroData(const UObject* WorldContextObj
 
 void UAuraSystemsLibrary::SaveGameData(
   const UObject* WorldContextObject,
-  const FString& PlayerName,
-  int32 SlotIndex
+  const FSaveInfo& SaveData
   )
 {
   UAuraGameInstance* AuraGameInstance = CastChecked<UAuraGameInstance>(
     UGameplayStatics::GetGameInstance(WorldContextObject)
   );
 
-  AuraGameInstance->SaveGameData(PlayerName, SlotIndex);
+  AuraGameInstance->SaveGameData(SaveData);
 }
 
 UAuraSaveGame* UAuraSystemsLibrary::LoadGameData(
@@ -273,6 +272,15 @@ void UAuraSystemsLibrary::DeleteGameData(const UObject* WorldContextObject, int3
   );
 
   return AuraGameInstance->DeleteGameData(SlotIndex);
+}
+
+void UAuraSystemsLibrary::LoadGameAndPlay(const UObject* WorldContextObject, int32 SlotIndex)
+{
+  UAuraGameInstance* AuraGameInstance = CastChecked<UAuraGameInstance>(
+    UGameplayStatics::GetGameInstance(WorldContextObject)
+  );
+
+  return AuraGameInstance->LoadAndPlay(SlotIndex);
 }
 
 AGameModeBase* UAuraSystemsLibrary::GetManagerInterfaceGameMode(const UObject* WorldContextObject)
