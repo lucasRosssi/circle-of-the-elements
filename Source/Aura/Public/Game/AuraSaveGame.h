@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
 #include "GameFramework/SaveGame.h"
 #include "Enums/CharacterName.h"
 #include "Enums/Region.h"
@@ -30,6 +31,28 @@ struct FSaveInfo
   }
 };
 
+USTRUCT(BlueprintType)
+struct FPlayerStateSave
+{
+  GENERATED_BODY()
+
+  UPROPERTY(BlueprintReadWrite)
+  int32 AttributePoints = 0;
+  UPROPERTY(BlueprintReadWrite)
+  int32 SkillPoints = 0;
+  UPROPERTY(BlueprintReadWrite)
+  TMap<FGameplayTag, int32> Resources = TMap<FGameplayTag, int32>();
+};
+
+USTRUCT(BlueprintType)
+struct FAttributeSetSave
+{
+  GENERATED_BODY()
+
+  UPROPERTY(BlueprintReadWrite)
+  TMap<FGameplayTag, float> Attributes = TMap<FGameplayTag, float>();
+};
+
 /**
  * 
  */
@@ -38,8 +61,14 @@ class AURA_API UAuraSaveGame : public USaveGame
 {
 	GENERATED_BODY()
 public:
+  UAuraSaveGame();
+  
   UPROPERTY(BlueprintReadWrite)
   FSaveInfo SaveInfo = FSaveInfo();
+  UPROPERTY(BlueprintReadWrite)
+  FPlayerStateSave PlayerState = FPlayerStateSave();
+  UPROPERTY(BlueprintReadWrite)
+  FAttributeSetSave AttributeSet = FAttributeSetSave();
 
   UPROPERTY(BlueprintReadWrite)
   int32 LocationIndex = -1;

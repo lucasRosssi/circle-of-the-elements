@@ -30,6 +30,7 @@ class AURA_API UAuraGameInstance : public UGameInstance
 
 public:
 	void SaveGameData(const FSaveInfo& SaveData);
+	void SaveGameByObject(UAuraSaveGame* SaveGameObject);
   UAuraSaveGame* LoadGameData(int32 SlotIndex);
   void DeleteGameData(int32 SlotIndex);
   void LoadAndPlay(int32 SlotIndex);

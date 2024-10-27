@@ -28,6 +28,23 @@ void UAuraGameInstance::SaveGameData(const FSaveInfo& SaveData)
   if (!SaveGame) SaveGame = AuraSaveGame;
 }
 
+void UAuraGameInstance::SaveGameByObject(UAuraSaveGame* SaveGameObject)
+{
+  if (!IsValid(SaveGameObject)) return;
+  
+  if (UGameplayStatics::DoesSaveGameExist(SaveGameObject->SaveInfo.SlotName, SaveGameObject->SaveInfo.SlotIndex))
+  {
+    UGameplayStatics::DeleteGameInSlot(SaveGameObject->SaveInfo.SlotName, SaveGameObject->SaveInfo.SlotIndex);
+  }
+
+  UGameplayStatics::SaveGameToSlot(
+    SaveGameObject,
+    SaveGameObject->SaveInfo.SlotName,
+    SaveGameObject->SaveInfo.SlotIndex
+    );
+  SaveGame = SaveGameObject;
+}
+
 UAuraSaveGame* UAuraGameInstance::LoadGameData(int32 SlotIndex)
 {
   const FString SlotName = GetSlotName(SlotIndex);
@@ -60,7 +77,7 @@ void UAuraGameInstance::DeleteGameData(int32 SlotIndex)
 
 void UAuraGameInstance::LoadAndPlay(int32 SlotIndex)
 {
-  const UAuraSaveGame* AuraSave = LoadGameData(SlotIndex);
+  UAuraSaveGame* AuraSave = LoadGameData(SlotIndex);
 
   if (!AuraSave)
   {
@@ -74,9 +91,13 @@ void UAuraGameInstance::LoadAndPlay(int32 SlotIndex)
     return;
   }
 
-  const TSoftObjectPtr<UWorld> Level = RegionInfo->GetLevels()[AuraSave->SaveInfo.RegionName];
+  SaveGame = AuraSave;
+  
+  CurrentHeroName = AuraSave->SaveInfo.HeroName;
 
-  UGameplayStatics::OpenLevelBySoftObjectPtr(this, Level);
+  const ERegion& Region = AuraSave->SaveInfo.RegionName;
+  const TSoftObjectPtr<UWorld> RegionLevel = RegionInfo->GetLevels()[Region];
+  UGameplayStatics::OpenLevelBySoftObjectPtr(this, RegionLevel);
 }
 
 FHeroData UAuraGameInstance::GetCurrentHeroData() const

@@ -120,6 +120,15 @@ public:
     const FSaveInfo& SaveData
     );
   UFUNCTION(
+    BlueprintCallable,
+    Category="Aura Systems|Save",
+    meta=(HidePin="WorldContextObject", DefaultToSelf="WorldContextObject")
+    )
+  static void SaveGameByObject(
+    const UObject* WorldContextObject,
+    UAuraSaveGame* SaveGameObject
+    );
+  UFUNCTION(
     BlueprintPure,
     Category="Aura Systems|Save",
     meta=(HidePin="WorldContextObject", DefaultToSelf="WorldContextObject")
@@ -146,6 +155,12 @@ public:
     const UObject* WorldContextObject,
     int32 SlotIndex
     );
+  UFUNCTION(
+    BlueprintPure,
+    Category="Aura Systems|Save",
+    meta=(HidePin="WorldContextObject", DefaultToSelf="WorldContextObject")
+    )
+  static UAuraSaveGame* GetCurrentSaveGameObject(const UObject* WorldContextObject);
 
 private:
   static AGameModeBase* GetManagerInterfaceGameMode(const UObject* WorldContextObject);

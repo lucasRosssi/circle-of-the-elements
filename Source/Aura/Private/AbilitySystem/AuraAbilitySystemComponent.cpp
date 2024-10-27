@@ -9,7 +9,9 @@
 #include "AbilitySystem/Abilities/ActiveAbility.h"
 #include "Aura/AuraLogChannels.h"
 #include "Character/AuraCharacterBase.h"
+#include "Game/AuraSaveGame.h"
 #include "Interfaces/PlayerInterface.h"
+#include "Utils/AuraSystemsLibrary.h"
 
 void UAuraAbilitySystemComponent::AbilityActorInfoSet()
 {
@@ -316,6 +318,11 @@ void UAuraAbilitySystemComponent::ServerUpgradeAttribute_Implementation(
 		Payload
 	);
 
+  if (float* Attribute = GetSaveGame()->AttributeSet.Attributes.Find(AttributeTag))
+  {
+    *Attribute += 1.f;
+  }
+
 	IPlayerInterface::Execute_AddAttributePoints(GetAvatarActor(), -1);
 }
 
@@ -521,6 +528,16 @@ void UAuraAbilitySystemComponent::EffectApplied(
 	EffectSpec.GetAllAssetTags(TagContainer);
 
 	EffectAssetTags.Broadcast(TagContainer);
+}
+
+UAuraSaveGame* UAuraAbilitySystemComponent::GetSaveGame()
+{
+  if (SaveGame == nullptr)
+  {
+    SaveGame = UAuraSystemsLibrary::GetCurrentSaveGameObject(GetAvatarActor());
+  }
+
+  return SaveGame;
 }
 
 void UAuraAbilitySystemComponent::ClientUpdateAbilityState_Implementation(

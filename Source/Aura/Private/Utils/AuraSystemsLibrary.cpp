@@ -253,6 +253,15 @@ void UAuraSystemsLibrary::SaveGameData(
   AuraGameInstance->SaveGameData(SaveData);
 }
 
+void UAuraSystemsLibrary::SaveGameByObject(const UObject* WorldContextObject, UAuraSaveGame* SaveGameObject)
+{
+  UAuraGameInstance* AuraGameInstance = CastChecked<UAuraGameInstance>(
+    UGameplayStatics::GetGameInstance(WorldContextObject)
+  );
+
+  AuraGameInstance->SaveGameByObject(SaveGameObject);
+}
+
 UAuraSaveGame* UAuraSystemsLibrary::LoadGameData(
   const UObject* WorldContextObject,
   int32 SlotIndex
@@ -281,6 +290,15 @@ void UAuraSystemsLibrary::LoadGameAndPlay(const UObject* WorldContextObject, int
   );
 
   return AuraGameInstance->LoadAndPlay(SlotIndex);
+}
+
+UAuraSaveGame* UAuraSystemsLibrary::GetCurrentSaveGameObject(const UObject* WorldContextObject)
+{
+  const UAuraGameInstance* AuraGameInstance = CastChecked<UAuraGameInstance>(
+    UGameplayStatics::GetGameInstance(WorldContextObject)
+  );
+
+  return AuraGameInstance->GetCurrentSaveGameObject();
 }
 
 AGameModeBase* UAuraSystemsLibrary::GetManagerInterfaceGameMode(const UObject* WorldContextObject)

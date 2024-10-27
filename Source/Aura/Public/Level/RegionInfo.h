@@ -97,6 +97,10 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	TSoftObjectPtr<UWorld> GetBossArena(ERegion Region);
+
+  int32 FindLocationIndex(ERegion Region, TSoftObjectPtr<UWorld> Location);
+
+  TSoftObjectPtr<UWorld> GetRegionLocationByIndex(ERegion Region, int32 Index);
 	
 protected:
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)

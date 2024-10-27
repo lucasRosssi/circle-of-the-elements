@@ -9,6 +9,7 @@
 #include "Interfaces/AttributeSetInterface.h"
 #include "AuraPlayerState.generated.h"
 
+class UAuraSaveGame;
 class UAuraAttributeSet;
 class UAuraAbilitySystemComponent;
 class AAuraCharacterBase;
@@ -52,9 +53,6 @@ public:
 	int32 GetSkillPoints() const { return SkillPoints; }
 	void SetSkillPoints(int32 InSkillPoints);
 	void AddSkillPoints(int32 InSkillPoints);
-	int32 GetPerkPoints() const { return PerkPoints; }
-	void SetPerkPoints(int32 InPerkPoints);
-	void AddPerkPoints(int32 InPerkPoints);
 
   void AddPlayerResource(const FGameplayTag& ResourceTag, int32 Amount);
   int32 GetPlayerResourceByTag(const FGameplayTag& ResourceTag);
@@ -85,10 +83,11 @@ protected:
     Category="Player",
     meta=(Categories="Resources", ForceInlineRow)
     )
-  TMap<FGameplayTag, int32> PlayerResources;
+  TMap<FGameplayTag, int32> Resources;
 
 private:
 	AAuraCharacterBase* GetCharacterBase();
+  UAuraSaveGame* GetSaveGame();
 	
 	UPROPERTY(VisibleAnywhere, ReplicatedUsing=OnRep_Level)
 	int32 Level = 1;
@@ -120,4 +119,7 @@ private:
 
 	UPROPERTY()
 	AAuraCharacterBase* CharacterBase;
+
+  UPROPERTY()
+  UAuraSaveGame* SaveGame;
 };

@@ -109,3 +109,18 @@ TSoftObjectPtr<UWorld> URegionInfo::GetBossArena(ERegion Region)
 
 	return Data->BossArena;
 }
+
+int32 URegionInfo::FindLocationIndex(ERegion Region, TSoftObjectPtr<UWorld> Location)
+{
+  return GetRegionLocations(Region).IndexOfByPredicate(
+    [Location](const TSoftObjectPtr<UWorld>& Item)
+    {
+      return Item == Location;
+    }
+    );
+}
+
+TSoftObjectPtr<UWorld> URegionInfo::GetRegionLocationByIndex(ERegion Region, int32 Index)
+{
+  return GetRegionLocations(Region)[Index];
+}

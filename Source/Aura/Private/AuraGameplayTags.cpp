@@ -1533,6 +1533,18 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
   });
 
   GameplayTags.ParentsToChildren.Add(GameplayTags.Resources_Essence, EssenceTags);
+  
+  const TArray PrimaryAttributeTags = TArray({
+    GameplayTags.Attributes_Primary_Strength,
+    GameplayTags.Attributes_Primary_Dexterity,
+    GameplayTags.Attributes_Primary_Constitution,
+    GameplayTags.Attributes_Primary_Intelligence,
+    GameplayTags.Attributes_Primary_Wisdom,
+    GameplayTags.Attributes_Primary_Charisma,
+  });
+
+  GameplayTags.ParentsToChildren.Add(GameplayTags.Attributes_Primary, PrimaryAttributeTags);
+
 
 	GameplayTags.bIsValid = true;
 }

@@ -6,6 +6,7 @@
 #include "AbilitySystemComponent.h"
 #include "AuraAbilitySystemComponent.generated.h"
 
+class UAuraSaveGame;
 class UBaseAbility;
 class UAbilityInfo;
 class AAuraCharacterBase;
@@ -139,6 +140,11 @@ protected:
 	);
 
 private:
+  UAuraSaveGame* GetSaveGame();
+  
+  UPROPERTY()
+  UAuraSaveGame* SaveGame = nullptr;
+  
 	UPROPERTY()
 	AAuraCharacterBase* AvatarCharacter = nullptr;
 
