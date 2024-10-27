@@ -29,8 +29,8 @@ class AURA_API UAuraGameInstance : public UGameInstance
 	GENERATED_BODY()
 
 public:
-	void SaveGameData(const FSaveInfo& SaveData);
-	void SaveGameByObject(UAuraSaveGame* SaveGameObject);
+  void SaveGameData(const FSaveInfo& SaveData);
+  void SaveCurrentGame();
   UAuraSaveGame* LoadGameData(int32 SlotIndex);
   void DeleteGameData(int32 SlotIndex);
   void LoadAndPlay(int32 SlotIndex);

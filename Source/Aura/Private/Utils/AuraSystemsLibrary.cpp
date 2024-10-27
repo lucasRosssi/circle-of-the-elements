@@ -253,13 +253,13 @@ void UAuraSystemsLibrary::SaveGameData(
   AuraGameInstance->SaveGameData(SaveData);
 }
 
-void UAuraSystemsLibrary::SaveGameByObject(const UObject* WorldContextObject, UAuraSaveGame* SaveGameObject)
+void UAuraSystemsLibrary::SaveCurrentGame(const UObject* WorldContextObject)
 {
   UAuraGameInstance* AuraGameInstance = CastChecked<UAuraGameInstance>(
     UGameplayStatics::GetGameInstance(WorldContextObject)
   );
 
-  AuraGameInstance->SaveGameByObject(SaveGameObject);
+  AuraGameInstance->SaveCurrentGame();
 }
 
 UAuraSaveGame* UAuraSystemsLibrary::LoadGameData(

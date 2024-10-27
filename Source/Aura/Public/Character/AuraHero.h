@@ -7,6 +7,7 @@
 #include "Interfaces/PlayerInterface.h"
 #include "AuraHero.generated.h"
 
+class UAuraSaveGame;
 class AAuraCamera;
 class USpotLightComponent;
 class APostProcessVolume;
@@ -29,21 +30,18 @@ public:
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void OnRep_PlayerState() override;
 
-	virtual void AddCharacterAbilities() override;
+	virtual void InitializeAbilities() override;
 	
 	/** Combat Interface */
-	virtual int32 GetCharacterLevel_Implementation() const override;
 	virtual void Die(const FVector& DeathImpulse) override;
   virtual void SetCustomDepth_Implementation(int32 Value) override;
 	/** end Combat Interface */
 	void DeathMontageEndRagdoll();
 
 	/** Player Interface */
-	virtual void AddToXP_Implementation(int32 InXP) override;
-	virtual int32 GetXP_Implementation() const override;
-	virtual int32 GetAttributePoints_Implementation() const override;
+	virtual int32 GetAttributePoints_Implementation() override;
 	virtual void AddAttributePoints_Implementation(int32 Amount) override;
-	virtual int32 GetSkillPoints_Implementation() const override;
+	virtual int32 GetSkillPoints_Implementation() override;
 	virtual void AddSkillPoints_Implementation(int32 Amount) override;
 	virtual void ShowTargetingActor_Implementation(
 		TSubclassOf<ATargetingActor> TargetingActorClass,
@@ -61,9 +59,7 @@ public:
 	void EndDeath();
 
   void BackToHome();
-
-	UFUNCTION(BlueprintCallable)
-	AAuraPlayerState* GetAuraPlayerState() const;
+  
 	UFUNCTION(BlueprintPure, meta=(DefaultToSelf="Target", HidePin="Target"))
 	AAuraPlayerController* GetAuraPlayerController();
 
@@ -72,9 +68,11 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+  virtual void InitializeAttributes() override;
+
   UFUNCTION(BlueprintImplementableEvent)
   void SetInteractionWidgetText(const FText& Text);
-	
+  
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Camera")
 	TSubclassOf<AAuraCamera> CameraClass;
 	UPROPERTY(BlueprintReadOnly, Category="Camera")
@@ -98,7 +96,18 @@ protected:
 private:
 	virtual void InitAbilityActorInfo() override;
 
+  AAuraPlayerState* GetAuraPlayerState();
+
+  UAuraSaveGame* GetSaveGame();
+
+  UPROPERTY()
+  TObjectPtr<AAuraPlayerState> AuraPlayerState;
+  
+	TWeakObjectPtr<AAuraPlayerController> AuraPlayerController;
+  
 	bool bDying = false;
 
-	TWeakObjectPtr<AAuraPlayerController> AuraPlayerController;
+  UPROPERTY()
+  TObjectPtr<UAuraSaveGame> SaveGame;
+  
 };

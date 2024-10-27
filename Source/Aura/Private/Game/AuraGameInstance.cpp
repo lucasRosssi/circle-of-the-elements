@@ -28,21 +28,20 @@ void UAuraGameInstance::SaveGameData(const FSaveInfo& SaveData)
   if (!SaveGame) SaveGame = AuraSaveGame;
 }
 
-void UAuraGameInstance::SaveGameByObject(UAuraSaveGame* SaveGameObject)
+void UAuraGameInstance::SaveCurrentGame()
 {
-  if (!IsValid(SaveGameObject)) return;
+  if (!IsValid(SaveGame)) return;
   
-  if (UGameplayStatics::DoesSaveGameExist(SaveGameObject->SaveInfo.SlotName, SaveGameObject->SaveInfo.SlotIndex))
+  if (UGameplayStatics::DoesSaveGameExist(SaveGame->SaveInfo.SlotName, SaveGame->SaveInfo.SlotIndex))
   {
-    UGameplayStatics::DeleteGameInSlot(SaveGameObject->SaveInfo.SlotName, SaveGameObject->SaveInfo.SlotIndex);
+    UGameplayStatics::DeleteGameInSlot(SaveGame->SaveInfo.SlotName, SaveGame->SaveInfo.SlotIndex);
   }
 
   UGameplayStatics::SaveGameToSlot(
-    SaveGameObject,
-    SaveGameObject->SaveInfo.SlotName,
-    SaveGameObject->SaveInfo.SlotIndex
+    SaveGame,
+    SaveGame->SaveInfo.SlotName,
+    SaveGame->SaveInfo.SlotIndex
     );
-  SaveGame = SaveGameObject;
 }
 
 UAuraSaveGame* UAuraGameInstance::LoadGameData(int32 SlotIndex)

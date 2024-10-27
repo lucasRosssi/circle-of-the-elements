@@ -124,9 +124,8 @@ public:
     Category="Aura Systems|Save",
     meta=(HidePin="WorldContextObject", DefaultToSelf="WorldContextObject")
     )
-  static void SaveGameByObject(
-    const UObject* WorldContextObject,
-    UAuraSaveGame* SaveGameObject
+  static void SaveCurrentGame(
+    const UObject* WorldContextObject
     );
   UFUNCTION(
     BlueprintPure,

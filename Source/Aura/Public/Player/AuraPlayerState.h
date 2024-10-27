@@ -57,6 +57,8 @@ public:
   void AddPlayerResource(const FGameplayTag& ResourceTag, int32 Amount);
   int32 GetPlayerResourceByTag(const FGameplayTag& ResourceTag);
   bool CanAffordResourceCost(const TMap<FGameplayTag, int32>& CostMap) const;
+
+  void InitializeState();
 	
   FOnPlayerStatChanged OnXPChangedDelegate;
   FOnPlayerStatChanged OnLevelChangedDelegate;

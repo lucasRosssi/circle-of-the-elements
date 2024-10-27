@@ -53,6 +53,21 @@ struct FAttributeSetSave
   TMap<FGameplayTag, float> Attributes = TMap<FGameplayTag, float>();
 };
 
+USTRUCT(BlueprintType)
+struct FAbilityManagerSave
+{
+  GENERATED_BODY()
+
+  UPROPERTY(BlueprintReadWrite)
+  TMap<FGameplayTag, int32> AcquiredAbilities = TMap<FGameplayTag, int32>();
+  UPROPERTY(BlueprintReadWrite)
+  FGameplayTagContainer BlockedAbilities = FGameplayTagContainer();
+  UPROPERTY(BlueprintReadWrite)
+  TMap<FGameplayTag, FGameplayTagContainer> AbilitiesContainer = TMap<FGameplayTag, FGameplayTagContainer>();
+  UPROPERTY(BlueprintReadWrite)
+  TMap<FGameplayTag, FGameplayTagContainer> ElementalTierPool = TMap<FGameplayTag, FGameplayTagContainer>();
+};
+
 /**
  * 
  */
@@ -69,6 +84,8 @@ public:
   FPlayerStateSave PlayerState = FPlayerStateSave();
   UPROPERTY(BlueprintReadWrite)
   FAttributeSetSave AttributeSet = FAttributeSetSave();
+  UPROPERTY(BlueprintReadWrite)
+  FAbilityManagerSave AbilityManager = FAbilityManagerSave();
 
   UPROPERTY(BlueprintReadWrite)
   int32 LocationIndex = -1;

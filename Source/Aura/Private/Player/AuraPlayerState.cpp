@@ -171,6 +171,10 @@ void AAuraPlayerState::AddPlayerResource(const FGameplayTag& ResourceTag, int32 
     {
       *SaveAmount = *CurrentAmount;
     }
+    else
+    {
+      GetSaveGame()->PlayerState.Resources.Add(ResourceTag, *CurrentAmount);
+    }
     
     OnResourceChangedDelegate.Broadcast(ResourceTag, Amount);
   }
@@ -212,6 +216,20 @@ bool AAuraPlayerState::CanAffordResourceCost(const TMap<FGameplayTag, int32>& Co
     if (*PlayerAmount < Cost) return false;
   }
   return true;
+}
+
+void AAuraPlayerState::InitializeState()
+{
+  SetSkillPoints(GetSaveGame()->PlayerState.SkillPoints);
+  SetAttributePoints(SaveGame->PlayerState.AttributePoints);
+
+  for (auto& [Resource, SaveAmount] : SaveGame->PlayerState.Resources)
+  {
+    if (int32* PlayerAmount = Resources.Find(Resource))
+    {
+      *PlayerAmount = SaveAmount;
+    }
+  }
 }
 
 AAuraCharacterBase* AAuraPlayerState::GetCharacterBase()

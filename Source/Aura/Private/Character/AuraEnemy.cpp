@@ -114,7 +114,7 @@ void AAuraEnemy::BeginPlay()
 	InitAbilityActorInfo();
 	if (HasAuthority())
 	{
-		AddCharacterAbilities();
+		InitializeAbilities();
 	}
 
 	if (UAuraUserWidget* AuraUserWidget = Cast<UAuraUserWidget>(HealthBar->GetUserWidgetObject()))
@@ -154,7 +154,14 @@ void AAuraEnemy::InitAbilityActorInfo()
 
 	if (HasAuthority())
 	{
-		InitializeDefaultAttributes();
+		InitializeAttributes();
 	}
 	OnASCRegistered.Broadcast(AbilitySystemComponent);
+}
+
+void AAuraEnemy::InitializeAttributes()
+{
+  ApplyEffectToSelf(DefaultPrimaryAttributes, Level);
+  
+  Super::InitializeAttributes();
 }

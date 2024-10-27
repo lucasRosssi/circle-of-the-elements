@@ -97,6 +97,11 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FString("Increases Cooldown Reduction")
 		);
 
+  GameplayTags.Attributes_Primary_Prime = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Attributes.Primary.Prime"),
+    FString("Increases Power")
+    );
+
 	/*
 	 * VITAL ATTRIBUTES
 	 */

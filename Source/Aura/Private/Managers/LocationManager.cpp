@@ -45,7 +45,7 @@ TSoftObjectPtr<UWorld> ULocationManager::GetNextLocation(
   PrevLocation = CurrentLocation;
   CurrentLocation = Location;
 
-  UAuraSystemsLibrary::SaveGameByObject(this, GetSaveGame());
+  UAuraSystemsLibrary::SaveCurrentGame(this);
 
   return Location;
 }

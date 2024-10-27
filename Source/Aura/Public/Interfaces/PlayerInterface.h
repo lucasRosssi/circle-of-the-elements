@@ -42,12 +42,12 @@ public:
 	void LevelUp();
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	int32 GetAttributePoints() const;
+	int32 GetAttributePoints();
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void AddAttributePoints(int32 Amount);
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	int32 GetSkillPoints() const;
+	int32 GetSkillPoints();
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void AddSkillPoints(int32 Amount);
 

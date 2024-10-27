@@ -3,7 +3,9 @@
 
 #include "Character/AuraHero.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
+#include "AuraGameplayTags.h"
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
@@ -13,6 +15,7 @@
 #include "Components/TeamComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Enums/CameraState.h"
+#include "Game/AuraSaveGame.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Level/RegionInfo.h"
@@ -49,7 +52,8 @@ void AAuraHero::PossessedBy(AController* NewController)
 
   // Init ability actor info for the Server
   InitAbilityActorInfo();
-  AddCharacterAbilities();
+  InitializeAttributes();
+  InitializeAbilities();
 
   if (ActiveCamera)
   {
@@ -66,15 +70,10 @@ void AAuraHero::OnRep_PlayerState()
   InitAbilityActorInfo();
 }
 
-void AAuraHero::AddCharacterAbilities()
+void AAuraHero::InitializeAbilities()
 {
-  Super::AddCharacterAbilities();
-
-  // GetAuraASC()->AddCharacterAbilities(
-  //   EligibleAbilities,
-  //   FAuraGameplayTags::Get().Abilities_Status_Eligible
-  // );
-
+  Super::InitializeAbilities();
+  
   if (UAbilityManager* AbilityManager = UAuraSystemsLibrary::GetAbilityManager(this))
   {
     AbilityManager->GiveAcquiredAbilities(this);
@@ -104,27 +103,12 @@ void AAuraHero::DeathMontageEndRagdoll()
   RagdollMesh();
 }
 
-int32 AAuraHero::GetCharacterLevel_Implementation() const
-{
-  return GetAuraPlayerState()->GetCharacterLevel();
-}
-
-void AAuraHero::AddToXP_Implementation(int32 InXP)
-{
-  GetAuraPlayerState()->AddXP(InXP);
-}
-
-int32 AAuraHero::GetXP_Implementation() const
-{
-  return GetAuraPlayerState()->GetXP();;
-}
-
-int32 AAuraHero::GetAttributePoints_Implementation() const
+int32 AAuraHero::GetAttributePoints_Implementation()
 {
   return GetAuraPlayerState()->GetAttributePoints();
 }
 
-int32 AAuraHero::GetSkillPoints_Implementation() const
+int32 AAuraHero::GetSkillPoints_Implementation()
 {
   return GetAuraPlayerState()->GetSkillPoints();
 }
@@ -276,14 +260,6 @@ void AAuraHero::BackToHome()
   UGameplayStatics::OpenLevelBySoftObjectPtr(this, HomeLevel);
 }
 
-AAuraPlayerState* AAuraHero::GetAuraPlayerState() const
-{
-  AAuraPlayerState* AuraPlayerState = GetPlayerState<AAuraPlayerState>();
-  check(AuraPlayerState);
-
-  return AuraPlayerState;
-}
-
 AAuraPlayerController* AAuraHero::GetAuraPlayerController()
 {
   if (AuraPlayerController == nullptr)
@@ -314,12 +290,58 @@ void AAuraHero::BeginPlay()
   }
 }
 
+void AAuraHero::InitializeAttributes()
+{
+  const FAuraGameplayTags& AuraTags = FAuraGameplayTags::Get();
+
+  FGameplayEffectContextHandle EffectContextHandle = AbilitySystemComponent->MakeEffectContext();
+  EffectContextHandle.AddSourceObject(this);
+
+  const FGameplayEffectSpecHandle SpecHandle = AbilitySystemComponent->MakeOutgoingSpec(
+    DefaultPrimaryAttributes,
+    1.f,
+    EffectContextHandle
+    );
+  
+  UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(
+    SpecHandle,
+    AuraTags.Attributes_Primary_Strength,
+    GetSaveGame()->AttributeSet.Attributes[AuraTags.Attributes_Primary_Strength]
+    );
+  UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(
+    SpecHandle,
+    AuraTags.Attributes_Primary_Dexterity,
+    GetSaveGame()->AttributeSet.Attributes[AuraTags.Attributes_Primary_Dexterity]
+    );
+  UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(
+    SpecHandle,
+    AuraTags.Attributes_Primary_Constitution,
+    GetSaveGame()->AttributeSet.Attributes[AuraTags.Attributes_Primary_Constitution]
+    );
+  UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(
+    SpecHandle,
+    AuraTags.Attributes_Primary_Intelligence,
+    GetSaveGame()->AttributeSet.Attributes[AuraTags.Attributes_Primary_Intelligence]
+    );
+  UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(
+    SpecHandle,
+    AuraTags.Attributes_Primary_Wisdom,
+    GetSaveGame()->AttributeSet.Attributes[AuraTags.Attributes_Primary_Wisdom]
+    );
+  UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(
+    SpecHandle,
+    AuraTags.Attributes_Primary_Charisma,
+    GetSaveGame()->AttributeSet.Attributes[AuraTags.Attributes_Primary_Charisma]
+    );
+  
+  AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data);
+  
+  Super::InitializeAttributes();
+}
+
 void AAuraHero::InitAbilityActorInfo()
 {
-  AAuraPlayerState* AuraPlayerState = GetPlayerState<AAuraPlayerState>();
-  check(AuraPlayerState);
-
-  AbilitySystemComponent = AuraPlayerState->GetAbilitySystemComponent();
+  AbilitySystemComponent = GetAuraPlayerState()->GetAbilitySystemComponent();
   OnASCRegistered.Broadcast(AbilitySystemComponent);
   AttributeSet = AuraPlayerState->GetAttributeSet();
   AttributeSet->AssignPrimeAttribute(PrimeAttributeTag);
@@ -327,14 +349,34 @@ void AAuraHero::InitAbilityActorInfo()
   AbilitySystemComponent->InitAbilityActorInfo(AuraPlayerState, this);
 
   GetAuraASC()->AbilityActorInfoSet();
-
+  AuraPlayerState->InitializeState();
+  
   if (AAuraHUD* AuraHUD = GetAuraPlayerController()->GetHUD<AAuraHUD>())
   {
-    AuraHUD->InitOverlay(AuraPlayerController.Get(),
-                         AuraPlayerState,
-                         AbilitySystemComponent,
-                         AttributeSet);
+    AuraHUD->InitOverlay(
+      AuraPlayerController.Get(),
+      AuraPlayerState,
+      AbilitySystemComponent,
+      AttributeSet);
+  }
+}
+
+AAuraPlayerState* AAuraHero::GetAuraPlayerState()
+{
+  if (!IsValid(AuraPlayerState))
+  {
+    AuraPlayerState = GetPlayerState<AAuraPlayerState>();
   }
 
-  InitializeDefaultAttributes();
+  return AuraPlayerState;
+}
+
+UAuraSaveGame* AAuraHero::GetSaveGame()
+{
+  if (SaveGame == nullptr)
+  {
+    SaveGame = UAuraSystemsLibrary::GetCurrentSaveGameObject(this);
+  }
+
+  return SaveGame;
 }

@@ -9,6 +9,8 @@
 #include "Aura/AuraLogChannels.h"
 #include "Enums/CharacterName.h"
 #include "AbilitySystem/Abilities/BaseAbility.h"
+#include "Character/Data/HeroInfo.h"
+#include "Game/AuraSaveGame.h"
 #include "Managers/RewardManager.h"
 #include "UI/WidgetController/OverlayWidgetController.h"
 #include "Utils/AuraSystemsLibrary.h"
@@ -32,15 +34,29 @@ UAbilityManager::UAbilityManager()
 
 void UAbilityManager::GiveAcquiredAbilities(AActor* Actor)
 {
-  if (AcquiredAbilities.Num() > 0)
+  if (AcquiredAbilities.IsEmpty())
   {
-    for (auto AbilityTagIterator = AcquiredAbilities.CreateConstIterator(); AbilityTagIterator; ++AbilityTagIterator)
-    {
-      const FAuraAbilityInfo& AbilityInfo = UAuraSystemsLibrary::GetAbilitiesInfo(this)->FindAbilityInfoByTag(*AbilityTagIterator);
-      UAuraAbilitySystemComponent* AuraASC = UAuraAbilitySystemLibrary::GetAuraAbilitySystemComponent(Actor);
-      GiveAbility(AbilityInfo, AuraASC);
-    }
+    AcquiredAbilities = GetSaveGame()->AbilityManager.AcquiredAbilities;
   }
+  else
+  {
+    UE_LOG(
+      LogAura,
+      Warning,
+      TEXT("Ability Manager is overriding Acquired Abilities! If it is not the intention, check it in the game mode.")
+    );
+  }
+
+  const UAbilityInfo* AbilitiesDataAsset = UAuraSystemsLibrary::GetAbilitiesInfo(this);
+  UAuraAbilitySystemComponent* AuraASC = UAuraAbilitySystemLibrary::GetAuraAbilitySystemComponent(Actor);
+  
+  for (const auto& [Ability, Level] : AcquiredAbilities)
+  {
+    const FAuraAbilityInfo& AbilityInfo = AbilitiesDataAsset->FindAbilityInfoByTag(Ability);
+    GiveAbility(AuraASC, AbilityInfo, Level);
+    OnAbilitySelectedDelegate.Broadcast(AbilityInfo);
+  }
+  
 }
 
 void UAbilityManager::BeginPlay()
@@ -104,6 +120,7 @@ TArray<FAuraAbilityInfo> UAbilityManager::RandomizeElementAbilities(
 		ElementAbilities.Remove(RemainingAbilities[RandomAbilityIndex].AbilityTag);
 		
 		AbilitiesContainer.Find(ElementTag)->AddTag(RemainingAbilities[RandomAbilityIndex].AbilityTag);
+	  GetSaveGame()->AbilityManager.AbilitiesContainer = AbilitiesContainer;
 	}
 	
 	return SelectedAbilities;
@@ -169,16 +186,16 @@ void UAbilityManager::GetAbilityFormattedTexts(
 	));
 }
 
-
-
 void UAbilityManager::SelectAbilityReward(
 		const FGameplayTag& ElementTag,
 		const FAuraAbilityInfo& AbilityInfo,
 		UAuraAbilitySystemComponent* AuraASC
 		)
 {
-	GiveAbility(AbilityInfo, AuraASC);
-	AcquiredAbilities.AddTag(AbilityInfo.AbilityTag);
+  constexpr int32 Level = 1;
+	GiveAbility(AuraASC, AbilityInfo);
+	AcquiredAbilities.Add(AbilityInfo.AbilityTag, Level);
+  GetSaveGame()->AbilityManager.AcquiredAbilities.Add(AbilityInfo.AbilityTag, Level);
 
   if (!bOverrideAbilitiesContainer)
   {
@@ -238,7 +255,7 @@ TMap<FGameplayTag, FAuraAbilityInfo> UAbilityManager::GetRemainingElementAbiliti
 		[this](const TTuple<FGameplayTag, FAuraAbilityInfo>& 
 	AbilityInfo)
 	{
-		return !AcquiredAbilities.HasTagExact(AbilityInfo.Key) &&
+		return !AcquiredAbilities.Contains(AbilityInfo.Key) &&
 			!BlockedAbilities.HasTagExact(AbilityInfo.Key);
 	});
 }
@@ -313,9 +330,13 @@ FGameplayTag UAbilityManager::GetAvailableInputTag(UAuraAbilitySystemComponent* 
 	return FGameplayTag();
 }
 
-void UAbilityManager::GiveAbility(const FAuraAbilityInfo& AbilityInfo, UAuraAbilitySystemComponent* AuraASC)
+void UAbilityManager::GiveAbility(
+UAuraAbilitySystemComponent* AuraASC,
+  const FAuraAbilityInfo& AbilityInfo,
+  int32 Level
+  )
 {
-  FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(AbilityInfo.Ability, 1);
+  FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(AbilityInfo.Ability, Level);
   AuraASC->UnlockAbility(AbilitySpec);
 	
   if (IAbilityInterface::Execute_IsActiveAbility(AbilitySpec.Ability))

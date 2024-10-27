@@ -317,10 +317,14 @@ void UAuraAbilitySystemComponent::ServerUpgradeAttribute_Implementation(
 		AttributeTag,
 		Payload
 	);
-
+  
   if (float* Attribute = GetSaveGame()->AttributeSet.Attributes.Find(AttributeTag))
   {
     *Attribute += 1.f;
+  }
+  else
+  {
+    GetSaveGame()->AttributeSet.Attributes.Add(AttributeTag, 11);
   }
 
 	IPlayerInterface::Execute_AddAttributePoints(GetAvatarActor(), -1);

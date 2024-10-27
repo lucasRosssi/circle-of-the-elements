@@ -321,13 +321,11 @@ void AAuraCharacterBase::ApplyEffectToSelf(
 	ASC->ApplyGameplayEffectSpecToTarget(*SpecHandle.Data.Get(), ASC);
 }
 
-void AAuraCharacterBase::InitializeDefaultAttributes() const
+void AAuraCharacterBase::InitializeAttributes()
 {
-	const int32 Level = Execute_GetCharacterLevel(this);
-	ApplyEffectToSelf(DefaultPrimaryAttributes, Level);
-	if (DefaultSecondaryAttributes) ApplyEffectToSelf(DefaultSecondaryAttributes, Level);
-	if (DefaultVitalAttributes) ApplyEffectToSelf(DefaultVitalAttributes, Level);
-	if (DefaultRegenerationEffect) ApplyEffectToSelf(DefaultRegenerationEffect, Level);
+	if (DefaultSecondaryAttributes) ApplyEffectToSelf(DefaultSecondaryAttributes, 1.f);
+	if (DefaultVitalAttributes) ApplyEffectToSelf(DefaultVitalAttributes, 1.f);
+	if (DefaultRegenerationEffect) ApplyEffectToSelf(DefaultRegenerationEffect, 1.f);
 
 	if (!NativeEffects.IsEmpty())
 	{
@@ -338,7 +336,7 @@ void AAuraCharacterBase::InitializeDefaultAttributes() const
 	}
 }
 
-void AAuraCharacterBase::AddCharacterAbilities()
+void AAuraCharacterBase::InitializeAbilities()
 {
 	if (!HasAuthority()) return;
 
