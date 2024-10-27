@@ -87,6 +87,9 @@ void AAuraHero::InitializeAbilities()
 void AAuraHero::Die(const FVector& DeathImpulse)
 {
   bDying = true;
+  
+  GetSaveGame()->OnPlayerDeath();
+  UAuraSystemsLibrary::SaveCurrentGame(this);
 
   StartDeath();
 }

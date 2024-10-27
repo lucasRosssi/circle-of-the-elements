@@ -42,6 +42,12 @@ struct FPlayerStateSave
   int32 SkillPoints = 0;
   UPROPERTY(BlueprintReadWrite)
   TMap<FGameplayTag, int32> Resources = TMap<FGameplayTag, int32>();
+
+  void Reset()
+  {
+    AttributePoints = 0;
+    SkillPoints = 0;
+  }
 };
 
 USTRUCT(BlueprintType)
@@ -51,6 +57,14 @@ struct FAttributeSetSave
 
   UPROPERTY(BlueprintReadWrite)
   TMap<FGameplayTag, float> Attributes = TMap<FGameplayTag, float>();
+
+  void Reset()
+  {
+    for (auto& [Attribute, Value] : Attributes)
+    {
+      Value = 10;
+    }
+  }
 };
 
 USTRUCT(BlueprintType)
@@ -66,6 +80,20 @@ struct FAbilityManagerSave
   TMap<FGameplayTag, FGameplayTagContainer> AbilitiesContainer = TMap<FGameplayTag, FGameplayTagContainer>();
   UPROPERTY(BlueprintReadWrite)
   TMap<FGameplayTag, FGameplayTagContainer> ElementalTierPool = TMap<FGameplayTag, FGameplayTagContainer>();
+
+  UPROPERTY(BlueprintReadWrite)
+  bool bIsStarting = true;
+
+  void Reset()
+  {
+    AcquiredAbilities.Empty();
+    BlockedAbilities = FGameplayTagContainer();
+    AbilitiesContainer.Empty();
+    ElementalTierPool.Empty();
+    
+    bIsStarting = true;
+  }
+  
 };
 
 /**
@@ -77,6 +105,8 @@ class AURA_API UAuraSaveGame : public USaveGame
 	GENERATED_BODY()
 public:
   UAuraSaveGame();
+
+  void OnPlayerDeath();
   
   UPROPERTY(BlueprintReadWrite)
   FSaveInfo SaveInfo = FSaveInfo();
@@ -93,5 +123,6 @@ public:
 protected:
 
 private:
-  
+  void InitPlayerState();
+  void InitAttributeSet();
 };

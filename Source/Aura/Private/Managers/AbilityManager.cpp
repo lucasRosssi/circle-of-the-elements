@@ -17,19 +17,19 @@
 
 UAbilityManager::UAbilityManager()
 {
-	const FAuraGameplayTags& Tags = FAuraGameplayTags::Get();
-	
-	FGameplayTagContainer TierTags;
- 	for (const FGameplayTag& TierTag : *Tags.ParentsToChildren.Find(Tags.Abilities_Tier))
-	{
-		TierTags.AddTagFast(TierTag);
-	}
-
-	for (const FGameplayTag& ElementTag : *Tags.ParentsToChildren.Find(Tags.Abilities_Element))
-	{
-		ElementalTierPool.Add(ElementTag, TierTags);
-		AbilitiesContainer.Add(ElementTag);
-	}
+  const FAuraGameplayTags& AuraTags = FAuraGameplayTags::Get();
+  
+  FGameplayTagContainer TierTags;
+  for (const FGameplayTag& TierTag : *AuraTags.ParentsToChildren.Find(AuraTags.Abilities_Tier))
+  {
+    TierTags.AddTagFast(TierTag);
+  }
+  
+  for (const FGameplayTag& ElementTag : *AuraTags.ParentsToChildren.Find(AuraTags.Abilities_Element))
+  {
+    ElementalTierPool.Add(ElementTag, TierTags);
+    AbilitiesContainer.Add(ElementTag);
+  }
 }
 
 void UAbilityManager::GiveAcquiredAbilities(AActor* Actor)
@@ -56,13 +56,12 @@ void UAbilityManager::GiveAcquiredAbilities(AActor* Actor)
     GiveAbility(AuraASC, AbilityInfo, Level);
     OnAbilitySelectedDelegate.Broadcast(AbilityInfo);
   }
-  
 }
 
 void UAbilityManager::BeginPlay()
 {
 	Super::BeginPlay();
-
+  
   if (!bInitializeOnBeginPlay) return;
 
   if (bOverrideAbilitiesContainer)
@@ -71,7 +70,15 @@ void UAbilityManager::BeginPlay()
     return;
   }
 
-	AssignInitialAbilities();
+  if (GetSaveGame()->AbilityManager.bIsStarting)
+  {
+	  AssignInitialAbilities();
+  }
+  else
+  {
+    ElementalTierPool = GetSaveGame()->AbilityManager.ElementalTierPool;
+    AbilitiesContainer = GetSaveGame()->AbilityManager.AbilitiesContainer;
+  }
 }
 
 TMap<FGameplayTag, FAuraAbilityInfo> UAbilityManager::GetElementAbilities(
@@ -110,6 +117,7 @@ TArray<FAuraAbilityInfo> UAbilityManager::RandomizeElementAbilities(
 		{
 			AvailableTiers.Remove(SelectedTierTag);
 			ElementalTierPool.Find(ElementTag)->RemoveTag(SelectedTierTag);
+
 			if (AvailableTiers.IsEmpty()) break;
 			continue;
 		}
@@ -120,9 +128,11 @@ TArray<FAuraAbilityInfo> UAbilityManager::RandomizeElementAbilities(
 		ElementAbilities.Remove(RemainingAbilities[RandomAbilityIndex].AbilityTag);
 		
 		AbilitiesContainer.Find(ElementTag)->AddTag(RemainingAbilities[RandomAbilityIndex].AbilityTag);
-	  GetSaveGame()->AbilityManager.AbilitiesContainer = AbilitiesContainer;
 	}
 	
+	GetSaveGame()->AbilityManager.AbilitiesContainer = AbilitiesContainer;
+	GetSaveGame()->AbilityManager.ElementalTierPool = ElementalTierPool;
+  
 	return SelectedAbilities;
 }
 
@@ -223,6 +233,8 @@ void UAbilityManager::AssignInitialAbilities()
 	{
 		RandomizeElementAbilities(GetHeroName(), ElementTag);
 	}
+
+  GetSaveGame()->AbilityManager.bIsStarting = false;
 }
 
 FGameplayTag UAbilityManager::RandomizeTier(const TMap<FGameplayTag, int32>& TierMap)
