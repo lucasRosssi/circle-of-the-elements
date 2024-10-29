@@ -7,6 +7,9 @@
 #include "Enums/Region.h"
 #include "LocationManager.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnInitLocation);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnExitLocation);
+
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class AURA_API ULocationManager : public UAuraSystemComponent
 {

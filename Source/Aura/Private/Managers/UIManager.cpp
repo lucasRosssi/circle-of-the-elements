@@ -4,17 +4,26 @@
 #include "Managers/UIManager.h"
 
 #include "UI/Widget/AuraUserWidget.h"
-#include "GameFramework/PlayerController.h"
+#include "UI/HUD/AuraHUD.h"
 
-UUIManager::UUIManager()
+void UUIManager::SetPlayerController(APlayerController* InPlayerController)
 {
-	PrimaryComponentTick.bCanEverTick = false;
+  PlayerController = InPlayerController;
+}
 
+void UUIManager::SetOverlayWidget(UAuraUserWidget* InWidget)
+{
+  OverlayWidget = InWidget;
+}
+
+void UUIManager::SetAuraHUD(AAuraHUD* InHUD)
+{
+  AuraHUD = InHUD;
 }
 
 UAuraUserWidget* UUIManager::BuildWidget(TSubclassOf<UAuraUserWidget> WidgetClass)
 {
-	return CreateWidget<UAuraUserWidget>(PlayerController, WidgetClass);
+	return CreateWidget<UAuraUserWidget>(PlayerController.Get(), WidgetClass);
 }
 
 UAuraUserWidget* UUIManager::OpenWidget(UAuraUserWidget* Widget)

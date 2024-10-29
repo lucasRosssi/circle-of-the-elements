@@ -98,7 +98,7 @@ protected:
 	TObjectPtr<UAttributeSet> AttributeSet;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Widget Controller")
-	TObjectPtr<AAuraPlayerController> MainPlayerController;
+	TObjectPtr<AAuraPlayerController> AuraPlayerController;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Widget Controller")
 	TObjectPtr<AAuraPlayerState> AuraPlayerState;

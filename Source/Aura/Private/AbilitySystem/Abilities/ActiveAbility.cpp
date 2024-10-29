@@ -4,6 +4,7 @@
 #include "AbilitySystem/Abilities/ActiveAbility.h"
 
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
+#include "Interfaces/AttributeSetInterface.h"
 
 AActor* UActiveAbility::GetNextBounceTarget(AActor* HitTarget)
 {
@@ -43,14 +44,20 @@ void UActiveAbility::GetMontageParams(
 	float& RootMotionScale
 	) const
 {
-	Montage = MontageToPlay;
-	PlayRate = MontagePlayRate.GetValueAtLevel(GetAbilityLevel());
-	RootMotionScale = AnimRootMotionTranslateScale.GetValueAtLevel(GetAbilityLevel());
+	Montage = GetAnimMontage();
+	PlayRate = GetMontagePlayRate();
+	RootMotionScale = GetAnimRootMotionTranslateScale();
+}
+
+UAnimMontage* UActiveAbility::GetAnimMontage() const
+{
+  return MontageToPlay;
 }
 
 float UActiveAbility::GetMontagePlayRate() const
 {
-	return MontagePlayRate.GetValueAtLevel(GetAbilityLevel());
+  const float ActionSpeed = IAttributeSetInterface::Execute_GetActionSpeed(GetOwningActorFromActorInfo());
+	return MontagePlayRate.GetValueAtLevel(GetAbilityLevel()) * ActionSpeed;
 }
 
 float UActiveAbility::GetAnimRootMotionTranslateScale() const

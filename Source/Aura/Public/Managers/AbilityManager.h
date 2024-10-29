@@ -70,9 +70,12 @@ protected:
 		EditDefaultsOnly,
 		BlueprintReadWrite,
 		Category="Manager|Ability",
-		meta=(Categories="Abilities.Active.Aura,Abilities.Active.Vilkar,Abilities.Passive.Aura,Abilities.Passive.Vilkar")
+		meta=(
+		  Categories="Abilities.Active.Aura,Abilities.Active.Vilkar,Abilities.Passive.Aura,Abilities.Passive.Vilkar",
+		  ForceInlineRow
+		  )
 		)
-	FGameplayTagContainer AcquiredAbilities;
+	TMap<FGameplayTag, int32> AcquiredAbilities;
 	UPROPERTY(
 		EditDefaultsOnly,
 		BlueprintReadWrite,
@@ -113,7 +116,12 @@ private:
 
 	FGameplayTag GetAvailableInputTag(UAuraAbilitySystemComponent* AuraASC);
 
-  void GiveAbility(const FAuraAbilityInfo& AbilityInfo, UAuraAbilitySystemComponent* AuraASC);
+  void GiveAbility(
+    UAuraAbilitySystemComponent* AuraASC,
+    const FAuraAbilityInfo& AbilityInfo,
+    int32 Level = 1,
+    const FGameplayTag& InputTag = FGameplayTag()
+    );
 
   ECharacterName GetHeroName();
   

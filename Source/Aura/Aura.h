@@ -16,7 +16,10 @@
 #define CUSTOM_DEPTH_FULL_RED 255
 #define CUSTOM_DEPTH_DEFAULT_COLOR 254
 
-#define MAX_AMOUNT_ABILITIES_PER_LEVEL 3
+#define MAX_SAVE_SLOTS 3
+#define SLOT_DEFAULT_NAME FString("SaveSlot_")
+
+#define BOSS_LOCATION 100
 
 #define ECC_Projectile ECollisionChannel::ECC_GameTraceChannel1
 #define ECC_Target ECollisionChannel::ECC_GameTraceChannel2

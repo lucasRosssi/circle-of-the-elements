@@ -48,17 +48,6 @@ void UActiveDamageAbility::EndAbility(
   bComboInputPressed = false;
 }
 
-void UActiveDamageAbility::GetMontageParams(
-	UAnimMontage*& Montage,
-	float& PlayRate,
-	float& RootMotionScale
-	) const
-{
-	Montage = GetAnimMontage();
-	PlayRate = MontagePlayRate.GetValueAtLevel(GetAbilityLevel());
-	RootMotionScale = AnimRootMotionTranslateScale.GetValueAtLevel(GetAbilityLevel());
-}
-
 bool UActiveDamageAbility::IsDamageAbility_Implementation() const
 {
 	return true;

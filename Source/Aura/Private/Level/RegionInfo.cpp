@@ -71,20 +71,20 @@ TSoftObjectPtr<UWorld> URegionInfo::GetRandomizedRegionLocation(
 	TArray<TSoftObjectPtr<UWorld>> LevelsToExclude
 	)
 {
-	TArray<TSoftObjectPtr<UWorld>> Levels = GetRegionLocations(Region);
-	if (Levels.IsEmpty()) return nullptr;
+	TArray<TSoftObjectPtr<UWorld>> Locations = GetRegionLocations(Region);
+	if (Locations.IsEmpty()) return nullptr;
 
-	if (!LevelsToExclude.IsEmpty() && LevelsToExclude.Num() < Levels.Num())
+	if (!LevelsToExclude.IsEmpty() && LevelsToExclude.Num() < Locations.Num())
 	{
 		for (auto Level : LevelsToExclude)
 		{
-			Levels.RemoveSingle(Level);
+			Locations.RemoveSingle(Level);
 		}
 	}
 
-	const int32 Index = FMath::RandRange(0, Levels.Num() - 1);
+	const int32 Index = FMath::RandRange(0, Locations.Num() - 1);
 
-	return Levels[Index];
+	return Locations[Index];
 }
 
 TSoftObjectPtr<UWorld> URegionInfo::GetRandomizedInitialLocation(ERegion Region)
@@ -108,4 +108,19 @@ TSoftObjectPtr<UWorld> URegionInfo::GetBossArena(ERegion Region)
 	if (!Data) return nullptr;
 
 	return Data->BossArena;
+}
+
+int32 URegionInfo::FindLocationIndex(ERegion Region, TSoftObjectPtr<UWorld> Location)
+{
+  return GetRegionLocations(Region).IndexOfByPredicate(
+    [Location](const TSoftObjectPtr<UWorld>& Item)
+    {
+      return Item == Location;
+    }
+    );
+}
+
+TSoftObjectPtr<UWorld> URegionInfo::GetRegionLocationByIndex(ERegion Region, int32 Index)
+{
+  return GetRegionLocations(Region)[Index];
 }

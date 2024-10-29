@@ -78,8 +78,7 @@ public:
   virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
                           const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility,
                           bool bWasCancelled) override;
-  virtual void GetMontageParams(UAnimMontage*& Montage, float& PlayRate, float& RootMotionScale) const override;
-
+  
   // Ability Interface overrides
   virtual bool IsDamageAbility_Implementation() const override;
   virtual FGameplayTag GetDamageTypeTag_Implementation() const override;;
@@ -102,8 +101,11 @@ public:
   void OnNextComboSequence();
 
 protected:
+  // Active Ability overrides
   UFUNCTION(BlueprintPure, Category="AbilityDefaults", meta=(DefaultToSelf="Target", HidePin="Target"))
-  UAnimMontage* GetAnimMontage() const;
+  virtual UAnimMontage* GetAnimMontage() const override;
+  // END Active Ability overrides
+  
   UFUNCTION(BlueprintPure, Category="Ability Defaults", meta=(DefaultToSelf="Target", HidePin="Target"))
   FName GetAbilitySocketName() const;
   UFUNCTION(BlueprintPure, Category="Ability Defaults", meta=(DefaultToSelf="Target", HidePin="Target"))

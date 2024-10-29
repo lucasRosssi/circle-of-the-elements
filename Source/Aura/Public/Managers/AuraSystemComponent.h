@@ -3,10 +3,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Game/AuraGameModeBase.h"
 #include "AuraSystemComponent.generated.h"
 
-class AAuraGameModeBase;
+class UAuraSaveGame;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class AURA_API UAuraSystemComponent : public UActorComponent
@@ -17,6 +16,10 @@ public:
 	UAuraSystemComponent();
 
 protected:
+  UAuraSaveGame* GetSaveGame();
+
+  UPROPERTY()
+  UAuraSaveGame* SaveGame = nullptr;
 
 private:
 		

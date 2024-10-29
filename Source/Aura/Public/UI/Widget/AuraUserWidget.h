@@ -3,8 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "BaseWidget.h"
 #include "Interfaces/WidgetControllerInterface.h"
-#include "UINavigation/Public/UINavWidget.h"
 #include "AuraUserWidget.generated.h"
 
 enum class EMenuBlurMode : uint8;
@@ -18,18 +18,11 @@ class AAuraHero;
  * 
  */
 UCLASS()
-class AURA_API UAuraUserWidget : public UUINavWidget, public IWidgetControllerInterface
+class AURA_API UAuraUserWidget : public UBaseWidget
 {
 	GENERATED_BODY()
 public:
 	virtual void NativeConstruct() override;
-
-  // Widget Controller Interface
-  virtual void AssignWidgetController_Implementation(UObject* InWidgetController) override;
-  // END Widget Controller Interface
-	
-	UFUNCTION(BlueprintCallable)
-	void SetWidgetController(UObject* InWidgetController);
 
 	UFUNCTION(BlueprintPure, meta = (HidePin = "Target", DefaultToSelf = "Target"))
 	AAuraHero* GetOwningHero();
@@ -45,17 +38,11 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent, Category="Input")
 	void OnChangeInputDevice(EInputType InputType);
-
-	UPROPERTY(BlueprintReadOnly)
-	TObjectPtr<UObject> WidgetController;
-
+  
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Focus")
 	EMenuBlurMode BlurMode;
 
 protected:
-	UFUNCTION(BlueprintImplementableEvent)
-	void WidgetControllerSet();
-
 	UFUNCTION(BlueprintPure)
 	UUIManager* GetUIManager();
 

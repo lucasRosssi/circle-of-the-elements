@@ -9,7 +9,6 @@
 #include "GameplayEffectExtension.h"
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "GameFramework/Character.h"
-#include "GameFramework/CharacterMovementComponent.h"
 #include "Interfaces/AttributeSetInterface.h"
 #include "Interfaces/CombatInterface.h"
 #include "Kismet/GameplayStatics.h"

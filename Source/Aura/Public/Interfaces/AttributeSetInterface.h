@@ -31,6 +31,8 @@ public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	float GetHealth();
 	
+  UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+  float GetActionSpeed();
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void SetActionSpeed(float InActionSpeed);
 	

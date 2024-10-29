@@ -26,7 +26,7 @@ void UBTService_FindNearestTarget::TickNode(
 	TArray<AActor*> ActorsToIgnore;
 	AActor* ClosestActor = UAuraAbilitySystemLibrary::GetClosestActorToTarget(
 		OwningPawn,
-		2000.f,
+		5000.f,
 		ETargetTeam::Enemies,
 		ActorsToIgnore
 		);

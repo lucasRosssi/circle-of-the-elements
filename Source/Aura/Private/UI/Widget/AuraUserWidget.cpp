@@ -22,30 +22,6 @@ void UAuraUserWidget::NativeConstruct()
 	}
 }
 
-void UAuraUserWidget::AssignWidgetController_Implementation(UObject* InWidgetController)
-{
-  SetWidgetController(InWidgetController);
-}
-
-void UAuraUserWidget::SetWidgetController(UObject* InWidgetController)
-{
-	WidgetController = InWidgetController;
-	WidgetControllerSet();
-
-	// Propagate widget controller to children
-	WidgetTree->ForEachWidget(
-		[&](UWidget* Widget)
-		{
-			if (Widget->Implements<UWidgetControllerInterface>())
-			{
-					Execute_AssignWidgetController(Widget, InWidgetController);
-			}
-		}
-	);
-
-	
-}
-
 AAuraHero* UAuraUserWidget::GetOwningHero()
 {
 	if (Hero == nullptr)

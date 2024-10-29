@@ -9,6 +9,7 @@
 #include "Interfaces/AttributeSetInterface.h"
 #include "AuraPlayerState.generated.h"
 
+class UAuraSaveGame;
 class UAuraAttributeSet;
 class UAuraAbilitySystemComponent;
 class AAuraCharacterBase;
@@ -33,6 +34,7 @@ public:
 	UAuraAttributeSet* GetAttributeSet() const { return AttributeSet; }
 
 	/* Attribute Set Interface */
+  virtual float GetActionSpeed_Implementation() override;
 	virtual void SetActionSpeed_Implementation(float InActionSpeed) override;
 	virtual float GetPower_Implementation() override;
 	virtual void SetTimeDilation_Implementation(float InTimeDilation) override;
@@ -51,13 +53,12 @@ public:
 	int32 GetSkillPoints() const { return SkillPoints; }
 	void SetSkillPoints(int32 InSkillPoints);
 	void AddSkillPoints(int32 InSkillPoints);
-	int32 GetPerkPoints() const { return PerkPoints; }
-	void SetPerkPoints(int32 InPerkPoints);
-	void AddPerkPoints(int32 InPerkPoints);
 
   void AddPlayerResource(const FGameplayTag& ResourceTag, int32 Amount);
   int32 GetPlayerResourceByTag(const FGameplayTag& ResourceTag);
   bool CanAffordResourceCost(const TMap<FGameplayTag, int32>& CostMap) const;
+
+  void InitializeState();
 	
   FOnPlayerStatChanged OnXPChangedDelegate;
   FOnPlayerStatChanged OnLevelChangedDelegate;
@@ -84,10 +85,11 @@ protected:
     Category="Player",
     meta=(Categories="Resources", ForceInlineRow)
     )
-  TMap<FGameplayTag, int32> PlayerResources;
+  TMap<FGameplayTag, int32> Resources;
 
 private:
 	AAuraCharacterBase* GetCharacterBase();
+  UAuraSaveGame* GetSaveGame();
 	
 	UPROPERTY(VisibleAnywhere, ReplicatedUsing=OnRep_Level)
 	int32 Level = 1;
@@ -109,14 +111,12 @@ private:
 	UFUNCTION()
 	void OnRep_SkillPoints(int32 OldSkillPoints);
 
-	UPROPERTY(VisibleAnywhere, ReplicatedUsing=OnRep_PerkPoints)
-	int32 PerkPoints = 0;
-	UFUNCTION()
-	void OnRep_PerkPoints(int32 OldPerkPoints);
-
 	UPROPERTY()
 	UAuraAbilitySystemComponent* AuraASC;
 
 	UPROPERTY()
 	AAuraCharacterBase* CharacterBase;
+
+  UPROPERTY()
+  UAuraSaveGame* SaveGame;
 };

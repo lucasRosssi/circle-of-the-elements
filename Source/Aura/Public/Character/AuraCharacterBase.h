@@ -115,8 +115,8 @@ protected:
 	virtual void BeginPlay() override;
 
   virtual void InitAbilityActorInfo();
-  virtual void AddCharacterAbilities();
-  void InitializeDefaultAttributes() const;
+  virtual void InitializeAbilities();
+  virtual void InitializeAttributes();
   
   void ApplyEffectToSelf(TSubclassOf<UGameplayEffect> GameplayEffectClass, float Level) const;
   

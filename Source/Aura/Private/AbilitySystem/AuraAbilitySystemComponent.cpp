@@ -9,7 +9,9 @@
 #include "AbilitySystem/Abilities/ActiveAbility.h"
 #include "Aura/AuraLogChannels.h"
 #include "Character/AuraCharacterBase.h"
+#include "Game/AuraSaveGame.h"
 #include "Interfaces/PlayerInterface.h"
+#include "Utils/AuraSystemsLibrary.h"
 
 void UAuraAbilitySystemComponent::AbilityActorInfoSet()
 {
@@ -315,6 +317,15 @@ void UAuraAbilitySystemComponent::ServerUpgradeAttribute_Implementation(
 		AttributeTag,
 		Payload
 	);
+  
+  if (float* Attribute = GetSaveGame()->AttributeSet.Attributes.Find(AttributeTag))
+  {
+    *Attribute += 1.f;
+  }
+  else
+  {
+    GetSaveGame()->AttributeSet.Attributes.Add(AttributeTag, 11);
+  }
 
 	IPlayerInterface::Execute_AddAttributePoints(GetAvatarActor(), -1);
 }
@@ -366,6 +377,20 @@ void UAuraAbilitySystemComponent::ServerEquipAbility_Implementation(
 
 	MarkAbilitySpecDirty(*AbilitySpec);
 	ClientEquipAbility(AbilityTag, Tags.Abilities_Status_Equipped, InputTag, PreviousInputTag);
+
+  if (GetSaveGame()->AbilityInput.Inputs.Contains(InputTag))
+  {
+    GetSaveGame()->AbilityInput.Inputs[InputTag] = AbilityTag;
+  }
+  else
+  {
+    GetSaveGame()->AbilityInput.Inputs.Add(InputTag, AbilityTag);
+  }
+
+  if (PreviousInputTag.IsValid() && GetSaveGame()->AbilityInput.Inputs.Contains(PreviousInputTag))
+  {
+    GetSaveGame()->AbilityInput.Inputs[PreviousInputTag] = FGameplayTag();
+  }
 }
 
 void UAuraAbilitySystemComponent::ClientEquipAbility_Implementation(
@@ -521,6 +546,16 @@ void UAuraAbilitySystemComponent::EffectApplied(
 	EffectSpec.GetAllAssetTags(TagContainer);
 
 	EffectAssetTags.Broadcast(TagContainer);
+}
+
+UAuraSaveGame* UAuraAbilitySystemComponent::GetSaveGame()
+{
+  if (SaveGame == nullptr)
+  {
+    SaveGame = UAuraSystemsLibrary::GetCurrentSaveGameObject(GetAvatarActor());
+  }
+
+  return SaveGame;
 }
 
 void UAuraAbilitySystemComponent::ClientUpdateAbilityState_Implementation(

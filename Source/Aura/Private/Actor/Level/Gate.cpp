@@ -5,6 +5,7 @@
 
 #include "Components/InteractComponent.h"
 #include "Components/WidgetComponent.h"
+#include "Game/AuraSaveGame.h"
 #include "Managers/LocationManager.h"
 #include "Managers/RewardManager.h"
 #include "Utils/AuraSystemsLibrary.h"
@@ -25,6 +26,8 @@ AGate::AGate()
 void AGate::Interact_Implementation(const AController* Controller)
 {
   GetRewardManager()->SetNextReward(RewardTag);
+  UAuraSaveGame* SaveGame = UAuraSystemsLibrary::GetCurrentSaveGameObject(this);
+  SaveGame->RewardManager.NextRewardTag = RewardTag;
   RewardWidget->SetVisibility(false);
   
   OnInteracted(Controller);

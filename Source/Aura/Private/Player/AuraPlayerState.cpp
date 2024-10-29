@@ -8,8 +8,10 @@
 #include "AbilitySystem/Data/LevelInfo.h"
 #include "Aura/AuraLogChannels.h"
 #include "Character/AuraCharacterBase.h"
+#include "Game/AuraSaveGame.h"
 #include "Interfaces/PlayerInterface.h"
 #include "Net/UnrealNetwork.h"
+#include "Utils/AuraSystemsLibrary.h"
 
 AAuraPlayerState::AAuraPlayerState()
 {
@@ -30,7 +32,6 @@ void AAuraPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
   DOREPLIFETIME(AAuraPlayerState, XP);
   DOREPLIFETIME(AAuraPlayerState, AttributePoints);
   DOREPLIFETIME(AAuraPlayerState, SkillPoints);
-  DOREPLIFETIME(AAuraPlayerState, PerkPoints);
 }
 
 UAbilitySystemComponent* AAuraPlayerState::GetAbilitySystemComponent() const
@@ -46,6 +47,11 @@ UAuraAbilitySystemComponent* AAuraPlayerState::GetAuraASC()
   }
 
   return AuraASC;
+}
+
+float AAuraPlayerState::GetActionSpeed_Implementation()
+{
+  return AttributeSet->GetActionSpeed();
 }
 
 void AAuraPlayerState::SetActionSpeed_Implementation(float InActionSpeed)
@@ -128,6 +134,9 @@ void AAuraPlayerState::AddAttributePoints(int32 InAttributePoints)
   if (InAttributePoints == 0) return;
 
   AttributePoints += InAttributePoints;
+
+  GetSaveGame()->PlayerState.AttributePoints = AttributePoints;
+  
   OnAttributePointsChangedDelegate.Broadcast(AttributePoints);
 }
 
@@ -144,31 +153,27 @@ void AAuraPlayerState::AddSkillPoints(int32 InSkillPoints)
   if (InSkillPoints == 0) return;
 
   SkillPoints += InSkillPoints;
+  
+  GetSaveGame()->PlayerState.SkillPoints = SkillPoints;
+  
   OnSkillPointsChangedDelegate.Broadcast(SkillPoints);
-}
-
-void AAuraPlayerState::SetPerkPoints(int32 InPerkPoints)
-{
-  if (PerkPoints == InPerkPoints) return;
-
-  PerkPoints = InPerkPoints;
-  OnPerkPointsChangedDelegate.Broadcast(PerkPoints);
-}
-
-void AAuraPlayerState::AddPerkPoints(int32 InPerkPoints)
-{
-  if (InPerkPoints == 0) return;
-
-  PerkPoints += InPerkPoints;
-  OnPerkPointsChangedDelegate.Broadcast(PerkPoints);
 }
 
 void AAuraPlayerState::AddPlayerResource(const FGameplayTag& ResourceTag, int32 Amount)
 {
-  if (int32* CurrentAmount = PlayerResources.Find(ResourceTag))
+  if (int32* CurrentAmount = Resources.Find(ResourceTag))
   {
     *CurrentAmount += Amount;
     if (*CurrentAmount < 0) *CurrentAmount = 0;
+    
+    if (int32* SaveAmount = GetSaveGame()->PlayerState.Resources.Find(ResourceTag))
+    {
+      *SaveAmount = *CurrentAmount;
+    }
+    else
+    {
+      GetSaveGame()->PlayerState.Resources.Add(ResourceTag, *CurrentAmount);
+    }
     
     OnResourceChangedDelegate.Broadcast(ResourceTag, Amount);
   }
@@ -185,7 +190,7 @@ void AAuraPlayerState::AddPlayerResource(const FGameplayTag& ResourceTag, int32 
 
 int32 AAuraPlayerState::GetPlayerResourceByTag(const FGameplayTag& ResourceTag)
 {
-  const int32* Amount = PlayerResources.Find(ResourceTag);
+  const int32* Amount = Resources.Find(ResourceTag);
   
   return Amount ? *Amount : 0;
 }
@@ -194,7 +199,7 @@ bool AAuraPlayerState::CanAffordResourceCost(const TMap<FGameplayTag, int32>& Co
 {
   for (const auto& [Resource, Cost] : CostMap)
   {
-    const int32* PlayerAmount = PlayerResources.Find(Resource);
+    const int32* PlayerAmount = Resources.Find(Resource);
 
     if (!PlayerAmount)
     {
@@ -212,6 +217,20 @@ bool AAuraPlayerState::CanAffordResourceCost(const TMap<FGameplayTag, int32>& Co
   return true;
 }
 
+void AAuraPlayerState::InitializeState()
+{
+  SetSkillPoints(GetSaveGame()->PlayerState.SkillPoints);
+  SetAttributePoints(SaveGame->PlayerState.AttributePoints);
+
+  for (auto& [Resource, SaveAmount] : SaveGame->PlayerState.Resources)
+  {
+    if (int32* PlayerAmount = Resources.Find(Resource))
+    {
+      *PlayerAmount = SaveAmount;
+    }
+  }
+}
+
 AAuraCharacterBase* AAuraPlayerState::GetCharacterBase()
 {
   if (CharacterBase == nullptr)
@@ -220,6 +239,16 @@ AAuraCharacterBase* AAuraPlayerState::GetCharacterBase()
   }
 
   return CharacterBase;
+}
+
+UAuraSaveGame* AAuraPlayerState::GetSaveGame()
+{
+  if (SaveGame == nullptr)
+  {
+    SaveGame = UAuraSystemsLibrary::GetCurrentSaveGameObject(this);
+  }
+
+  return SaveGame;
 }
 
 void AAuraPlayerState::OnRep_Level(int32 OldLevel)
@@ -240,9 +269,4 @@ void AAuraPlayerState::OnRep_AttributePoints(int32 OldAttributePoints)
 void AAuraPlayerState::OnRep_SkillPoints(int32 OldSkillPoints)
 {
   OnSkillPointsChangedDelegate.Broadcast(SkillPoints);
-}
-
-void AAuraPlayerState::OnRep_PerkPoints(int32 OldPerkPoints)
-{
-  OnPerkPointsChangedDelegate.Broadcast(PerkPoints);
 }

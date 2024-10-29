@@ -8,6 +8,7 @@
 #include "UI/WidgetController/AuraWidgetController.h"
 #include "AuraAbilitySystemLibrary.generated.h"
 
+class UMainMenuWidgetController;
 struct FAuraAbilityInfo;
 struct FAuraUpgradeInfo;
 class UUpgradeMenuWidgetController;
@@ -88,6 +89,14 @@ public:
     meta = (HidePin = "WorldContextObject", DefaultToSelf = "WorldContextObject")
   )
   static UUpgradeMenuWidgetController* GetUpgradeMenuWidgetController(
+    const UObject* WorldContextObject
+  );
+  UFUNCTION(
+    BlueprintPure,
+    Category = "AuraAbilitySystemLibrary|WidgetController",
+    meta = (HidePin = "WorldContextObject", DefaultToSelf = "WorldContextObject")
+  )
+  static UMainMenuWidgetController* GetMainMenuWidgetController(
     const UObject* WorldContextObject
   );
 

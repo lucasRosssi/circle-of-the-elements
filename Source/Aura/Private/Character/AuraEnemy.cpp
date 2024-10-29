@@ -97,6 +97,11 @@ float AAuraEnemy::GetHealth_Implementation()
 	return AttributeSet->GetHealth();
 }
 
+float AAuraEnemy::GetActionSpeed_Implementation()
+{
+  return AttributeSet->GetActionSpeed();
+}
+
 void AAuraEnemy::SetTimeDilation_Implementation(float InTimeDilation)
 {
 	CustomTimeDilation = InTimeDilation;
@@ -109,7 +114,7 @@ void AAuraEnemy::BeginPlay()
 	InitAbilityActorInfo();
 	if (HasAuthority())
 	{
-		AddCharacterAbilities();
+		InitializeAbilities();
 	}
 
 	if (UAuraUserWidget* AuraUserWidget = Cast<UAuraUserWidget>(HealthBar->GetUserWidgetObject()))
@@ -149,7 +154,14 @@ void AAuraEnemy::InitAbilityActorInfo()
 
 	if (HasAuthority())
 	{
-		InitializeDefaultAttributes();
+		InitializeAttributes();
 	}
 	OnASCRegistered.Broadcast(AbilitySystemComponent);
+}
+
+void AAuraEnemy::InitializeAttributes()
+{
+  ApplyEffectToSelf(DefaultPrimaryAttributes, Level);
+  
+  Super::InitializeAttributes();
 }

@@ -13,5 +13,15 @@ UCLASS()
 class AURA_API AMainMenuGameMode : public AAuraGameModeBase
 {
 	GENERATED_BODY()
-	
+
+public:
+
+protected:
+  virtual void BeginPlay() override;
+  
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Sound")
+  TObjectPtr<USoundBase> MainMenuMusic;
+  
+private:
+  
 };

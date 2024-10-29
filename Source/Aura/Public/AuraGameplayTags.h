@@ -33,7 +33,8 @@ public:
 	FGameplayTag Attributes_Primary_Constitution;
 	FGameplayTag Attributes_Primary_Intelligence;
 	FGameplayTag Attributes_Primary_Wisdom;
-	FGameplayTag Attributes_Primary_Charisma;
+  FGameplayTag Attributes_Primary_Charisma;
+  FGameplayTag Attributes_Primary_Prime;
 
 	FGameplayTag Attributes_Vital;
 	FGameplayTag Attributes_Vital_MaxHealth;

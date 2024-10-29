@@ -3,6 +3,8 @@
 
 #include "Managers/LocationManager.h"
 
+#include "Aura/Aura.h"
+#include "Game/AuraSaveGame.h"
 #include "GameFramework/PlayerStart.h"
 #include "Kismet/GameplayStatics.h"
 #include "Level/RegionInfo.h"
@@ -13,8 +15,6 @@ TSoftObjectPtr<UWorld> ULocationManager::GetNextLocation(
   ERegion InRegion
 )
 {
-  UAuraSystemsLibrary::SaveHeroData(this);
-
   if (bWillExitRegion)
   {
     return nullptr;
@@ -22,6 +22,7 @@ TSoftObjectPtr<UWorld> ULocationManager::GetNextLocation(
 
   URegionInfo* RegionInfo = UAuraSystemsLibrary::GetRegionInfo(this);
   const int32 CombatsCount = UAuraSystemsLibrary::GetCombatManager(this)->GetCombatsCount();
+  
   TSoftObjectPtr<UWorld> Location;
   if (CombatsCount < RegionInfo->GetRegionData(InRegion)->MaxCombats)
   {
@@ -29,24 +30,54 @@ TSoftObjectPtr<UWorld> ULocationManager::GetNextLocation(
       InRegion,
       SelectedLocations
     );
+    
+    const int32 LocationIndex = RegionInfo->FindLocationIndex(InRegion, Location);
+    GetSaveGame()->LocationManager.Index = LocationIndex;
+    GetSaveGame()->LocationManager.SelectedLocationsIndex.Add(LocationIndex);
   }
   else
   {
     Location = RegionInfo->GetBossArena(InRegion);
     bWillExitRegion = true;
+    GetSaveGame()->LocationManager.Index = BOSS_LOCATION;
   }
 
   SelectedLocations.Add(Location);
   PrevLocation = CurrentLocation;
   CurrentLocation = Location;
-
+  
   return Location;
 }
 
 TSoftObjectPtr<UWorld> ULocationManager::GetInitialLocation(ERegion InRegion)
 {
-  const TSoftObjectPtr<UWorld> Location = UAuraSystemsLibrary::GetRegionInfo(this)
-    ->GetRandomizedInitialLocation(InRegion);
+  URegionInfo* RegionInfo = UAuraSystemsLibrary::GetRegionInfo(this);
+  
+  TSoftObjectPtr<UWorld> Location;
+  if (GetSaveGame())
+  {
+    if (SaveGame->LocationManager.Index < 0)
+    {
+      Location = RegionInfo->GetRandomizedInitialLocation(InRegion);
+    }
+    else if (SaveGame->LocationManager.Index == BOSS_LOCATION)
+    {
+      Location = RegionInfo->GetBossArena(InRegion);
+    }
+    else
+    {
+      Location = RegionInfo->GetRegionLocationByIndex(InRegion, SaveGame->LocationManager.Index);
+    }
+
+    for (const int32 Index : SaveGame->LocationManager.SelectedLocationsIndex)
+    {
+      SelectedLocations.Add(RegionInfo->GetRegionLocations(InRegion)[Index]);
+    }
+  }
+  else
+  {
+    Location = RegionInfo->GetRandomizedInitialLocation(InRegion);
+  }
 
   CurrentLocation = Location;
   return Location;
