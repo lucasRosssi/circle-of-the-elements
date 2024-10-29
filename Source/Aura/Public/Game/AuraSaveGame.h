@@ -159,7 +159,9 @@ struct FRewardManagerSave
 
   UPROPERTY(BlueprintReadWrite)
   FGameplayTagContainer BlockedRewards = FGameplayTagContainer();
+  UPROPERTY(BlueprintReadWrite)
   FGameplayTag NextRewardTag = FGameplayTag();
+  UPROPERTY(BlueprintReadWrite)
   TArray<FGameplayTag> RewardBag = TArray<FGameplayTag>();
 
   void Reset()

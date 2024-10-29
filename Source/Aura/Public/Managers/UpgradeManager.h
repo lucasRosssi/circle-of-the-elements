@@ -59,7 +59,7 @@ public:
   bool IsMaxed(const FGameplayTag& UpgradeTag);
   bool IsMaxed(const FAuraUpgradeInfo& AuraUpgradeInfo);
 
-  void UnlockUpgrade(const FGameplayTag& UpgradeTag, int32 Level);
+  void UnlockUpgrade(const FGameplayTag& UpgradeTag, int32 Level = 1);
 
   UPROPERTY(BlueprintAssignable, Category="Manager|Upgrade")
   FOnUpgradeUnlock OnUpgradeUnlockDelegate;
