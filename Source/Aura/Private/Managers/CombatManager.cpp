@@ -8,6 +8,7 @@
 #include "Actor/AuraProjectile.h"
 #include "Actor/Level/EnemySpawner.h"
 #include "Aura/AuraLogChannels.h"
+#include "Game/AuraSaveGame.h"
 #include "Kismet/GameplayStatics.h"
 #include "Level/RegionInfo.h"
 #include "Utils/AuraSystemsLibrary.h"
@@ -49,14 +50,21 @@ void UCombatManager::SetCombatDifficulty()
 void UCombatManager::SetCurrentCombatData()
 {
 	CurrentWave = 0;
-	SetCombatDifficulty();
-	GetEnemySpawns();
+
+  if (GetSaveGame()->bJustLoaded)
+  {
+    CombatsCount = GetSaveGame()->CombatManager.CombatsCount;
+  }
+  
+  SetCombatDifficulty();
+	GetEnemyWaves();
 	GetAvailableSpawners();
 }
 
 void UCombatManager::StartCombat()
 {
 	CombatsCount += 1;
+  GetSaveGame()->CombatManager.CombatsCount = CombatsCount;
 	
 	NextWave();
 }
@@ -90,7 +98,10 @@ void UCombatManager::NextWave()
 		}
 	}
 
-	if (!bOverrideEnemyWaves) EnemyWaves.RemoveAt(0);
+	if (!bOverrideEnemyWaves)
+	{
+	  EnemyWaves.RemoveAt(0);
+	}
 }
 
 void UCombatManager::FinishCombat()
@@ -160,7 +171,7 @@ void UCombatManager::GetAvailableSpawners()
 	}
 }
 
-void UCombatManager::GetEnemySpawns()
+void UCombatManager::GetEnemyWaves()
 {
 	if (!bOverrideEnemyWaves)
 	{

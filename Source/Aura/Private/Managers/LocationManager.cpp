@@ -44,9 +44,7 @@ TSoftObjectPtr<UWorld> ULocationManager::GetNextLocation(
   SelectedLocations.Add(Location);
   PrevLocation = CurrentLocation;
   CurrentLocation = Location;
-
-  UAuraSystemsLibrary::SaveCurrentGame(this);
-
+  
   return Location;
 }
 
@@ -57,9 +55,9 @@ TSoftObjectPtr<UWorld> ULocationManager::GetInitialLocation(ERegion InRegion)
   TSoftObjectPtr<UWorld> Location;
   if (GetSaveGame())
   {
-    if (SaveGame->LocationIndex >= 0)
+    if (SaveGame->LocationIndex < 0)
     {
-      Location = RegionInfo->GetRegionLocationByIndex(InRegion, SaveGame->LocationIndex);
+      Location = RegionInfo->GetRandomizedInitialLocation(InRegion);
     }
     else if (SaveGame->LocationIndex == BOSS_LOCATION)
     {
@@ -67,7 +65,7 @@ TSoftObjectPtr<UWorld> ULocationManager::GetInitialLocation(ERegion InRegion)
     }
     else
     {
-      Location = RegionInfo->GetRandomizedInitialLocation(InRegion);
+      Location = RegionInfo->GetRegionLocationByIndex(InRegion, SaveGame->LocationIndex);
     }
   }
   else

@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "AuraGameModeBase.h"
-#include "GameplayTagContainer.h"
 #include "CombatGameMode.generated.h"
 
 enum class ECharacterName : uint8;

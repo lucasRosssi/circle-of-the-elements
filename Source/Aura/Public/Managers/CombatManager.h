@@ -94,7 +94,7 @@ protected:
 private:
 	void SetCombatDifficulty();
 	void GetAvailableSpawners();
-	void GetEnemySpawns();
+	void GetEnemyWaves();
 
 	void NextWave();
 	void FinishCombat();

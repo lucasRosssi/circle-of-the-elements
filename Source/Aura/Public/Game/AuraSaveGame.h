@@ -93,7 +93,47 @@ struct FAbilityManagerSave
     
     bIsStarting = true;
   }
-  
+};
+
+USTRUCT(BlueprintType)
+struct FAbilityInputSave
+{
+  GENERATED_BODY()
+
+  // Keys: Input tags; Values: Ability tags
+  UPROPERTY(BlueprintReadWrite, meta=(Categories="Abilities.Active,InputTag.1,InputTag.2,InputTag.3,InputTag.4"))
+  TMap<FGameplayTag, FGameplayTag> Inputs = TMap<FGameplayTag, FGameplayTag>();
+
+  FGameplayTag FindAbilityInput(const FGameplayTag& AbilityTag)
+  {
+    for (auto& [Input, Ability] : Inputs)
+    {
+      if (Ability == AbilityTag) return Input;
+    }
+
+    return FGameplayTag();
+  }
+
+  void Reset()
+  {
+    for (auto& Item : Inputs)
+    {
+      Item.Value = FGameplayTag();
+    }
+  }
+};
+
+USTRUCT(BlueprintType)
+struct FCombatManagerSave
+{
+  GENERATED_BODY()
+  UPROPERTY(BlueprintReadWrite)
+  int32 CombatsCount = 0;
+
+  void Reset()
+  {
+    CombatsCount = 0;
+  }
 };
 
 /**
@@ -106,7 +146,11 @@ class AURA_API UAuraSaveGame : public USaveGame
 public:
   UAuraSaveGame();
 
+  virtual void PostInitProperties() override;
+
   void OnPlayerDeath();
+
+  bool bJustLoaded = false;
   
   UPROPERTY(BlueprintReadWrite)
   FSaveInfo SaveInfo = FSaveInfo();
@@ -116,6 +160,10 @@ public:
   FAttributeSetSave AttributeSet = FAttributeSetSave();
   UPROPERTY(BlueprintReadWrite)
   FAbilityManagerSave AbilityManager = FAbilityManagerSave();
+  UPROPERTY(BlueprintReadWrite)
+  FAbilityInputSave AbilityInput = FAbilityInputSave();
+  UPROPERTY(BlueprintReadWrite)
+  FCombatManagerSave CombatManager = FCombatManagerSave();
 
   UPROPERTY(BlueprintReadWrite)
   int32 LocationIndex = -1;
@@ -125,4 +173,5 @@ protected:
 private:
   void InitPlayerState();
   void InitAttributeSet();
+  void InitAbilityInputs();
 };

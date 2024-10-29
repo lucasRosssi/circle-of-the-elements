@@ -119,7 +119,8 @@ private:
   void GiveAbility(
     UAuraAbilitySystemComponent* AuraASC,
     const FAuraAbilityInfo& AbilityInfo,
-    int32 Level = 1
+    int32 Level = 1,
+    const FGameplayTag& InputTag = FGameplayTag()
     );
 
   ECharacterName GetHeroName();

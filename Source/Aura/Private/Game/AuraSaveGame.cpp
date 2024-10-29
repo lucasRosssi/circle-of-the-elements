@@ -9,7 +9,14 @@ UAuraSaveGame::UAuraSaveGame()
 {
   InitPlayerState();
   InitAttributeSet();
-  // InitAbilityManager();
+  InitAbilityInputs();
+}
+
+void UAuraSaveGame::PostInitProperties()
+{
+  Super::PostInitProperties();
+
+  bJustLoaded = true;
 }
 
 void UAuraSaveGame::OnPlayerDeath()
@@ -17,6 +24,8 @@ void UAuraSaveGame::OnPlayerDeath()
   PlayerState.Reset();
   AttributeSet.Reset();
   AbilityManager.Reset();
+  AbilityInput.Reset();
+  CombatManager.Reset();
 
   SaveInfo.RegionName = ERegion::Village;
 }
@@ -45,4 +54,14 @@ void UAuraSaveGame::InitAttributeSet()
       AttributeSet.Attributes.Add(Tag, 10);
     }
   }
+}
+
+void UAuraSaveGame::InitAbilityInputs()
+{
+  const FAuraGameplayTags& AuraTags = FAuraGameplayTags::Get();
+  
+  AbilityInput.Inputs.Add(AuraTags.InputTag_1, FGameplayTag());
+  AbilityInput.Inputs.Add(AuraTags.InputTag_2, FGameplayTag());
+  AbilityInput.Inputs.Add(AuraTags.InputTag_3, FGameplayTag());
+  AbilityInput.Inputs.Add(AuraTags.InputTag_4, FGameplayTag());
 }

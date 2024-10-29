@@ -377,6 +377,20 @@ void UAuraAbilitySystemComponent::ServerEquipAbility_Implementation(
 
 	MarkAbilitySpecDirty(*AbilitySpec);
 	ClientEquipAbility(AbilityTag, Tags.Abilities_Status_Equipped, InputTag, PreviousInputTag);
+
+  if (GetSaveGame()->AbilityInput.Inputs.Contains(InputTag))
+  {
+    GetSaveGame()->AbilityInput.Inputs[InputTag] = AbilityTag;
+  }
+  else
+  {
+    GetSaveGame()->AbilityInput.Inputs.Add(InputTag, AbilityTag);
+  }
+
+  if (PreviousInputTag.IsValid() && GetSaveGame()->AbilityInput.Inputs.Contains(PreviousInputTag))
+  {
+    GetSaveGame()->AbilityInput.Inputs[PreviousInputTag] = FGameplayTag();
+  }
 }
 
 void UAuraAbilitySystemComponent::ClientEquipAbility_Implementation(

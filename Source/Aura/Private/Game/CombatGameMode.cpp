@@ -3,13 +3,13 @@
 
 #include "Game/CombatGameMode.h"
 
-#include "AuraGameplayTags.h"
-#include "Aura/AuraLogChannels.h"
+#include "Game/AuraSaveGame.h"
 #include "Managers/AbilityManager.h"
 #include "Managers/CombatManager.h"
 #include "Managers/LocationManager.h"
 #include "Managers/RewardManager.h"
 #include "Managers/UpgradeManager.h"
+#include "Utils/AuraSystemsLibrary.h"
 
 ACombatGameMode::ACombatGameMode()
 {
@@ -32,6 +32,18 @@ void ACombatGameMode::LoadLevelInfo()
   LocationManager->InitLocation();
   CombatManager->SetCurrentCombatData();
   RewardManager->SetGatesRewards();
+
+  if (UAuraSaveGame* SaveGame = UAuraSystemsLibrary::GetCurrentSaveGameObject(this))
+  {
+    if (SaveGame->bJustLoaded)
+    {
+      SaveGame->bJustLoaded = false;
+    }
+    else
+    {
+      UAuraSystemsLibrary::SaveCurrentGame(this);
+    }
+  }
 }
 
 int32 ACombatGameMode::GetEnemiesLevel() const
