@@ -8,6 +8,7 @@
 #include "AbilitySystem/Abilities/UpgradeAbility.h"
 #include "AbilitySystem/Data/UpgradeInfo.h"
 #include "AbilitySystem/GameplayEffects/UpgradeEffect.h"
+#include "Aura/AuraLogChannels.h"
 #include "Game/AuraSaveGame.h"
 #include "Kismet/GameplayStatics.h"
 #include "Player/AuraPlayerState.h"
@@ -15,11 +16,24 @@
 
 void UUpgradeManager::GiveAcquiredUpgrades()
 {
-  AcquiredUpgrades = GetSaveGame()->UpgradeManager.AcquiredUpgrades;
-  
-  for (const auto& [Upgrade, Level] : AcquiredUpgrades)
+  if (AcquiredUpgrades.IsEmpty())
   {
-    UnlockUpgrade(Upgrade, Level);
+    AcquiredUpgrades = GetSaveGame()->UpgradeManager.AcquiredUpgrades;
+  }
+  else
+  {
+    UE_LOG(
+      LogAura,
+      Warning,
+      TEXT("Upgrades are being overriden! If it isn't the intention, empty the AcquiredUpgrades in the game mode.")
+    );
+  }
+  UAuraAbilitySystemComponent* AuraASC = GetAuraPlayerState()->GetAuraASC();
+  
+  for (const auto& [UpgradeTag, Level] : AcquiredUpgrades)
+  {
+    const FAuraUpgradeInfo& Info = GetUpgradeInfo()->FindUpgradeInfoByTag(UpgradeTag);
+    GiveUpgrade(Info, AuraASC, Level);
   }
 }
 
@@ -158,8 +172,11 @@ bool UUpgradeManager::HasRequiredUpgrades(const FGameplayTag& UpgradeTag)
 
   const FAuraUpgradeInfo& Info = GetUpgradeInfo()->FindUpgradeInfoByTag(UpgradeTag);
 
+  if (Info.Requirements.IsEmpty()) return true;
+  
   TArray<FGameplayTag> RequiredArray;
   Info.Requirements.GetGameplayTagArray(RequiredArray);
+
   for (const auto& Tag : RequiredArray)
   {
     if (AcquiredUpgrades.Contains(Tag)) return true;
@@ -210,6 +227,15 @@ void UUpgradeManager::UnlockUpgrade(const FGameplayTag& UpgradeTag, int32 Level)
     const FGameplayTagContainer EffectTagContainer = FGameplayTagContainer({ Info.UpgradeTag });
     const FGameplayEffectQuery EffectQuery = FGameplayEffectQuery::MakeQuery_MatchAllOwningTags(EffectTagContainer);
     AuraASC->SetActiveGameplayEffectLevelUsingQuery(EffectQuery, Level);
+
+    if (int32* UpgradeLevel = AcquiredUpgrades.Find(UpgradeTag))
+    {
+      *UpgradeLevel = Level;
+    }
+    else
+    {
+      AcquiredUpgrades.Add(UpgradeTag, Level);
+    }
   }
   else
   {
@@ -221,7 +247,8 @@ void UUpgradeManager::UnlockUpgrade(const FGameplayTag& UpgradeTag, int32 Level)
   {
     AuraPlayerState->AddPlayerResource(CostTuple.Key, -CostTuple.Value.AsInteger(Level));
   }
-  
+
+  GetSaveGame()->UpgradeManager.AcquiredUpgrades = AcquiredUpgrades;
   OnUpgradeUnlockDelegate.Broadcast(Info, Level);
 }
 

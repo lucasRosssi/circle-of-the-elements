@@ -23,6 +23,8 @@ public:
   // END Manager Interface
 
 protected:
+  virtual void BeginPlay() override;
+  
   UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Managers|Character|Ability")
   TObjectPtr<UAbilityManager> AbilityManager;
   UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Managers|Character|Upgrade")

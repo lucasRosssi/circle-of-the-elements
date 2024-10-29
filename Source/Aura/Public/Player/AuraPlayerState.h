@@ -111,11 +111,6 @@ private:
 	UFUNCTION()
 	void OnRep_SkillPoints(int32 OldSkillPoints);
 
-	UPROPERTY(VisibleAnywhere, ReplicatedUsing=OnRep_PerkPoints)
-	int32 PerkPoints = 0;
-	UFUNCTION()
-	void OnRep_PerkPoints(int32 OldPerkPoints);
-
 	UPROPERTY()
 	UAuraAbilitySystemComponent* AuraASC;
 

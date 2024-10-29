@@ -71,14 +71,21 @@ void UAbilityManager::BeginPlay()
     return;
   }
 
-  if (GetSaveGame()->AbilityManager.bIsStarting)
+  if (GetSaveGame())
   {
-    AssignInitialAbilities();
+    if (SaveGame->AbilityManager.bIsStarting)
+    {
+      AssignInitialAbilities();
+    }
+    else
+    {
+      ElementalTierPool = GetSaveGame()->AbilityManager.ElementalTierPool;
+      AbilitiesContainer = GetSaveGame()->AbilityManager.AbilitiesContainer;
+    }
   }
   else
   {
-    ElementalTierPool = GetSaveGame()->AbilityManager.ElementalTierPool;
-    AbilitiesContainer = GetSaveGame()->AbilityManager.AbilitiesContainer;
+    AssignInitialAbilities();
   }
 }
 
@@ -240,7 +247,10 @@ void UAbilityManager::AssignInitialAbilities()
     RandomizeElementAbilities(GetHeroName(), ElementTag);
   }
 
-  GetSaveGame()->AbilityManager.bIsStarting = false;
+  if (GetSaveGame())
+  {
+    SaveGame->AbilityManager.bIsStarting = false;
+  }
 }
 
 FGameplayTag UAbilityManager::RandomizeTier(const TMap<FGameplayTag, int32>& TierMap)
