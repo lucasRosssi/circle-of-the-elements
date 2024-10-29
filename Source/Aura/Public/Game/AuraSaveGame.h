@@ -218,6 +218,9 @@ public:
   FRewardManagerSave RewardManager = FRewardManagerSave();
   UPROPERTY(BlueprintReadWrite)
   FUpgradeManagerSave UpgradeManager = FUpgradeManagerSave();
+
+  UPROPERTY(BlueprintReadWrite)
+  float HeroHealth = 100.f;
   
 protected:
 

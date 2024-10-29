@@ -6,6 +6,7 @@
 #include "AbilitySystemComponent.h"
 #include "AuraAbilitySystemComponent.generated.h"
 
+class UAuraAttributeSet;
 class UAuraSaveGame;
 class UBaseAbility;
 class UAbilityInfo;
@@ -123,6 +124,7 @@ public:
 	bool IsInputTagAssigned(const FGameplayTag& InputTag);
 	
 protected:
+  virtual void BeginPlay() override;
 	virtual void OnRep_ActivateAbilities() override;
 	
 	void EffectApplied(

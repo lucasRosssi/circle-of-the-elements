@@ -6,6 +6,7 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AuraGameplayTags.h"
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
+#include "AbilitySystem/AuraAttributeSet.h"
 #include "AbilitySystem/Abilities/ActiveAbility.h"
 #include "Aura/AuraLogChannels.h"
 #include "Character/AuraCharacterBase.h"
@@ -455,6 +456,26 @@ bool UAuraAbilitySystemComponent::IsInputTagAssigned(const FGameplayTag& InputTa
 	}
 
 	return false;
+}
+
+void UAuraAbilitySystemComponent::BeginPlay()
+{
+  Super::BeginPlay();
+
+  const UAuraAttributeSet* AuraAS = Cast<UAuraAttributeSet>(GetAttributeSet(UAuraAttributeSet::StaticClass()));
+
+  if (!AuraAS) return;
+  
+  GetGameplayAttributeValueChangeDelegate(AuraAS->GetHealthAttribute())
+    .AddLambda(
+      [this](const FOnAttributeChangeData& Data)
+      {
+        if (GetSaveGame() && !SaveGame->bJustLoaded)
+        {
+          SaveGame->HeroHealth = Data.NewValue;
+        }
+      }
+    );
 }
 
 void UAuraAbilitySystemComponent::SetInputTagFromSpec(

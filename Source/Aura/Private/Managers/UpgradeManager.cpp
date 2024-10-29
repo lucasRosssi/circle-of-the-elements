@@ -160,7 +160,7 @@ bool UUpgradeManager::HasResourcesToUnlock(const FGameplayTag& UpgradeTag)
   TMap<FGameplayTag, int32> CostMap;
   for (const auto& [Resource, ScalableCost] : Info.Cost)
   {
-    CostMap.Add(Resource, ScalableCost.AsInteger(Level));
+    CostMap.Add(Resource, ScalableCost.AsInteger(Level + 1));
   }
 
   return AuraPlayerState->CanAffordResourceCost(CostMap);
@@ -230,7 +230,7 @@ void UUpgradeManager::UnlockUpgrade(const FGameplayTag& UpgradeTag, int32 Level)
 
     if (int32* UpgradeLevel = AcquiredUpgrades.Find(UpgradeTag))
     {
-      *UpgradeLevel = Level;
+      *UpgradeLevel += 1;
     }
     else
     {

@@ -168,6 +168,35 @@ ECharacterName AAuraHero::GetHeroName_Implementation()
   return GetCharacterName();
 }
 
+void AAuraHero::AddResource_Implementation(const FGameplayTag& ResourceTag, int32 Amount)
+{
+  GetAuraPlayerState()->AddPlayerResource(ResourceTag, Amount);
+}
+
+void AAuraHero::SpendAttributePointsRandomly_Implementation()
+{
+  if (GetAuraASC())
+  {
+    const FAuraGameplayTags& AuraTags = FAuraGameplayTags::Get();
+    const TArray AttributeTags = TArray({
+      AuraTags.Attributes_Primary_Strength,
+      AuraTags.Attributes_Primary_Dexterity,
+      AuraTags.Attributes_Primary_Constitution,
+      AuraTags.Attributes_Primary_Intelligence,
+      AuraTags.Attributes_Primary_Wisdom,
+      AuraTags.Attributes_Primary_Charisma
+    });
+
+    const int32 AttributePoints = GetAuraPlayerState()->GetAttributePoints();
+    for (int32 i = 0; i < AttributePoints; i++)
+    {
+      const int32 RandomAttributeIndex = FMath::RandRange(0, 5);
+
+      GetAuraASC()->UpgradeAttribute(AttributeTags[RandomAttributeIndex]);
+    }
+  }
+}
+
 void AAuraHero::StartDeath()
 {
   bDead = true;
@@ -340,6 +369,11 @@ void AAuraHero::InitializeAttributes()
   AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data);
   
   Super::InitializeAttributes();
+
+  if (GetSaveGame())
+  {
+    GetAttributeSet()->SetHealth(SaveGame->HeroHealth);
+  }
 }
 
 void AAuraHero::InitAbilityActorInfo()

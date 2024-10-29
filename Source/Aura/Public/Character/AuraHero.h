@@ -53,6 +53,8 @@ public:
   virtual void AddInteractableToList_Implementation(const UInteractComponent* InteractableComponent) override;
   virtual void RemoveInteractableFromList_Implementation(const UInteractComponent* InteractableComponent) override;
 	virtual ECharacterName GetHeroName_Implementation() override;
+  virtual void AddResource_Implementation(const FGameplayTag& ResourceTag, int32 Amount) override;
+  virtual void SpendAttributePointsRandomly_Implementation() override;
 	/** end Player Interface */
 	
 	void StartDeath();

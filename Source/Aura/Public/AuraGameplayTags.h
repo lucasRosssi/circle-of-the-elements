@@ -313,8 +313,17 @@ public:
   FGameplayTag Abilities_Passive;
   FGameplayTag Abilities_Passive_Common;
   FGameplayTag Abilities_Passive_Upgrade;
+  
   FGameplayTag Abilities_Passive_Upgrade_SoulAbsorption;
+  FGameplayTag Abilities_Passive_Upgrade_SoulBalance;
+  FGameplayTag Abilities_Passive_Upgrade_WildSoul;
+  
   FGameplayTag Abilities_Passive_Upgrade_Respite;
+  FGameplayTag Abilities_Passive_Upgrade_ShortRest;
+  
+  FGameplayTag Abilities_Passive_Upgrade_Brilliance;
+  FGameplayTag Abilities_Passive_Upgrade_Clarity;
+  
   FGameplayTag Abilities_Passive_Upgrade_SecondWind;
 	
 	FGameplayTag Abilities_Passive_Aura;
@@ -333,9 +342,17 @@ public:
   FGameplayTag Upgrades;
   
   FGameplayTag Upgrades_Soul;
+  
   FGameplayTag Upgrades_Soul_Absorption;
+  FGameplayTag Upgrades_Soul_Balance;
+  FGameplayTag Upgrades_Soul_Wild;
+  
   FGameplayTag Upgrades_Soul_Respite;
+  FGameplayTag Upgrades_Soul_ShortRest;
+  
   FGameplayTag Upgrades_Soul_Brilliance;
+  FGameplayTag Upgrades_Soul_Clarity;
+  
   FGameplayTag Upgrades_Soul_SecondWind;
   
   FGameplayTag Upgrades_Fire;

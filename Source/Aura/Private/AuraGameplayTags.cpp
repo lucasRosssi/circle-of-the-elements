@@ -1196,9 +1196,34 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
     FString("SoulAbsorption ability")
     );
 
+  GameplayTags.Abilities_Passive_Upgrade_SoulBalance = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Abilities.Passive.Upgrade.SoulBalance"),
+    FString("SoulBalance ability")
+    );
+
+  GameplayTags.Abilities_Passive_Upgrade_WildSoul = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Abilities.Passive.Upgrade.WildSoul"),
+    FString("WildSoul ability")
+    );
+
   GameplayTags.Abilities_Passive_Upgrade_Respite = UGameplayTagsManager::Get().AddNativeGameplayTag(
     FName("Abilities.Passive.Upgrade.Respite"),
     FString("Respite ability")
+    );
+
+  GameplayTags.Abilities_Passive_Upgrade_ShortRest = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Abilities.Passive.Upgrade.ShortRest"),
+    FString("ShortRest ability")
+    );
+
+  GameplayTags.Abilities_Passive_Upgrade_Brilliance = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Abilities.Passive.Upgrade.Brilliance"),
+    FString("Brilliance ability")
+    );
+
+  GameplayTags.Abilities_Passive_Upgrade_Clarity = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Abilities.Passive.Upgrade.Clarity"),
+    FString("Clarity ability")
     );
 
   GameplayTags.Abilities_Passive_Upgrade_SecondWind = UGameplayTagsManager::Get().AddNativeGameplayTag(
@@ -1275,14 +1300,34 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
     FString("Soul Absorption upgrade tag")
     );
 
+  GameplayTags.Upgrades_Soul_Balance = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Upgrades.Soul.Balance"),
+    FString("Soul Balance upgrade tag")
+    );
+
+  GameplayTags.Upgrades_Soul_Wild = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Upgrades.Soul.Wild"),
+    FString("Wild Soul upgrade tag")
+    );
+
   GameplayTags.Upgrades_Soul_Respite = UGameplayTagsManager::Get().AddNativeGameplayTag(
     FName("Upgrades.Soul.Respite"),
     FString("Respite upgrade tag")
     );
 
+  GameplayTags.Upgrades_Soul_ShortRest = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Upgrades.Soul.ShortRest"),
+    FString("Short Rest upgrade tag")
+    );
+
   GameplayTags.Upgrades_Soul_Brilliance = UGameplayTagsManager::Get().AddNativeGameplayTag(
     FName("Upgrades.Soul.Brilliance"),
     FString("Brilliance upgrade tag")
+    );
+
+  GameplayTags.Upgrades_Soul_Clarity = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Upgrades.Soul.Clarity"),
+    FString("Clarity upgrade tag")
     );
 
   GameplayTags.Upgrades_Soul_SecondWind = UGameplayTagsManager::Get().AddNativeGameplayTag(

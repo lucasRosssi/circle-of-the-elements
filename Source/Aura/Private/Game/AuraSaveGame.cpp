@@ -28,6 +28,7 @@ void UAuraSaveGame::OnPlayerDeath()
   CombatManager.Reset();
   LocationManager.Reset();
   RewardManager.Reset();
+  HeroHealth = 100.f;
 
   SaveInfo.RegionName = ERegion::Village;
 }

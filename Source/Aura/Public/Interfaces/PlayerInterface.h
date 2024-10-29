@@ -73,4 +73,10 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	ECharacterName GetHeroName();
+
+  UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+  void AddResource(const FGameplayTag& ResourceTag, int32 Amount);
+
+  UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+  void SpendAttributePointsRandomly();
 };
