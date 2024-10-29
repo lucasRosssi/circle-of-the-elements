@@ -32,13 +32,13 @@ TSoftObjectPtr<UWorld> ULocationManager::GetNextLocation(
     );
     
     const int32 LocationIndex = RegionInfo->FindLocationIndex(InRegion, Location);
-    GetSaveGame()->LocationIndex = LocationIndex;
+    GetSaveGame()->LocationManager.Index = LocationIndex;
   }
   else
   {
     Location = RegionInfo->GetBossArena(InRegion);
     bWillExitRegion = true;
-    GetSaveGame()->LocationIndex = BOSS_LOCATION;
+    GetSaveGame()->LocationManager.Index = BOSS_LOCATION;
   }
 
   SelectedLocations.Add(Location);
@@ -55,17 +55,17 @@ TSoftObjectPtr<UWorld> ULocationManager::GetInitialLocation(ERegion InRegion)
   TSoftObjectPtr<UWorld> Location;
   if (GetSaveGame())
   {
-    if (SaveGame->LocationIndex < 0)
+    if (SaveGame->LocationManager.Index < 0)
     {
       Location = RegionInfo->GetRandomizedInitialLocation(InRegion);
     }
-    else if (SaveGame->LocationIndex == BOSS_LOCATION)
+    else if (SaveGame->LocationManager.Index == BOSS_LOCATION)
     {
       Location = RegionInfo->GetBossArena(InRegion);
     }
     else
     {
-      Location = RegionInfo->GetRegionLocationByIndex(InRegion, SaveGame->LocationIndex);
+      Location = RegionInfo->GetRegionLocationByIndex(InRegion, SaveGame->LocationManager.Index);
     }
   }
   else

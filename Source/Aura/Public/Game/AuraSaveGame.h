@@ -136,6 +136,38 @@ struct FCombatManagerSave
   }
 };
 
+USTRUCT(BlueprintType)
+struct FLocationManagerSave
+{
+  GENERATED_BODY()
+
+  UPROPERTY(BlueprintReadWrite)
+  int32 Index = -1;
+
+  void Reset()
+  {
+    Index = -1;
+  }
+};
+
+USTRUCT(BlueprintType)
+struct FRewardManagerSave
+{
+  GENERATED_BODY()
+
+  UPROPERTY(BlueprintReadWrite)
+  FGameplayTagContainer BlockedRewards = FGameplayTagContainer();
+  FGameplayTag NextRewardTag = FGameplayTag();
+  TArray<FGameplayTag> RewardBag = TArray<FGameplayTag>();
+
+  void Reset()
+  {
+    BlockedRewards = FGameplayTagContainer();
+    NextRewardTag = FGameplayTag();
+    RewardBag.Empty();
+  }
+};
+
 /**
  * 
  */
@@ -164,9 +196,10 @@ public:
   FAbilityInputSave AbilityInput = FAbilityInputSave();
   UPROPERTY(BlueprintReadWrite)
   FCombatManagerSave CombatManager = FCombatManagerSave();
-
   UPROPERTY(BlueprintReadWrite)
-  int32 LocationIndex = -1;
+  FLocationManagerSave LocationManager = FLocationManagerSave();
+  UPROPERTY(BlueprintReadWrite)
+  FRewardManagerSave RewardManager = FRewardManagerSave();
   
 protected:
 

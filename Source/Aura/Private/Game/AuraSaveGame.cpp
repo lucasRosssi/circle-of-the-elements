@@ -26,6 +26,8 @@ void UAuraSaveGame::OnPlayerDeath()
   AbilityManager.Reset();
   AbilityInput.Reset();
   CombatManager.Reset();
+  LocationManager.Reset();
+  RewardManager.Reset();
 
   SaveInfo.RegionName = ERegion::Village;
 }
