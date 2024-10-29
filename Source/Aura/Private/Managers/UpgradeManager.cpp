@@ -8,18 +8,18 @@
 #include "AbilitySystem/Abilities/UpgradeAbility.h"
 #include "AbilitySystem/Data/UpgradeInfo.h"
 #include "AbilitySystem/GameplayEffects/UpgradeEffect.h"
+#include "Game/AuraSaveGame.h"
 #include "Kismet/GameplayStatics.h"
 #include "Player/AuraPlayerState.h"
 #include "Utils/AuraSystemsLibrary.h"
 
 void UUpgradeManager::GiveAcquiredUpgrades()
 {
-  if (AcquiredUpgrades.Num() > 0)
+  AcquiredUpgrades = GetSaveGame()->UpgradeManager.AcquiredUpgrades;
+  
+  for (const auto& [Upgrade, Level] : AcquiredUpgrades)
   {
-    for (auto UpgradeTagIterator = AcquiredUpgrades.CreateConstIterator(); UpgradeTagIterator; ++UpgradeTagIterator)
-    {
-      UnlockUpgrade(*UpgradeTagIterator);
-    }
+    UnlockUpgrade(Upgrade, Level);
   }
 }
 
@@ -157,8 +157,15 @@ bool UUpgradeManager::HasRequiredUpgrades(const FGameplayTag& UpgradeTag)
   if (!GetAuraPlayerState()) return false;
 
   const FAuraUpgradeInfo& Info = GetUpgradeInfo()->FindUpgradeInfoByTag(UpgradeTag);
-  
-  return AcquiredUpgrades.HasAllExact(Info.Requirements);
+
+  TArray<FGameplayTag> RequiredArray;
+  Info.Requirements.GetGameplayTagArray(RequiredArray);
+  for (const auto& Tag : RequiredArray)
+  {
+    if (AcquiredUpgrades.Contains(Tag)) return true;
+  }
+
+  return false;
 }
 
 bool UUpgradeManager::IsMaxed(const FGameplayTag& UpgradeTag)
@@ -186,12 +193,11 @@ bool UUpgradeManager::IsMaxed(const FAuraUpgradeInfo& AuraUpgradeInfo)
   return false;
 }
 
-void UUpgradeManager::UnlockUpgrade(const FGameplayTag& UpgradeTag)
+void UUpgradeManager::UnlockUpgrade(const FGameplayTag& UpgradeTag, int32 Level)
 {
   const FAuraUpgradeInfo& Info = GetUpgradeInfo()->FindUpgradeInfoByTag(UpgradeTag);
   UAuraAbilitySystemComponent* AuraASC = GetAuraPlayerState()->GetAuraASC();
-
-  int32 Level;
+  
   if (FGameplayAbilitySpec* AbilitySpec = AuraASC->GetSpecFromAbilityTag(Info.AbilityTag))
   {
     if (AbilitySpec->Level >= Info.MaxLevel) return;
@@ -207,10 +213,8 @@ void UUpgradeManager::UnlockUpgrade(const FGameplayTag& UpgradeTag)
   }
   else
   {
-    GiveUpgrade(Info, AuraASC);
-    AcquiredUpgrades.AddTag(UpgradeTag);
-
-    Level = 1;
+    GiveUpgrade(Info, AuraASC, Level);
+    AcquiredUpgrades.Add(UpgradeTag, Level);
   }
 
   for (const auto& CostTuple : Info.Cost)
@@ -233,19 +237,20 @@ AAuraPlayerState* UUpgradeManager::GetAuraPlayerState()
 
 void UUpgradeManager::GiveUpgrade(
   const FAuraUpgradeInfo& AuraUpgradeInfo,
-  UAuraAbilitySystemComponent* AuraASC
+  UAuraAbilitySystemComponent* AuraASC,
+  int32 Level
   )
 {
   if (AuraUpgradeInfo.Ability)
   {
-    FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(AuraUpgradeInfo.Ability, 1);
+    FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(AuraUpgradeInfo.Ability, Level);
     AuraASC->UnlockAbility(AbilitySpec);
   }
 
   if (AuraUpgradeInfo.UpgradeEffect)
   {
     const FGameplayEffectContextHandle ContextHandle = AuraASC->MakeEffectContext();
-    AuraASC->ApplyGameplayEffectToSelf(AuraUpgradeInfo.UpgradeEffect.GetDefaultObject(), 1, ContextHandle);
+    AuraASC->ApplyGameplayEffectToSelf(AuraUpgradeInfo.UpgradeEffect.GetDefaultObject(), Level, ContextHandle);
   }
 }
 

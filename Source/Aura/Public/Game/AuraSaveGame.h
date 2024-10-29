@@ -143,6 +143,8 @@ struct FLocationManagerSave
 
   UPROPERTY(BlueprintReadWrite)
   int32 Index = -1;
+  UPROPERTY(BlueprintReadWrite)
+  TArray<int32> SelectedLocationsIndex;
 
   void Reset()
   {
@@ -167,6 +169,18 @@ struct FRewardManagerSave
     RewardBag.Empty();
   }
 };
+
+USTRUCT(BlueprintType)
+struct FUpgradeManagerSave
+{
+  GENERATED_BODY()
+
+  UPROPERTY(BlueprintReadWrite)
+  TMap<FGameplayTag, int32> AcquiredUpgrades = TMap<FGameplayTag, int32>();
+  UPROPERTY(BlueprintReadWrite)
+  FGameplayTagContainer BlockedUpgrades = FGameplayTagContainer();
+};
+
 
 /**
  * 
@@ -200,6 +214,8 @@ public:
   FLocationManagerSave LocationManager = FLocationManagerSave();
   UPROPERTY(BlueprintReadWrite)
   FRewardManagerSave RewardManager = FRewardManagerSave();
+  UPROPERTY(BlueprintReadWrite)
+  FUpgradeManagerSave UpgradeManager = FUpgradeManagerSave();
   
 protected:
 

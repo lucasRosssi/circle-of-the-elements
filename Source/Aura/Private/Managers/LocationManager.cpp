@@ -33,6 +33,7 @@ TSoftObjectPtr<UWorld> ULocationManager::GetNextLocation(
     
     const int32 LocationIndex = RegionInfo->FindLocationIndex(InRegion, Location);
     GetSaveGame()->LocationManager.Index = LocationIndex;
+    GetSaveGame()->LocationManager.SelectedLocationsIndex.Add(LocationIndex);
   }
   else
   {
@@ -66,6 +67,11 @@ TSoftObjectPtr<UWorld> ULocationManager::GetInitialLocation(ERegion InRegion)
     else
     {
       Location = RegionInfo->GetRegionLocationByIndex(InRegion, SaveGame->LocationManager.Index);
+    }
+
+    for (const int32 Index : SaveGame->LocationManager.SelectedLocationsIndex)
+    {
+      SelectedLocations.Add(RegionInfo->GetRegionLocations(InRegion)[Index]);
     }
   }
   else
