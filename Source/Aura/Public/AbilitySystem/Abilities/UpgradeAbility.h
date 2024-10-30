@@ -18,7 +18,6 @@ public:
   UUpgradeAbility();
 
 protected:
-  
 
 private:
 };
