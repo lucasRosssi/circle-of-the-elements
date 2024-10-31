@@ -91,7 +91,8 @@ public:
 
 	FGameplayTag StatusEffects_Buff;
 	FGameplayTag StatusEffects_Buff_Shield;
-	FGameplayTag StatusEffects_Buff_Haste;
+  FGameplayTag StatusEffects_Buff_Haste;
+  FGameplayTag StatusEffects_Buff_Clarity;
 
   // Debuffs
 	
@@ -372,6 +373,10 @@ public:
   
   FGameplayTag Upgrades_Physical;
   FGameplayTag Upgrades_Physical_Absorption;
+
+  FGameplayTag Upgrades_Ability_Dodge;
+  FGameplayTag Upgrades_Ability_Dodge_Charges;
+  FGameplayTag Upgrades_Ability_Dodge_Dash;
 
   /* RESOURCES */
 	

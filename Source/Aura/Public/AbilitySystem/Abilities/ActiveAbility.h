@@ -19,10 +19,20 @@ class AURA_API UActiveAbility : public UBaseAbility
 	GENERATED_BODY()
 
 public:
+  virtual bool CommitAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, FGameplayTagContainer* OptionalRelevantTags) override;
+  virtual bool CommitAbilityCost(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, FGameplayTagContainer* OptionalRelevantTags) override;
+  
+	// Ability Interface overrides
+	virtual EAbilityHitMode GetHitMode_Implementation() const override { return RangedHitMode; }
+	virtual int32 GetMaxHitCountAtLevel_Implementation (int32 Level) const override;
+	virtual float GetEffectChangePerHitAtLevel_Implementation(int32 Level) const override;
+	virtual bool IsActiveAbility_Implementation() const override;
+	// END Ability Interface overrides
+  
 	UFUNCTION(BlueprintCallable)
 	AActor* GetNextBounceTarget(AActor* HitTarget);
-	
-	// Starting input for the player, when the ability is granted
+
+  // Starting input for the player, when the ability is granted
 	UPROPERTY(EditDefaultsOnly, Category="Input", meta=(EditCondition="bIsPlayerAbility", DisplayPriority=1))
 	FGameplayTag StartupInputTag;
 	// True if the ability should target accordingly to the player movement input direction 
@@ -31,12 +41,6 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category="Input", meta=(EditCondition="bIsPlayerAbility", DisplayPriority=3))
 	bool bUsesMovementInputDirection = false;
 
-	// Ability Interface overrides
-	virtual EAbilityHitMode GetHitMode_Implementation() const override { return RangedHitMode; }
-	virtual int32 GetMaxHitCountAtLevel_Implementation (int32 Level) const override;
-	virtual float GetEffectChangePerHitAtLevel_Implementation(int32 Level) const override;
-	virtual bool IsActiveAbility_Implementation() const override;
-	// END Ability Interface overrides
 
 protected:
 	UFUNCTION(BlueprintPure, Category="Ability Defaults")
@@ -115,6 +119,8 @@ protected:
 	bool bCanRepeatTarget = false;
 
 private:
+  bool CheckForClarityEffect(const FGameplayAbilityActorInfo* ActorInfo);
+  
 	UPROPERTY()
 	TArray<AActor*> BounceHitActors;
 

@@ -441,6 +441,11 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FString("Increases action speed")
 		);
 
+  GameplayTags.StatusEffects_Buff_Clarity = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("StatusEffects.Buff.Clarity"),
+    FString("The next ability commited doesn't cost mana")
+    );
+
 	// Debuffs
 
 	GameplayTags.StatusEffects_Debuff = UGameplayTagsManager::Get().AddNativeGameplayTag(
@@ -1405,6 +1410,23 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
   GameplayTags.Upgrades_Physical_Absorption = UGameplayTagsManager::Get().AddNativeGameplayTag(
     FName("Upgrades.Physical.Absorption"),
     FString("Physical Absorption upgrade tag")
+    );
+
+  // Abilities Upgrades
+
+  GameplayTags.Upgrades_Ability_Dodge = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Upgrades.Ability.Dodge"),
+    FString("Dodge ability upgrade tag")
+    );
+
+  GameplayTags.Upgrades_Ability_Dodge_Charges = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Upgrades.Ability.Dodge.Charges"),
+    FString("Dodge Charges upgrade tag")
+    );
+  
+  GameplayTags.Upgrades_Ability_Dodge_Dash = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Upgrades.Ability.Dodge.Dash"),
+    FString("Dodge Dash upgrade tag")
     );
 
 	/*
