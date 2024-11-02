@@ -60,6 +60,8 @@ public:
   bool IsMaxed(const FAuraUpgradeInfo& AuraUpgradeInfo);
 
   void UnlockUpgrade(const FGameplayTag& UpgradeTag, int32 Level = 1);
+  void EquipUpgrade(const FGameplayTag& UpgradeTag, bool bSkipMutuallyExclusiveCheck = false);
+  void UnequipUpgrade(const FGameplayTag& UpgradeTag);
 
   UPROPERTY(BlueprintAssignable, Category="Manager|Upgrade")
   FOnUpgradeUnlock OnUpgradeUnlockDelegate;
@@ -72,6 +74,13 @@ protected:
 		meta=(Categories="Upgrades")
 		)
 	TMap<FGameplayTag, int32> AcquiredUpgrades;
+  UPROPERTY(
+    EditDefaultsOnly,
+    BlueprintReadWrite,
+    Category="Manager|Upgrade",
+    meta=(Categories="Upgrades")
+    )
+  FGameplayTagContainer EquippedUpgrades;
 	UPROPERTY(
 		EditDefaultsOnly,
 		BlueprintReadWrite,

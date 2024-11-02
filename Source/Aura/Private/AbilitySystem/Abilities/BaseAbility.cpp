@@ -198,22 +198,17 @@ int32 UBaseAbility::GetRoundedCooldownAtLevel(int32 Level) const
 
 int32 UBaseAbility::GetMaxChargesAtLevel(int32 Level) const
 {
-	return FMath::RoundToInt32(MaxCharges.GetValueAtLevel(Level));
+	return FMath::RoundToInt32(MaxCharges.GetValueAtLevel(Level)) + AdditionalCharges;
 }
 
-float UBaseAbility::GetAreaInnerRadius() const
+float UBaseAbility::GetAreaRadius() const
 {
-	return AreaInnerRadius.GetValueAtLevel(GetAbilityLevel());
-}
-
-float UBaseAbility::GetAreaOuterRadius() const
-{
-	return AreaOuterRadius.GetValueAtLevel(GetAbilityLevel());
+	return AreaRadius.GetValueAtLevel(GetAbilityLevel()) + AdditionalAreaRadius;
 }
 
 int32 UBaseAbility::GetMaxCharges() const
 {
-	return FMath::RoundToInt32(MaxCharges.GetValueAtLevel(GetAbilityLevel()));
+	return FMath::RoundToInt32(MaxCharges.GetValueAtLevel(GetAbilityLevel())) + AdditionalCharges;
 }
 
 void UBaseAbility::DisablePlayerInput()
@@ -254,8 +249,8 @@ FAbilityParams UBaseAbility::MakeAbilityParamsFromDefaults(AActor* TargetActor) 
 	if (bIsAreaAbility)
 	{
 		AbilityParams.bIsAreaAbility = true;
-		AbilityParams.AreaInnerRadius = AreaInnerRadius.GetValueAtLevel(GetAbilityLevel());
-		AbilityParams.AreaOuterRadius = AreaOuterRadius.GetValueAtLevel(GetAbilityLevel());
+		AbilityParams.AreaInnerRadius = AreaRadius.GetValueAtLevel(GetAbilityLevel());
+		AbilityParams.AreaOuterRadius = AbilityParams.AreaInnerRadius;
 		AbilityParams.AreaOrigin = AreaOrigin;
 		if (IsValid(TargetActor))
 		{

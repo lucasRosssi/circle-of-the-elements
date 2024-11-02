@@ -375,8 +375,10 @@ public:
   FGameplayTag Upgrades_Physical_Absorption;
 
   FGameplayTag Upgrades_Ability_Dodge;
-  FGameplayTag Upgrades_Ability_Dodge_Charges;
+  FGameplayTag Upgrades_Ability_Dodge_Boost;
   FGameplayTag Upgrades_Ability_Dodge_Dash;
+  FGameplayTag Upgrades_Ability_Dodge_Rush;
+  FGameplayTag Upgrades_Ability_Dodge_Maneuver;
 
   /* RESOURCES */
 	

@@ -36,7 +36,7 @@ public:
 	void ScheduleHomingActivation(float Delay);
 	void HandleAreaAbility(const AActor* EffectCauser, bool& bSuccess);
 	void HandleSingleTarget(AActor* OtherActor, bool& bSuccess);
-	void HandleBounceHitMode(AActor* OtherActor);
+	void HandleRicochetHitMode(AActor* OtherActor);
 	void HandlePenetrationHitMode(AActor* OtherActor);
 
 	TObjectPtr<UNiagaraSystem> GetMuzzleEffect() { return MuzzleEffect; }
@@ -47,7 +47,7 @@ public:
 	EAbilityHitMode HitMode = EAbilityHitMode::Default;
 	int32 MaxHitCount = 1;
 	float EffectChangePerHit = 0.f;
-	float BounceRadius = 500.f;
+	float RicochetRadius = 500.f;
 	bool bCanRepeatTarget = false;
 	UPROPERTY()
 	AActor* InitialTarget = nullptr;

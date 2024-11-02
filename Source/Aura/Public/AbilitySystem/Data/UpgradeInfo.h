@@ -63,7 +63,7 @@ struct FAuraUpgradeInfo
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
   TArray<FScalableFloat> DescriptionPercents;
 
-  bool IsValid() const { return AbilityTag.IsValid(); }
+  bool IsValid() const { return AbilityTag.IsValid() || UpgradeTag.IsValid(); }
 };
 
 USTRUCT(BlueprintType)
@@ -157,4 +157,12 @@ public:
     meta=(NoResetToDefault)
     )
   TMap<ECharacterName, FUpgradesMapStruct> Upgrades;
+
+  UPROPERTY(
+    EditDefaultsOnly,
+    BlueprintReadOnly,
+    Category="UpgradeInformation",
+    meta=(NoResetToDefault)
+    )
+  TArray<FGameplayTagContainer> MutuallyExclusiveUpgrades;
 };

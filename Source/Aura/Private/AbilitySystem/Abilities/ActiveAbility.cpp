@@ -5,23 +5,17 @@
 
 #include "AuraGameplayTags.h"
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
+#include "Aura/AuraLogChannels.h"
 #include "Interfaces/AttributeSetInterface.h"
 
-AActor* UActiveAbility::GetNextBounceTarget(AActor* HitTarget)
+void UActiveAbility::OnGiveAbility(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec)
 {
-  if (!IsValid(HitTarget)) return nullptr;
-  
-	TArray ActorsToIgnore({GetAvatarActorFromActorInfo()});
-	ActorsToIgnore.Append(BounceHitActors);
-	AActor* NextTarget = UAuraAbilitySystemLibrary::GetClosestActorToTarget(
-		HitTarget,
-		BounceRadius.GetValueAtLevel(GetAbilityLevel()),
-		AbilityTargetTeam == ETargetTeam::Both ? AbilityTargetTeam : ETargetTeam::Friends,
-		ActorsToIgnore
-		);
+  Super::OnGiveAbility(ActorInfo, Spec);
 
-	BounceHitActors.Add(HitTarget);
-	return NextTarget;
+  for (const FGameplayTag& UpgradeTag : UpgradeTags)
+  {
+    ApplyUpgrade(UpgradeTag);
+  }
 }
 
 bool UActiveAbility::CommitAbility(
@@ -53,12 +47,12 @@ bool UActiveAbility::CommitAbilityCost(
 
 int32 UActiveAbility::GetMaxHitCountAtLevel_Implementation(int32 Level) const
 {
-	return MaxHitCount.AsInteger(Level);
+	return MaxHitCount.AsInteger(Level) + AdditionalMaxHitCount;
 }
 
 float UActiveAbility::GetEffectChangePerHitAtLevel_Implementation(int32 Level) const
 {
-	return EffectChangePerHit.GetValueAtLevel(Level);
+	return EffectChangePerHit.GetValueAtLevel(Level) + AdditionalEffectChangePerHit;
 }
 
 bool UActiveAbility::IsActiveAbility_Implementation() const
@@ -77,6 +71,32 @@ void UActiveAbility::GetMontageParams(
 	RootMotionScale = GetAnimRootMotionTranslateScale();
 }
 
+AActor* UActiveAbility::GetNextRicochetTarget(AActor* HitTarget)
+{
+  if (!IsValid(HitTarget)) return nullptr;
+  
+  TArray ActorsToIgnore({GetAvatarActorFromActorInfo()});
+  ActorsToIgnore.Append(RicochetHitActors);
+  AActor* NextTarget = UAuraAbilitySystemLibrary::GetClosestActorToTarget(
+    HitTarget,
+    RicochetRadius.GetValueAtLevel(GetAbilityLevel()),
+    AbilityTargetTeam == ETargetTeam::Both ? AbilityTargetTeam : ETargetTeam::Friends,
+    ActorsToIgnore
+    );
+
+  RicochetHitActors.Add(HitTarget);
+  return NextTarget;
+}
+
+void UActiveAbility::ApplyUpgrade_Implementation(const FGameplayTag& UpgradeTag)
+{
+  UE_LOG(
+    LogAura,
+    Error,
+    TEXT("ApplyUpgrade is not overriden in BP, but ability has UpgradeTags!")
+  );
+}
+
 UAnimMontage* UActiveAbility::GetAnimMontage() const
 {
   return MontageToPlay;
@@ -85,27 +105,27 @@ UAnimMontage* UActiveAbility::GetAnimMontage() const
 float UActiveAbility::GetMontagePlayRate() const
 {
   const float ActionSpeed = IAttributeSetInterface::Execute_GetActionSpeed(GetOwningActorFromActorInfo());
-	return MontagePlayRate.GetValueAtLevel(GetAbilityLevel()) * ActionSpeed;
+	return MontagePlayRate.GetValueAtLevel(GetAbilityLevel()) * ActionSpeed + AdditionalMontagePlayRate;
 }
 
 float UActiveAbility::GetAnimRootMotionTranslateScale() const
 {
-	return AnimRootMotionTranslateScale.GetValueAtLevel(GetAbilityLevel());
+	return AnimRootMotionTranslateScale.GetValueAtLevel(GetAbilityLevel()) + AdditionalAnimRootMotionTranslateScale;
 }
 
 int32 UActiveAbility::GetMaxHitCount() const
 {
-	return MaxHitCount.AsInteger(GetAbilityLevel()); 
+	return MaxHitCount.AsInteger(GetAbilityLevel()) + AdditionalMaxHitCount; 
 }
 
 float UActiveAbility::GetEffectChangePerHit() const
 {
-	return EffectChangePerHit.GetValueAtLevel(GetAbilityLevel());
+	return EffectChangePerHit.GetValueAtLevel(GetAbilityLevel()) + AdditionalEffectChangePerHit;
 }
 
-void UActiveAbility::ClearBounceHitTargets()
+void UActiveAbility::ClearRicochetHitTargets()
 {
-	BounceHitActors.Empty();
+	RicochetHitActors.Empty();
 }
 
 bool UActiveAbility::CheckForClarityEffect(const FGameplayAbilityActorInfo* ActorInfo)

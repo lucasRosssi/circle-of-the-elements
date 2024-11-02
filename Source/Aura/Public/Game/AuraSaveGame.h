@@ -180,6 +180,8 @@ struct FUpgradeManagerSave
   UPROPERTY(BlueprintReadWrite)
   TMap<FGameplayTag, int32> AcquiredUpgrades = TMap<FGameplayTag, int32>();
   UPROPERTY(BlueprintReadWrite)
+  FGameplayTagContainer EquippedUpgrades = FGameplayTagContainer();
+  UPROPERTY(BlueprintReadWrite)
   FGameplayTagContainer BlockedUpgrades = FGameplayTagContainer();
 };
 

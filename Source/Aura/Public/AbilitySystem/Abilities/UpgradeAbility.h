@@ -17,7 +17,9 @@ class AURA_API UUpgradeAbility : public UPassiveAbility
 public:
   UUpgradeAbility();
 
+
 protected:
+
 
 private:
 };

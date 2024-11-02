@@ -1419,14 +1419,24 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
     FString("Dodge ability upgrade tag")
     );
 
-  GameplayTags.Upgrades_Ability_Dodge_Charges = UGameplayTagsManager::Get().AddNativeGameplayTag(
-    FName("Upgrades.Ability.Dodge.Charges"),
-    FString("Dodge Charges upgrade tag")
-    );
-  
   GameplayTags.Upgrades_Ability_Dodge_Dash = UGameplayTagsManager::Get().AddNativeGameplayTag(
     FName("Upgrades.Ability.Dodge.Dash"),
     FString("Dodge Dash upgrade tag")
+    );
+
+  GameplayTags.Upgrades_Ability_Dodge_Rush = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Upgrades.Ability.Dodge.Rush"),
+    FString("Dodge Rush upgrade tag")
+    );
+
+  GameplayTags.Upgrades_Ability_Dodge_Boost = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Upgrades.Ability.Dodge.Boost"),
+    FString("Dodge Boost upgrade tag")
+    );
+
+  GameplayTags.Upgrades_Ability_Dodge_Maneuver = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Upgrades.Ability.Dodge.Maneuver"),
+    FString("Dodge Maneuver upgrade tag")
     );
 
 	/*
