@@ -46,7 +46,7 @@ class AURA_API UBaseAbility : public UGameplayAbility, public IAbilityInterface
 public:
   UBaseAbility();
 
-  virtual void OnGiveAbility(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec) override;
+  virtual void OnAvatarSet(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec) override;
   virtual bool CommitAbility(
     const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
     const FGameplayAbilityActivationInfo ActivationInfo, FGameplayTagContainer* OptionalRelevantTags
@@ -139,6 +139,11 @@ protected:
   UFUNCTION(BlueprintCallable)
   void EnablePlayerInput();
 
+  UFUNCTION(BlueprintPure, Category="Ability Utilities", meta=(DefaultToSelf="Target", HidePin="Target"))
+  FGameplayEffectSpec GetEffectSpecByTag(const FGameplayTag& Tag);
+  UFUNCTION(BlueprintPure, Category="Ability Utilities", meta=(DefaultToSelf="Target", HidePin="Target"))
+  int32 GetEffectLevelByTag(const FGameplayTag& Tag);
+
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Status Effects")
   TArray<FStatusEffectApplicationData> StatusEffectData;
 
@@ -221,6 +226,9 @@ protected:
   ETargetTeam HealTarget = ETargetTeam::Friends;
   UPROPERTY(EditDefaultsOnly, Category="Heal")
   FScalableFloat Heal;
+
+  UPROPERTY(EditDefaultsOnly, Category="Upgrade")
+  FGameplayTagContainer UpgradeTags;
 
 private:
   void HandleCooldownRecharge(

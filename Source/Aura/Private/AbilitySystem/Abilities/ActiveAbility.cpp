@@ -8,16 +8,6 @@
 #include "Aura/AuraLogChannels.h"
 #include "Interfaces/AttributeSetInterface.h"
 
-void UActiveAbility::OnGiveAbility(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec)
-{
-  Super::OnGiveAbility(ActorInfo, Spec);
-
-  for (const FGameplayTag& UpgradeTag : UpgradeTags)
-  {
-    ApplyUpgrade(UpgradeTag);
-  }
-}
-
 bool UActiveAbility::CommitAbility(
   const FGameplayAbilitySpecHandle Handle,
   const FGameplayAbilityActorInfo* ActorInfo,
@@ -94,6 +84,15 @@ void UActiveAbility::ApplyUpgrade_Implementation(const FGameplayTag& UpgradeTag)
     LogAura,
     Error,
     TEXT("ApplyUpgrade is not overriden in BP, but ability has UpgradeTags!")
+  );
+}
+
+void UActiveAbility::RemoveUpgrade_Implementation(const FGameplayTag& UpgradeTag)
+{
+  UE_LOG(
+    LogAura,
+    Error,
+    TEXT("RemoveUpgrade is not overriden in BP, but ability has UpgradeTags!")
   );
 }
 

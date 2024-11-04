@@ -296,6 +296,19 @@ FGameplayAbilitySpec* UAuraAbilitySystemComponent::GetSpecFromAbilityTag(
 	return nullptr;
 }
 
+FGameplayEffectSpec UAuraAbilitySystemComponent::GetEffectSpecByTag(const FGameplayTag& EffectTag)
+{
+  const FGameplayEffectQuery Query = FGameplayEffectQuery::MakeQuery_MatchAllOwningTags(FGameplayTagContainer({ EffectTag }));
+  const TArray<FActiveGameplayEffectHandle> Effects = GetActiveEffects(Query);
+
+  if (Effects.IsEmpty()) return FGameplayEffectSpec();
+
+  const FActiveGameplayEffect* ActiveEffect = GetActiveGameplayEffect(Effects[0]);
+  if (!ActiveEffect) return FGameplayEffectSpec();
+
+  return ActiveEffect->Spec;
+}
+
 void UAuraAbilitySystemComponent::UpgradeAttribute(const FGameplayTag& AttributeTag)
 {
 	if (

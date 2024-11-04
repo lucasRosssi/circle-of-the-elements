@@ -91,6 +91,8 @@ public:
 
 	FGameplayAbilitySpec* GetSpecFromAbilityTag(const FGameplayTag& AbilityTag);
 
+  FGameplayEffectSpec GetEffectSpecByTag(const FGameplayTag& EffectTag);
+
 	void UpgradeAttribute(const FGameplayTag& AttributeTag);
 
 	UFUNCTION(Server, Reliable)

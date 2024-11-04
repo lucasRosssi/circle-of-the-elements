@@ -19,8 +19,6 @@ class AURA_API UActiveAbility : public UBaseAbility
 	GENERATED_BODY()
 
 public:
-  virtual void OnGiveAbility(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec) override;
-  
   virtual bool CommitAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, FGameplayTagContainer* OptionalRelevantTags) override;
   virtual bool CommitAbilityCost(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, FGameplayTagContainer* OptionalRelevantTags) override;
   
@@ -29,13 +27,12 @@ public:
 	virtual int32 GetMaxHitCountAtLevel_Implementation (int32 Level) const override;
 	virtual float GetEffectChangePerHitAtLevel_Implementation(int32 Level) const override;
 	virtual bool IsActiveAbility_Implementation() const override;
+  virtual void ApplyUpgrade_Implementation(const FGameplayTag& UpgradeTag) override;
+  virtual void RemoveUpgrade_Implementation(const FGameplayTag& UpgradeTag) override;
 	// END Ability Interface overrides
   
 	UFUNCTION(BlueprintCallable)
 	AActor* GetNextRicochetTarget(AActor* HitTarget);
-
-  UFUNCTION(BlueprintNativeEvent)
-  void ApplyUpgrade(const FGameplayTag& UpgradeTag);
 
   // Starting input for the player, when the ability is granted
 	UPROPERTY(EditDefaultsOnly, Category="Input", meta=(EditCondition="bIsPlayerAbility", DisplayPriority=1))
@@ -136,9 +133,6 @@ protected:
 		meta=(EditCondition="RangedHitMode == EAbilityHitMode::Ricochet", EditConditionHides)
 		)
 	bool bCanRepeatTarget = false;
-
-  UPROPERTY(EditDefaultsOnly, Category="Upgrade")
-  FGameplayTagContainer UpgradeTags;
 
 private:
   bool CheckForClarityEffect(const FGameplayAbilityActorInfo* ActorInfo);

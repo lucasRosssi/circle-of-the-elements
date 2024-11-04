@@ -25,10 +25,13 @@ struct FAuraUpgradeInfo
   FGameplayTag UpgradeTag = FGameplayTag();
 
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-  TSubclassOf<UUpgradeAbility> Ability;
+  TSubclassOf<UUpgradeAbility> UpgradeAbility;
 
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(Categories="Abilities.Passive.Upgrade"))
-  FGameplayTag AbilityTag = FGameplayTag();
+  FGameplayTag UpgradeAbilityTag = FGameplayTag();
+
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(Categories="Abilities"))
+  FGameplayTag TargetAbilityTag = FGameplayTag();
 
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
   ECharacterName Hero = ECharacterName::Undefined;
@@ -63,7 +66,7 @@ struct FAuraUpgradeInfo
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
   TArray<FScalableFloat> DescriptionPercents;
 
-  bool IsValid() const { return AbilityTag.IsValid() || UpgradeTag.IsValid(); }
+  bool IsValid() const { return UpgradeAbilityTag.IsValid() || UpgradeTag.IsValid(); }
 };
 
 USTRUCT(BlueprintType)

@@ -41,6 +41,8 @@ public:
 
   UFUNCTION(BlueprintCallable)
   void EquipUpgrade(const FGameplayTag& UpgradeTag);
+  UFUNCTION(BlueprintCallable)
+  void UnequipUpgrade(const FGameplayTag& UpgradeTag);
 
   UFUNCTION(BlueprintCallable)
   FString GetUpgradeDescription(const FAuraUpgradeInfo& AuraUpgradeInfo, int32 Level);

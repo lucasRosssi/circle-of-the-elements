@@ -30,7 +30,8 @@ public:
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void OnRep_PlayerState() override;
 
-	virtual void InitializeAbilities() override;
+  virtual void InitializeAbilities() override;
+  void InitializeUpgrades();
 	
 	/** Combat Interface */
 	virtual void Die(const FVector& DeathImpulse) override;

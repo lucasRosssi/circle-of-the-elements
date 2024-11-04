@@ -53,6 +53,7 @@ void AAuraHero::PossessedBy(AController* NewController)
   // Init ability actor info for the Server
   InitAbilityActorInfo();
   InitializeAttributes();
+  InitializeUpgrades();
   InitializeAbilities();
 
   if (ActiveCamera)
@@ -78,6 +79,10 @@ void AAuraHero::InitializeAbilities()
   {
     AbilityManager->GiveAcquiredAbilities(this);
   }
+}
+
+void AAuraHero::InitializeUpgrades()
+{
   if (UUpgradeManager* UpgradeManager = UAuraSystemsLibrary::GetUpgradeManager(this))
   {
     UpgradeManager->GiveAcquiredUpgrades();

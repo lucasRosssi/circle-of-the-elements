@@ -49,4 +49,9 @@ public:
 
   UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
   int32 GetRoundedHealAtLevel(int32 Level) const;
+
+  UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+  void ApplyUpgrade(const FGameplayTag& UpgradeTag);
+  UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+  void RemoveUpgrade(const FGameplayTag& UpgradeTag);
 };
