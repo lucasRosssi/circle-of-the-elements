@@ -99,6 +99,9 @@ protected:
 private:
 	virtual void InitAbilityActorInfo() override;
 
+  UFUNCTION()
+  void SaveCurrentHealth();
+
   AAuraPlayerState* GetAuraPlayerState();
 
   UAuraSaveGame* GetSaveGame();

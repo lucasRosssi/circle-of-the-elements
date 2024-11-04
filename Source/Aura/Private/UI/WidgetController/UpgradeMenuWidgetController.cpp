@@ -78,9 +78,7 @@ void UUpgradeMenuWidgetController::UnequipUpgrade(const FGameplayTag& UpgradeTag
 
 FString UUpgradeMenuWidgetController::GetUpgradeDescription(const FAuraUpgradeInfo& AuraUpgradeInfo, int32 Level)
 {
-  const bool bNextLevel = Level > 0 && GetUpgradeManager()->HasResourcesToUnlock(AuraUpgradeInfo.UpgradeTag);
-
-  return UpgradeManager->GetUpgradeDescription(AuraUpgradeInfo, Level, bNextLevel);
+  return UpgradeManager->GetUpgradeDescription(AuraUpgradeInfo, Level);
 }
 
 bool UUpgradeMenuWidgetController::CanBeUnlocked(const FGameplayTag& UpgradeTag)

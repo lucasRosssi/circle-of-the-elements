@@ -126,7 +126,6 @@ public:
 	bool IsInputTagAssigned(const FGameplayTag& InputTag);
 	
 protected:
-  virtual void BeginPlay() override;
 	virtual void OnRep_ActivateAbilities() override;
 	
 	void EffectApplied(

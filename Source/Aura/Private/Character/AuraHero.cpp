@@ -20,6 +20,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Level/RegionInfo.h"
 #include "Managers/AbilityManager.h"
+#include "Managers/CombatManager.h"
 #include "Managers/UpgradeManager.h"
 #include "Player/AuraPlayerState.h"
 #include "Player/AuraPlayerController.h"
@@ -325,6 +326,11 @@ void AAuraHero::BeginPlay()
     ActiveCamera->SetPlayerActor(this);
     ActiveCamera->SetCameraState(ECameraState::Default);
   }
+
+  if (UCombatManager* CombatManager = UAuraSystemsLibrary::GetCombatManager(this))
+  {
+    CombatManager->OnCombatFinishedDelegate.AddUniqueDynamic(this, &AAuraHero::SaveCurrentHealth);
+  }
 }
 
 void AAuraHero::InitializeAttributes()
@@ -400,6 +406,14 @@ void AAuraHero::InitAbilityActorInfo()
       AuraPlayerState,
       AbilitySystemComponent,
       AttributeSet);
+  }
+}
+
+void AAuraHero::SaveCurrentHealth()
+{
+  if (GetSaveGame())
+  {
+    SaveGame->HeroHealth = AttributeSet->GetHealth();
   }
 }
 
