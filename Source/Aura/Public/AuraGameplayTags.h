@@ -314,6 +314,8 @@ public:
   FGameplayTag Abilities_Passive;
   FGameplayTag Abilities_Passive_Common;
   FGameplayTag Abilities_Passive_Upgrade;
+
+  // Soul upgrades
   
   FGameplayTag Abilities_Passive_Upgrade_SoulAbsorption;
   FGameplayTag Abilities_Passive_Upgrade_SoulBalance;
@@ -326,14 +328,52 @@ public:
   FGameplayTag Abilities_Passive_Upgrade_Clarity;
   
   FGameplayTag Abilities_Passive_Upgrade_SecondWind;
-	
-	FGameplayTag Abilities_Passive_Aura;
-	FGameplayTag Abilities_Passive_Aura_EnergyShield;
-	FGameplayTag Cooldown_Passive_Aura_EnergyShield;
-	FGameplayTag Abilities_Passive_Aura_LifeSiphon;
-	FGameplayTag Abilities_Passive_Aura_SpiritSiphon;
 
-	FGameplayTag Abilities_Passive_Vilkar;
+  // Fire upgrades
+
+  FGameplayTag Abilities_Passive_Upgrade_FireAbsorption;
+  FGameplayTag Abilities_Passive_Upgrade_FireControl;
+  FGameplayTag Abilities_Passive_Upgrade_Pyromania;
+
+  // Ice upgrades
+
+  FGameplayTag Abilities_Passive_Upgrade_IceAbsorption;
+  FGameplayTag Abilities_Passive_Upgrade_IceControl;
+  FGameplayTag Abilities_Passive_Upgrade_Cryogenesis;
+
+  // Lightning upgrades
+  
+  FGameplayTag Abilities_Passive_Upgrade_LightningAbsorption;
+  FGameplayTag Abilities_Passive_Upgrade_LightningControl;
+  FGameplayTag Abilities_Passive_Upgrade_Stormbound;
+
+  // Necrotic upgrades
+
+  FGameplayTag Abilities_Passive_Upgrade_NecroticAbsorption;
+  FGameplayTag Abilities_Passive_Upgrade_NecroticControl;
+  FGameplayTag Abilities_Passive_Upgrade_FeedOnTheWeak;
+
+  // Arcane upgrades
+
+  FGameplayTag Abilities_Passive_Upgrade_ArcaneAbsorption;
+  FGameplayTag Abilities_Passive_Upgrade_ArcaneControl;
+  FGameplayTag Abilities_Passive_Upgrade_MysticSurge;
+
+  // Physical upgrades
+
+  FGameplayTag Abilities_Passive_Upgrade_PhysicalAbsorption;
+  FGameplayTag Abilities_Passive_Upgrade_PhysicalBalance;
+  FGameplayTag Abilities_Passive_Upgrade_BrawlStar;
+
+  // Perks
+	
+  FGameplayTag Abilities_Passive_Aura;
+  FGameplayTag Abilities_Passive_Aura_EnergyShield;
+  FGameplayTag Cooldown_Passive_Aura_EnergyShield;
+  FGameplayTag Abilities_Passive_Aura_LifeSiphon;
+  FGameplayTag Abilities_Passive_Aura_SpiritSiphon;
+
+  FGameplayTag Abilities_Passive_Vilkar;
 
   FGameplayTag Abilities_Event;
   FGameplayTag Abilities_Event_SecondWindTrigger;
@@ -357,24 +397,43 @@ public:
   FGameplayTag Upgrades_Soul_SecondWind;
   
   FGameplayTag Upgrades_Fire;
+  
   FGameplayTag Upgrades_Fire_Absorption;
+  FGameplayTag Upgrades_Fire_Control;
+  FGameplayTag Upgrades_Fire_Pyromania;
   
   FGameplayTag Upgrades_Ice;
+  
   FGameplayTag Upgrades_Ice_Absorption;
+  FGameplayTag Upgrades_Ice_Control;
+  FGameplayTag Upgrades_Ice_Cryogenesis;
   
   FGameplayTag Upgrades_Lightning;
+  
   FGameplayTag Upgrades_Lightning_Absorption;
+  FGameplayTag Upgrades_Lightning_Control;
+  FGameplayTag Upgrades_Lightning_Stormbound;
   
   FGameplayTag Upgrades_Necrotic;
+  
   FGameplayTag Upgrades_Necrotic_Absorption;
+  FGameplayTag Upgrades_Necrotic_Control;
+  FGameplayTag Upgrades_Necrotic_FeedOnTheWeak;
   
   FGameplayTag Upgrades_Arcane;
+  
   FGameplayTag Upgrades_Arcane_Absorption;
+  FGameplayTag Upgrades_Arcane_Control;
+  FGameplayTag Upgrades_Arcane_MysticSurge;
   
   FGameplayTag Upgrades_Physical;
+  
   FGameplayTag Upgrades_Physical_Absorption;
+  FGameplayTag Upgrades_Physical_Balance;
+  FGameplayTag Upgrades_Physical_BrawlStar;
 
   FGameplayTag Upgrades_Ability_Dodge;
+  
   FGameplayTag Upgrades_Ability_Dodge_Boost;
   FGameplayTag Upgrades_Ability_Dodge_Dash;
   FGameplayTag Upgrades_Ability_Dodge_Rush;

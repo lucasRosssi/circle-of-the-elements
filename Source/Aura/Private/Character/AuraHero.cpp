@@ -203,6 +203,11 @@ void AAuraHero::SpendAttributePointsRandomly_Implementation()
   }
 }
 
+void AAuraHero::AddAttribute_Implementation(const FGameplayTag& AttributeTag, int32 Amount)
+{
+  GetAuraASC()->AddAttribute(AttributeTag, Amount);
+}
+
 void AAuraHero::StartDeath()
 {
   bDead = true;

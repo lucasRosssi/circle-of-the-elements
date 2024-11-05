@@ -309,6 +309,28 @@ FGameplayEffectSpec UAuraAbilitySystemComponent::GetEffectSpecByTag(const FGamep
   return ActiveEffect->Spec;
 }
 
+void UAuraAbilitySystemComponent::AddAttribute(const FGameplayTag& AttributeTag, int32 Amount)
+{
+  FGameplayEventData Payload;
+  Payload.EventTag = AttributeTag;
+  Payload.EventMagnitude = Amount;
+
+  UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(
+    GetAvatarActor(),
+    AttributeTag,
+    Payload
+  );
+  
+  if (float* Attribute = GetSaveGame()->AttributeSet.Attributes.Find(AttributeTag))
+  {
+    *Attribute += Amount;
+  }
+  else
+  {
+    GetSaveGame()->AttributeSet.Attributes.Add(AttributeTag, 10 + Amount);
+  }
+}
+
 void UAuraAbilitySystemComponent::UpgradeAttribute(const FGameplayTag& AttributeTag)
 {
 	if (
@@ -322,24 +344,7 @@ void UAuraAbilitySystemComponent::UpgradeAttribute(const FGameplayTag& Attribute
 void UAuraAbilitySystemComponent::ServerUpgradeAttribute_Implementation(
 	const FGameplayTag& AttributeTag)
 {
-	FGameplayEventData Payload;
-	Payload.EventTag = AttributeTag;
-	Payload.EventMagnitude = 1.f;
-
-	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(
-		GetAvatarActor(),
-		AttributeTag,
-		Payload
-	);
-  
-  if (float* Attribute = GetSaveGame()->AttributeSet.Attributes.Find(AttributeTag))
-  {
-    *Attribute += 1.f;
-  }
-  else
-  {
-    GetSaveGame()->AttributeSet.Attributes.Add(AttributeTag, 11);
-  }
+	AddAttribute(AttributeTag);
 
 	IPlayerInterface::Execute_AddAttributePoints(GetAvatarActor(), -1);
 }

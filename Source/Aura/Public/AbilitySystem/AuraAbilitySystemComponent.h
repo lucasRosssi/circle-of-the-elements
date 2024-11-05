@@ -92,6 +92,8 @@ public:
 	FGameplayAbilitySpec* GetSpecFromAbilityTag(const FGameplayTag& AbilityTag);
 
   FGameplayEffectSpec GetEffectSpecByTag(const FGameplayTag& EffectTag);
+  
+  void AddAttribute(const FGameplayTag& AttributeTag, int32 Amount = 1);
 
 	void UpgradeAttribute(const FGameplayTag& AttributeTag);
 
