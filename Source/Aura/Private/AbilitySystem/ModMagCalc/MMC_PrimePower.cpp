@@ -25,5 +25,5 @@ float UMMC_PrimePower::CalculateBaseMagnitude_Implementation(const FGameplayEffe
 	float PrimeAttributeValue = 0.f;
 	GetCapturedAttributeMagnitude(PrimeAttributeDef, Spec, EvaluationParameters, PrimeAttributeValue);
 	
-	return (PrimeAttributeValue - 10.f) * 0.05f;
+	return (PrimeAttributeValue - 10.f) * 0.03f;
 }
