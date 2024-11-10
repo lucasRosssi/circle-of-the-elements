@@ -8,4 +8,5 @@
 UUpgradeAbility::UUpgradeAbility()
 {
   bActivatesOnGranted = false;
+  
 }

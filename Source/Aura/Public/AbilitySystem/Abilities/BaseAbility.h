@@ -204,7 +204,7 @@ protected:
     meta=(EditCondition="bUseCharges", EditConditionHides)
   )
   FScalableFloat MaxCharges = 1;
-  
+
   UPROPERTY(BlueprintReadWrite)
   int32 AdditionalCharges = 0;
 
