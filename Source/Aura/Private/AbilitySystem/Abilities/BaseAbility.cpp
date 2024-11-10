@@ -20,37 +20,37 @@ UBaseAbility::UBaseAbility()
 	bServerRespectsRemoteAbilityCancellation = false;
 }
 
-void UBaseAbility::OnGiveAbility(
-	const FGameplayAbilityActorInfo* ActorInfo,
-	const FGameplayAbilitySpec& Spec
-	)
+void UBaseAbility::OnAvatarSet(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec)
 {
-	Super::OnGiveAbility(ActorInfo, Spec);
+  for (const FGameplayTag& UpgradeTag : UpgradeTags)
+  {
+    Execute_ApplyUpgrade(this, UpgradeTag);
+  }
 	
-	if (IsChargesModeActive())
-	{
-		if (InstancingPolicy != EGameplayAbilityInstancingPolicy::InstancedPerActor)
-		{
-			UE_LOG(LogAura, Error, TEXT("Ability with Charges (%s) needs to be Instanced Per Actor!!"), *GetName());
-			return;
-		}
+  if (IsChargesModeActive())
+  {
+    if (InstancingPolicy != EGameplayAbilityInstancingPolicy::InstancedPerActor)
+    {
+      UE_LOG(LogAura, Error, TEXT("Ability with Charges (%s) needs to be Instanced Per Actor!!"), *GetName());
+      return;
+    }
 		
-		ApplyGameplayEffectToOwner(
-			Spec.Handle,
-			ActorInfo,
-			Spec.ActivationInfo,
-			GetChargesEffect(),
-			1.f,
-			GetMaxCharges()
-			);
+    ApplyGameplayEffectToOwner(
+      Spec.Handle,
+      ActorInfo,
+      Spec.ActivationInfo,
+      GetChargesEffect(),
+      1.f,
+      GetMaxCharges()
+      );
 		
-		FGameplayTagContainer ChargesTags;
-		GetChargesEffect()->GetOwnedGameplayTags(ChargesTags);
+    FGameplayTagContainer ChargesTags;
+    GetChargesEffect()->GetOwnedGameplayTags(ChargesTags);
 		
-		ActivationRequiredTags.AppendTags(ChargesTags);
+    ActivationRequiredTags.AppendTags(ChargesTags);
 
-		GetChargesEffect()->StackLimitCount = GetMaxCharges();
-	}
+    GetChargesEffect()->StackLimitCount = GetMaxCharges();
+  }
 }
 
 bool UBaseAbility::CommitAbility(
@@ -198,22 +198,17 @@ int32 UBaseAbility::GetRoundedCooldownAtLevel(int32 Level) const
 
 int32 UBaseAbility::GetMaxChargesAtLevel(int32 Level) const
 {
-	return FMath::RoundToInt32(MaxCharges.GetValueAtLevel(Level));
+	return FMath::RoundToInt32(MaxCharges.GetValueAtLevel(Level)) + AdditionalCharges;
 }
 
-float UBaseAbility::GetAreaInnerRadius() const
+float UBaseAbility::GetAreaRadius() const
 {
-	return AreaInnerRadius.GetValueAtLevel(GetAbilityLevel());
-}
-
-float UBaseAbility::GetAreaOuterRadius() const
-{
-	return AreaOuterRadius.GetValueAtLevel(GetAbilityLevel());
+	return AreaRadius.GetValueAtLevel(GetAbilityLevel()) + AdditionalAreaRadius;
 }
 
 int32 UBaseAbility::GetMaxCharges() const
 {
-	return FMath::RoundToInt32(MaxCharges.GetValueAtLevel(GetAbilityLevel()));
+	return FMath::RoundToInt32(MaxCharges.GetValueAtLevel(GetAbilityLevel())) + AdditionalCharges;
 }
 
 void UBaseAbility::DisablePlayerInput()
@@ -230,6 +225,29 @@ void UBaseAbility::EnablePlayerInput()
   {
     PlayerController->EnableInput(PlayerController);
   }
+}
+
+FGameplayEffectSpec UBaseAbility::GetEffectSpecByTag(const FGameplayTag& Tag)
+{
+  if (!IsInstantiated()) return FGameplayEffectSpec();
+  
+  const UAbilitySystemComponent* ASC = GetAbilitySystemComponentFromActorInfo();
+  if (!ASC) return FGameplayEffectSpec();
+
+  const FGameplayEffectQuery Query = FGameplayEffectQuery::MakeQuery_MatchAllOwningTags(FGameplayTagContainer({ Tag }));
+  const TArray<FActiveGameplayEffectHandle> Effects = ASC->GetActiveEffects(Query);
+
+  if (Effects.IsEmpty()) return FGameplayEffectSpec();
+
+  const FActiveGameplayEffect* ActiveEffect = ASC->GetActiveGameplayEffect(Effects[0]);
+  if (!ActiveEffect) return FGameplayEffectSpec();
+
+  return ActiveEffect->Spec;
+}
+
+int32 UBaseAbility::GetEffectLevelByTag(const FGameplayTag& Tag)
+{
+  return GetEffectSpecByTag(Tag).GetLevel();
 }
 
 UGameplayEffect* UBaseAbility::GetChargesEffect()
@@ -254,8 +272,8 @@ FAbilityParams UBaseAbility::MakeAbilityParamsFromDefaults(AActor* TargetActor) 
 	if (bIsAreaAbility)
 	{
 		AbilityParams.bIsAreaAbility = true;
-		AbilityParams.AreaInnerRadius = AreaInnerRadius.GetValueAtLevel(GetAbilityLevel());
-		AbilityParams.AreaOuterRadius = AreaOuterRadius.GetValueAtLevel(GetAbilityLevel());
+		AbilityParams.AreaInnerRadius = AreaRadius.GetValueAtLevel(GetAbilityLevel());
+		AbilityParams.AreaOuterRadius = AbilityParams.AreaInnerRadius;
 		AbilityParams.AreaOrigin = AreaOrigin;
 		if (IsValid(TargetActor))
 		{
@@ -433,7 +451,7 @@ void UBaseAbility::HandleCooldownRecharge(
 
 bool UBaseAbility::IsChargesModeActive() const
 {
-	return bUseCharges && MaxCharges.GetValueAtLevel(GetAbilityLevel()) > 1 && IsValid(ChargesEffectClass);
+	return bUseCharges && IsValid(ChargesEffectClass);
 }
 
 float UBaseAbility::GetHealAtLevel(int32 Level) const

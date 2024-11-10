@@ -48,23 +48,26 @@ public:
 		FText& UpgradeDetails
 		);
   UFUNCTION(BlueprintPure, Category="Manager|Upgrade|Description")
-  FString GetUpgradeDescription(
-    const FAuraUpgradeInfo& AuraUpgradeInfo,
-    int32 Level,
-    bool bNextLevel
-  );
+  FString GetUpgradeDescription(const FAuraUpgradeInfo& AuraUpgradeInfo, int32 Level);
 
   bool HasResourcesToUnlock(const FGameplayTag& UpgradeTag);
   bool HasRequiredUpgrades(const FGameplayTag& UpgradeTag);
   bool IsMaxed(const FGameplayTag& UpgradeTag);
   bool IsMaxed(const FAuraUpgradeInfo& AuraUpgradeInfo);
+  bool IsAcquired(const FGameplayTag& UpgradeTag);
+  bool IsEquipped(const FGameplayTag& UpgradeTag);
 
+  int32 GetUpgradeLevel(const FGameplayTag& UpgradeTag);
+  
   void UnlockUpgrade(const FGameplayTag& UpgradeTag, int32 Level = 1);
+  void EquipUpgrade(const FGameplayTag& UpgradeTag, bool bSkipMutuallyExclusiveCheck = false);
+  void UnequipUpgrade(const FGameplayTag& UpgradeTag);
 
   UPROPERTY(BlueprintAssignable, Category="Manager|Upgrade")
   FOnUpgradeUnlock OnUpgradeUnlockDelegate;
 
 protected:
+  // Map of acquired upgrades to their level
 	UPROPERTY(
 		EditDefaultsOnly,
 		BlueprintReadWrite,
@@ -72,6 +75,13 @@ protected:
 		meta=(Categories="Upgrades")
 		)
 	TMap<FGameplayTag, int32> AcquiredUpgrades;
+  UPROPERTY(
+    EditDefaultsOnly,
+    BlueprintReadWrite,
+    Category="Manager|Upgrade",
+    meta=(Categories="Upgrades")
+    )
+  FGameplayTagContainer EquippedUpgrades;
 	UPROPERTY(
 		EditDefaultsOnly,
 		BlueprintReadWrite,

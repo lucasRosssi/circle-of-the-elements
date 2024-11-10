@@ -7,6 +7,7 @@
 #include "UObject/Interface.h"
 #include "PlayerInterface.generated.h"
 
+struct FGameplayTag;
 class UInteractComponent;
 class ATargetingActor;
 enum class ETargetTeam : uint8;
@@ -73,4 +74,13 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	ECharacterName GetHeroName();
+
+  UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+  void AddResource(const FGameplayTag& ResourceTag, int32 Amount);
+
+  UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+  void SpendAttributePointsRandomly();
+
+  UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+  void AddAttribute(const FGameplayTag& AttributeTag, int32 Amount);
 };

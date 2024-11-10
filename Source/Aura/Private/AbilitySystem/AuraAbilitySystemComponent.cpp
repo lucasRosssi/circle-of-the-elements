@@ -6,6 +6,7 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AuraGameplayTags.h"
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
+#include "AbilitySystem/AuraAttributeSet.h"
 #include "AbilitySystem/Abilities/ActiveAbility.h"
 #include "Aura/AuraLogChannels.h"
 #include "Character/AuraCharacterBase.h"
@@ -295,6 +296,41 @@ FGameplayAbilitySpec* UAuraAbilitySystemComponent::GetSpecFromAbilityTag(
 	return nullptr;
 }
 
+FGameplayEffectSpec UAuraAbilitySystemComponent::GetEffectSpecByTag(const FGameplayTag& EffectTag)
+{
+  const FGameplayEffectQuery Query = FGameplayEffectQuery::MakeQuery_MatchAllOwningTags(FGameplayTagContainer({ EffectTag }));
+  const TArray<FActiveGameplayEffectHandle> Effects = GetActiveEffects(Query);
+
+  if (Effects.IsEmpty()) return FGameplayEffectSpec();
+
+  const FActiveGameplayEffect* ActiveEffect = GetActiveGameplayEffect(Effects[0]);
+  if (!ActiveEffect) return FGameplayEffectSpec();
+
+  return ActiveEffect->Spec;
+}
+
+void UAuraAbilitySystemComponent::AddAttribute(const FGameplayTag& AttributeTag, int32 Amount)
+{
+  FGameplayEventData Payload;
+  Payload.EventTag = AttributeTag;
+  Payload.EventMagnitude = Amount;
+
+  UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(
+    GetAvatarActor(),
+    AttributeTag,
+    Payload
+  );
+  
+  if (float* Attribute = GetSaveGame()->AttributeSet.Attributes.Find(AttributeTag))
+  {
+    *Attribute += Amount;
+  }
+  else
+  {
+    GetSaveGame()->AttributeSet.Attributes.Add(AttributeTag, 10 + Amount);
+  }
+}
+
 void UAuraAbilitySystemComponent::UpgradeAttribute(const FGameplayTag& AttributeTag)
 {
 	if (
@@ -308,24 +344,7 @@ void UAuraAbilitySystemComponent::UpgradeAttribute(const FGameplayTag& Attribute
 void UAuraAbilitySystemComponent::ServerUpgradeAttribute_Implementation(
 	const FGameplayTag& AttributeTag)
 {
-	FGameplayEventData Payload;
-	Payload.EventTag = AttributeTag;
-	Payload.EventMagnitude = 1.f;
-
-	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(
-		GetAvatarActor(),
-		AttributeTag,
-		Payload
-	);
-  
-  if (float* Attribute = GetSaveGame()->AttributeSet.Attributes.Find(AttributeTag))
-  {
-    *Attribute += 1.f;
-  }
-  else
-  {
-    GetSaveGame()->AttributeSet.Attributes.Add(AttributeTag, 11);
-  }
+	AddAttribute(AttributeTag);
 
 	IPlayerInterface::Execute_AddAttributePoints(GetAvatarActor(), -1);
 }

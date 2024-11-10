@@ -30,7 +30,8 @@ public:
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void OnRep_PlayerState() override;
 
-	virtual void InitializeAbilities() override;
+  virtual void InitializeAbilities() override;
+  void InitializeUpgrades();
 	
 	/** Combat Interface */
 	virtual void Die(const FVector& DeathImpulse) override;
@@ -53,6 +54,9 @@ public:
   virtual void AddInteractableToList_Implementation(const UInteractComponent* InteractableComponent) override;
   virtual void RemoveInteractableFromList_Implementation(const UInteractComponent* InteractableComponent) override;
 	virtual ECharacterName GetHeroName_Implementation() override;
+  virtual void AddResource_Implementation(const FGameplayTag& ResourceTag, int32 Amount) override;
+  virtual void SpendAttributePointsRandomly_Implementation() override;
+  virtual void AddAttribute_Implementation(const FGameplayTag& AttributeTag, int32 Amount) override;
 	/** end Player Interface */
 	
 	void StartDeath();
@@ -95,6 +99,9 @@ protected:
 
 private:
 	virtual void InitAbilityActorInfo() override;
+
+  UFUNCTION()
+  void SaveCurrentHealth();
 
   AAuraPlayerState* GetAuraPlayerState();
 

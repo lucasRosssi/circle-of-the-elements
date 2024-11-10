@@ -3,7 +3,10 @@
 
 #include "AbilitySystem/Abilities/UpgradeAbility.h"
 
+#include "AbilitySystemComponent.h"
+
 UUpgradeAbility::UUpgradeAbility()
 {
+  bActivatesOnGranted = false;
   
 }

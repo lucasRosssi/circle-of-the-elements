@@ -194,11 +194,11 @@ void AAuraProjectile::HandleSingleTarget(AActor* OtherActor, bool& bSuccess)
 	}
 }
 
-void AAuraProjectile::HandleBounceHitMode(AActor* OtherActor)
+void AAuraProjectile::HandleRicochetHitMode(AActor* OtherActor)
 {
 	AActor* ClosestActor = UAuraAbilitySystemLibrary::GetClosestActorToTarget(
 		OtherActor,
-		BounceRadius,
+		RicochetRadius,
 		TargetTeam == ETargetTeam::Both ? TargetTeam : ETargetTeam::Friends,
 		ActorsHit
 	);
@@ -239,7 +239,7 @@ void AAuraProjectile::HandlePenetrationHitMode(AActor* OtherActor)
 		{
 			AActor* ClosestActor = UAuraAbilitySystemLibrary::GetClosestActorToTarget(
 				OtherActor,
-				BounceRadius,
+				RicochetRadius,
 				TargetTeam == ETargetTeam::Both ? TargetTeam : ETargetTeam::Friends,
 				ActorsHit
 			);
@@ -305,12 +305,12 @@ void AAuraProjectile::OnSphereOverlap(
 		 */
 		else HandleSingleTarget(OtherActor, bSuccess);
 		/*
-		 * If it is a bouncing ability, we have to find the closest actor to bounce to.
+		 * If it is a bouncing ability, we have to find the closest actor to ricochet to.
 		 * If there is no actor close, we destroy the projectile.
 		 */
-		if (HitMode == EAbilityHitMode::Bounce && HitCount + 1 < MaxHitCount)
+		if (HitMode == EAbilityHitMode::Ricochet && HitCount + 1 < MaxHitCount)
 		{
-			HandleBounceHitMode(OtherActor);
+			HandleRicochetHitMode(OtherActor);
 		}
 		/*
 		 * If it is a penetrating ability, we just have to check if the target hit implements
@@ -322,7 +322,7 @@ void AAuraProjectile::OnSphereOverlap(
 			HandlePenetrationHitMode(OtherActor);
 		}
 		/*
-		 * Has a default hit mode or reached maximum bounce/penetration hits
+		 * Has a default hit mode or reached maximum ricochet/penetration hits
 		 */
 		else
 		{

@@ -180,6 +180,8 @@ struct FUpgradeManagerSave
   UPROPERTY(BlueprintReadWrite)
   TMap<FGameplayTag, int32> AcquiredUpgrades = TMap<FGameplayTag, int32>();
   UPROPERTY(BlueprintReadWrite)
+  FGameplayTagContainer EquippedUpgrades = FGameplayTagContainer();
+  UPROPERTY(BlueprintReadWrite)
   FGameplayTagContainer BlockedUpgrades = FGameplayTagContainer();
 };
 
@@ -218,6 +220,9 @@ public:
   FRewardManagerSave RewardManager = FRewardManagerSave();
   UPROPERTY(BlueprintReadWrite)
   FUpgradeManagerSave UpgradeManager = FUpgradeManagerSave();
+
+  UPROPERTY(BlueprintReadWrite)
+  float HeroHealth = 100.f;
   
 protected:
 

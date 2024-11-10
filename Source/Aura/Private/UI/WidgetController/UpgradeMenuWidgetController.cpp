@@ -48,7 +48,7 @@ void UUpgradeMenuWidgetController::UpgradeGlobeSelected(const FAuraUpgradeInfo& 
 
   if (!IsValid(AuraASC)) return;
 
-  const int32 Level = AuraASC->GetAbilityLevelFromTag(AuraUpgradeInfo.AbilityTag);
+  const int32 Level = GetUpgradeManager()->GetUpgradeLevel(AuraUpgradeInfo.UpgradeTag);
   
   OnUpgradeGlobeSelectedDelegate.Broadcast(AuraUpgradeInfo, Level, bCanUnlock);
 }
@@ -62,11 +62,23 @@ void UUpgradeMenuWidgetController::UnlockUpgrade(
   UpgradeManager->UnlockUpgrade(UpgradeTag);
 }
 
+void UUpgradeMenuWidgetController::EquipUpgrade(const FGameplayTag& UpgradeTag)
+{
+  if (!GetUpgradeManager()) return;
+
+  UpgradeManager->EquipUpgrade(UpgradeTag);
+}
+
+void UUpgradeMenuWidgetController::UnequipUpgrade(const FGameplayTag& UpgradeTag)
+{
+  if (!GetUpgradeManager()) return;
+
+  UpgradeManager->UnequipUpgrade(UpgradeTag);
+}
+
 FString UUpgradeMenuWidgetController::GetUpgradeDescription(const FAuraUpgradeInfo& AuraUpgradeInfo, int32 Level)
 {
-  const bool bNextLevel = Level > 0 && GetUpgradeManager()->HasResourcesToUnlock(AuraUpgradeInfo.UpgradeTag);
-
-  return UpgradeManager->GetUpgradeDescription(AuraUpgradeInfo, Level, bNextLevel);
+  return UpgradeManager->GetUpgradeDescription(AuraUpgradeInfo, Level);
 }
 
 bool UUpgradeMenuWidgetController::CanBeUnlocked(const FGameplayTag& UpgradeTag)

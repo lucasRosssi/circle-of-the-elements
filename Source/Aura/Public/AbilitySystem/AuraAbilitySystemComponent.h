@@ -6,6 +6,7 @@
 #include "AbilitySystemComponent.h"
 #include "AuraAbilitySystemComponent.generated.h"
 
+class UAuraAttributeSet;
 class UAuraSaveGame;
 class UBaseAbility;
 class UAbilityInfo;
@@ -89,6 +90,10 @@ public:
   int32 GetAbilityLevelFromTag(const FGameplayTag& AbilityTag);
 
 	FGameplayAbilitySpec* GetSpecFromAbilityTag(const FGameplayTag& AbilityTag);
+
+  FGameplayEffectSpec GetEffectSpecByTag(const FGameplayTag& EffectTag);
+  
+  void AddAttribute(const FGameplayTag& AttributeTag, int32 Amount = 1);
 
 	void UpgradeAttribute(const FGameplayTag& AttributeTag);
 

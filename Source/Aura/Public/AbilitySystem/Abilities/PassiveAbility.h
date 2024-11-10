@@ -18,7 +18,9 @@ public:
 	
 	virtual void OnGiveAbility(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec) override;
 
-private:
+protected:
 	UPROPERTY(EditDefaultsOnly)
 	bool bActivatesOnGranted = true;
+
+private:
 };

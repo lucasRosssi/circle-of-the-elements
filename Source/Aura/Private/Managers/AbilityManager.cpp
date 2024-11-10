@@ -36,7 +36,10 @@ void UAbilityManager::GiveAcquiredAbilities(AActor* Actor)
 {
   if (AcquiredAbilities.IsEmpty())
   {
-    AcquiredAbilities = GetSaveGame()->AbilityManager.AcquiredAbilities;
+    if (GetSaveGame())
+    {
+      AcquiredAbilities = SaveGame->AbilityManager.AcquiredAbilities;
+    }
   }
   else
   {
@@ -53,7 +56,9 @@ void UAbilityManager::GiveAcquiredAbilities(AActor* Actor)
   for (const auto& [Ability, Level] : AcquiredAbilities)
   {
     const FAuraAbilityInfo& AbilityInfo = AbilitiesDataAsset->FindAbilityInfoByTag(Ability);
-    const FGameplayTag& InputTag = GetSaveGame()->AbilityInput.FindAbilityInput(Ability);
+    const FGameplayTag& InputTag = GetSaveGame()
+      ? SaveGame->AbilityInput.FindAbilityInput(Ability)
+      : FGameplayTag();
     GiveAbility(AuraASC, AbilityInfo, Level, InputTag);
     OnAbilitySelectedDelegate.Broadcast(AbilityInfo);
   }
@@ -79,8 +84,8 @@ void UAbilityManager::BeginPlay()
     }
     else
     {
-      ElementalTierPool = GetSaveGame()->AbilityManager.ElementalTierPool;
-      AbilitiesContainer = GetSaveGame()->AbilityManager.AbilitiesContainer;
+      ElementalTierPool = SaveGame->AbilityManager.ElementalTierPool;
+      AbilitiesContainer = SaveGame->AbilityManager.AbilitiesContainer;
     }
   }
   else
@@ -138,8 +143,11 @@ TArray<FAuraAbilityInfo> UAbilityManager::RandomizeElementAbilities(
     AbilitiesContainer.Find(ElementTag)->AddTag(RemainingAbilities[RandomAbilityIndex].AbilityTag);
   }
 
-  GetSaveGame()->AbilityManager.AbilitiesContainer = AbilitiesContainer;
-  GetSaveGame()->AbilityManager.ElementalTierPool = ElementalTierPool;
+  if (GetSaveGame())
+  {
+    SaveGame->AbilityManager.AbilitiesContainer = AbilitiesContainer;
+    SaveGame->AbilityManager.ElementalTierPool = ElementalTierPool;
+  }
 
   return SelectedAbilities;
 }
@@ -218,7 +226,11 @@ void UAbilityManager::SelectAbilityReward(
   constexpr int32 Level = 1;
   GiveAbility(AuraASC, AbilityInfo);
   AcquiredAbilities.Add(AbilityInfo.AbilityTag, Level);
-  GetSaveGame()->AbilityManager.AcquiredAbilities.Add(AbilityInfo.AbilityTag, Level);
+
+  if (GetSaveGame())
+  {
+    SaveGame->AbilityManager.AcquiredAbilities.Add(AbilityInfo.AbilityTag, Level);
+  }
 
   if (!bOverrideAbilitiesContainer)
   {

@@ -3,6 +3,7 @@
 
 #include "Managers/UpgradeManager.h"
 
+#include "AuraGameplayTags.h"
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "AbilitySystem/Abilities/UpgradeAbility.h"
@@ -19,6 +20,7 @@ void UUpgradeManager::GiveAcquiredUpgrades()
   if (AcquiredUpgrades.IsEmpty())
   {
     AcquiredUpgrades = GetSaveGame()->UpgradeManager.AcquiredUpgrades;
+    EquippedUpgrades = GetSaveGame()->UpgradeManager.EquippedUpgrades;
   }
   else
   {
@@ -34,6 +36,10 @@ void UUpgradeManager::GiveAcquiredUpgrades()
   {
     const FAuraUpgradeInfo& Info = GetUpgradeInfo()->FindUpgradeInfoByTag(UpgradeTag);
     GiveUpgrade(Info, AuraASC, Level);
+    if (EquippedUpgrades.HasTagExact(UpgradeTag))
+    {
+      EquipUpgrade(UpgradeTag, true);
+    }
   }
 }
 
@@ -98,7 +104,7 @@ void UUpgradeManager::GetUpgradeFormattedTexts(
   {
     const FAuraUpgradeInfo& Info = GetUpgradeInfo()->FindUpgradeInfoByTag(Tag);
 
-    if (!Info.Ability) continue;
+    if (!Info.UpgradeAbility) continue;
 
     if (RequirementsString.IsEmpty())
     {
@@ -134,13 +140,11 @@ void UUpgradeManager::GetUpgradeFormattedTexts(
   }
 }
 
-FString UUpgradeManager::GetUpgradeDescription(
-  const FAuraUpgradeInfo& AuraUpgradeInfo,
-  int32 Level,
-  bool bNextLevel
-  )
+FString UUpgradeManager::GetUpgradeDescription(const FAuraUpgradeInfo& AuraUpgradeInfo, int32 Level)
 {
   if (!AuraUpgradeInfo.IsValid()) return FString();
+
+  const bool bNextLevel = Level > 0 && !IsMaxed(AuraUpgradeInfo) && HasResourcesToUnlock(AuraUpgradeInfo.UpgradeTag);
 
   FText Name;
   FText Description;
@@ -155,12 +159,12 @@ bool UUpgradeManager::HasResourcesToUnlock(const FGameplayTag& UpgradeTag)
   if (!GetAuraPlayerState()) return false;
 
   const FAuraUpgradeInfo& Info = GetUpgradeInfo()->FindUpgradeInfoByTag(UpgradeTag);
-  const int32 Level = AuraPlayerState->GetAuraASC()->GetAbilityLevelFromTag(Info.AbilityTag);
+  const int32 Level = AuraPlayerState->GetAuraASC()->GetAbilityLevelFromTag(Info.UpgradeAbilityTag);
   
   TMap<FGameplayTag, int32> CostMap;
   for (const auto& [Resource, ScalableCost] : Info.Cost)
   {
-    CostMap.Add(Resource, ScalableCost.AsInteger(Level));
+    CostMap.Add(Resource, ScalableCost.AsInteger(Level + 1));
   }
 
   return AuraPlayerState->CanAffordResourceCost(CostMap);
@@ -187,55 +191,67 @@ bool UUpgradeManager::HasRequiredUpgrades(const FGameplayTag& UpgradeTag)
 
 bool UUpgradeManager::IsMaxed(const FGameplayTag& UpgradeTag)
 {
-  const FAuraUpgradeInfo& Info = GetUpgradeInfo()->FindUpgradeInfoByTag(UpgradeTag);
-  UAuraAbilitySystemComponent* AuraASC = GetAuraPlayerState()->GetAuraASC();
+  if (!IsAcquired(UpgradeTag)) return false;
   
-  if (const FGameplayAbilitySpec* AbilitySpec = AuraASC->GetSpecFromAbilityTag(Info.AbilityTag))
-  {
-    return AbilitySpec->Level >= Info.MaxLevel;
-  }
+  const FAuraUpgradeInfo& Info = GetUpgradeInfo()->FindUpgradeInfoByTag(UpgradeTag);
 
-  return false;
+  return AcquiredUpgrades[UpgradeTag] >= Info.MaxLevel;
 }
 
 bool UUpgradeManager::IsMaxed(const FAuraUpgradeInfo& AuraUpgradeInfo)
 {
-  UAuraAbilitySystemComponent* AuraASC = GetAuraPlayerState()->GetAuraASC();
+  if (!IsAcquired(AuraUpgradeInfo.UpgradeTag)) return false;
 
-  if (const FGameplayAbilitySpec* AbilitySpec = AuraASC->GetSpecFromAbilityTag(AuraUpgradeInfo.AbilityTag))
-  {
-    return AbilitySpec->Level >= AuraUpgradeInfo.MaxLevel;
-  }
+  return AcquiredUpgrades[AuraUpgradeInfo.UpgradeTag] >= AuraUpgradeInfo.MaxLevel;
+}
 
-  return false;
+bool UUpgradeManager::IsAcquired(const FGameplayTag& UpgradeTag)
+{
+  return AcquiredUpgrades.Contains(UpgradeTag);
+}
+
+bool UUpgradeManager::IsEquipped(const FGameplayTag& UpgradeTag)
+{
+  return EquippedUpgrades.HasTagExact(UpgradeTag);
+}
+
+int32 UUpgradeManager::GetUpgradeLevel(const FGameplayTag& UpgradeTag)
+{
+  const int32* Level = AcquiredUpgrades.Find(UpgradeTag);
+
+  return Level ? *Level : 0;
 }
 
 void UUpgradeManager::UnlockUpgrade(const FGameplayTag& UpgradeTag, int32 Level)
 {
   const FAuraUpgradeInfo& Info = GetUpgradeInfo()->FindUpgradeInfoByTag(UpgradeTag);
   UAuraAbilitySystemComponent* AuraASC = GetAuraPlayerState()->GetAuraASC();
-  
-  if (FGameplayAbilitySpec* AbilitySpec = AuraASC->GetSpecFromAbilityTag(Info.AbilityTag))
+
+  if (IsAcquired(UpgradeTag))
   {
-    if (AbilitySpec->Level >= Info.MaxLevel) return;
+    if (AcquiredUpgrades[UpgradeTag] >= Info.MaxLevel) return;
     
-    AbilitySpec->Level += 1;
-    AuraASC->MarkAbilitySpecDirty(*AbilitySpec);
-
-    Level = AbilitySpec->Level;
-
-    const FGameplayTagContainer EffectTagContainer = FGameplayTagContainer({ Info.UpgradeTag });
-    const FGameplayEffectQuery EffectQuery = FGameplayEffectQuery::MakeQuery_MatchAllOwningTags(EffectTagContainer);
-    AuraASC->SetActiveGameplayEffectLevelUsingQuery(EffectQuery, Level);
-
-    if (int32* UpgradeLevel = AcquiredUpgrades.Find(UpgradeTag))
+    AcquiredUpgrades[UpgradeTag] += 1;
+    
+    if (Info.UpgradeAbility && Info.UpgradeAbilityTag.IsValid())
     {
-      *UpgradeLevel = Level;
+      if (FGameplayAbilitySpec* AbilitySpec = AuraASC->GetSpecFromAbilityTag(Info.UpgradeAbilityTag))
+      {
+        if (AbilitySpec->Level >= Info.MaxLevel) return;
+        
+        AbilitySpec->Level = AcquiredUpgrades[UpgradeTag];
+        AuraASC->MarkAbilitySpecDirty(*AbilitySpec);
+      }
     }
-    else
+
+    if (IsEquipped(UpgradeTag) && Info.UpgradeEffect)
     {
-      AcquiredUpgrades.Add(UpgradeTag, Level);
+      const FGameplayTagContainer EffectTagContainer = FGameplayTagContainer({ Info.UpgradeTag });
+      const FGameplayEffectQuery EffectQuery = FGameplayEffectQuery::MakeQuery_MatchAllOwningTags(EffectTagContainer);
+      AuraASC->SetActiveGameplayEffectLevelUsingQuery(EffectQuery, AcquiredUpgrades[UpgradeTag]);
     }
+    
+    Level = AcquiredUpgrades[UpgradeTag];
   }
   else
   {
@@ -250,6 +266,116 @@ void UUpgradeManager::UnlockUpgrade(const FGameplayTag& UpgradeTag, int32 Level)
 
   GetSaveGame()->UpgradeManager.AcquiredUpgrades = AcquiredUpgrades;
   OnUpgradeUnlockDelegate.Broadcast(Info, Level);
+}
+
+void UUpgradeManager::EquipUpgrade(const FGameplayTag& UpgradeTag, bool bSkipMutuallyExclusiveCheck)
+{
+  const FAuraGameplayTags& AuraTags = FAuraGameplayTags::Get();
+  const FAuraUpgradeInfo& Info = GetUpgradeInfo()->FindUpgradeInfoByTag(UpgradeTag);
+  UAuraAbilitySystemComponent* AuraASC = GetAuraPlayerState()->GetAuraASC();
+
+  if (!IsAcquired(UpgradeTag)) return;
+
+  EquippedUpgrades.AddTag(UpgradeTag);
+
+  if (Info.UpgradeAbility)
+  {
+    if (FGameplayAbilitySpec* UpgradeAbilitySpec = AuraASC->GetSpecFromAbilityTag(Info.UpgradeAbilityTag))
+    {
+      AuraASC->SetAbilityStatusFromSpec(*UpgradeAbilitySpec, AuraTags.Abilities_Status_Equipped);
+      AuraASC->MarkAbilitySpecDirty(*UpgradeAbilitySpec);
+      
+      AuraASC->TryActivateAbilityByClass(Info.UpgradeAbility);
+    }
+  }
+  
+  const int32* Level = AcquiredUpgrades.Find(UpgradeTag);
+  
+  if (Info.UpgradeEffect)
+  {
+    const FGameplayEffectContextHandle ContextHandle = AuraASC->MakeEffectContext();
+    const FGameplayEffectSpecHandle SpecHandle = AuraASC->MakeOutgoingSpec(
+      Info.UpgradeEffect,
+      Level ? *Level : 1, 
+    ContextHandle
+    );
+    AuraASC->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data);
+  }
+  
+  if (bSkipMutuallyExclusiveCheck) return; // The game is loading or we're testing
+  
+  for (const auto MutuallyExclusiveContainer : GetUpgradeInfo()->MutuallyExclusiveUpgrades)
+  {
+    if (MutuallyExclusiveContainer.HasTagExact(UpgradeTag))
+    {
+      for (const FGameplayTag& ContainerTag : MutuallyExclusiveContainer)
+      {
+        if (ContainerTag.MatchesTagExact(UpgradeTag)) continue;
+
+        UnequipUpgrade(ContainerTag);
+      }
+
+      break;
+    }
+  }
+
+  OnUpgradeUnlockDelegate.Broadcast(Info, Level ? *Level : 1);
+  
+  if (GetSaveGame())
+  {
+    SaveGame->UpgradeManager.EquippedUpgrades = EquippedUpgrades;
+  }
+
+  /* This is not working for now, ability's actor info is invalid for some reason */
+  // if (Info.TargetAbilityTag.IsValid())
+  // {
+  //   if (const FGameplayAbilitySpec* AbilitySpec = AuraASC->GetSpecFromAbilityTag(Info.TargetAbilityTag))
+  //   {
+  //     IAbilityInterface::Execute_ApplyUpgrade(AbilitySpec->Ability, UpgradeTag);
+  //   }
+  // }
+}
+
+void UUpgradeManager::UnequipUpgrade(const FGameplayTag& UpgradeTag)
+{
+  const FAuraGameplayTags& AuraTags = FAuraGameplayTags::Get();
+  const FAuraUpgradeInfo& Info = GetUpgradeInfo()->FindUpgradeInfoByTag(UpgradeTag);
+  UAuraAbilitySystemComponent* AuraASC = GetAuraPlayerState()->GetAuraASC();
+
+  EquippedUpgrades.RemoveTag(UpgradeTag);
+
+  if (Info.UpgradeAbility)
+  {
+    if (FGameplayAbilitySpec* AbilitySpec = AuraASC->GetSpecFromAbilityTag(Info.UpgradeAbilityTag))
+    {
+      AuraASC->SetAbilityStatusFromSpec(*AbilitySpec, AuraTags.Abilities_Status_Unlocked);
+
+      AuraASC->CancelAbility(AbilitySpec->Ability);
+    }
+  }
+  
+  if (Info.UpgradeEffect)
+  {
+    const FGameplayEffectQuery Query = FGameplayEffectQuery::MakeQuery_MatchAllOwningTags(
+      FGameplayTagContainer({ UpgradeTag })
+      );
+    AuraASC->RemoveActiveEffects(Query);
+  }
+
+  if (GetSaveGame())
+  {
+    SaveGame->UpgradeManager.EquippedUpgrades = EquippedUpgrades;
+  }
+  
+  /* This is not working for now, ability's actor info is invalid for some reason */
+  // if (Info.TargetAbilityTag.IsValid())
+  // {
+  //   if (const FGameplayAbilitySpec* AbilitySpec = AuraASC->GetSpecFromAbilityTag(Info.TargetAbilityTag))
+  //   {
+  //     IAbilityInterface::Execute_RemoveUpgrade(AbilitySpec->Ability, UpgradeTag);
+  //   }
+  // }
+
 }
 
 AAuraPlayerState* UUpgradeManager::GetAuraPlayerState()
@@ -268,17 +394,18 @@ void UUpgradeManager::GiveUpgrade(
   int32 Level
   )
 {
-  if (AuraUpgradeInfo.Ability)
+  if (AuraUpgradeInfo.UpgradeAbility)
   {
-    FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(AuraUpgradeInfo.Ability, Level);
+    FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(AuraUpgradeInfo.UpgradeAbility, Level);
     AuraASC->UnlockAbility(AbilitySpec);
   }
 
-  if (AuraUpgradeInfo.UpgradeEffect)
-  {
-    const FGameplayEffectContextHandle ContextHandle = AuraASC->MakeEffectContext();
-    AuraASC->ApplyGameplayEffectToSelf(AuraUpgradeInfo.UpgradeEffect.GetDefaultObject(), Level, ContextHandle);
-  }
+  /* Upgrade effects are now applied only when equipping */
+  // if (AuraUpgradeInfo.UpgradeEffect)
+  // {
+  //   const FGameplayEffectContextHandle ContextHandle = AuraASC->MakeEffectContext();
+  //   AuraASC->ApplyGameplayEffectToSelf(AuraUpgradeInfo.UpgradeEffect.GetDefaultObject(), Level, ContextHandle);
+  // }
 }
 
 UUpgradeInfo* UUpgradeManager::GetUpgradeInfo()
