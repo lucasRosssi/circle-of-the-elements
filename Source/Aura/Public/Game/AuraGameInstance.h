@@ -35,6 +35,8 @@ public:
   void DeleteGameData(int32 SlotIndex);
   void LoadAndPlay(int32 SlotIndex);
 
+  void ShowLoadingScreen();
+
   ECharacterName GetCurrentCharacterName() const { return CurrentHeroName; }
   FHeroData GetCurrentHeroData() const;
 
@@ -50,6 +52,9 @@ public:
   FString GetPlayerName() const { return PlayerName; }
 
 protected:
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Widget")
+  TSubclassOf<UUserWidget> LoadingScreenWidget;
+  
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Player|Hero")
 	ECharacterName CurrentHeroName = ECharacterName::Aura;
 

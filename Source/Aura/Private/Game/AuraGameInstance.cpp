@@ -99,6 +99,11 @@ void UAuraGameInstance::LoadAndPlay(int32 SlotIndex)
   UGameplayStatics::OpenLevelBySoftObjectPtr(this, RegionLevel);
 }
 
+void UAuraGameInstance::ShowLoadingScreen()
+{
+  
+}
+
 FHeroData UAuraGameInstance::GetCurrentHeroData() const
 {
   return HeroInfo->GetHeroData(CurrentHeroName);
