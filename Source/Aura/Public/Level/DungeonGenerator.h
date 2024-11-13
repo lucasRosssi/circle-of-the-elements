@@ -33,7 +33,7 @@ protected:
   int32 MaxTiles = 1;
 
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Dungeon")
-  float TileSize = 600.f;
+  float TileSize = 800.f;
 
 private:
   TArray<FIntPoint> GetAdjacentCoordinates();

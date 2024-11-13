@@ -19,8 +19,11 @@ void UUpgradeManager::GiveAcquiredUpgrades()
 {
   if (AcquiredUpgrades.IsEmpty())
   {
-    AcquiredUpgrades = GetSaveGame()->UpgradeManager.AcquiredUpgrades;
-    EquippedUpgrades = GetSaveGame()->UpgradeManager.EquippedUpgrades;
+    if (GetSaveGame())
+    {
+      AcquiredUpgrades = SaveGame->UpgradeManager.AcquiredUpgrades;
+      EquippedUpgrades = SaveGame->UpgradeManager.EquippedUpgrades;
+    }
   }
   else
   {
@@ -264,7 +267,10 @@ void UUpgradeManager::UnlockUpgrade(const FGameplayTag& UpgradeTag, int32 Level)
     AuraPlayerState->AddPlayerResource(CostTuple.Key, -CostTuple.Value.AsInteger(Level));
   }
 
-  GetSaveGame()->UpgradeManager.AcquiredUpgrades = AcquiredUpgrades;
+  if (GetSaveGame())
+  {
+    SaveGame->UpgradeManager.AcquiredUpgrades = AcquiredUpgrades;
+  }
   OnUpgradeUnlockDelegate.Broadcast(Info, Level);
 }
 

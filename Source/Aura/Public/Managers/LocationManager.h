@@ -7,6 +7,8 @@
 #include "Enums/Region.h"
 #include "LocationManager.generated.h"
 
+class ADungeonGenerator;
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnInitLocation);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnExitLocation);
 
@@ -35,16 +37,25 @@ public:
   UFUNCTION(BlueprintCallable)
   void SetCameraBoundaryActors(const TArray<AActor*>& InActors) { CameraBoundaryActors = InActors; }
 
+  ADungeonGenerator* GetDungeonGenerator();
+
   UPROPERTY(BlueprintAssignable)
   FOnInitLocation OnInitLocationDelegate;
   UPROPERTY(BlueprintAssignable)
   FOnExitLocation OnExitLocationDelegate;
 
 protected:
+  virtual void BeginPlay() override;
+  
   UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Location")
   ERegion Region = ERegion::Undefined;
   UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Location")
   ERegion NextRegion = ERegion::Undefined;
+
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Procedural Generation")
+  bool bUseProceduralGeneration = true;
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Procedural Generation")
+  TSubclassOf<ADungeonGenerator> DungeonGeneratorClass;
 
 private:
   TArray<TSoftObjectPtr<UWorld>> SelectedLocations;
@@ -55,4 +66,7 @@ private:
   TArray<AActor*> CameraBoundaryActors;
 
   bool bWillExitRegion = false;
+
+  UPROPERTY()
+  TObjectPtr<ADungeonGenerator> DungeonGenerator;
 };

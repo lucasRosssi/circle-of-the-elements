@@ -4,9 +4,11 @@
 #include "Managers/LocationManager.h"
 
 #include "Aura/Aura.h"
+#include "Aura/AuraLogChannels.h"
 #include "Game/AuraSaveGame.h"
 #include "GameFramework/PlayerStart.h"
 #include "Kismet/GameplayStatics.h"
+#include "Level/DungeonGenerator.h"
 #include "Level/RegionInfo.h"
 #include "Managers/CombatManager.h"
 #include "Utils/AuraSystemsLibrary.h"
@@ -115,4 +117,35 @@ void ULocationManager::ExitLocation()
 {
   CameraBoundaryActors.Empty();
   OnExitLocationDelegate.Broadcast();
+}
+
+ADungeonGenerator* ULocationManager::GetDungeonGenerator()
+{
+  if (DungeonGenerator == nullptr)
+  {
+    const FVector Location = FVector::ZeroVector;
+    const FRotator Rotation = FRotator::ZeroRotator;
+    DungeonGenerator = Cast<ADungeonGenerator>(GetWorld()->SpawnActor(DungeonGeneratorClass, &Location, &Rotation));
+
+    if (!DungeonGenerator)
+    {
+      UE_LOG(
+        LogAura,
+        Error,
+        TEXT("Failed to spawn the Dungeon Generator! Check if DungeonGeneratorClass is set.")
+      );
+    }
+  }
+
+  return DungeonGenerator;
+}
+
+void ULocationManager::BeginPlay()
+{
+  Super::BeginPlay();
+
+  if (bUseProceduralGeneration)
+  {
+    GetDungeonGenerator();
+  }
 }

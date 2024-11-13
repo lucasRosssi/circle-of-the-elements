@@ -135,7 +135,10 @@ void AAuraPlayerState::AddAttributePoints(int32 InAttributePoints)
 
   AttributePoints += InAttributePoints;
 
-  GetSaveGame()->PlayerState.AttributePoints = AttributePoints;
+  if (GetSaveGame())
+  {
+    SaveGame->PlayerState.AttributePoints = AttributePoints;
+  }
   
   OnAttributePointsChangedDelegate.Broadcast(AttributePoints);
 }
@@ -153,8 +156,11 @@ void AAuraPlayerState::AddSkillPoints(int32 InSkillPoints)
   if (InSkillPoints == 0) return;
 
   SkillPoints += InSkillPoints;
-  
-  GetSaveGame()->PlayerState.SkillPoints = SkillPoints;
+
+  if (GetSaveGame())
+  {
+    SaveGame->PlayerState.SkillPoints = SkillPoints;
+  }
   
   OnSkillPointsChangedDelegate.Broadcast(SkillPoints);
 }
@@ -165,14 +171,17 @@ void AAuraPlayerState::AddPlayerResource(const FGameplayTag& ResourceTag, int32 
   {
     *CurrentAmount += Amount;
     if (*CurrentAmount < 0) *CurrentAmount = 0;
-    
-    if (int32* SaveAmount = GetSaveGame()->PlayerState.Resources.Find(ResourceTag))
+
+    if (GetSaveGame())
     {
-      *SaveAmount = *CurrentAmount;
-    }
-    else
-    {
-      GetSaveGame()->PlayerState.Resources.Add(ResourceTag, *CurrentAmount);
+      if (int32* SaveAmount = SaveGame->PlayerState.Resources.Find(ResourceTag))
+      {
+        *SaveAmount = *CurrentAmount;
+      }
+      else
+      {
+        SaveGame->PlayerState.Resources.Add(ResourceTag, *CurrentAmount);
+      }
     }
     
     OnResourceChangedDelegate.Broadcast(ResourceTag, Amount);
@@ -219,14 +228,17 @@ bool AAuraPlayerState::CanAffordResourceCost(const TMap<FGameplayTag, int32>& Co
 
 void AAuraPlayerState::InitializeState()
 {
-  SetSkillPoints(GetSaveGame()->PlayerState.SkillPoints);
-  SetAttributePoints(SaveGame->PlayerState.AttributePoints);
-
-  for (auto& [Resource, SaveAmount] : SaveGame->PlayerState.Resources)
+  if (GetSaveGame())
   {
-    if (int32* PlayerAmount = Resources.Find(Resource))
+    SetSkillPoints(SaveGame->PlayerState.SkillPoints);
+    SetAttributePoints(SaveGame->PlayerState.AttributePoints);
+    
+    for (auto& [Resource, SaveAmount] : SaveGame->PlayerState.Resources)
     {
-      *PlayerAmount = SaveAmount;
+      if (int32* PlayerAmount = Resources.Find(Resource))
+      {
+        *PlayerAmount = SaveAmount;
+      }
     }
   }
 }

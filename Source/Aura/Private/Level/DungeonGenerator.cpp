@@ -15,7 +15,8 @@ ADungeonGenerator::ADungeonGenerator()
 void ADungeonGenerator::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+  SpawnFirstTile();
 }
 
 void ADungeonGenerator::SpawnFirstTile()
@@ -33,6 +34,8 @@ void ADungeonGenerator::SpawnFirstTile()
     );
     return;
   }
+
+  FirstTile->TileNumber = 0;
   
   DungeonMap.Add(CurrentCoordinate, FirstTile);
   SpecialTiles.Add(CurrentCoordinate);
