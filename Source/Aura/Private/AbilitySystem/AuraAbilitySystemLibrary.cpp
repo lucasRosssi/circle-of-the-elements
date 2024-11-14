@@ -1352,27 +1352,6 @@ FGameplayEffectContextHandle UAuraAbilitySystemLibrary::ApplyAbilityEffect(
     SetAreaOuterRadius(EffectContextHandle, AbilityParams.AreaOuterRadius);
   }
 
-  if (DamageParams.IsValid())
-  {
-    SetApplyHitReact(EffectContextHandle, DamageParams.bApplyHitReact);
-
-    const FGameplayEffectSpecHandle DamageSpecHandle = AbilityParams.SourceASC->MakeOutgoingSpec(
-      DamageParams.DamageEffectClass,
-      AbilityParams.AbilityLevel,
-      EffectContextHandle
-    );
-
-    UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(
-      DamageSpecHandle,
-      DamageParams.DamageType,
-      DamageParams.BaseDamage
-    );
-
-    AbilityParams.SourceASC
-      ->ApplyGameplayEffectSpecToTarget(*DamageSpecHandle.Data, AbilityParams.TargetASC);
-    bSuccess = true;
-  }
-
   if (EffectParams.Num() > 0)
   {
     for (const auto& Effect : EffectParams)
@@ -1402,6 +1381,27 @@ FGameplayEffectContextHandle UAuraAbilitySystemLibrary::ApplyAbilityEffect(
       }
     }
 
+    bSuccess = true;
+  }
+
+  if (DamageParams.IsValid())
+  {
+    SetApplyHitReact(EffectContextHandle, DamageParams.bApplyHitReact);
+
+    const FGameplayEffectSpecHandle DamageSpecHandle = AbilityParams.SourceASC->MakeOutgoingSpec(
+      DamageParams.DamageEffectClass,
+      AbilityParams.AbilityLevel,
+      EffectContextHandle
+    );
+
+    UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(
+      DamageSpecHandle,
+      DamageParams.DamageType,
+      DamageParams.BaseDamage
+    );
+
+    AbilityParams.SourceASC
+      ->ApplyGameplayEffectSpecToTarget(*DamageSpecHandle.Data, AbilityParams.TargetASC);
     bSuccess = true;
   }
 

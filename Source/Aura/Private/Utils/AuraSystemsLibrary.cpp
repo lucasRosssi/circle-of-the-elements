@@ -9,6 +9,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Managers/CameraManager.h"
 #include "Managers/CombatManager.h"
+#include "Managers/LocationManager.h"
 #include "Player/AuraPlayerController.h"
 #include "UI/HUD/AuraHUD.h"
 
@@ -299,6 +300,11 @@ UAuraSaveGame* UAuraSystemsLibrary::GetCurrentSaveGameObject(const UObject* Worl
   );
 
   return AuraGameInstance->GetCurrentSaveGameObject();
+}
+
+ADungeonGenerator* UAuraSystemsLibrary::GetDungeonGenerator(const UObject* WorldContextObject)
+{
+  return GetLocationManager(WorldContextObject)->GetDungeonGenerator();
 }
 
 AGameModeBase* UAuraSystemsLibrary::GetManagerInterfaceGameMode(const UObject* WorldContextObject)

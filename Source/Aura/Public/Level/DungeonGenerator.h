@@ -7,7 +7,10 @@
 #include "GameFramework/Actor.h"
 #include "DungeonGenerator.generated.h"
 
+class APlayerStart;
 class ATile;
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FGeneratingTiles, float, CurrentProgress);
 
 UCLASS()
 class AURA_API ADungeonGenerator : public AActor
@@ -21,12 +24,18 @@ public:
 
   void BuildDungeon();
 
+  UFUNCTION(BlueprintPure)
+  bool GetIsFinished() const { return bFinished; }
+
 protected:
   virtual void BeginPlay() override;
 
   void SpawnFirstTile();
   UFUNCTION(BlueprintPure)
   float CalculateTileLoading();
+
+  UPROPERTY(BlueprintAssignable, Category = Dungeon)
+  FGeneratingTiles GeneratingTilesDelegate;
 
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Dungeon")
   TSubclassOf<ATile> TileClass;
@@ -71,6 +80,8 @@ private:
 
   EDirection GetCoordinateDirection(const FIntPoint& StartingCoordinate, const FIntPoint& EndingCoordinate);
   EDirection GetOppositeDirection(EDirection Direction);
+
+  void PlacePlayerInInitialPosition();
   
   UPROPERTY()
   TArray<AActor*> ActorsToDestroy;
@@ -82,8 +93,13 @@ private:
 
   TSet<FIntPoint> SpecialTiles;
 
-  EDirection LastExit = EDirection::South;
+  EDirection LastExit = EDirection::None;
   EDirection NextExit = EDirection::North;
+
+  UPROPERTY()
+  APlayerStart* PlayerStart = nullptr;
   
   float BacktrackChance = 0.f;
+
+  bool bFinished = false;
 };

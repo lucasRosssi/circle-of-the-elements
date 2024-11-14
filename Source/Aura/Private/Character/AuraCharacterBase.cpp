@@ -299,6 +299,11 @@ void AAuraCharacterBase::SetCustomDepth_Implementation(int32 Value)
   GetMesh()->SetCustomDepthStencilValue(Value);
 }
 
+float AAuraCharacterBase::GetCapsuleHalfHeight_Implementation() const
+{
+  return GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
+}
+
 void AAuraCharacterBase::InitAbilityActorInfo()
 {
 }

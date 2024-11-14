@@ -71,6 +71,7 @@ public:
 	virtual bool IsFriend_Implementation(AActor* Actor) override;
 	virtual bool IsEnemy_Implementation(AActor* Actor) override;
   virtual void SetCustomDepth_Implementation(int32 Value) override;
+  virtual float GetCapsuleHalfHeight_Implementation() const override;
 	/** END Combat Interface */
 
 	void InitSummon(int32 TeamID);

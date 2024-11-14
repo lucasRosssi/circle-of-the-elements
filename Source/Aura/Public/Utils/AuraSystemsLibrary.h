@@ -6,6 +6,7 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "AuraSystemsLibrary.generated.h"
 
+class ADungeonGenerator;
 struct FSaveInfo;
 class ACameraManager;
 struct FHeroData;
@@ -160,6 +161,14 @@ public:
     meta=(HidePin="WorldContextObject", DefaultToSelf="WorldContextObject")
     )
   static UAuraSaveGame* GetCurrentSaveGameObject(const UObject* WorldContextObject);
+
+  UFUNCTION(
+    BlueprintPure,
+    Category="Aura Systems|PCG|Dungeon",
+    meta=(HidePin="WorldContextObject", DefaultToSelf="WorldContextObject")
+    )
+  static ADungeonGenerator* GetDungeonGenerator(const UObject* WorldContextObject);
+
 
 private:
   static AGameModeBase* GetManagerInterfaceGameMode(const UObject* WorldContextObject);

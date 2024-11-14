@@ -67,4 +67,10 @@ void AAuraGameModeBase::SpawnAndPossessSelectedHero()
 
   PlayerController->Possess(Hero);
   PlayerController->SetActorTickEnabled(true);
+
+  Hero->SetActorLocation(PlayerStart->GetActorLocation(),
+    false,
+    nullptr,
+    ETeleportType::ResetPhysics
+    );
 }

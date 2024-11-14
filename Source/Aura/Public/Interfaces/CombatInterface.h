@@ -98,6 +98,9 @@ public:
 
   UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
   void SetCustomDepth(int32 Value);
+
+  UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+  float GetCapsuleHalfHeight() const;
 	
 	virtual FOnASCRegistered& GetOnASCRegisteredDelegate() = 0;
 	virtual FOnDeath& GetOnDeathDelegate() = 0;

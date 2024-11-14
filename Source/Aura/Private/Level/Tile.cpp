@@ -22,6 +22,7 @@ ATile::ATile()
   UnderWallMesh4 = CreateDefaultSubobject<UStaticMeshComponent>("UnderWallMesh4");
   UnderWallMesh4->SetupAttachment(TileMesh);
 
+#if WITH_EDITOR
   NorthArrow = CreateDefaultSubobject<UArrowComponent>("NorthArrow");
   NorthArrow->SetupAttachment(TileMesh);
   EastArrow = CreateDefaultSubobject<UArrowComponent>("EastArrow");
@@ -42,12 +43,16 @@ ATile::ATile()
   TileNumberTextComponent = CreateDefaultSubobject<UTextRenderComponent>("TileNumberText");
   TileNumberTextComponent->SetupAttachment(TileMesh);
   TileNumberTextComponent->SetText(FText::FormatOrdered(FText::FromString(FString("{0}")), TileNumber));
+#endif
 
   for (uint8 i = 0; i < static_cast<uint8>(EDirection::MAX); i++)
   {
     EDirection Direction = static_cast<EDirection>(i);
     AvailableExits.Add(Direction, false);
   }
+
+  ChildDecoratorComponent = CreateDefaultSubobject<UChildActorComponent>("Decorator");
+  ChildDecoratorComponent->SetupAttachment(TileMesh);
 }
 
 void ATile::SetExitAvailable(EDirection Direction, bool bAvailable)
@@ -84,4 +89,14 @@ void ATile::BeginPlay()
       Arrows[Direction]->SetVisibility(bAvailable);
     }
   }
+}
+
+AActor* ATile::GetDecorator()
+{
+  if (Decorator == nullptr)
+  {
+    Decorator = Cast<AActor>(ChildDecoratorComponent->GetChildActor());
+  }
+
+  return Decorator;
 }

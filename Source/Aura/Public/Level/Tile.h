@@ -35,7 +35,14 @@ protected:
   TObjectPtr<UStaticMeshComponent> UnderWallMesh3;
   UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Tile")
   TObjectPtr<UStaticMeshComponent> UnderWallMesh4;
-  
+
+  UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Tile|Exit")
+  TMap<EDirection, bool> AvailableExits;
+
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Tile|Decorator")
+  TObjectPtr<UChildActorComponent> ChildDecoratorComponent;
+
+#if WITH_EDITORONLY_DATA
   UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Tile")
   TObjectPtr<UArrowComponent> NorthArrow;
   UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Tile")
@@ -44,16 +51,20 @@ protected:
   TObjectPtr<UArrowComponent> SouthArrow;
   UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Tile")
   TObjectPtr<UArrowComponent> WestArrow;
-
   UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Tile")
   TObjectPtr<UTextRenderComponent> TileNumberTextComponent;
-
-  UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Tile|Exit")
-  TMap<EDirection, bool> AvailableExits;
+#endif
 
 private:
-  int32 TileNumber = 0;
+  AActor* GetDecorator();
   
+  int32 TileNumber = 0;
+
+  UPROPERTY()
+  AActor* Decorator;
+  
+#if WITH_EDITOR
   TMap<EDirection, UArrowComponent*> Arrows;
+#endif
   
 };

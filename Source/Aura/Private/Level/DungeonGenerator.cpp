@@ -4,6 +4,8 @@
 #include "Level/DungeonGenerator.h"
 
 #include "Aura/AuraLogChannels.h"
+#include "GameFramework/PlayerStart.h"
+#include "Kismet/GameplayStatics.h"
 #include "Level/Tile.h"
 
 ADungeonGenerator::ADungeonGenerator()
@@ -14,7 +16,14 @@ ADungeonGenerator::ADungeonGenerator()
 
 void ADungeonGenerator::BuildDungeon()
 {
-  if (DungeonMap.Num() >= MaxTiles) return;
+  const float Progress = static_cast<float>(DungeonMap.Num()) / static_cast<float>(MaxTiles);
+  GeneratingTilesDelegate.Broadcast(Progress);
+  
+  if (DungeonMap.Num() >= MaxTiles)
+  {
+    bFinished = true;
+    return;
+  }
 
   const float Roll = FMath::FRandRange(0.f, 1.f);
   if (Roll <= BacktrackChance)
@@ -89,6 +98,7 @@ void ADungeonGenerator::BeginPlay()
 	Super::BeginPlay();
 
   SpawnFirstTile();
+  PlacePlayerInInitialPosition();
   BuildDungeon();
 }
 
@@ -117,6 +127,8 @@ void ADungeonGenerator::SpawnFirstTile()
 
   const int32 RandomIndex = FMath::RandRange(0, static_cast<int32>(EDirection::MAX) - 1);
   LastExit = static_cast<EDirection>(RandomIndex);
+
+  PlayerStart = GetWorld()->SpawnActor<APlayerStart>(Location + FVector(0.f, 0.f, 200.f), Rotation);
 }
 
 float ADungeonGenerator::CalculateTileLoading()
@@ -248,4 +260,18 @@ EDirection ADungeonGenerator::GetOppositeDirection(EDirection Direction)
     default:
       return EDirection::None;
   }
+}
+
+void ADungeonGenerator::PlacePlayerInInitialPosition()
+{
+  if (!PlayerStart) return;
+  
+  APawn* Player = UGameplayStatics::GetPlayerPawn(this, 0);
+  
+  Player->SetActorLocation(
+    PlayerStart->GetActorLocation(),
+    false,
+    nullptr,
+    ETeleportType::ResetPhysics
+  );
 }
