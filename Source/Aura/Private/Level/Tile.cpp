@@ -5,6 +5,7 @@
 
 #include "Components/ArrowComponent.h"
 #include "Components/TextRenderComponent.h"
+#include "Enums/Direction.h"
 
 ATile::ATile()
 {
@@ -33,7 +34,42 @@ ATile::ATile()
   WestArrow->SetupAttachment(TileMesh);
   WestArrow->SetRelativeRotation(FRotator(0.f, 270.f, 0.f));
 
+  Arrows.Add(EDirection::North, NorthArrow);
+  Arrows.Add(EDirection::East, EastArrow);
+  Arrows.Add(EDirection::South, SouthArrow);
+  Arrows.Add(EDirection::West, WestArrow);
+
   TileNumberTextComponent = CreateDefaultSubobject<UTextRenderComponent>("TileNumberText");
+  TileNumberTextComponent->SetupAttachment(TileMesh);
+  TileNumberTextComponent->SetText(FText::FormatOrdered(FText::FromString(FString("{0}")), TileNumber));
+
+  for (uint8 i = 0; i < static_cast<uint8>(EDirection::MAX); i++)
+  {
+    EDirection Direction = static_cast<EDirection>(i);
+    AvailableExits.Add(Direction, false);
+  }
+}
+
+void ATile::SetExitAvailable(EDirection Direction, bool bAvailable)
+{
+  if (bool* Availability = AvailableExits.Find(Direction))
+  {
+    *Availability = bAvailable;
+  }
+  else
+  {
+    AvailableExits.Add(Direction, bAvailable);
+  }
+
+  if (Arrows.Contains(Direction))
+  {
+    Arrows[Direction]->SetVisibility(bAvailable);
+  }
+}
+
+void ATile::SetTileNumber(int32 Number)
+{
+  TileNumber = Number;
   TileNumberTextComponent->SetText(FText::FormatOrdered(FText::FromString(FString("{0}")), TileNumber));
 }
 
@@ -41,5 +77,11 @@ void ATile::BeginPlay()
 {
 	Super::BeginPlay();
 
-  
+  for (auto [Direction, bAvailable] : AvailableExits)
+  {
+    if (Arrows.Contains(Direction))
+    {
+      Arrows[Direction]->SetVisibility(bAvailable);
+    }
+  }
 }

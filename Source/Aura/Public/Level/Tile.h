@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "Tile.generated.h"
 
+enum class EDirection : uint8;
 class UTextRenderComponent;
 class UArrowComponent;
 
@@ -17,7 +18,9 @@ class AURA_API ATile : public AActor
 public:
   ATile();
 
-  int32 TileNumber = 0;
+  void SetExitAvailable(EDirection Direction, bool bAvailable);
+
+  void SetTileNumber(int32 Number);
 
 protected:
   virtual void BeginPlay() override;
@@ -45,5 +48,12 @@ protected:
   UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Tile")
   TObjectPtr<UTextRenderComponent> TileNumberTextComponent;
 
+  UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Tile|Exit")
+  TMap<EDirection, bool> AvailableExits;
+
 private:
+  int32 TileNumber = 0;
+  
+  TMap<EDirection, UArrowComponent*> Arrows;
+  
 };
