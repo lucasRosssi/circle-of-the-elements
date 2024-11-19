@@ -7,8 +7,10 @@
 #include "GameFramework/Actor.h"
 #include "DungeonGenerator.generated.h"
 
-class APlayerStart;
 class ATile;
+class ATileExit;
+class ATileBasic;
+class APlayerStart;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FGeneratingTiles, float, CurrentProgress);
 
@@ -21,7 +23,7 @@ public:
   ADungeonGenerator();
 
   float GetTileSize() const { return TileSize; }
-
+  
   void BuildDungeon();
 
   UFUNCTION(BlueprintPure)
@@ -38,7 +40,9 @@ protected:
   FGeneratingTiles GeneratingTilesDelegate;
 
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Dungeon")
-  TSubclassOf<ATile> TileClass;
+  TSubclassOf<ATileBasic> TileBasicClass;
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Dungeon")
+  TSubclassOf<ATileExit> TileExitClass;
 
   UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Dungeon")
   int32 MaxTiles = 1;
@@ -77,6 +81,7 @@ private:
   FIntPoint GetNextEmptyCoordinate(const FIntPoint& Coordinate);
   
   FVector GetCoordinateWorldLocation(const FIntPoint& Coordinate);
+  FRotator GetDirectionRotation(EDirection Direction);
 
   EDirection GetCoordinateDirection(const FIntPoint& StartingCoordinate, const FIntPoint& EndingCoordinate);
   EDirection GetOppositeDirection(EDirection Direction);

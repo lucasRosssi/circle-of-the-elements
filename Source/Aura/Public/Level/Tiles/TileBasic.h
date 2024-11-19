@@ -18,10 +18,15 @@ class AURA_API ATileBasic : public ATile
 public:
   ATileBasic();
 
-  virtual void SetExitAvailable(EDirection Direction, bool bAvailable) override;
+  virtual void SetExitAvailable(EDirection WorldDirection, bool bAvailable) override;
   
 protected:
   virtual void BeginPlay() override;
+
+  UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Tile")
+  TObjectPtr<UStaticMeshComponent> FloorMesh;
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Tile|Decorator")
+  TObjectPtr<UChildActorComponent> ChildDecoratorComponent;
   
   UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Tile")
   TObjectPtr<UStaticMeshComponent> UnderWallMesh1;
@@ -44,6 +49,11 @@ protected:
 #endif
   
 private:
+  ADecorator* GetDecorator();
+
+  UPROPERTY()
+  ADecorator* Decorator = nullptr;
+  
 #if WITH_EDITOR
   TMap<EDirection, UArrowComponent*> Arrows;
 #endif

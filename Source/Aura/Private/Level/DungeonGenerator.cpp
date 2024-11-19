@@ -6,7 +6,8 @@
 #include "Aura/AuraLogChannels.h"
 #include "GameFramework/PlayerStart.h"
 #include "Kismet/GameplayStatics.h"
-#include "Level/Tiles/Tile.h"
+#include "Level/Tiles/TileBasic.h"
+#include "Level/Tiles/Special/TileExit.h"
 
 ADungeonGenerator::ADungeonGenerator()
 {
@@ -28,7 +29,6 @@ void ADungeonGenerator::BuildDungeon()
   const float Roll = FMath::FRandRange(0.f, 1.f);
   if (Roll <= BacktrackChance)
   {
-    BacktrackChance = 0.00f;
     Backtrack();
     return;
   }
@@ -43,25 +43,34 @@ void ADungeonGenerator::BuildDungeon()
     Backtrack();
     return;
   }
-
-  const FVector Location = GetCoordinateWorldLocation(CurrentCoordinate);
-  const FRotator Rotation = GetActorRotation();
-  ATile* Tile = Cast<ATile>(GetWorld()->SpawnActor(TileClass, &Location, &Rotation));
-  if (!Tile)
-  {
-    UE_LOG(
-      LogAura,
-      Error,
-      TEXT("Failed to spawn the Tile! Check if TileClass is set.")
-    );
-    return;
-  }
-
+  
   const EDirection SelectedExit = GetCoordinateDirection(
     LastCoordinate,
     CurrentCoordinate
     );
   LastExit = GetOppositeDirection(SelectedExit);
+  const FVector Location = GetCoordinateWorldLocation(CurrentCoordinate);
+  const FRotator Rotation = GetActorRotation() + GetDirectionRotation(SelectedExit);
+
+  ATile* Tile;
+  if (DungeonMap.Num() == MaxTiles - 1)
+  {
+    Tile = Cast<ATile>(GetWorld()->SpawnActor(TileExitClass, &Location, &Rotation));
+  }
+  else
+  {
+    Tile = Cast<ATile>(GetWorld()->SpawnActor(TileBasicClass, &Location, &Rotation));
+  }
+  
+  if (!Tile)
+  {
+    UE_LOG(
+      LogAura,
+      Error,
+      TEXT("Failed to spawn the Tile! Check if the tile classes are set.")
+    );
+    return;
+  }
   
   if (DungeonMap.Contains(LastCoordinate))
   {
@@ -76,6 +85,7 @@ void ADungeonGenerator::BuildDungeon()
 #endif
   
   Tile->SetTileNumber(DungeonMap.Num());
+  Tile->SetFacingDirection(SelectedExit);
   Tile->SetExitAvailable(LastExit, true);
   
 #if WITH_EDITOR
@@ -111,7 +121,7 @@ void ADungeonGenerator::SpawnFirstTile()
 {
   const FVector Location = GetActorLocation();
   const FRotator Rotation = GetActorRotation();
-  ATile* FirstTile = Cast<ATile>(GetWorld()->SpawnActor(TileClass, &Location, &Rotation));
+  ATile* FirstTile = Cast<ATile>(GetWorld()->SpawnActor(TileBasicClass, &Location, &Rotation));
 
   if (!FirstTile)
   {
@@ -130,7 +140,7 @@ void ADungeonGenerator::SpawnFirstTile()
   
   ActorsToDestroy.Add(FirstTile);
 
-  const int32 RandomIndex = FMath::RandRange(0, static_cast<int32>(EDirection::MAX) - 1);
+  const int32 RandomIndex = FMath::RandRange(0, static_cast<int32>(EDirection::None) - 1);
   LastExit = static_cast<EDirection>(RandomIndex);
 
   PlayerStart = GetWorld()->SpawnActor<APlayerStart>(Location + FVector(0.f, 0.f, 200.f), Rotation);
@@ -143,6 +153,8 @@ float ADungeonGenerator::CalculateTileLoading()
 
 void ADungeonGenerator::Backtrack()
 {
+  BacktrackChance = 0.f;
+  
   TArray<FIntPoint> DungeonCoordinates;
   DungeonMap.GetKeys(DungeonCoordinates);
   
@@ -218,6 +230,15 @@ FVector ADungeonGenerator::GetCoordinateWorldLocation(const FIntPoint& Coordinat
   const FVector TileLocationInCoordinate = FVector(Coordinate.X, Coordinate.Y, 0.0f) * TileSize;
 
   return GetActorLocation() + TileLocationInCoordinate;
+}
+
+FRotator ADungeonGenerator::GetDirectionRotation(EDirection Direction)
+{
+  const int32 DirectionInt = static_cast<int32>(Direction);
+
+  if (DirectionInt > 3) return FRotator(0.0f);
+
+  return FRotator(0.f, DirectionInt * 90.f, 0.f);
 }
 
 EDirection ADungeonGenerator::GetCoordinateDirection(
