@@ -6,7 +6,7 @@
 #include "Aura/AuraLogChannels.h"
 #include "GameFramework/PlayerStart.h"
 #include "Kismet/GameplayStatics.h"
-#include "Level/Tile.h"
+#include "Level/Tiles/Tile.h"
 
 ADungeonGenerator::ADungeonGenerator()
 {
@@ -71,8 +71,13 @@ void ADungeonGenerator::BuildDungeon()
   DungeonMap.Add(CurrentCoordinate, Tile);
   ActorsToDestroy.Add(Tile);
 
+#if WITH_EDITOR
+  Tile->bDebug = bDebugEnabled;
+#endif
+  
   Tile->SetTileNumber(DungeonMap.Num());
   Tile->SetExitAvailable(LastExit, true);
+  
 #if WITH_EDITOR
   if (bDebugEnabled && SpawnDelay > 0.f)
   {

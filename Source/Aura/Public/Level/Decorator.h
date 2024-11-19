@@ -6,6 +6,9 @@
 #include "GameFramework/Actor.h"
 #include "Decorator.generated.h"
 
+enum class EDirection : uint8;
+class ATile;
+
 UCLASS()
 class AURA_API ADecorator : public AActor
 {
@@ -13,6 +16,8 @@ class AURA_API ADecorator : public AActor
 	
 public:	
 	ADecorator();
+
+  void RemoveWall(EDirection Direction);
 
 protected:
 	virtual void BeginPlay() override;
@@ -28,7 +33,11 @@ protected:
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
   TObjectPtr<UStaticMeshComponent> Wall4;
 
-private:	
+private:
+  ATile* GetParentTile();
+  
+  TWeakObjectPtr<ATile> ParentTile;
 
-
+  UPROPERTY()
+  TMap<EDirection, UStaticMeshComponent*> Walls;
 };

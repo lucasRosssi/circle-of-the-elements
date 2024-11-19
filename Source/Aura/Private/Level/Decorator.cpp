@@ -3,6 +3,9 @@
 
 #include "Level/Decorator.h"
 
+#include "Enums/Direction.h"
+#include "Level/Tiles/Tile.h"
+
 ADecorator::ADecorator()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -17,10 +20,33 @@ ADecorator::ADecorator()
   Wall3->SetupAttachment(Root);
   Wall4 = CreateDefaultSubobject<UStaticMeshComponent>("Wall4");
   Wall4->SetupAttachment(Root);
+  
+  Walls.Add(EDirection::North, Wall1);
+  Walls.Add(EDirection::East, Wall2);
+  Walls.Add(EDirection::South, Wall3);
+  Walls.Add(EDirection::West, Wall4);
+}
+
+void ADecorator::RemoveWall(EDirection Direction)
+{
+  if (Walls.Contains(Direction))
+  {
+    Walls[Direction]->DestroyComponent();
+  }
 }
 
 void ADecorator::BeginPlay()
 {
 	Super::BeginPlay();
 	
+}
+
+ATile* ADecorator::GetParentTile()
+{
+  if (!ParentTile.IsValid())
+  {
+    ParentTile = Cast<ATile>(GetParentActor());
+  }
+
+  return ParentTile.Get();
 }
