@@ -12,6 +12,22 @@ class ADecorator;
 enum class EDirection : uint8;
 class UTextRenderComponent;
 
+USTRUCT(BlueprintType)
+struct FTileSpace
+{
+  GENERATED_BODY()
+
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+  FIntPoint StartingPoint = FIntPoint(0, 0);
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+  FIntPoint EndingPoint = FIntPoint(0, 0);
+
+  FIntPoint GetSize() const
+  {
+    return EndingPoint - StartingPoint + 1;
+  }
+};
+
 UCLASS()
 class AURA_API ATile : public AActor
 {
@@ -21,12 +37,12 @@ public:
   ATile();
 
   virtual void SetExitAvailable(EDirection WorldDirection, bool bAvailable);
-
+  
   void SetTileNumber(int32 Number);
-
   void SetFacingDirection(EDirection Direction);
 
-  EDirection GetRelativeDirection(EDirection WorldDirection);
+  EDirection GetRelativeDirection(EDirection WorldDirection) const;
+  FTileSpace GetTileSpace() const { return TileSpace; }
 
 #if WITH_EDITOR
   bool bDebug = false;
@@ -40,8 +56,9 @@ protected:
   UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Tile|Exit")
   TMap<EDirection, bool> AvailableExits;
 
+  // Tile space in relative coordinates
   UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Tile")
-  FIntPoint TileSize = FIntPoint(1, 1);
+  FTileSpace TileSpace = FTileSpace();
 
   EDirection FacingDirection = EDirection::North;
 

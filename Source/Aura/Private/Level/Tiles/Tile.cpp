@@ -64,7 +64,7 @@ void ATile::BeginPlay()
   
 }
 
-EDirection ATile::GetRelativeDirection(EDirection WorldDirection)
+EDirection ATile::GetRelativeDirection(EDirection WorldDirection) const
 {
   const int32 RelativeDirectionInt = static_cast<uint8>(FacingDirection);
   const int32 WorldDirectionInt = static_cast<uint8>(WorldDirection);

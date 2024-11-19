@@ -87,6 +87,8 @@ private:
   EDirection GetOppositeDirection(EDirection Direction);
 
   void PlacePlayerInInitialPosition();
+
+  void AddTileToDungeonMap(const FIntPoint& Coordinate, ATile* Tile);
   
   UPROPERTY()
   TArray<AActor*> ActorsToDestroy;
@@ -95,8 +97,9 @@ private:
   FIntPoint CurrentCoordinate = {0,0};
   
   TMap<FIntPoint, ATile*> DungeonMap;
+  int32 TotalTiles = 0;
 
-  TSet<FIntPoint> SpecialTiles;
+  // TSet<FIntPoint> SpecialTiles;
 
   EDirection LastExit = EDirection::None;
   EDirection NextExit = EDirection::North;

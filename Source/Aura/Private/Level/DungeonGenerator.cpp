@@ -17,10 +17,10 @@ ADungeonGenerator::ADungeonGenerator()
 
 void ADungeonGenerator::BuildDungeon()
 {
-  const float Progress = static_cast<float>(DungeonMap.Num()) / static_cast<float>(MaxTiles);
+  const float Progress = static_cast<float>(TotalTiles) / static_cast<float>(MaxTiles);
   GeneratingTilesDelegate.Broadcast(Progress);
   
-  if (DungeonMap.Num() >= MaxTiles)
+  if (TotalTiles >= MaxTiles)
   {
     bFinished = true;
     return;
@@ -53,7 +53,7 @@ void ADungeonGenerator::BuildDungeon()
   const FRotator Rotation = GetActorRotation() + GetDirectionRotation(SelectedExit);
 
   ATile* Tile;
-  if (DungeonMap.Num() == MaxTiles - 1)
+  if (TotalTiles == MaxTiles - 1)
   {
     Tile = Cast<ATile>(GetWorld()->SpawnActor(TileExitClass, &Location, &Rotation));
   }
@@ -76,15 +76,16 @@ void ADungeonGenerator::BuildDungeon()
   {
     DungeonMap[LastCoordinate]->SetExitAvailable(SelectedExit, true);
   }
-  
-  DungeonMap.Add(CurrentCoordinate, Tile);
+
+  AddTileToDungeonMap(CurrentCoordinate, Tile);
   ActorsToDestroy.Add(Tile);
+  TotalTiles += 1;
 
 #if WITH_EDITOR
   Tile->bDebug = bDebugEnabled;
 #endif
   
-  Tile->SetTileNumber(DungeonMap.Num());
+  Tile->SetTileNumber(TotalTiles);
   Tile->SetFacingDirection(SelectedExit);
   Tile->SetExitAvailable(LastExit, true);
   
@@ -136,7 +137,7 @@ void ADungeonGenerator::SpawnFirstTile()
   FirstTile->SetTileNumber(1);
   
   DungeonMap.Add(CurrentCoordinate, FirstTile);
-  SpecialTiles.Add(CurrentCoordinate);
+  // SpecialTiles.Add(CurrentCoordinate);
   
   ActorsToDestroy.Add(FirstTile);
 
@@ -148,7 +149,7 @@ void ADungeonGenerator::SpawnFirstTile()
 
 float ADungeonGenerator::CalculateTileLoading()
 {
-  return DungeonMap.Num() / MaxTiles;
+  return TotalTiles / MaxTiles;
 }
 
 void ADungeonGenerator::Backtrack()
@@ -300,4 +301,22 @@ void ADungeonGenerator::PlacePlayerInInitialPosition()
     nullptr,
     ETeleportType::ResetPhysics
   );
+}
+
+void ADungeonGenerator::AddTileToDungeonMap(const FIntPoint& Coordinate, ATile* Tile)
+{
+  const FTileSpace& TileSpace = Tile->GetTileSpace();
+  const FIntPoint& Size = TileSpace.GetSize();
+
+  for (int32 X = 0; X < Size.X; X++)
+  {
+    for (int32 Y = 0; Y < Size.Y; Y++)
+    {
+      FIntPoint CoordinateInTile =
+        Coordinate +
+        FIntPoint(TileSpace.StartingPoint.X + X, TileSpace.StartingPoint.Y + Y);
+
+      DungeonMap.Add(CoordinateInTile, Tile);
+    }
+  }
 }
