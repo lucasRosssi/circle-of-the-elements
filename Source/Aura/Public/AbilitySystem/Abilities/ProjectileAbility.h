@@ -41,6 +41,14 @@ protected:
 	  )
 	float ProjectileSpread = 0.f;
 
+  UPROPERTY(
+    EditDefaultsOnly,
+    BlueprintReadWrite,
+    Category="Projectile",
+    meta=(ClampMin=0.f, UIMin=0.f, ClampMax=90.f, UIMax=90.f)
+    )
+  float ProjectileAimSpread = 0.f;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Projectile")
 	float PitchOverride = 0.f;
 	

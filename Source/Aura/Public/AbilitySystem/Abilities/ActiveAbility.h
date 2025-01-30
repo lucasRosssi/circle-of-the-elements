@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "BaseAbility.h"
+#include "Enums/AbilityActivationMode.h"
 #include "Enums/AbilityHitMode.h"
 #include "ActiveAbility.generated.h"
 
@@ -64,6 +65,8 @@ protected:
 	// True when a player uses the ability, false when it is an AI
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Input", meta=(DisplayPriority=0))
 	bool bIsPlayerAbility = false;
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Input")
+  EAbilityActivationMode ActivationMode = EAbilityActivationMode::Default;
   
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Ability Defaults")
 	TObjectPtr<UAnimMontage> MontageToPlay;

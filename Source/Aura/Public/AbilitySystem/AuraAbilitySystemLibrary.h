@@ -343,7 +343,7 @@ public:
 	// If it has tags that prevents harmful effects, but abilities still interact with target
 	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|GameplayMechanics")
 	static bool HasAnyParryTag(const UAbilitySystemComponent* TargetASC);
-
+  
 	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|GameplayMechanics")
 	static TArray<FRotator> EvenlySpacedRotators(
 		const FVector& Forward,
