@@ -318,18 +318,18 @@ void UAuraAttributeSet::HandleIncomingXP(const FEffectProperties& Props)
 void UAuraAttributeSet::HandleKnockback(const FEffectProperties& Props)
 {
   const float LocalIncomingForce = GetIncomingForce();
-  if (LocalIncomingForce > 0.f)
-  {
-    SetIncomingForce(0.f);
+  
+  if (FMath::IsNearlyZero(LocalIncomingForce)) return;
+  
+  SetIncomingForce(0.f);
 
-    if (!Props.TargetCharacter->Implements<UCombatInterface>()) return;
-    
-    const FVector ForwardVector =
-      UAuraAbilitySystemLibrary::GetForwardVector(Props.EffectContextHandle);
-    const FVector KnockbackForce = ForwardVector * LocalIncomingForce;
+  if (!Props.TargetCharacter->Implements<UCombatInterface>()) return;
+  
+  const FVector ForwardVector =
+    UAuraAbilitySystemLibrary::GetForwardVector(Props.EffectContextHandle);
+  const FVector KnockbackForce = ForwardVector * LocalIncomingForce;
 
-    ICombatInterface::Execute_ApplyKnockback(Props.TargetCharacter, KnockbackForce);
-  }
+  ICombatInterface::Execute_ApplyKnockback(Props.TargetCharacter, KnockbackForce);
 }
 
 void UAuraAttributeSet::HandleHeal(const FEffectProperties& Props)

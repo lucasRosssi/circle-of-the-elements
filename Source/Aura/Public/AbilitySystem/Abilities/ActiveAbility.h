@@ -44,7 +44,6 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category="Input", meta=(EditCondition="bIsPlayerAbility", DisplayPriority=3))
 	bool bUsesMovementInputDirection = false;
 
-
 protected:
 	UFUNCTION(BlueprintPure, Category="Ability Defaults")
 	void GetMontageParams(UAnimMontage*& Montage, float& PlayRate, float& RootMotionScale) const;
@@ -61,12 +60,43 @@ protected:
 	
 	UFUNCTION(BlueprintCallable)
 	void ClearRicochetHitTargets();
+
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Ability Defaults|Activation")
+  EAbilityActivationMode ActivationMode = EAbilityActivationMode::Default;
+  UPROPERTY(
+    EditDefaultsOnly,
+    BlueprintReadOnly,
+    Category="Ability Defaults|Activation",
+    meta=(
+      EditCondition="ActivationMode == EAbilityActivationMode::Channeling",
+      EditConditionHides,
+      Units="s",
+      ClampMin=0.f,
+      UIMin=0.f,
+      ClampMax=1.f,
+      UIMax=1.f
+      )
+    )
+  float ChannelingTick = 0.2f;
+  UPROPERTY(
+    EditDefaultsOnly,
+    BlueprintReadOnly,
+    Category="Ability Defaults|Activation",
+    meta=(
+      EditCondition="ActivationMode == EAbilityActivationMode::Focus",
+      EditConditionHides,
+      Units="s",
+      ClampMin=0.f,
+      UIMin=0.f,
+      ClampMax=5.f,
+      UIMax=5.f
+      )
+    )
+  float FocusTime = 1.f;
 	
 	// True when a player uses the ability, false when it is an AI
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Input", meta=(DisplayPriority=0))
 	bool bIsPlayerAbility = false;
-  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Input")
-  EAbilityActivationMode ActivationMode = EAbilityActivationMode::Default;
   
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Ability Defaults")
 	TObjectPtr<UAnimMontage> MontageToPlay;
