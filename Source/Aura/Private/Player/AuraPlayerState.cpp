@@ -219,8 +219,11 @@ bool AAuraPlayerState::CanAffordResourceCost(const TMap<FGameplayTag, int32>& Co
 
 void AAuraPlayerState::InitializeState()
 {
-  SetSkillPoints(GetSaveGame()->PlayerState.SkillPoints);
-  SetAttributePoints(SaveGame->PlayerState.AttributePoints);
+  if (GetSaveGame())
+  {
+    SetSkillPoints(SaveGame->PlayerState.SkillPoints);
+    SetAttributePoints(SaveGame->PlayerState.AttributePoints);
+  }
 
   for (auto& [Resource, SaveAmount] : SaveGame->PlayerState.Resources)
   {
