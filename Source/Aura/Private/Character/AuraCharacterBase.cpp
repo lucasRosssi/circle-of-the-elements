@@ -259,6 +259,24 @@ void AAuraCharacterBase::ApplyKnockback_Implementation(const FVector& KnockbackF
   );
 }
 
+void AAuraCharacterBase::ApplyForce_Implementation(const FVector& Force)
+{
+  GetCharacterMovement()->AddForce(Force);
+}
+
+void AAuraCharacterBase::ApplyAttraction_Implementation(
+  const FVector& AttractionPoint,
+  float DeltaTime,
+  float InterpSpeed)
+{
+  SetActorLocation(FMath::VInterpConstantTo(
+    GetActorLocation(),
+    AttractionPoint,
+    DeltaTime,
+    InterpSpeed
+    ));
+}
+
 USceneComponent* AAuraCharacterBase::GetTopStatusEffectSceneComponent_Implementation()
 {
 	return TopStatusEffectSceneComponent;

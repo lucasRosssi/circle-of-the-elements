@@ -8,22 +8,45 @@
 #include "NiagaraComponent.h"
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "Aura/Aura.h"
+#include "Components/SphereComponent.h"
 #include "Components/TeamComponent.h"
+#include "Interfaces/CombatInterface.h"
+#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 
 AAreaEffectActor::AAreaEffectActor()
 {
-  PrimaryActorTick.bCanEverTick = false;
+  PrimaryActorTick.bCanEverTick = true;
   bReplicates = true;
 
   SetRootComponent(CreateDefaultSubobject<USceneComponent>("SceneRoot"));
   TeamComponent = CreateDefaultSubobject<UTeamComponent>("TeamComponent");
   TeamComponent->TeamID = NEUTRAL_TEAM;
+  RadialForceSphere = CreateDefaultSubobject<USphereComponent>("RadialForceSphere");
+  RadialForceSphere->SetupAttachment(GetRootComponent());
 }
 
 void AAreaEffectActor::BeginPlay()
 {
   Super::BeginPlay();
+
+  if (SpawnSound)
+  {
+    UGameplayStatics::PlaySoundAtLocation(
+      this,
+      SpawnSound,
+      GetActorLocation(),
+      GetActorRotation(),
+      SpawnSoundVolume,
+      SpawnSoundPitch
+    );
+  }
+
+  if (bHasRadialForce)
+  {
+    RadialForceSphere->OnComponentBeginOverlap.AddDynamic(this, &AAreaEffectActor::OnRadialForceOverlap);
+    RadialForceSphere->OnComponentEndOverlap.AddDynamic(this, &AAreaEffectActor::OnRadialForceEndOverlap);
+  }
 
   if (LifeSpan > 0.f)
   {
@@ -80,6 +103,24 @@ void AAreaEffectActor::BeginDestroy()
   }
 
   Super::BeginDestroy();
+}
+
+void AAreaEffectActor::Tick(float DeltaSeconds)
+{
+  Super::Tick(DeltaSeconds);
+
+  if (bHasRadialForce)
+  {
+    for (const auto Actor : ActorsInForceArea)
+    {
+      ICombatInterface::Execute_ApplyAttraction(
+        Actor,
+        RadialForceSphere->GetComponentLocation(),
+        DeltaSeconds,
+        Force
+        );
+    }
+  }
 }
 
 void AAreaEffectActor::DeactivateAndDestroy()
@@ -219,4 +260,39 @@ void AAreaEffectActor::OnEndOverlap(AActor* TargetActor)
   }
 
   ASCsInArea.Remove(TargetASC);
+}
+
+void AAreaEffectActor::OnRadialForceOverlap(
+    UPrimitiveComponent* OverlappedComponent,
+    AActor* OtherActor,
+    UPrimitiveComponent* OtherComp,
+    int32 OtherBodyIndex,
+    bool bFromSweep,
+    const FHitResult& SweepResult)
+{
+  if (bDestroying) return;
+  if (
+    TargetTeam == ETargetTeam::Enemies &&
+    !UAuraAbilitySystemLibrary::AreActorsEnemies(this, OtherActor)
+  )
+    return;
+  if (
+    TargetTeam == ETargetTeam::Friends &&
+    !UAuraAbilitySystemLibrary::AreActorsFriends(this, OtherActor)
+  )
+    return;
+  const UAbilitySystemComponent* TargetASC =
+    UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(OtherActor);
+  if (!IsValid(TargetASC)) return;
+
+  ActorsInForceArea.Add(OtherActor);
+}
+void AAreaEffectActor::OnRadialForceEndOverlap(
+  UPrimitiveComponent* OverlappedComponent,
+  AActor* OtherActor,
+  UPrimitiveComponent* OtherComp,
+  int32 OtherBodyIndex
+    )
+{
+  ActorsInForceArea.Remove(OtherActor);
 }
