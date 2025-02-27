@@ -19,7 +19,8 @@ AAreaEffectActor::AAreaEffectActor()
   PrimaryActorTick.bCanEverTick = true;
   bReplicates = true;
 
-  SetRootComponent(CreateDefaultSubobject<USceneComponent>("SceneRoot"));
+  Root = CreateDefaultSubobject<USphereComponent>("SceneRoot");
+  SetRootComponent(Root);
   TeamComponent = CreateDefaultSubobject<UTeamComponent>("TeamComponent");
   TeamComponent->TeamID = NEUTRAL_TEAM;
   RadialForceSphere = CreateDefaultSubobject<USphereComponent>("RadialForceSphere");
@@ -217,6 +218,7 @@ void AAreaEffectActor::OnOverlap(AActor* TargetActor)
 void AAreaEffectActor::ApplyAbilityEffect(UAbilitySystemComponent* TargetASC, bool& bSuccess)
 {
   AbilityParams.TargetASC = TargetASC;
+  AbilityParams.AreaOrigin = GetActorLocation(); // Some Area Effect Actors can move!
   AbilityParams.ForwardVector = UKismetMathLibrary::GetDirectionUnitVector(
     AbilityParams.AreaOrigin,
     TargetASC->GetAvatarActor()->GetActorLocation()

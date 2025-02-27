@@ -99,9 +99,11 @@ protected:
     );
 
   UPROPERTY(VisibleAnywhere)
-  TObjectPtr<UTeamComponent> TeamComponent;
+  TObjectPtr<USphereComponent> Root;
   UPROPERTY(VisibleAnywhere)
   TObjectPtr<USphereComponent> RadialForceSphere;
+  UPROPERTY(VisibleAnywhere)
+  TObjectPtr<UTeamComponent> TeamComponent;
 
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Applied Effects")
   TSubclassOf<UGameplayEffect> GameplayEffectClass;
