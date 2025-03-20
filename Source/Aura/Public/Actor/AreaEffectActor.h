@@ -63,6 +63,19 @@ public:
     Category = "Applied Effects|Force"
   )
   float Force = 0.f;
+  UPROPERTY(
+    EditDefaultsOnly,
+    BlueprintReadOnly,
+    Category = "Applied Effects|Mode"
+  )
+  bool bActorUsesCharges = false;
+  UPROPERTY(
+    EditDefaultsOnly,
+    BlueprintReadOnly,
+    Category = "Applied Effects|Mode",
+    meta=(ClampMin=0, UIMin=0)
+  )
+  int32 ActorCharges = 0;
 
 protected:
   virtual void BeginPlay() override;

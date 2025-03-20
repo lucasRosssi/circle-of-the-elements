@@ -217,6 +217,8 @@ void AAreaEffectActor::OnOverlap(AActor* TargetActor)
 
 void AAreaEffectActor::ApplyAbilityEffect(UAbilitySystemComponent* TargetASC, bool& bSuccess)
 {
+  if (bActorUsesCharges && ActorCharges <= 0) return;
+
   AbilityParams.TargetASC = TargetASC;
   AbilityParams.AreaOrigin = GetActorLocation(); // Some Area Effect Actors can move!
   AbilityParams.ForwardVector = UKismetMathLibrary::GetDirectionUnitVector(
@@ -238,6 +240,16 @@ void AAreaEffectActor::ApplyAbilityEffectToActorsInArea()
     }
 
     ApplyAbilityEffect(CurrentASC, bSuccess);
+
+    if (bActorUsesCharges)
+    {
+      ActorCharges -= 1;
+      if (ActorCharges <= 0)
+      {
+        DeactivateAndDestroy();
+        break;
+      }
+    }
   }
 }
 

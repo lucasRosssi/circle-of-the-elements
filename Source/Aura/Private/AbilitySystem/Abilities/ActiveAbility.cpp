@@ -122,6 +122,11 @@ float UActiveAbility::GetEffectChangePerHit() const
 	return EffectChangePerHit.GetValueAtLevel(GetAbilityLevel()) + AdditionalEffectChangePerHit;
 }
 
+int32 UActiveAbility::GetActorCharges() const
+{
+  return ActorCharges.AsInteger(GetAbilityLevel()) + AdditionalActorCharges;
+}
+
 void UActiveAbility::ClearRicochetHitTargets()
 {
 	RicochetHitActors.Empty();

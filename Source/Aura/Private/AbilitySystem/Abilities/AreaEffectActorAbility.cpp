@@ -73,6 +73,8 @@ AAreaEffectActor* UAreaEffectActorAbility::SpawnEffectActor(const FVector& Targe
 	AreaEffectActor->DelayImpact = DelayImpact.GetValueAtLevel(GetAbilityLevel());
   AreaEffectActor->bHasRadialForce = bHasRadialForce;
   AreaEffectActor->Force = Force.GetValueAtLevel(GetAbilityLevel());
+  AreaEffectActor->bActorUsesCharges = bActorUsesCharges;
+  AreaEffectActor->ActorCharges = GetActorCharges();
  	AreaEffectActor->FinishSpawning(SpawnTransform);
 
 	return AreaEffectActor;

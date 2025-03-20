@@ -57,6 +57,8 @@ protected:
 	int32 GetMaxHitCount() const;
 	UFUNCTION(BlueprintPure, Category="Ability Defaults|Mode")
 	float GetEffectChangePerHit() const;
+  UFUNCTION(BlueprintPure, Category="Ability Defaults|Mode|Actor Spawn")
+  int32 GetActorCharges() const;
 	
 	UFUNCTION(BlueprintCallable)
 	void ClearRicochetHitTargets();
@@ -166,6 +168,22 @@ protected:
 		meta=(EditCondition="RangedHitMode == EAbilityHitMode::Ricochet", EditConditionHides)
 		)
 	bool bCanRepeatTarget = false;
+
+  UPROPERTY(
+    EditDefaultsOnly,
+    BlueprintReadOnly,
+    Category="Ability Defaults|Mode|Actor Spawn"
+    )
+  bool bActorUsesCharges = false;
+  UPROPERTY(
+    EditDefaultsOnly,
+    BlueprintReadOnly,
+    Category="Ability Defaults|Mode|Actor Spawn",
+    meta=(EditCondition="bActorUsesCharges", EditConditionHides)
+    )
+  FScalableFloat ActorCharges = 0.f;
+  UPROPERTY(BlueprintReadWrite)
+  int32 AdditionalActorCharges = 0;
 
 private:
   bool CheckForClarityEffect(const FGameplayAbilityActorInfo* ActorInfo);
