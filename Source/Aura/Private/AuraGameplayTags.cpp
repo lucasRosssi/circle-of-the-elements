@@ -614,6 +614,11 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
     FString("Immunity to freeze effect")
   );
 
+  GameplayTags.Immunities_Force = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Immunities.Force"),
+    FString("Immunity to any force effects (pull, knockback...)")
+  );
+
   /*
    * Boss Tags
    */

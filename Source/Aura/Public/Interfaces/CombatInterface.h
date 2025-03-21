@@ -83,6 +83,12 @@ public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void ApplyKnockback(const FVector& KnockbackForce);
 
+  UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+  void ApplyForce(const FVector& Force);
+
+  UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+  void ApplyAttraction(const FVector& AttractionPoint, float DeltaTime, float InterpSpeed);
+
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	USceneComponent* GetTopStatusEffectSceneComponent();
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)

@@ -26,104 +26,106 @@ class UAbilitySystemComponent;
 class UAuraAttributeSet;
 
 UCLASS(Abstract)
-class AURA_API AAuraCharacterBase : public ACharacter, public IAbilitySystemInterface, public 
-ICombatInterface, public ITargetInterface
+class AURA_API AAuraCharacterBase : public ACharacter, public IAbilitySystemInterface, public
+                                    ICombatInterface, public ITargetInterface
 {
-	GENERATED_BODY()
+  GENERATED_BODY()
 
 public:
-	AAuraCharacterBase();
-	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
-	UAuraAttributeSet* GetAttributeSet() const { return AttributeSet; }
-	ECharacterName GetCharacterName() const { return CharacterName; }
-	
-	virtual void HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
-	
-	UFUNCTION(NetMulticast, Reliable)
-	virtual void MulticastHandleDeath(const FVector& DeathImpulse);
+  AAuraCharacterBase();
+  virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+  UAuraAttributeSet* GetAttributeSet() const { return AttributeSet; }
+  ECharacterName GetCharacterName() const { return CharacterName; }
 
-	/** Target Interface */
-	virtual void HighlightActor_Implementation(AActor* InstigatorActor = nullptr) override;
-	virtual void UnHighlightActor_Implementation() override;
-	/** end Target Interface */
+  virtual void HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
 
-	/** Combat Interface */
-	virtual UAnimMontage* GetDodgeMontage_Implementation() override;
-	virtual UAnimMontage* GetHitReactMontage_Implementation() override;
-	virtual UAnimMontage* GetStunMontage_Implementation() override;
-	virtual void SetCombatTarget_Implementation(AActor* InCombatTarget) override;
-	virtual AActor* GetCombatTarget_Implementation() const override;
-	virtual USkeletalMeshComponent* GetWeapon_Implementation() override;
-	virtual USkeletalMeshComponent* GetAvatarMesh_Implementation() override;
-	virtual FVector GetAbilitySocketLocation_Implementation(const FName SocketName, bool bSocketInWeapon = true) override;;
-	virtual void Die(const FVector& DeathImpulse = FVector::ZeroVector) override;
-	virtual bool IsDead_Implementation() const override;
-	virtual AActor* GetAvatar_Implementation() override;
-	virtual UNiagaraSystem* GetBloodEffect_Implementation() override;
-	virtual USoundBase* GetHitSound_Implementation() override;
-	virtual ECharacterType GetCharacterType_Implementation() override;
-	virtual FOnASCRegistered& GetOnASCRegisteredDelegate() override;
-	virtual FOnDeath& GetOnDeathDelegate() override;
-	virtual void ApplyKnockback_Implementation(const FVector& KnockbackForce) override;
-	virtual USceneComponent* GetTopStatusEffectSceneComponent_Implementation() override;
-	virtual USceneComponent* GetBottomStatusEffectSceneComponent_Implementation() override;
-	virtual UBoxComponent* EnableWeaponCollision_Implementation(bool bEnable) override;
-	virtual bool IsFriend_Implementation(AActor* Actor) override;
-	virtual bool IsEnemy_Implementation(AActor* Actor) override;
+  UFUNCTION(NetMulticast, Reliable)
+  virtual void MulticastHandleDeath(const FVector& DeathImpulse);
+
+  /** Target Interface */
+  virtual void HighlightActor_Implementation(AActor* InstigatorActor = nullptr) override;
+  virtual void UnHighlightActor_Implementation() override;
+  /** end Target Interface */
+
+  /** Combat Interface */
+  virtual UAnimMontage* GetDodgeMontage_Implementation() override;
+  virtual UAnimMontage* GetHitReactMontage_Implementation() override;
+  virtual UAnimMontage* GetStunMontage_Implementation() override;
+  virtual void SetCombatTarget_Implementation(AActor* InCombatTarget) override;
+  virtual AActor* GetCombatTarget_Implementation() const override;
+  virtual USkeletalMeshComponent* GetWeapon_Implementation() override;
+  virtual USkeletalMeshComponent* GetAvatarMesh_Implementation() override;
+  virtual FVector GetAbilitySocketLocation_Implementation(const FName SocketName, bool bSocketInWeapon = true) override;
+  virtual void Die(const FVector& DeathImpulse = FVector::ZeroVector) override;
+  virtual bool IsDead_Implementation() const override;
+  virtual AActor* GetAvatar_Implementation() override;
+  virtual UNiagaraSystem* GetBloodEffect_Implementation() override;
+  virtual USoundBase* GetHitSound_Implementation() override;
+  virtual ECharacterType GetCharacterType_Implementation() override;
+  virtual FOnASCRegistered& GetOnASCRegisteredDelegate() override;
+  virtual FOnDeath& GetOnDeathDelegate() override;
+  virtual void ApplyKnockback_Implementation(const FVector& KnockbackForce) override;
+  virtual void ApplyForce_Implementation(const FVector& Force) override;
+  virtual void ApplyAttraction_Implementation(const FVector& AttractionPoint, float DeltaTime, float InterpSpeed) override;
+  virtual USceneComponent* GetTopStatusEffectSceneComponent_Implementation() override;
+  virtual USceneComponent* GetBottomStatusEffectSceneComponent_Implementation() override;
+  virtual UBoxComponent* EnableWeaponCollision_Implementation(bool bEnable) override;
+  virtual bool IsFriend_Implementation(AActor* Actor) override;
+  virtual bool IsEnemy_Implementation(AActor* Actor) override;
   virtual void SetCustomDepth_Implementation(int32 Value) override;
   virtual float GetCapsuleHalfHeight_Implementation() const override;
 	/** END Combat Interface */
 
-	void InitSummon(int32 TeamID);
+  void InitSummon(int32 TeamID);
   UFUNCTION(BlueprintImplementableEvent)
   void OnSpawned();
 
-	void ChangeActionSpeed(float InActionSpeed);
+  void ChangeActionSpeed(float InActionSpeed);
 
-	UTeamComponent* GetTeamComponent() const { return TeamComponent; }
+  UTeamComponent* GetTeamComponent() const { return TeamComponent; }
 
-	UAuraAbilitySystemComponent* GetAuraASC();
+  UAuraAbilitySystemComponent* GetAuraASC();
 
-	FOnASCRegistered OnASCRegistered;
+  FOnASCRegistered OnASCRegistered;
   UPROPERTY(BlueprintAssignable)
-	FOnDeath OnDeath;
+  FOnDeath OnDeath;
 
-	UPROPERTY(BlueprintReadOnly, Category="Combat")
-	bool bHitReacting = false;
+  UPROPERTY(BlueprintReadOnly, Category="Combat")
+  bool bHitReacting = false;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Character Defaults|Combat")
-	float LifeSpanDuration = 10.f;
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Character Defaults|Combat")
+  float LifeSpanDuration = 10.f;
 
-	UPROPERTY(BlueprintReadWrite, Category="Combat")
-	TObjectPtr<AActor> CombatTarget;
+  UPROPERTY(BlueprintReadWrite, Category="Combat")
+  TObjectPtr<AActor> CombatTarget;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Character Defaults|Abilities|Startup", meta=(DisplayPriority=0))
-	TArray<TSubclassOf<UGameplayAbility>> NativeBaseAbilities;
-	UPROPERTY(EditDefaultsOnly, Category="Character Defaults|Abilities|Startup", meta=(DisplayPriority=1))
-	TArray<TSubclassOf<UGameplayAbility>> NativeCharacterAbilities;
-	UPROPERTY(EditDefaultsOnly, Category="Character Defaults|Effects|Startup", meta=(DisplayPriority=3))
-	TArray<TSubclassOf<UGameplayEffect>> NativeEffects;
+  UPROPERTY(EditDefaultsOnly, Category = "Character Defaults|Abilities|Startup", meta=(DisplayPriority=0))
+  TArray<TSubclassOf<UGameplayAbility>> NativeBaseAbilities;
+  UPROPERTY(EditDefaultsOnly, Category="Character Defaults|Abilities|Startup", meta=(DisplayPriority=1))
+  TArray<TSubclassOf<UGameplayAbility>> NativeCharacterAbilities;
+  UPROPERTY(EditDefaultsOnly, Category="Character Defaults|Effects|Startup", meta=(DisplayPriority=3))
+  TArray<TSubclassOf<UGameplayEffect>> NativeEffects;
 
-	UPROPERTY(
-		EditDefaultsOnly,
-		BlueprintReadOnly,
-		Category="Character Defaults|Attributes",
-		meta=(Categories="Attributes.Primary")
-		)
-	FGameplayTag PrimeAttributeTag = FGameplayTag();
+  UPROPERTY(
+    EditDefaultsOnly,
+    BlueprintReadOnly,
+    Category="Character Defaults|Attributes",
+    meta=(Categories="Attributes.Primary")
+  )
+  FGameplayTag PrimeAttributeTag = FGameplayTag();
 
 protected:
-	virtual void BeginPlay() override;
+  virtual void BeginPlay() override;
 
   virtual void InitAbilityActorInfo();
   virtual void InitializeAbilities();
   virtual void InitializeAttributes();
-  
+
   void ApplyEffectToSelf(TSubclassOf<UGameplayEffect> GameplayEffectClass, float Level) const;
-  
-	void ReleaseWeapon();
-	void RagdollMesh(const FVector& DeathImpulse = FVector::ZeroVector);
-  
+
+  void ReleaseWeapon();
+  void RagdollMesh(const FVector& DeathImpulse = FVector::ZeroVector);
+
   void DissolveCharacter();
   UFUNCTION(BlueprintImplementableEvent)
   void StartDissolveTimeline(UMaterialInstanceDynamic* DynamicMaterialInstance);
@@ -142,13 +144,13 @@ protected:
   TSubclassOf<UGameplayEffect> DefaultVitalAttributes;
   UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Character Defaults|Attributes")
   TSubclassOf<UGameplayEffect> DefaultRegenerationEffect;
-  
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Character Defaults|Montages|Combat")
-	TObjectPtr<UAnimMontage> DodgeMontage;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Defaults|Montages|Combat")
-	TObjectPtr<UAnimMontage> HitReactMontage;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Defaults|Montages|Combat")
-	TObjectPtr<UAnimMontage> StunMontage;
+
+  UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Character Defaults|Montages|Combat")
+  TObjectPtr<UAnimMontage> DodgeMontage;
+  UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Defaults|Montages|Combat")
+  TObjectPtr<UAnimMontage> HitReactMontage;
+  UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Defaults|Montages|Combat")
+  TObjectPtr<UAnimMontage> StunMontage;
 
   UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Defaults|Combat")
   TObjectPtr<UNiagaraSystem> BloodEffect;
@@ -157,50 +159,56 @@ protected:
   UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Defaults|Combat")
   TObjectPtr<USoundBase> DeathSound;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat")
-	TObjectPtr<USkeletalMeshComponent> Weapon;
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat")
-	TObjectPtr<UBoxComponent> WeaponHitBox;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
-	FName WeaponSocketName;
+  UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat")
+  TObjectPtr<USkeletalMeshComponent> Weapon;
+  UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat")
+  TObjectPtr<UBoxComponent> WeaponHitBox;
+  UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
+  FName WeaponSocketName;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat")
-	TObjectPtr<UTeamComponent> TeamComponent;
+  UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat")
+  TObjectPtr<UTeamComponent> TeamComponent;
 
   bool bDead = false;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Defaults")
-	ECharacterName CharacterName = ECharacterName::Undefined;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Defaults")
-	ECharacterType CharacterType = ECharacterType::Regular;
-  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Character Defaults", meta=( DisplayThumbnail="true", AllowedClasses="/Script/Engine.Texture,/Script/Engine.MaterialInterface,/Script/Engine.SlateTextureAtlasInterface", DisallowedClasses = "/Script/MediaAssets.MediaTexture"))
+  UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Defaults")
+  ECharacterName CharacterName = ECharacterName::Undefined;
+  UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Defaults")
+  ECharacterType CharacterType = ECharacterType::Regular;
+  UPROPERTY(
+    EditAnywhere,
+    BlueprintReadWrite,
+    Category= "Character Defaults",
+    meta=( DisplayThumbnail="true", AllowedClasses=
+      "/Script/Engine.Texture,/Script/Engine.MaterialInterface,/Script/Engine.SlateTextureAtlasInterface",
+      DisallowedClasses = "/Script/MediaAssets.MediaTexture")
+  )
   TObjectPtr<UObject> Portrait;
   UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Character Defaults")
   FColor MainColor;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	TObjectPtr<UMaterialInstance> DissolveMaterialInstance;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	TObjectPtr<UMaterialInstance> WeaponDissolveMaterialInstance;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category= "Character Defaults|Speed")
-	float DefaultWalkSpeed = 600.f;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Character Defaults|Speed")
-	float CurrentWalkSpeed = DefaultWalkSpeed;
+  UPROPERTY(EditAnywhere, BlueprintReadOnly)
+  TObjectPtr<UMaterialInstance> DissolveMaterialInstance;
+  UPROPERTY(EditAnywhere, BlueprintReadOnly)
+  TObjectPtr<UMaterialInstance> WeaponDissolveMaterialInstance;
 
-	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<UStatusEffectsManager> StatusEffectsManager;
-	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<USceneComponent> TopStatusEffectSceneComponent;
-	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<USceneComponent> BottomStatusEffectSceneComponent;
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category= "Character Defaults|Speed")
+  float DefaultWalkSpeed = 600.f;
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Character Defaults|Speed")
+  float CurrentWalkSpeed = DefaultWalkSpeed;
+
+  UPROPERTY(VisibleAnywhere)
+  TObjectPtr<UStatusEffectsManager> StatusEffectsManager;
+  UPROPERTY(VisibleAnywhere)
+  TObjectPtr<USceneComponent> TopStatusEffectSceneComponent;
+  UPROPERTY(VisibleAnywhere)
+  TObjectPtr<USceneComponent> BottomStatusEffectSceneComponent;
 
 private:
   void CheckVelocityNearStop();
 
   FTimerHandle VelocityCheckTimer;
-  
-	UPROPERTY()
-	UAuraAbilitySystemComponent* AuraASC = nullptr;
 
+  UPROPERTY()
+  UAuraAbilitySystemComponent* AuraASC = nullptr;
 };

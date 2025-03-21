@@ -114,7 +114,19 @@ bool UBaseAbility::CheckCooldown(
 	) const
 {
 	// With charges, cooldown will only affect the frequency a charge is recharged
-	if (IsChargesModeActive()) return true;
+	if (IsChargesModeActive())
+	{
+	  if (ChargesEffect)
+	  {
+	    FGameplayTagContainer ChargesTags;
+	    ChargesEffect->GetOwnedGameplayTags(ChargesTags);
+
+	    const int32 ChargesCount = ActorInfo->AbilitySystemComponent->GetGameplayTagCount(ChargesTags.First());
+
+	    return ChargesCount > 0;
+	  }
+	  return false;
+	}
 	
 	return Super::CheckCooldown(Handle, ActorInfo, OptionalRelevantTags);
 }

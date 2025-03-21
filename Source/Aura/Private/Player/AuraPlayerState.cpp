@@ -56,9 +56,9 @@ float AAuraPlayerState::GetActionSpeed_Implementation()
 
 void AAuraPlayerState::SetActionSpeed_Implementation(float InActionSpeed)
 {
-  if (const auto Character = GetCharacterBase())
+  if (GetCharacterBase())
   {
-    Character->ChangeActionSpeed(InActionSpeed);
+    CharacterBase->ChangeActionSpeed(InActionSpeed);
   }
 }
 
