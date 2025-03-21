@@ -104,7 +104,7 @@ UAnimMontage* UActiveAbility::GetAnimMontage() const
 float UActiveAbility::GetMontagePlayRate() const
 {
   const float ActionSpeed = IAttributeSetInterface::Execute_GetActionSpeed(GetOwningActorFromActorInfo());
-	return MontagePlayRate.GetValueAtLevel(GetAbilityLevel()) * ActionSpeed + AdditionalMontagePlayRate;
+	return (MontagePlayRate.GetValueAtLevel(GetAbilityLevel()) + AdditionalMontagePlayRate) * ActionSpeed;
 }
 
 float UActiveAbility::GetAnimRootMotionTranslateScale() const
@@ -120,6 +120,11 @@ int32 UActiveAbility::GetMaxHitCount() const
 float UActiveAbility::GetEffectChangePerHit() const
 {
 	return EffectChangePerHit.GetValueAtLevel(GetAbilityLevel()) + AdditionalEffectChangePerHit;
+}
+
+int32 UActiveAbility::GetActorCharges() const
+{
+  return ActorCharges.AsInteger(GetAbilityLevel()) + AdditionalActorCharges;
 }
 
 void UActiveAbility::ClearRicochetHitTargets()

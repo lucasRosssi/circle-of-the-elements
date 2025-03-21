@@ -139,6 +139,8 @@ public:
 	FGameplayTag Immunities_Incapacitation_Knockback;
 	FGameplayTag Immunities_Incapacitation_Freeze;
 
+  FGameplayTag Immunities_Force;
+
   /* BOSS */
 
 	FGameplayTag Boss;

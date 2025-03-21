@@ -53,7 +53,13 @@ void UProjectileAbility::SpawnProjectile(
 	{
 		FTransform SpawnTransform;
 		SpawnTransform.SetLocation(SocketLocation);
-		SpawnTransform.SetRotation(Rotator.Quaternion());
+	  FRotator FinalRotator = Rotator;
+	  if (ProjectileAimSpread > 0.f)
+	  {
+	    const float RandomDeviation = FMath::FRandRange(-ProjectileAimSpread / 2, ProjectileAimSpread / 2);
+	    FinalRotator.Yaw = FinalRotator.Yaw + RandomDeviation;
+	  }
+		SpawnTransform.SetRotation(FinalRotator.Quaternion());
 		
 		AAuraProjectile* Projectile = GetWorld()->SpawnActorDeferred<AAuraProjectile>(
 			ProjectileClass,

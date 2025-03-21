@@ -26,9 +26,9 @@ void URewardManager::BeginPlay()
   }
   else
   {
-    if (GetSaveGame()->bJustLoaded)
+    if (GetSaveGame() && SaveGame->bJustLoaded)
     {
-      RewardBag = GetSaveGame()->RewardManager.RewardBag;
+      RewardBag = SaveGame->RewardManager.RewardBag;
     }
     else
     {
@@ -88,7 +88,10 @@ void URewardManager::SetGatesRewards()
     RewardBag.Add(Reward);
   }
 
-  GetSaveGame()->RewardManager.RewardBag = RewardBag;
+  if (GetSaveGame())
+  {
+    SaveGame->RewardManager.RewardBag = RewardBag;
+  }
 }
 
 void URewardManager::SpawnReward()
@@ -139,7 +142,10 @@ void URewardManager::RemoveRewardFromPool(const FGameplayTag& RewardTag)
   });
 
   BlockedRewards.AddTag(RewardTag);
-  GetSaveGame()->RewardManager.BlockedRewards = BlockedRewards;
+  if (GetSaveGame())
+  {
+    SaveGame->RewardManager.BlockedRewards = BlockedRewards;
+  }
 }
 
 FGameplayTag URewardManager::GetNextRewardInBag()

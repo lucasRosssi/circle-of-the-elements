@@ -201,19 +201,19 @@ void UExecCalc_Damage::Execute_Implementation(
 
 		DamageTypeValue *= 1.f - Resistance;
 
-		if (UAuraAbilitySystemLibrary::IsRadialDamage(EffectContextHandle))
-		{
-			FRadialProps RadialProps = UAuraAbilitySystemLibrary::GetRadialProps(EffectContextHandle);
-			DamageTypeValue = UAuraAbilitySystemLibrary::GetRadialDamageWithFalloff(
-				 TargetAvatar,
-				 DamageTypeValue,
-				 DamageTypeValue / 4,
-				 RadialProps.Origin,
-				 RadialProps.InnerRadius,
-				 RadialProps.OuterRadius,
-				 1.f
-				 );
-		}
+		// if (UAuraAbilitySystemLibrary::IsRadialDamage(EffectContextHandle))
+		// {
+		// 	FRadialProps RadialProps = UAuraAbilitySystemLibrary::GetRadialProps(EffectContextHandle);
+		// 	DamageTypeValue = UAuraAbilitySystemLibrary::GetRadialDamageWithFalloff(
+		// 		 TargetAvatar,
+		// 		 DamageTypeValue,
+		// 		 DamageTypeValue / 4,
+		// 		 RadialProps.Origin,
+		// 		 RadialProps.InnerRadius,
+		// 		 RadialProps.OuterRadius,
+		// 		 1.f
+		// 		 );
+		// }
 		
 		Damage += DamageTypeValue;
 	}

@@ -41,4 +41,15 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Ability Defaults|Area Effect")
 	FScalableFloat DelayImpact = 0.f;
+
+  UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Ability Defaults|Area Effect")
+  bool bHasRadialForce = false;
+  
+  UPROPERTY(
+    EditDefaultsOnly,
+    BlueprintReadWrite,
+    Category="Ability Defaults|Area Effect",
+    meta=(EditCondition="bHasRadialForce")
+    )
+  FScalableFloat Force = 0.f;
 };
