@@ -51,9 +51,9 @@ void UCombatManager::SetCurrentCombatData()
 {
 	CurrentWave = 0;
 
-  if (GetSaveGame()->bJustLoaded)
+  if (GetSaveGame() && SaveGame->bJustLoaded)
   {
-    CombatsCount = GetSaveGame()->CombatManager.CombatsCount;
+    CombatsCount = SaveGame->CombatManager.CombatsCount;
   }
   
   SetCombatDifficulty();
@@ -64,7 +64,10 @@ void UCombatManager::SetCurrentCombatData()
 void UCombatManager::StartCombat()
 {
 	CombatsCount += 1;
-  GetSaveGame()->CombatManager.CombatsCount = CombatsCount;
+  if (GetSaveGame())
+  {
+    SaveGame->CombatManager.CombatsCount = CombatsCount;
+  }
 	
 	NextWave();
 }
