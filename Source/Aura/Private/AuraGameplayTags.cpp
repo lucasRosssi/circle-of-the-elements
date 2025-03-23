@@ -17,6 +17,26 @@ const FAuraGameplayTags& FAuraGameplayTags::Get()
 void FAuraGameplayTags::InitializeNativeGameplayTags()
 {
   if (GameplayTags.IsValid()) return;
+  
+  /*
+  * HEROES
+  */
+
+  GameplayTags.Heroes = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Heroes"),
+    FString("Heroes tags")
+  );
+
+  GameplayTags.Heroes_Aura = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Heroes.Aura"),
+    FString("Aura tag")
+  );
+
+  GameplayTags.Heroes_Vilkar = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Heroes.Vilkar"),
+    FString("Vilkar tag")
+  );
+  
   /*
    * DIFFICULTY CLASSES
    */

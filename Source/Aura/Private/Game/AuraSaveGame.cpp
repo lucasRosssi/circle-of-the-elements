@@ -21,16 +21,16 @@ void UAuraSaveGame::PostInitProperties()
 
 void UAuraSaveGame::OnPlayerDeath()
 {
-  PlayerState.Reset();
-  AttributeSet.Reset();
-  AbilityManager.Reset();
-  AbilityInput.Reset();
-  CombatManager.Reset();
-  LocationManager.Reset();
-  RewardManager.Reset();
-  HeroHealth = 100.f;
-
-  SaveInfo.RegionName = ERegion::Village;
+  // PlayerState.Reset();
+  // AttributeSet.Reset();
+  // AbilityManager.Reset();
+  // AbilityInput.Reset();
+  // CombatManager.Reset();
+  // LocationManager.Reset();
+  // RewardManager.Reset();
+  // HeroHealth = 100.f;
+  //
+  // SaveInfo.RegionName = ERegion::Village;
 }
 
 void UAuraSaveGame::InitPlayerState()

@@ -3,13 +3,18 @@
 
 #include "Utils/AuraSystemsLibrary.h"
 
+#include "AbilitySystem/Data/LevelInfo.h"
 #include "Aura/AuraLogChannels.h"
 #include "Game/AuraGameInstance.h"
 #include "Game/AuraGameModeBase.h"
+#include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
+#include "Level/RegionInfo.h"
 #include "Managers/CameraManager.h"
 #include "Managers/CombatManager.h"
+#include "Managers/MatchManager.h"
 #include "Player/AuraPlayerController.h"
+#include "Player/AuraPlayerState.h"
 #include "UI/HUD/AuraHUD.h"
 
 UCharacterInfo* UAuraSystemsLibrary::GetCharacterClassInfo(
@@ -56,6 +61,15 @@ UUpgradeInfo* UAuraSystemsLibrary::GetUpgradeInfo(const UObject* WorldContextObj
   );
 
   return AuraGameInstance->GetUpgradeInfo();
+}
+
+ULevelInfo* UAuraSystemsLibrary::GetLevelInfo(const UObject* WorldContextObject)
+{
+  const UAuraGameInstance* AuraGameInstance = CastChecked<UAuraGameInstance>(
+    UGameplayStatics::GetGameInstance(WorldContextObject)
+  );
+
+  return AuraGameInstance->GetLevelInfo();
 }
 
 URegionInfo* UAuraSystemsLibrary::GetRegionInfo(const UObject* WorldContextObject)
@@ -212,6 +226,28 @@ UUIManager* UAuraSystemsLibrary::GetUIManager(const UObject* WorldContextObject,
 	return nullptr;
 }
 
+UMatchManager* UAuraSystemsLibrary::GetMatchManager(const UObject* WorldContextObject)
+{
+  const AGameModeBase* GameMode = GetManagerInterfaceGameMode(WorldContextObject);
+
+  if (!GameMode) return nullptr;
+
+  UMatchManager* MatchManager = IManagerInterface::Execute_GetMatchManager(GameMode);
+
+  if (!MatchManager)
+  {
+    UE_LOG(LogAura, Warning, TEXT(
+      "[AuraSystemsLibrary] Current Game Mode doesn't have an Match Manager. "
+      "Trying to access from object: %s. "
+      "Game Mode: %s"),
+      *WorldContextObject->GetName(),
+      *GameMode->GetName()
+      );
+  }
+  
+  return MatchManager;
+}
+
 AAuraHUD* UAuraSystemsLibrary::GetAuraHUD(const UObject* WorldContextObject, int32 PlayerIndex)
 {
 	AGameModeBase* GameMode = UGameplayStatics::GetGameMode(WorldContextObject);
@@ -239,6 +275,24 @@ FHeroData UAuraSystemsLibrary::GetCurrentHeroData(const UObject* WorldContextObj
   }
 
   return FHeroData();
+}
+
+AAuraPlayerState* UAuraSystemsLibrary::GetAuraPlayerState(const UObject* WorldContextObject)
+{
+  APlayerState* PlayerState = UGameplayStatics::GetPlayerState(WorldContextObject, 0);
+
+  if (AAuraPlayerState* AuraPlayerState = Cast<AAuraPlayerState>(PlayerState))
+  {
+    return AuraPlayerState;
+  }
+
+  UE_LOG(LogAura, Warning, TEXT(
+    "Player index is invalid or doesn't have an Aura Player State. "
+    "Trying to access from object: %s"),
+    *WorldContextObject->GetName()
+    );
+
+  return nullptr;
 }
 
 void UAuraSystemsLibrary::SaveGameData(
@@ -299,6 +353,26 @@ UAuraSaveGame* UAuraSystemsLibrary::GetCurrentSaveGameObject(const UObject* Worl
   );
 
   return AuraGameInstance->GetCurrentSaveGameObject();
+}
+
+void UAuraSystemsLibrary::StackXP(const ACharacter* RewardedCharacter, ECharacterType CharacterType, int32 Level)
+{
+  const int32 XPReward = GetLevelInfo(RewardedCharacter)->GetXPRewardForTypeAndLevel(
+      CharacterType,
+      Level
+    );
+
+  UMatchManager* MatchManager = GetMatchManager(RewardedCharacter);
+  if (MatchManager)
+  {
+    MatchManager->RegisterXP(XPReward);
+  }
+}
+
+void UAuraSystemsLibrary::BackToHome(const UObject* WorldContextObject)
+{
+  const TSoftObjectPtr<UWorld> HomeLevel = GetRegionInfo(WorldContextObject)->GetHomeLevel();
+  UGameplayStatics::OpenLevelBySoftObjectPtr(WorldContextObject, HomeLevel);
 }
 
 AGameModeBase* UAuraSystemsLibrary::GetManagerInterfaceGameMode(const UObject* WorldContextObject)

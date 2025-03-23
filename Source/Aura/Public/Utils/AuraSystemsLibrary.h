@@ -6,6 +6,10 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "AuraSystemsLibrary.generated.h"
 
+class UMatchManager;
+enum class ECharacterType : uint8;
+class ULevelInfo;
+class AAuraPlayerState;
 struct FSaveInfo;
 class ACameraManager;
 struct FHeroData;
@@ -49,6 +53,8 @@ public:
   static UStatusEffectInfo* GetStatusEffectInfo(UPARAM(DisplayName="Target")const UObject* WorldContextObject);
   UFUNCTION(BlueprintPure, Category="Aura Systems|Info", meta=(DefaultToSelf="WorldContextObject"))
   static UUpgradeInfo* GetUpgradeInfo(UPARAM(DisplayName="Target") const UObject* WorldContextObject);
+  UFUNCTION(BlueprintPure, Category="Aura Systems|Info", meta=(DefaultToSelf="WorldContextObject"))
+  static ULevelInfo* GetLevelInfo(UPARAM(DisplayName="Target") const UObject* WorldContextObject);
   // END Data Assets
 
   // Managers
@@ -94,6 +100,12 @@ public:
 		meta=(HidePin="WorldContextObject", DefaultToSelf="WorldContextObject")
 		)
 	static UUIManager* GetUIManager(const UObject* WorldContextObject, int32 PlayerIndex);
+  UFUNCTION(
+    BlueprintPure,
+    Category="Aura Systems|Match",
+    meta=(HidePin="WorldContextObject", DefaultToSelf="WorldContextObject")
+    )
+  static UMatchManager* GetMatchManager(const UObject* WorldContextObject);
   // END Managers
   
 	UFUNCTION(
@@ -109,6 +121,12 @@ public:
     meta=(HidePin="WorldContextObject", DefaultToSelf="WorldContextObject")
     )
   static FHeroData GetCurrentHeroData(const UObject* WorldContextObject);
+  UFUNCTION(
+    BlueprintPure,
+    Category="Aura Systems|Hero",
+    meta=(HidePin="WorldContextObject", DefaultToSelf="WorldContextObject")
+    )
+  static AAuraPlayerState* GetAuraPlayerState(const UObject* WorldContextObject);
 
   UFUNCTION(
     BlueprintCallable,
@@ -160,6 +178,20 @@ public:
     meta=(HidePin="WorldContextObject", DefaultToSelf="WorldContextObject")
     )
   static UAuraSaveGame* GetCurrentSaveGameObject(const UObject* WorldContextObject);
+
+  UFUNCTION(
+    BlueprintCallable,
+    Category="Aura Systems|Leveling",
+    meta=(HidePin="WorldContextObject", DefaultToSelf="WorldContextObject")
+    )
+  static void StackXP(const ACharacter* RewardedCharacter, ECharacterType CharacterType, int32 Level);
+  
+  UFUNCTION(
+    BlueprintCallable,
+    Category="Aura Systems|Location",
+    meta=(HidePin="WorldContextObject", DefaultToSelf="WorldContextObject")
+    )
+  static void BackToHome(const UObject* WorldContextObject);
 
 private:
   static AGameModeBase* GetManagerInterfaceGameMode(const UObject* WorldContextObject);

@@ -8,6 +8,7 @@
 #include "UI/WidgetController/AuraWidgetController.h"
 #include "AuraAbilitySystemLibrary.generated.h"
 
+enum class ECharacterType : uint8;
 class UMainMenuWidgetController;
 struct FAuraAbilityInfo;
 struct FAuraUpgradeInfo;
