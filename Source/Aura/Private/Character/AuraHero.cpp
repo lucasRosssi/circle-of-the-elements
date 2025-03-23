@@ -93,9 +93,12 @@ void AAuraHero::InitializeUpgrades()
 void AAuraHero::Die(const FVector& DeathImpulse)
 {
   bDying = true;
-  
-  GetSaveGame()->OnPlayerDeath();
-  UAuraSystemsLibrary::SaveCurrentGame(this);
+
+  if (GetSaveGame())
+  {
+    SaveGame->OnPlayerDeath();
+    UAuraSystemsLibrary::SaveCurrentGame(this);
+  }
 
   StartDeath();
 }
@@ -350,46 +353,63 @@ void AAuraHero::InitializeAttributes()
     1.f,
     EffectContextHandle
     );
+
+  float InitialStrength = 10.f;
+  float InitialDexterity = 10.f;
+  float InitialConstitution = 10.f;
+  float InitialIntelligence = 10.f;
+  float InitialWisdom = 10.f;
+  float InitialCharisma = 10.f;
+
+  if (GetSaveGame())
+  {
+    InitialStrength = SaveGame->AttributeSet.Attributes[AuraTags.Attributes_Primary_Strength];
+    InitialDexterity = SaveGame->AttributeSet.Attributes[AuraTags.Attributes_Primary_Dexterity];
+    InitialConstitution = SaveGame->AttributeSet.Attributes[AuraTags.Attributes_Primary_Constitution];
+    InitialIntelligence = SaveGame->AttributeSet.Attributes[AuraTags.Attributes_Primary_Intelligence];
+    InitialWisdom = SaveGame->AttributeSet.Attributes[AuraTags.Attributes_Primary_Wisdom];
+    InitialCharisma = SaveGame->AttributeSet.Attributes[AuraTags.Attributes_Primary_Charisma];
+  }
   
   UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(
     SpecHandle,
     AuraTags.Attributes_Primary_Strength,
-    GetSaveGame()->AttributeSet.Attributes[AuraTags.Attributes_Primary_Strength]
+    InitialStrength
     );
   UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(
     SpecHandle,
     AuraTags.Attributes_Primary_Dexterity,
-    GetSaveGame()->AttributeSet.Attributes[AuraTags.Attributes_Primary_Dexterity]
+    InitialDexterity
     );
   UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(
     SpecHandle,
     AuraTags.Attributes_Primary_Constitution,
-    GetSaveGame()->AttributeSet.Attributes[AuraTags.Attributes_Primary_Constitution]
+    InitialConstitution
     );
   UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(
     SpecHandle,
     AuraTags.Attributes_Primary_Intelligence,
-    GetSaveGame()->AttributeSet.Attributes[AuraTags.Attributes_Primary_Intelligence]
+    InitialIntelligence
     );
   UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(
     SpecHandle,
     AuraTags.Attributes_Primary_Wisdom,
-    GetSaveGame()->AttributeSet.Attributes[AuraTags.Attributes_Primary_Wisdom]
+    InitialWisdom
     );
   UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(
     SpecHandle,
     AuraTags.Attributes_Primary_Charisma,
-    GetSaveGame()->AttributeSet.Attributes[AuraTags.Attributes_Primary_Charisma]
+    InitialCharisma
     );
   
   AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data);
   
   Super::InitializeAttributes();
 
-  if (GetSaveGame())
-  {
-    GetAttributeSet()->SetHealth(SaveGame->HeroHealth);
-  }
+  // if (GetSaveGame())
+  // {
+  //   GetAttributeSet()->SetHealth(SaveGame->HeroHealth);
+  // }
 }
 
 void AAuraHero::InitAbilityActorInfo()
