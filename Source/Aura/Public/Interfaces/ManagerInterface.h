@@ -37,4 +37,6 @@ public:
   URewardManager* GetRewardManager() const;
   UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
   UUpgradeManager* GetUpgradeManager() const;
+  UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+  UMatchManager* GetMatchManager() const;
 };

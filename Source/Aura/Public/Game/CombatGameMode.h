@@ -6,6 +6,7 @@
 #include "AuraGameModeBase.h"
 #include "CombatGameMode.generated.h"
 
+class UMatchManager;
 enum class ECharacterName : uint8;
 class URewardsInfo;
 class URegionInfo;
@@ -37,6 +38,7 @@ public:
 	virtual UCombatManager* GetCombatManager_Implementation() const override { return CombatManager; }
   virtual URewardManager* GetRewardManager_Implementation() const override { return RewardManager; }
   virtual UUpgradeManager* GetUpgradeManager_Implementation() const override { return UpgradeManager; }
+  virtual UMatchManager* GetMatchManager_Implementation() const override { return MatchManager; }
   // END Manager Interface
   
 	UFUNCTION(BlueprintCallable)
@@ -63,6 +65,8 @@ protected:
 	TObjectPtr<UCombatManager> CombatManager;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Managers|Location|Reward")
 	TObjectPtr<URewardManager> RewardManager;
+  UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Managers|Match")
+  TObjectPtr<UMatchManager> MatchManager;
 
 private:
 

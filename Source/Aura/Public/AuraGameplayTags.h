@@ -18,6 +18,10 @@ public:
   static const FAuraGameplayTags& Get();
   static void InitializeNativeGameplayTags();
 
+  FGameplayTag Heroes;
+  FGameplayTag Heroes_Aura;
+  FGameplayTag Heroes_Vilkar;
+
 	FGameplayTag DifficultyClass;
 	FGameplayTag DifficultyClass_Initial;
 	FGameplayTag DifficultyClass_Easy;

@@ -7,6 +7,7 @@
 #include "Managers/AbilityManager.h"
 #include "Managers/CombatManager.h"
 #include "Managers/LocationManager.h"
+#include "Managers/MatchManager.h"
 #include "Managers/RewardManager.h"
 #include "Managers/UpgradeManager.h"
 #include "Utils/AuraSystemsLibrary.h"
@@ -18,6 +19,7 @@ ACombatGameMode::ACombatGameMode()
   CombatManager = CreateDefaultSubobject<UCombatManager>("CombatManager");
   RewardManager = CreateDefaultSubobject<URewardManager>("RewardManager");
   UpgradeManager = CreateDefaultSubobject<UUpgradeManager>("UpgradeManager");
+  MatchManager = CreateDefaultSubobject<UMatchManager>("MatchManager");
 }
 
 void ACombatGameMode::BeginPlay()

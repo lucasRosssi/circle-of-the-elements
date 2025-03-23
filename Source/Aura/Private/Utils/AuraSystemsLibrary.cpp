@@ -9,8 +9,10 @@
 #include "Game/AuraGameModeBase.h"
 #include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
+#include "Level/RegionInfo.h"
 #include "Managers/CameraManager.h"
 #include "Managers/CombatManager.h"
+#include "Managers/MatchManager.h"
 #include "Player/AuraPlayerController.h"
 #include "Player/AuraPlayerState.h"
 #include "UI/HUD/AuraHUD.h"
@@ -224,6 +226,28 @@ UUIManager* UAuraSystemsLibrary::GetUIManager(const UObject* WorldContextObject,
 	return nullptr;
 }
 
+UMatchManager* UAuraSystemsLibrary::GetMatchManager(const UObject* WorldContextObject)
+{
+  const AGameModeBase* GameMode = GetManagerInterfaceGameMode(WorldContextObject);
+
+  if (!GameMode) return nullptr;
+
+  UMatchManager* MatchManager = IManagerInterface::Execute_GetMatchManager(GameMode);
+
+  if (!MatchManager)
+  {
+    UE_LOG(LogAura, Warning, TEXT(
+      "[AuraSystemsLibrary] Current Game Mode doesn't have an Match Manager. "
+      "Trying to access from object: %s. "
+      "Game Mode: %s"),
+      *WorldContextObject->GetName(),
+      *GameMode->GetName()
+      );
+  }
+  
+  return MatchManager;
+}
+
 AAuraHUD* UAuraSystemsLibrary::GetAuraHUD(const UObject* WorldContextObject, int32 PlayerIndex)
 {
 	AGameModeBase* GameMode = UGameplayStatics::GetGameMode(WorldContextObject);
@@ -338,7 +362,17 @@ void UAuraSystemsLibrary::StackXP(const ACharacter* RewardedCharacter, ECharacte
       Level
     );
 
-  // Get current match and stack xp
+  UMatchManager* MatchManager = GetMatchManager(RewardedCharacter);
+  if (MatchManager)
+  {
+    MatchManager->RegisterXP(XPReward);
+  }
+}
+
+void UAuraSystemsLibrary::BackToHome(const UObject* WorldContextObject)
+{
+  const TSoftObjectPtr<UWorld> HomeLevel = GetRegionInfo(WorldContextObject)->GetHomeLevel();
+  UGameplayStatics::OpenLevelBySoftObjectPtr(WorldContextObject, HomeLevel);
 }
 
 AGameModeBase* UAuraSystemsLibrary::GetManagerInterfaceGameMode(const UObject* WorldContextObject)

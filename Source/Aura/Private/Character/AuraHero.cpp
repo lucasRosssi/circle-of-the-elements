@@ -18,7 +18,6 @@
 #include "Game/AuraSaveGame.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "Level/RegionInfo.h"
 #include "Managers/AbilityManager.h"
 #include "Managers/CombatManager.h"
 #include "Managers/UpgradeManager.h"
@@ -307,8 +306,7 @@ void AAuraHero::EndDeath()
 
 void AAuraHero::BackToHome()
 {
-  const TSoftObjectPtr<UWorld> HomeLevel = UAuraSystemsLibrary::GetRegionInfo(this)->GetHomeLevel();
-  UGameplayStatics::OpenLevelBySoftObjectPtr(this, HomeLevel);
+  UAuraSystemsLibrary::BackToHome(this);
 }
 
 AAuraPlayerController* AAuraHero::GetAuraPlayerController()

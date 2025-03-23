@@ -246,6 +246,8 @@ void AAuraPlayerState::InitializeState()
         *PlayerAmount = SaveAmount;
       }
     }
+
+    SetXP(SaveGame->PlayerState.XP);
   }
 }
 

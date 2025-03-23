@@ -6,6 +6,7 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "AuraSystemsLibrary.generated.h"
 
+class UMatchManager;
 enum class ECharacterType : uint8;
 class ULevelInfo;
 class AAuraPlayerState;
@@ -99,6 +100,12 @@ public:
 		meta=(HidePin="WorldContextObject", DefaultToSelf="WorldContextObject")
 		)
 	static UUIManager* GetUIManager(const UObject* WorldContextObject, int32 PlayerIndex);
+  UFUNCTION(
+    BlueprintPure,
+    Category="Aura Systems|Match",
+    meta=(HidePin="WorldContextObject", DefaultToSelf="WorldContextObject")
+    )
+  static UMatchManager* GetMatchManager(const UObject* WorldContextObject);
   // END Managers
   
 	UFUNCTION(
@@ -178,6 +185,13 @@ public:
     meta=(HidePin="WorldContextObject", DefaultToSelf="WorldContextObject")
     )
   static void StackXP(const ACharacter* RewardedCharacter, ECharacterType CharacterType, int32 Level);
+  
+  UFUNCTION(
+    BlueprintCallable,
+    Category="Aura Systems|Location",
+    meta=(HidePin="WorldContextObject", DefaultToSelf="WorldContextObject")
+    )
+  static void BackToHome(const UObject* WorldContextObject);
 
 private:
   static AGameModeBase* GetManagerInterfaceGameMode(const UObject* WorldContextObject);

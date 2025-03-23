@@ -40,5 +40,5 @@ int32 ULevelInfo::GetLevelUpSkillPoints(int32 OldLevel, int32 NewLevel)
 
 int32 ULevelInfo::GetXPRewardForTypeAndLevel(ECharacterType CharacterType, int32 Level)
 {
-  return XPReward.AsInteger(Level - 1) * XPRewardMultiplier[CharacterType];
+  return XPReward.AsInteger(Level) * XPRewardMultiplier[CharacterType];
 }
