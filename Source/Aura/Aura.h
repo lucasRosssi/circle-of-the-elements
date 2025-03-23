@@ -19,6 +19,8 @@
 #define MAX_SAVE_SLOTS 3
 #define SLOT_DEFAULT_NAME FString("SaveSlot_")
 
+#define MAX_LEVEL 50
+
 #define BOSS_LOCATION 100
 
 #define ECC_Projectile ECollisionChannel::ECC_GameTraceChannel1

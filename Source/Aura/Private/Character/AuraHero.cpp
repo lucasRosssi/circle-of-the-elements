@@ -115,6 +115,11 @@ void AAuraHero::DeathMontageEndRagdoll()
   RagdollMesh();
 }
 
+void AAuraHero::AddToXP_Implementation(int32 InXP)
+{
+  GetAuraPlayerState()->AddXP(InXP);
+}
+
 int32 AAuraHero::GetAttributePoints_Implementation()
 {
   return GetAuraPlayerState()->GetAttributePoints();

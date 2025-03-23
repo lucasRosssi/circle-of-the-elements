@@ -92,11 +92,6 @@ void AAuraPlayerState::AddLevel(int32 InLevel)
 
   AddAttributePoints(APReward);
   AddSkillPoints(SPReward);
-
-  // if (GetAuraASC())
-  // {
-  // 	GetAuraASC()->UpdateAbilityStatuses(Level);
-  // }
 }
 
 void AAuraPlayerState::SetXP(int32 InXP)
@@ -104,7 +99,14 @@ void AAuraPlayerState::SetXP(int32 InXP)
   if (XP == InXP) return;
 
   XP = InXP;
+  if (GetSaveGame())
+  {
+    SaveGame->PlayerState.XP = XP;
+  }
   OnXPChangedDelegate.Broadcast(XP);
+
+  const int32 XPLevel = LevelInfo.Get()->FindLevelByXP(XP);
+  SetLevel(XPLevel);
 }
 
 void AAuraPlayerState::AddXP(int32 InXP)
@@ -112,9 +114,13 @@ void AAuraPlayerState::AddXP(int32 InXP)
   if (InXP < 1) return;
 
   XP += InXP;
+  if (GetSaveGame())
+  {
+    SaveGame->PlayerState.XP = XP;
+  }
   OnXPChangedDelegate.Broadcast(XP);
+  
   const int32 LevelUpAmount = LevelInfo.Get()->FindLevelByXP(XP) - Level;
-
   if (LevelUpAmount > 0)
   {
     AddLevel(LevelUpAmount);

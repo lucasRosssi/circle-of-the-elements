@@ -3,13 +3,16 @@
 
 #include "Utils/AuraSystemsLibrary.h"
 
+#include "AbilitySystem/Data/LevelInfo.h"
 #include "Aura/AuraLogChannels.h"
 #include "Game/AuraGameInstance.h"
 #include "Game/AuraGameModeBase.h"
+#include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
 #include "Managers/CameraManager.h"
 #include "Managers/CombatManager.h"
 #include "Player/AuraPlayerController.h"
+#include "Player/AuraPlayerState.h"
 #include "UI/HUD/AuraHUD.h"
 
 UCharacterInfo* UAuraSystemsLibrary::GetCharacterClassInfo(
@@ -56,6 +59,15 @@ UUpgradeInfo* UAuraSystemsLibrary::GetUpgradeInfo(const UObject* WorldContextObj
   );
 
   return AuraGameInstance->GetUpgradeInfo();
+}
+
+ULevelInfo* UAuraSystemsLibrary::GetLevelInfo(const UObject* WorldContextObject)
+{
+  const UAuraGameInstance* AuraGameInstance = CastChecked<UAuraGameInstance>(
+    UGameplayStatics::GetGameInstance(WorldContextObject)
+  );
+
+  return AuraGameInstance->GetLevelInfo();
 }
 
 URegionInfo* UAuraSystemsLibrary::GetRegionInfo(const UObject* WorldContextObject)
@@ -241,6 +253,24 @@ FHeroData UAuraSystemsLibrary::GetCurrentHeroData(const UObject* WorldContextObj
   return FHeroData();
 }
 
+AAuraPlayerState* UAuraSystemsLibrary::GetAuraPlayerState(const UObject* WorldContextObject)
+{
+  APlayerState* PlayerState = UGameplayStatics::GetPlayerState(WorldContextObject, 0);
+
+  if (AAuraPlayerState* AuraPlayerState = Cast<AAuraPlayerState>(PlayerState))
+  {
+    return AuraPlayerState;
+  }
+
+  UE_LOG(LogAura, Warning, TEXT(
+    "Player index is invalid or doesn't have an Aura Player State. "
+    "Trying to access from object: %s"),
+    *WorldContextObject->GetName()
+    );
+
+  return nullptr;
+}
+
 void UAuraSystemsLibrary::SaveGameData(
   const UObject* WorldContextObject,
   const FSaveInfo& SaveData
@@ -299,6 +329,16 @@ UAuraSaveGame* UAuraSystemsLibrary::GetCurrentSaveGameObject(const UObject* Worl
   );
 
   return AuraGameInstance->GetCurrentSaveGameObject();
+}
+
+void UAuraSystemsLibrary::StackXP(const ACharacter* RewardedCharacter, ECharacterType CharacterType, int32 Level)
+{
+  const int32 XPReward = GetLevelInfo(RewardedCharacter)->GetXPRewardForTypeAndLevel(
+      CharacterType,
+      Level
+    );
+
+  // Get current match and stack xp
 }
 
 AGameModeBase* UAuraSystemsLibrary::GetManagerInterfaceGameMode(const UObject* WorldContextObject)

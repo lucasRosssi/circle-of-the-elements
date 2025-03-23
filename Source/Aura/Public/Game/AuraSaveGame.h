@@ -37,6 +37,8 @@ struct FPlayerStateSave
   GENERATED_BODY()
 
   UPROPERTY(BlueprintReadWrite)
+  int32 XP = 0;
+  UPROPERTY(BlueprintReadWrite)
   int32 AttributePoints = 0;
   UPROPERTY(BlueprintReadWrite)
   int32 SkillPoints = 0;

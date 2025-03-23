@@ -40,6 +40,7 @@ public:
 	void DeathMontageEndRagdoll();
 
 	/** Player Interface */
+  virtual void AddToXP_Implementation(int32 InXP) override;
 	virtual int32 GetAttributePoints_Implementation() override;
 	virtual void AddAttributePoints_Implementation(int32 Amount) override;
 	virtual int32 GetSkillPoints_Implementation() override;

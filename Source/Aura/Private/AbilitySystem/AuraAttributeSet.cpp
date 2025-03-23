@@ -8,12 +8,15 @@
 #include "Net/UnrealNetwork.h"
 #include "GameplayEffectExtension.h"
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
+#include "AbilitySystem/Data/LevelInfo.h"
+#include "Enums/CharacterType.h"
 #include "GameFramework/Character.h"
 #include "Interfaces/AttributeSetInterface.h"
 #include "Interfaces/CombatInterface.h"
 #include "Kismet/GameplayStatics.h"
 #include "Player/AuraPlayerController.h"
 #include "Player/DamageCameraShake.h"
+#include "Utils/AuraSystemsLibrary.h"
 
 UAuraAttributeSet::UAuraAttributeSet()
 {
@@ -497,17 +500,12 @@ void UAuraAttributeSet::SendXPEvent(const FEffectProperties& Props)
 {
   if (Props.TargetCharacter->Implements<UCombatInterface>())
   {
-    // const int32 TargetLevel = ICombatInterface::Execute_GetCharacterLevel(Props.TargetCharacter);
-    // const ECharacterType TargetType = ICombatInterface::Execute_GetCharacterType(Props.TargetCharacter);
-    // const int32 XPReward = UAuraAbilitySystemLibrary::GetXPRewardForTypeAndLevel(
-    //   Props.TargetCharacter,
-    //   TargetType,
-    //   TargetLevel
-    // );
-
-    // Stacks XP until the room is cleared
-    // UAuraAbilitySystemLibrary::StackEncounterXP(Props.TargetCharacter, XPReward);
-
+    const int32 TargetLevel = ICombatInterface::Execute_GetCharacterLevel(Props.TargetCharacter);
+    const ECharacterType TargetType = ICombatInterface::Execute_GetCharacterType(Props.TargetCharacter);
+    
+    // Stacks XP until the match is complete
+    UAuraSystemsLibrary::StackXP(Props.SourceCharacter, TargetType, TargetLevel);
+    
     /*
      * Old logic. Gives XP instantly on enemy death, only to the killer
      */

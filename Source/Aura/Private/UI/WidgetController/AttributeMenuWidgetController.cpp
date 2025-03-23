@@ -7,6 +7,7 @@
 #include "AbilitySystem/AuraAttributeSet.h"
 #include "AbilitySystem/Data/AttributeInfo.h"
 #include "AbilitySystem/Data/LevelInfo.h"
+#include "Aura/Aura.h"
 #include "Player/AuraPlayerState.h"
 
 void UAttributeMenuWidgetController::BindCallbacksToDependencies()
@@ -58,12 +59,11 @@ void UAttributeMenuWidgetController::OnXPChanged(int32 NewXP)
 	checkf(LevelInfo, TEXT("Unable to find LevelInfo. Please fill out AuraPlayerState Blueprint."));
 	
 	const int32 Level = LevelInfo->FindLevelByXP(NewXP);
-	const int32 MaxLevel = LevelInfo->LevelInformation.Num();
 
-	if (Level < MaxLevel && Level > 0)
+	if (Level < MAX_LEVEL && Level > 0)
 	{
-		const int32 LevelUpRequirement = LevelInfo->LevelInformation[Level].XPRequirement;
-		const int32 PrevRequirement = LevelInfo->LevelInformation[Level - 1].XPRequirement;
+		const int32 LevelUpRequirement = LevelInfo->XPRequirement.AsInteger(Level);
+		const int32 PrevRequirement = LevelInfo->XPRequirement.AsInteger(Level - 1);
 		const int32 DeltaRequirement = LevelUpRequirement - PrevRequirement;
 		const int32 XPForThisLevel = NewXP - PrevRequirement;
 
