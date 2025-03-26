@@ -8,7 +8,7 @@
 #include "Enums/Region.h"
 #include "CombatManager.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnCombatFinished);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCombatFinished, FName, AreaName);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnLastEnemyKilled);
 
@@ -21,13 +21,12 @@ class AURA_API UCombatManager : public UAuraSystemComponent
   GENERATED_BODY()
 
 public:
-  int32 GetCombatsCount() const { return CombatsCount; }
   int32 GetEnemiesLevel() const { return EnemiesLevel; }
   AActor* GetCurrentBoss() const { return CurrentBoss.Get(); }
 
   void SetCurrentBoss(AActor* InBoss) { CurrentBoss = InBoss; }
 
-  void SetCurrentCombatData(FName AreaName);
+  void SetCurrentCombatData();
 
   UFUNCTION(BlueprintCallable)
   void StartCombat(FName AreaName);
@@ -96,14 +95,14 @@ protected:
   TArray<FEnemyWave> EnemyWaves;
 
 private:
-  void GetAvailableSpawners(FName AreaName);
-  void GetEnemyWaves(FName AreaName);
+  void GetAvailableSpawners();
+  void GetEnemyWaves();
 
   void NextWave();
   void FinishCombat();
   void PostFinishCombat();
 
-  int32 CombatsCount = 0;
+  FName CurrentAreaName;
   int32 EnemyCount = 0;
   int32 CurrentWave = 0;
   UPROPERTY()

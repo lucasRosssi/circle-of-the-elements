@@ -7,6 +7,7 @@
 
 #include "ManagerInterface.generated.h"
 
+class UMatchManager;
 class UUpgradeManager;
 class URewardManager;
 class ULocationManager;

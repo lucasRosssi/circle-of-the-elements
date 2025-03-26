@@ -21,10 +21,8 @@ public:
 	
 	void SetNextReward(const FGameplayTag& InRewardTag) { NextRewardTag = InRewardTag; }
 
-	void SetGatesRewards();
-
 	UFUNCTION(BlueprintCallable)
-	void SpawnReward();
+	void SpawnReward(FName AreaName = FName(""));
 
   void RemoveRewardFromPool(const FGameplayTag& RewardTag);
   

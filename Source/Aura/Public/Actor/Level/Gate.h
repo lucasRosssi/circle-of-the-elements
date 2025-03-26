@@ -3,8 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameplayTagContainer.h"
-#include "Enums/Region.h"
 #include "Interfaces/InteractInterface.h"
 #include "Gate.generated.h"
 
@@ -29,9 +27,11 @@ public:
   virtual UInteractComponent* GetInteractComponent_Implementation() const override;
   /* END Interact Interface */
 
-	void SetGateReward(const FGameplayTag& InRewardTag);
-	FGameplayTag GetGateReward() const { return RewardTag; }
   bool IsActive() const { return bActive; }
+
+  UFUNCTION()
+  void OnCombatFinished(FName InAreaName);
+  void Enable();
   
 	UFUNCTION(BlueprintImplementableEvent)
 	void RewardAssigned();
@@ -39,36 +39,18 @@ public:
   void DeactivateGate();
 
 protected:
-	virtual void BeginPlay() override;
+  virtual void BeginPlay() override;
   
   UFUNCTION(BlueprintImplementableEvent)
   void OnInteracted(const AController* Controller);
-
-	// UFUNCTION(BlueprintPure)
-	// TSoftObjectPtr<UWorld> GetCurrentLocation();
-	//
-	// UFUNCTION(BlueprintPure)
-	// TSoftObjectPtr<UWorld> GetRandomLocation();
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<UStaticMeshComponent> GateMesh;
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	TObjectPtr<UWidgetComponent> RewardWidget;
   UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
   TObjectPtr<UInteractComponent> InteractComponent;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Location|Gate")
-	ERegion Region = ERegion::Undefined;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Location|Gate")
-	FGameplayTag RewardTag = FGameplayTag();
+	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category="Location|Gate")
+	FName AreaName;
 private:
-	UFUNCTION()
-	void Enable();
-
-  // ULocationManager* GetLocationManager();
-  URewardManager* GetRewardManager();
-  TWeakObjectPtr<ULocationManager> LocationManager = nullptr;
-  TWeakObjectPtr<URewardManager> RewardManager = nullptr;
-
   bool bActive = true;
 };

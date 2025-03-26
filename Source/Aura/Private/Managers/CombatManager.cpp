@@ -3,25 +3,24 @@
 
 #include "Managers/CombatManager.h"
 
-#include "Actor/AreaEffectActor.h"
-#include "Actor/AuraProjectile.h"
 #include "Actor/Level/EnemySpawner.h"
 #include "Aura/AuraLogChannels.h"
 #include "Kismet/GameplayStatics.h"
 #include "Level/RegionInfo.h"
 #include "Utils/AuraSystemsLibrary.h"
 
-void UCombatManager::SetCurrentCombatData(FName AreaName)
+void UCombatManager::SetCurrentCombatData()
 {
   CurrentWave = 0;
   
-  GetEnemyWaves(AreaName);
-  GetAvailableSpawners(AreaName);
+  GetEnemyWaves();
+  GetAvailableSpawners();
 }
 
 void UCombatManager::StartCombat(FName AreaName)
 {
-  SetCurrentCombatData(AreaName);
+  CurrentAreaName = AreaName;
+  SetCurrentCombatData();
   NextWave();
 }
 
@@ -78,34 +77,34 @@ void UCombatManager::PostFinishCombat()
 {
   UGameplayStatics::SetGlobalTimeDilation(GetOwner(), 1.0f);
 
-  OnCombatFinishedDelegate.Broadcast();
+  OnCombatFinishedDelegate.Broadcast(CurrentAreaName);
 
-  TArray<AActor*> Projectiles;
-  UGameplayStatics::GetAllActorsOfClass(
-    this,
-    AAuraProjectile::StaticClass(),
-    Projectiles
-  );
-
-  TArray<AActor*> AreaEffectActors;
-  UGameplayStatics::GetAllActorsOfClass(
-    this,
-    AAreaEffectActor::StaticClass(),
-    AreaEffectActors
-  );
-
-  for (const auto Projectile : Projectiles)
-  {
-    if (IsValid(Projectile)) Projectile->Destroy();
-  }
-
-  for (const auto Actor : AreaEffectActors)
-  {
-    if (IsValid(Actor)) Actor->Destroy();
-  }
+  // TArray<AActor*> Projectiles;
+  // UGameplayStatics::GetAllActorsOfClass(
+  //   this,
+  //   AAuraProjectile::StaticClass(),
+  //   Projectiles
+  // );
+  //
+  // TArray<AActor*> AreaEffectActors;
+  // UGameplayStatics::GetAllActorsOfClass(
+  //   this,
+  //   AAreaEffectActor::StaticClass(),
+  //   AreaEffectActors
+  // );
+  //
+  // for (const auto Projectile : Projectiles)
+  // {
+  //   if (IsValid(Projectile)) Projectile->Destroy();
+  // }
+  //
+  // for (const auto Actor : AreaEffectActors)
+  // {
+  //   if (IsValid(Actor)) Actor->Destroy();
+  // }
 }
 
-void UCombatManager::GetAvailableSpawners(FName AreaName)
+void UCombatManager::GetAvailableSpawners()
 {
   EnemySpawners.Empty();
 
@@ -120,7 +119,7 @@ void UCombatManager::GetAvailableSpawners(FName AreaName)
   {
     if (AEnemySpawner* EnemySpawner = Cast<AEnemySpawner>(Spawner))
     {
-      if (EnemySpawner->GetAreaName() != AreaName) continue;
+      if (EnemySpawner->GetAreaName() != CurrentAreaName) continue;
 
       EnemySpawners.Add(EnemySpawner);
       EnemySpawner->EnemySpawnedDelegate.AddDynamic(this, &UCombatManager::OnEnemySpawned);
@@ -129,12 +128,12 @@ void UCombatManager::GetAvailableSpawners(FName AreaName)
   }
 }
 
-void UCombatManager::GetEnemyWaves(FName AreaName)
+void UCombatManager::GetEnemyWaves()
 {
   if (!bOverrideEnemyWaves)
   {
     EnemyWaves = UAuraSystemsLibrary::GetRegionInfo(this)->GetEnemyWaves(
-      AreaName,
+      CurrentAreaName,
       LocationName,
       Region
     );
