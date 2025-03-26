@@ -94,9 +94,10 @@ void UAuraGameInstance::LoadAndPlay(int32 SlotIndex)
   
   CurrentHeroName = AuraSave->SaveInfo.HeroName;
 
-  const ERegion& Region = AuraSave->SaveInfo.RegionName;
-  const TSoftObjectPtr<UWorld> RegionLevel = RegionInfo->GetLevels()[Region];
-  UGameplayStatics::OpenLevelBySoftObjectPtr(this, RegionLevel);
+  // const ERegion& Region = AuraSave->SaveInfo.RegionName;
+  // const TSoftObjectPtr<UWorld> RegionLevel = RegionInfo->GetLevels()[Region];
+  const TSoftObjectPtr<UWorld> Level = RegionInfo->GetHomeLevel();
+  UGameplayStatics::OpenLevelBySoftObjectPtr(this, Level);
 }
 
 FHeroData UAuraGameInstance::GetCurrentHeroData() const

@@ -6,7 +6,6 @@
 #include "Components/InteractComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Game/AuraSaveGame.h"
-#include "Managers/LocationManager.h"
 #include "Managers/RewardManager.h"
 #include "Utils/AuraSystemsLibrary.h"
 
@@ -27,7 +26,10 @@ void AGate::Interact_Implementation(const AController* Controller)
 {
   GetRewardManager()->SetNextReward(RewardTag);
   UAuraSaveGame* SaveGame = UAuraSystemsLibrary::GetCurrentSaveGameObject(this);
-  SaveGame->RewardManager.NextRewardTag = RewardTag;
+  if (SaveGame)
+  {
+    SaveGame->RewardManager.NextRewardTag = RewardTag;
+  }
   RewardWidget->SetVisibility(false);
   
   OnInteracted(Controller);
@@ -56,15 +58,15 @@ void AGate::BeginPlay()
   GetRewardManager()->OnRewardTakenDelegate.AddDynamic(this, &AGate::Enable);
 }
 
-TSoftObjectPtr<UWorld> AGate::GetCurrentLocation()
-{
-	return GetLocationManager()->GetCurrentLocation();
-}
-
-TSoftObjectPtr<UWorld> AGate::GetRandomLocation()
-{
-	return GetLocationManager()->GetNextLocation(Region);
-}
+// TSoftObjectPtr<UWorld> AGate::GetCurrentLocation()
+// {
+// 	return GetLocationManager()->GetCurrentLocation();
+// }
+//
+// TSoftObjectPtr<UWorld> AGate::GetRandomLocation()
+// {
+// 	return GetLocationManager()->GetNextLocation(Region);
+// }
 
 void AGate::Enable()
 {
@@ -74,19 +76,19 @@ void AGate::Enable()
 	RewardWidget->SetVisibility(true);
 }
 
-ULocationManager* AGate::GetLocationManager()
-{
-  if (LocationManager.Get() == nullptr)
-  {
-    LocationManager = UAuraSystemsLibrary::GetLocationManager(this);
-  }
-
-  return LocationManager.Get();
-}
+// ULocationManager* AGate::GetLocationManager()
+// {
+//   if (!LocationManager.IsValid())
+//   {
+//     LocationManager = UAuraSystemsLibrary::GetLocationManager(this);
+//   }
+//
+//   return LocationManager.Get();
+// }
 
 URewardManager* AGate::GetRewardManager()
 {
-  if (RewardManager.Get() == nullptr)
+  if (!RewardManager.IsValid())
   {
     RewardManager = UAuraSystemsLibrary::GetRewardManager(this);
   }

@@ -44,11 +44,11 @@ protected:
   UFUNCTION(BlueprintImplementableEvent)
   void OnInteracted(const AController* Controller);
 
-	UFUNCTION(BlueprintPure)
-	TSoftObjectPtr<UWorld> GetCurrentLocation();
-	
-	UFUNCTION(BlueprintPure)
-	TSoftObjectPtr<UWorld> GetRandomLocation();
+	// UFUNCTION(BlueprintPure)
+	// TSoftObjectPtr<UWorld> GetCurrentLocation();
+	//
+	// UFUNCTION(BlueprintPure)
+	// TSoftObjectPtr<UWorld> GetRandomLocation();
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<UStaticMeshComponent> GateMesh;
@@ -65,7 +65,7 @@ private:
 	UFUNCTION()
 	void Enable();
 
-  ULocationManager* GetLocationManager();
+  // ULocationManager* GetLocationManager();
   URewardManager* GetRewardManager();
   TWeakObjectPtr<ULocationManager> LocationManager = nullptr;
   TWeakObjectPtr<URewardManager> RewardManager = nullptr;
