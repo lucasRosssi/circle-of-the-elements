@@ -13,7 +13,7 @@ class UNiagaraComponent;
 enum class ECharacterName : uint8;
 class USphereComponent;
 
-UCLASS()
+UCLASS(ClassGroup="Interaction", meta=(BlueprintSpawnableComponent))
 class AURA_API UInteractComponent : public UActorComponent
 {
   GENERATED_BODY()
@@ -30,8 +30,11 @@ public:
 
   float GetInteractAreaRadius() const;
 
+  UFUNCTION(BlueprintCallable)
   void EnableInteraction();
+  UFUNCTION(BlueprintCallable)
   void DisableInteraction();
+  
   void BeginInteract(const AController* InstigatorController) const;
   
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Interaction")

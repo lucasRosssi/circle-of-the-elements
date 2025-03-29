@@ -21,21 +21,21 @@ void UInteractionAbility::ActivateAbility(
   Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
   const APawn* AvatarPawn = Cast<APawn>(GetAvatarActorFromActorInfo());
-  if (TriggerEventData)
+  if (!AvatarPawn || !TriggerEventData) return;
+  
+  if (AvatarPawn->Implements<UPlayerInterface>())
   {
-    if (AvatarPawn && AvatarPawn->Implements<UPlayerInterface>())
-    {
-      FPlayerInteractionData Data;
-      Data.InteractionTag = TriggerEventData->EventTag;
-      Data.AuraPlayerController = Cast<AAuraPlayerController>(AvatarPawn->GetController());
-      PlayerActivateInteraction(Data);
-    }
-    else
-    {
-      FAIInteractionData Data;
-      Data.InteractionTag = TriggerEventData->EventTag;
-      Data.AIController = Cast<AAIController>(AvatarPawn->GetController());
-      AIActivateInteraction(Data);
-    }
+    FPlayerInteractionData Data;
+    Data.InteractionTag = TriggerEventData->EventTag;
+    Data.AuraPlayerController = Cast<AAuraPlayerController>(AvatarPawn->GetController());
+    PlayerActivateInteraction(Data);
   }
+  else
+  {
+    FAIInteractionData Data;
+    Data.InteractionTag = TriggerEventData->EventTag;
+    Data.AIController = Cast<AAIController>(AvatarPawn->GetController());
+    AIActivateInteraction(Data);
+  }
+  
 }

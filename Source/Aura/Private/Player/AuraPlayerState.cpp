@@ -236,6 +236,7 @@ void AAuraPlayerState::InitializeState()
 {
   if (GetSaveGame())
   {
+    SetXP(SaveGame->PlayerState.XP);
     SetSkillPoints(SaveGame->PlayerState.SkillPoints);
     SetAttributePoints(SaveGame->PlayerState.AttributePoints);
     
@@ -246,8 +247,6 @@ void AAuraPlayerState::InitializeState()
         *PlayerAmount = SaveAmount;
       }
     }
-
-    SetXP(SaveGame->PlayerState.XP);
   }
 }
 

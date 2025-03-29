@@ -32,9 +32,6 @@ public:
   UFUNCTION()
   void OnCombatFinished(FName InAreaName);
   void Enable();
-  
-	UFUNCTION(BlueprintImplementableEvent)
-	void RewardAssigned();
 
   void DeactivateGate();
 

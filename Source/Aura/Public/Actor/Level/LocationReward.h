@@ -20,10 +20,10 @@ class UAuraGameInstance;
 UCLASS()
 class AURA_API ALocationReward : public AActor, public IInteractInterface
 {
-	GENERATED_BODY()
+  GENERATED_BODY()
 
 public:
-	ALocationReward();
+  ALocationReward();
 
   /* Interact Interface */
   virtual void Interact_Implementation(const AController* Controller) override;
@@ -33,46 +33,47 @@ public:
 protected:
   virtual void BeginPlay() override;
   virtual void Destroyed() override;
-  
-	FGameplayTag GetAbilityElement() const;
+
+  FGameplayTag GetAbilityElement() const;
 
   UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
   TObjectPtr<UStaticMeshComponent> RewardMesh;
   UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
   TObjectPtr<UInteractComponent> InteractComponent;
-	
-	UPROPERTY(
-		EditDefaultsOnly,
-		BlueprintReadOnly,
-		Category="Reward",
-		meta=(Categories="Resources")
-		)
-	FGameplayTag RewardTag = FGameplayTag();
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Reward|UI")
-	bool bShowMenuOnPickup = false;
-	UPROPERTY(
-		EditDefaultsOnly,
-		BlueprintReadOnly,
-		Category="Reward|UI",
-		meta=(EditCondition="bShowMenuOnPickup"))
-	TSubclassOf<UAuraUserWidget> MenuWidgetClass;
+  UPROPERTY(
+    EditDefaultsOnly,
+    BlueprintReadOnly,
+    Category="Reward",
+    meta=(Categories="Resources")
+  )
+  FGameplayTag RewardTag = FGameplayTag();
 
-  UPROPERTY(EditDefaultsOnly,BlueprintReadOnly, Category="Niagara|Spawn")
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Reward|UI")
+  bool bShowMenuOnPickup = false;
+  UPROPERTY(
+    EditDefaultsOnly,
+    BlueprintReadOnly,
+    Category="Reward|UI",
+    meta=(EditCondition="bShowMenuOnPickup")
+  )
+  TSubclassOf<UAuraUserWidget> MenuWidgetClass;
+
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Niagara|Spawn")
   TObjectPtr<UNiagaraSystem> SpawnNiagaraSystem;
-  UPROPERTY(EditDefaultsOnly,BlueprintReadOnly, Category="Niagara|Idle")
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Niagara|Idle")
   TObjectPtr<UNiagaraSystem> IdleNiagaraSystem;
   UPROPERTY()
   UNiagaraComponent* IdleNiagaraComponent = nullptr;
 
-  UPROPERTY(EditDefaultsOnly,BlueprintReadOnly, Category="Niagara|Spawn")
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Niagara|Spawn")
   FVector SpawnNiagaraOffset = FVector::ZeroVector;
-  UPROPERTY(EditDefaultsOnly,BlueprintReadOnly, Category="Niagara|Idle")
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Niagara|Idle")
   FVector IdleNiagaraOffset = FVector::ZeroVector;
 
 private:
   void SpawnNiagaraEffects();
 
-	AAuraPlayerState* GetAuraPlayerState();
-	TWeakObjectPtr<AAuraPlayerState> AuraPlayerState = nullptr;
+  AAuraPlayerState* GetAuraPlayerState();
+  TWeakObjectPtr<AAuraPlayerState> AuraPlayerState = nullptr;
 };
