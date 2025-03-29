@@ -10,16 +10,27 @@
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnInitLocation);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnExitLocation);
 
+class AEnemySpawner;
+
+USTRUCT(BlueprintType)
+struct FAreaInfo
+{
+  GENERATED_BODY()
+
+  UPROPERTY()
+  TArray<AEnemySpawner*> EnemySpawners;
+};
+
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class AURA_API ULocationManager : public UAuraSystemComponent
 {
   GENERATED_BODY()
 
 public:
-  UFUNCTION(BlueprintPure)
-  TSoftObjectPtr<UWorld> GetNextLocation(ERegion InRegion);
-  UFUNCTION(BlueprintPure)
-  TSoftObjectPtr<UWorld> GetInitialLocation(ERegion InRegion);
+  // UFUNCTION(BlueprintPure)
+  // TSoftObjectPtr<UWorld> GetNextLocation(ERegion InRegion);
+  // UFUNCTION(BlueprintPure)
+  // TSoftObjectPtr<UWorld> GetInitialLocation(ERegion InRegion);
 
   void PlacePlayerInStartingPoint();
 

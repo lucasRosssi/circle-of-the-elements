@@ -6,6 +6,7 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "AuraSystemsLibrary.generated.h"
 
+class FOnCombatFinished;
 class UMatchManager;
 enum class ECharacterType : uint8;
 class ULevelInfo;
@@ -107,6 +108,9 @@ public:
     )
   static UMatchManager* GetMatchManager(const UObject* WorldContextObject);
   // END Managers
+  // Managers Delegates
+  static FOnCombatFinished& GetOnCombatFinishedDelegate(const UObject* WorldContextObject);
+  // END Managers Delegates
   
 	UFUNCTION(
 		BlueprintPure,

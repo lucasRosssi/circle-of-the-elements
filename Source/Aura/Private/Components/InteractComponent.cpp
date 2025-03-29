@@ -41,7 +41,7 @@ void UInteractComponent::OnInteractAreaOverlap(
   const FHitResult& SweepResult
 )
 {
-  if (!IsValid(OtherActor)) return;
+  if (!bInteractionEnabled || !IsValid(OtherActor)) return;
   
   IPlayerInterface::Safe_AddInteractableToList(OtherActor, this);
 }
@@ -53,7 +53,7 @@ void UInteractComponent::OnInteractAreaEndOverlap(
   int32 OtherBodyIndex
 )
 {
-  if (!IsValid(OtherActor)) return;
+  if (!bInteractionEnabled || !IsValid(OtherActor)) return;
   
   IPlayerInterface::Safe_RemoveInteractableFromList(OtherActor, this);
 }
@@ -151,6 +151,11 @@ void UInteractComponent::BeginPlay()
 
   InteractArea->OnComponentBeginOverlap.AddDynamic(this, &UInteractComponent::OnInteractAreaOverlap);
   InteractArea->OnComponentEndOverlap.AddDynamic(this, &UInteractComponent::OnInteractAreaEndOverlap);
+
+  if (!bInteractionEnabled)
+  {
+    DisableInteraction();
+  }
 
 #if WITH_EDITOR
   if (!GetOwner()->Implements<UInteractInterface>())

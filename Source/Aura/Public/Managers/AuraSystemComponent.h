@@ -7,7 +7,7 @@
 
 class UAuraSaveGame;
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS( ClassGroup="Managers", meta=(BlueprintSpawnableComponent) )
 class AURA_API UAuraSystemComponent : public UActorComponent
 {
 	GENERATED_BODY()

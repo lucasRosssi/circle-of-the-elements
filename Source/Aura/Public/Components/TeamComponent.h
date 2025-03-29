@@ -6,7 +6,7 @@
 #include "TeamComponent.generated.h"
 
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS( ClassGroup="Team", meta=(BlueprintSpawnableComponent) )
 class AURA_API UTeamComponent : public UActorComponent
 {
 	GENERATED_BODY()

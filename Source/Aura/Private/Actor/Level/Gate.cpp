@@ -4,20 +4,13 @@
 #include "Actor/Level/Gate.h"
 
 #include "Components/InteractComponent.h"
-#include "Components/WidgetComponent.h"
-#include "Game/AuraSaveGame.h"
-#include "Managers/LocationManager.h"
-#include "Managers/RewardManager.h"
+#include "Managers/CombatManager.h"
 #include "Utils/AuraSystemsLibrary.h"
 
 AGate::AGate()
 {
-	GateMesh = CreateDefaultSubobject<UStaticMeshComponent>("GateMesh");
-	SetRootComponent(GateMesh);
-
-	RewardWidget = CreateDefaultSubobject<UWidgetComponent>("RewardWidget");
-	RewardWidget->SetupAttachment(GetRootComponent());
-	RewardWidget->SetVisibility(false);
+  GateMesh = CreateDefaultSubobject<UStaticMeshComponent>("GateMesh");
+  SetRootComponent(GateMesh);
 
   InteractComponent = CreateDefaultSubobject<UInteractComponent>("InteractComponent");
   InteractComponent->SetupInteractAreaAttachment(GetRootComponent());
@@ -25,23 +18,12 @@ AGate::AGate()
 
 void AGate::Interact_Implementation(const AController* Controller)
 {
-  GetRewardManager()->SetNextReward(RewardTag);
-  UAuraSaveGame* SaveGame = UAuraSystemsLibrary::GetCurrentSaveGameObject(this);
-  SaveGame->RewardManager.NextRewardTag = RewardTag;
-  RewardWidget->SetVisibility(false);
-  
   OnInteracted(Controller);
 }
 
 UInteractComponent* AGate::GetInteractComponent_Implementation() const
 {
   return InteractComponent;
-}
-
-void AGate::SetGateReward(const FGameplayTag& InRewardTag)
-{
-	RewardTag = InRewardTag;
-	RewardAssigned();
 }
 
 void AGate::DeactivateGate()
@@ -51,45 +33,21 @@ void AGate::DeactivateGate()
 
 void AGate::BeginPlay()
 {
-	Super::BeginPlay();
+  Super::BeginPlay();
 
-  GetRewardManager()->OnRewardTakenDelegate.AddDynamic(this, &AGate::Enable);
+  UAuraSystemsLibrary::GetOnCombatFinishedDelegate(this).AddDynamic(this, &AGate::OnCombatFinished);
 }
 
-TSoftObjectPtr<UWorld> AGate::GetCurrentLocation()
+void AGate::OnCombatFinished(FName InAreaName)
 {
-	return GetLocationManager()->GetCurrentLocation();
-}
+  if (InAreaName != AreaName) return;
 
-TSoftObjectPtr<UWorld> AGate::GetRandomLocation()
-{
-	return GetLocationManager()->GetNextLocation(Region);
+  Enable();
 }
 
 void AGate::Enable()
 {
   if (!bActive) return;
-  
-	InteractComponent->EnableInteraction();
-	RewardWidget->SetVisibility(true);
-}
 
-ULocationManager* AGate::GetLocationManager()
-{
-  if (LocationManager.Get() == nullptr)
-  {
-    LocationManager = UAuraSystemsLibrary::GetLocationManager(this);
-  }
-
-  return LocationManager.Get();
-}
-
-URewardManager* AGate::GetRewardManager()
-{
-  if (RewardManager.Get() == nullptr)
-  {
-    RewardManager = UAuraSystemsLibrary::GetRewardManager(this);
-  }
-
-  return RewardManager.Get();
+  InteractComponent->EnableInteraction();
 }

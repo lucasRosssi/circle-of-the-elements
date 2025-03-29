@@ -32,8 +32,6 @@ void ACombatGameMode::BeginPlay()
 void ACombatGameMode::LoadLevelInfo()
 {
   LocationManager->InitLocation();
-  CombatManager->SetCurrentCombatData();
-  RewardManager->SetGatesRewards();
 
   if (UAuraSaveGame* SaveGame = UAuraSystemsLibrary::GetCurrentSaveGameObject(this))
   {

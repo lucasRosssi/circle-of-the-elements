@@ -338,10 +338,10 @@ void AAuraHero::BeginPlay()
     ActiveCamera->SetCameraState(ECameraState::Default);
   }
 
-  if (UCombatManager* CombatManager = UAuraSystemsLibrary::GetCombatManager(this))
-  {
-    CombatManager->OnCombatFinishedDelegate.AddUniqueDynamic(this, &AAuraHero::SaveCurrentHealth);
-  }
+  // if (UCombatManager* CombatManager = UAuraSystemsLibrary::GetCombatManager(this))
+  // {
+  //   CombatManager->OnCombatFinishedDelegate.AddUniqueDynamic(this, &AAuraHero::SaveCurrentHealth);
+  // }
 }
 
 void AAuraHero::InitializeAttributes()

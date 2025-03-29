@@ -4,7 +4,6 @@
 #include "Managers/RewardManager.h"
 
 #include "AuraGameplayTags.h"
-#include "Actor/Level/Gate.h"
 #include "Actor/Level/LocationReward.h"
 #include "Algo/RandomShuffle.h"
 #include "Aura/AuraLogChannels.h"
@@ -42,59 +41,7 @@ FRewardInfo URewardManager::GetRewardInfo(const FGameplayTag& RewardTag)
   return UAuraSystemsLibrary::GetRewardsInfo(this)->GetRewardInfo(RewardTag);
 }
 
-void URewardManager::SetGatesRewards()
-{
-  TArray<AActor*> GateActors;
-  UGameplayStatics::GetAllActorsOfClass(
-    GetOwner(),
-    AGate::StaticClass(),
-    GateActors
-  );
-
-  TArray<FGameplayTag> SelectedRewards;
-  TArray<FGameplayTag> ReturningRewards;
-  for (const auto GateActor : GateActors)
-  {
-    FGameplayTag NextReward = GetNextRewardInBag();
-
-    int32 Count = 0;
-    // Add a Count to get out of the while loop in some rare situations. Most of the time the loop will finish before Count reaching 5.
-    while (SelectedRewards.Contains(NextReward) && Count < 5)
-    {
-      ReturningRewards.Add(NextReward);
-      NextReward = GetNextRewardInBag();
-      Count++;
-    }
-
-    AGate* Gate = Cast<AGate>(GateActor);
-
-    if (!Gate) continue;
-
-    if (Count == 5 && SelectedRewards.Contains(NextReward))
-    // If it was the last count and the NextReward is still one already assigned to another gate, we deactivate this gate.
-    {
-      Gate->DeactivateGate();
-    }
-
-    if (Gate->IsActive())
-    {
-      Gate->SetGateReward(NextReward);
-      SelectedRewards.Add(NextReward);
-    }
-  }
-  
-  for (const auto& Reward : ReturningRewards)
-  {
-    RewardBag.Add(Reward);
-  }
-
-  if (GetSaveGame())
-  {
-    SaveGame->RewardManager.RewardBag = RewardBag;
-  }
-}
-
-void URewardManager::SpawnReward()
+void URewardManager::SpawnReward(FName AreaName)
 {
   const ACharacter* PlayerCharacter = UGameplayStatics::GetPlayerCharacter(GetOwner(), 0);
   FTransform Transform;
@@ -128,7 +75,7 @@ void URewardManager::SpawnReward()
     UE_LOG(
       LogAura,
       Error,
-      TEXT("Failed to spawn Location Reward: %s"),
+      TEXT("Failed to spawn Reward: %s"),
       *Info.RewardClass->GetName()
     );
   }
@@ -186,10 +133,5 @@ void URewardManager::FillAndShuffleRewardBag()
 
 FRewardInfo URewardManager::GetNextRewardInfo()
 {
-  if (!NextRewardTag.IsValid())
-  {
-    NextRewardTag = GetNextRewardInBag();
-  }
-
-  return UAuraSystemsLibrary::GetRewardsInfo(this)->GetRewardInfo(NextRewardTag);
+  return UAuraSystemsLibrary::GetRewardsInfo(this)->GetRewardInfo(GetNextRewardInBag());
 }

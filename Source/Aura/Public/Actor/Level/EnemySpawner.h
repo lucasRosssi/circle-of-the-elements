@@ -20,6 +20,8 @@ class AURA_API AEnemySpawner : public AActor
 public:	
 	AEnemySpawner();
 
+  FName GetAreaName() const { return AreaName; }
+
 	UFUNCTION(BlueprintCallable)
 	void AddEnemyClassToQueue(TSubclassOf<AAuraEnemy> EnemyClass);
 	void PreSpawn();
@@ -34,6 +36,7 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Spawning")
 	float PreSpawnDelayMax = 0.f;
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -53,6 +56,9 @@ protected:
 		meta=(EditCondition="bOverrideEnemyLevel", EditConditionHides)
 		)
 	int32 LevelOverride = 1;
+
+  UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category="Location")
+  FName AreaName;
 
 private:
 	UPROPERTY()

@@ -248,6 +248,11 @@ UMatchManager* UAuraSystemsLibrary::GetMatchManager(const UObject* WorldContextO
   return MatchManager;
 }
 
+FOnCombatFinished& UAuraSystemsLibrary::GetOnCombatFinishedDelegate(const UObject* WorldContextObject)
+{
+  return GetCombatManager(WorldContextObject)->OnCombatFinishedDelegate;
+}
+
 AAuraHUD* UAuraSystemsLibrary::GetAuraHUD(const UObject* WorldContextObject, int32 PlayerIndex)
 {
 	AGameModeBase* GameMode = UGameplayStatics::GetGameMode(WorldContextObject);
