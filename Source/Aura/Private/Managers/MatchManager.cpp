@@ -46,11 +46,19 @@ void UMatchManager::RegisterXP(int32 XP)
   Scores.XP += XP;
 }
 
+void UMatchManager::RegisterLoot(UEquipment* Equipment)
+{
+  Loot.Add(Equipment);
+}
+
 void UMatchManager::EndMatch(bool bVictory)
 {
   if (bVictory)
   {
-    
+    for (const auto Equipment : Loot)
+    {
+      AuraPlayerState->AddEquipmentToInventory(Equipment);
+    }
   }
   else
   {

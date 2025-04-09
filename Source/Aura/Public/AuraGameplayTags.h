@@ -463,6 +463,33 @@ public:
 	FGameplayTag Resources_Essence_Lightning;
 	FGameplayTag Resources_Essence_Necrotic;
 
+  /* MODIFIERS */
+
+  FGameplayTag Modifiers;
+
+  FGameplayTag Modifiers_Fool;
+  FGameplayTag Modifiers_Magician;
+  FGameplayTag Modifiers_HighPriestess;
+  FGameplayTag Modifiers_Empress;
+  FGameplayTag Modifiers_Emperor;
+  FGameplayTag Modifiers_Hierophant;
+  FGameplayTag Modifiers_Lovers;
+  FGameplayTag Modifiers_Chariot;
+  FGameplayTag Modifiers_Strength;
+  FGameplayTag Modifiers_Hermit;
+  FGameplayTag Modifiers_Fortune;
+  FGameplayTag Modifiers_Justice;
+  FGameplayTag Modifiers_HangedMan;
+  FGameplayTag Modifiers_Death;
+  FGameplayTag Modifiers_Temperance;
+  FGameplayTag Modifiers_Devil;
+  FGameplayTag Modifiers_Tower;
+  FGameplayTag Modifiers_Star;
+  FGameplayTag Modifiers_Moon;
+  FGameplayTag Modifiers_Sun;
+  FGameplayTag Modifiers_Judgement;
+  FGameplayTag Modifiers_World;
+  
 	TMap<FGameplayTag, FGameplayTag> EssenceToAbility;
 
 	TMap<FGameplayTag, TArray<FGameplayTag>> ParentsToChildren;

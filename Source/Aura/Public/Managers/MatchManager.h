@@ -7,6 +7,7 @@
 #include "Managers/AuraSystemComponent.h"
 #include "MatchManager.generated.h"
 
+class UEquipment;
 class AAuraPlayerState;
 
 USTRUCT(BlueprintType)
@@ -54,6 +55,7 @@ public:
   void RegisterManaSpent(float Mana);
   void RegisterStatusEffectsApplied(int32 Amount);
   void RegisterXP(int32 XP);
+  void RegisterLoot(UEquipment* Equipment);
 
   UFUNCTION(BlueprintCallable)
   void EndMatch(bool bVictory);
@@ -67,4 +69,6 @@ protected:
 private:
   UPROPERTY()
   TWeakObjectPtr<AAuraPlayerState> AuraPlayerState = nullptr;
+
+  TArray<UEquipment*> Loot;
 };

@@ -46,6 +46,8 @@ public:
   UFUNCTION(BlueprintCallable)
   void SetCameraBoundaryActors(const TArray<AActor*>& InActors) { CameraBoundaryActors = InActors; }
 
+  int32 GetCurrentLocationRecommendedLevel();
+
   UPROPERTY(BlueprintAssignable)
   FOnInitLocation OnInitLocationDelegate;
   UPROPERTY(BlueprintAssignable)
@@ -54,8 +56,7 @@ public:
 protected:
   UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Location")
   ERegion Region = ERegion::Undefined;
-  UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Location")
-  ERegion NextRegion = ERegion::Undefined;
+  FName Location = NAME_None;
 
 private:
   TArray<TSoftObjectPtr<UWorld>> SelectedLocations;

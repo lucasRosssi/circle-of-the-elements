@@ -380,6 +380,42 @@ void UAuraSystemsLibrary::BackToHome(const UObject* WorldContextObject)
   UGameplayStatics::OpenLevelBySoftObjectPtr(WorldContextObject, HomeLevel);
 }
 
+ERegion UAuraSystemsLibrary::GetCurrentRegion(const UObject* WorldContextObject)
+{
+  const UAuraGameInstance* AuraGameInstance = CastChecked<UAuraGameInstance>(
+    UGameplayStatics::GetGameInstance(WorldContextObject)
+  );
+
+  return AuraGameInstance->GetCurrentRegion();
+}
+
+void UAuraSystemsLibrary::SetCurrentRegion(const UObject* WorldContextObject, ERegion Region)
+{
+  UAuraGameInstance* AuraGameInstance = CastChecked<UAuraGameInstance>(
+    UGameplayStatics::GetGameInstance(WorldContextObject)
+  );
+
+  AuraGameInstance->SetCurrentRegion(Region);
+}
+
+FName UAuraSystemsLibrary::GetCurrentLocation(const UObject* WorldContextObject)
+{
+  const UAuraGameInstance* AuraGameInstance = CastChecked<UAuraGameInstance>(
+    UGameplayStatics::GetGameInstance(WorldContextObject)
+  );
+
+  return AuraGameInstance->GetCurrentLocation();
+}
+
+void UAuraSystemsLibrary::SetCurrentLocation(const UObject* WorldContextObject, FName Location)
+{
+  UAuraGameInstance* AuraGameInstance = CastChecked<UAuraGameInstance>(
+    UGameplayStatics::GetGameInstance(WorldContextObject)
+  );
+
+  AuraGameInstance->SetCurrentLocation(Location);
+}
+
 AGameModeBase* UAuraSystemsLibrary::GetManagerInterfaceGameMode(const UObject* WorldContextObject)
 {
   AGameModeBase* GameMode = UGameplayStatics::GetGameMode(WorldContextObject);

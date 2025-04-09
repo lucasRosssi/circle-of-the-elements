@@ -4,10 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
+#include "AbilitySystem/Equipment/Rune.h"
+#include "AbilitySystem/Equipment/Spirit.h"
 #include "GameFramework/SaveGame.h"
 #include "Enums/CharacterName.h"
 #include "Enums/Region.h"
 #include "AuraSaveGame.generated.h"
+
 
 USTRUCT(BlueprintType)
 struct FSaveInfo
@@ -44,6 +47,12 @@ struct FPlayerStateSave
   int32 SkillPoints = 0;
   UPROPERTY(BlueprintReadWrite)
   TMap<FGameplayTag, int32> Resources = TMap<FGameplayTag, int32>();
+  UPROPERTY(BlueprintReadWrite)
+  TArray<FSpiritInfo> SpiritsInventory = TArray<FSpiritInfo>();
+  UPROPERTY(BlueprintReadWrite)
+  TArray<FRuneInfo> RunesInventory = TArray<FRuneInfo>();
+  UPROPERTY(BlueprintReadWrite)
+  TMap<FGameplayTag, FGuid> Loadout;
 
   void Reset()
   {
@@ -92,7 +101,7 @@ struct FAbilityManagerSave
     BlockedAbilities = FGameplayTagContainer();
     AbilitiesContainer.Empty();
     ElementalTierPool.Empty();
-    
+
     bIsStarting = true;
   }
 };
@@ -194,7 +203,8 @@ struct FUpgradeManagerSave
 UCLASS()
 class AURA_API UAuraSaveGame : public USaveGame
 {
-	GENERATED_BODY()
+  GENERATED_BODY()
+
 public:
   UAuraSaveGame();
 
@@ -203,7 +213,7 @@ public:
   void OnPlayerDeath();
 
   bool bJustLoaded = false;
-  
+
   UPROPERTY(BlueprintReadWrite)
   FSaveInfo SaveInfo = FSaveInfo();
   UPROPERTY(BlueprintReadWrite)
@@ -225,7 +235,7 @@ public:
 
   UPROPERTY(BlueprintReadWrite)
   float HeroHealth = 100.f;
-  
+
 protected:
 
 private:

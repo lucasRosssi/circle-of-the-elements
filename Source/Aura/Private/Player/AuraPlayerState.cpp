@@ -6,6 +6,8 @@
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
 #include "AbilitySystem/AuraAttributeSet.h"
 #include "AbilitySystem/Data/LevelInfo.h"
+#include "AbilitySystem/Equipment/Rune.h"
+#include "AbilitySystem/Equipment/Spirit.h"
 #include "Aura/AuraLogChannels.h"
 #include "Character/AuraCharacterBase.h"
 #include "Game/AuraSaveGame.h"
@@ -169,6 +171,30 @@ void AAuraPlayerState::AddSkillPoints(int32 InSkillPoints)
   }
   
   OnSkillPointsChangedDelegate.Broadcast(SkillPoints);
+}
+
+void AAuraPlayerState::AddEquipmentToInventory(UEquipment* InEquipment)
+{
+  if (USpirit* Spirit = Cast<USpirit>(InEquipment))
+  {
+    SpiritsInventory.Add(Spirit);
+
+    if (GetSaveGame())
+    {
+      const FSpiritInfo& SpiritInfo = Spirit->MakeSpiritInfo();
+      SaveGame->PlayerState.SpiritsInventory.Add(SpiritInfo);
+    }
+  }
+  else if (URune* Rune = Cast<URune>(InEquipment))
+  {
+    RunesInventory.Add(Rune);
+
+    if (GetSaveGame())
+    {
+      const FRuneInfo& RuneInfo = Rune->MakeRuneInfo();
+      SaveGame->PlayerState.RunesInventory.Add(RuneInfo);
+    }
+  }
 }
 
 void AAuraPlayerState::AddPlayerResource(const FGameplayTag& ResourceTag, int32 Amount)
