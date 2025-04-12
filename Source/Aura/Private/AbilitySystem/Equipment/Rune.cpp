@@ -21,14 +21,14 @@ void URune::Load(
   RuneTag = InRuneTag;
 }
 
-void URune::Equip()
+void URune::Equip(UObject* Object, bool bForcesUnequip)
 {
-  Super::Equip();
+  Super::Equip(Object, bForcesUnequip);
 }
 
-void URune::Unequip()
+void URune::Unequip(UObject* Object)
 {
-  Super::Unequip();
+  Super::Unequip(Object);
 }
 
 FRuneInfo URune::MakeRuneInfo()

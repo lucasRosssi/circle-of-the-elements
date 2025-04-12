@@ -7,6 +7,7 @@
 #include "GameplayTagContainer.h"
 #include "GameFramework/PlayerState.h"
 #include "Interfaces/AttributeSetInterface.h"
+#include "Interfaces/EquipperInterface.h"
 #include "AuraPlayerState.generated.h"
 
 class UEquipment;
@@ -26,7 +27,11 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnResourceChanged, FGameplayTag, R
  * 
  */
 UCLASS()
-class AURA_API AAuraPlayerState : public APlayerState, public IAbilitySystemInterface, public IAttributeSetInterface
+class AURA_API AAuraPlayerState :
+  public APlayerState,
+  public IAbilitySystemInterface,
+  public IAttributeSetInterface,
+  public IEquipperInterface
 {
   GENERATED_BODY()
 
@@ -43,6 +48,10 @@ public:
   virtual float GetPower_Implementation() override;
   virtual void SetTimeDilation_Implementation(float InTimeDilation) override;
   /* END Attribute Set Interface */
+
+  /* Equipper Interface */
+  virtual bool Equip_Implementation(const FGuid& ID, int32 Slot) override;
+  /* END Equipper Interface*/
 
   int32 GetCharacterLevel() const { return Level; }
   void SetLevel(int32 InLevel);

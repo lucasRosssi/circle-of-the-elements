@@ -17,8 +17,8 @@ class AURA_API UEquipment : public UObject
 public:
   virtual void Spawn();
   
-  virtual void Equip();
-  virtual void Unequip();
+  virtual void Equip(UObject* Object, bool bForcesUnequip = false);
+  virtual void Unequip(UObject* Object);
 
   FGuid GetID() const { return ID; }
   void SetID(const FGuid InID) { ID = InID; }
@@ -33,5 +33,7 @@ protected:
   FText EquipmentName = FText();
   
   int32 Level = 1;
+  
+  TWeakObjectPtr<UObject> Owner = nullptr;
 private:
 };

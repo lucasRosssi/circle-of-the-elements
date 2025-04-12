@@ -4,6 +4,8 @@
 #include "AbilitySystem/Equipment/Equipment.h"
 
 #include "Aura/Aura.h"
+#include "Aura/AuraLogChannels.h"
+#include "Interfaces/EquipperInterface.h"
 #include "Managers/LocationManager.h"
 #include "Utils/AuraSystemsLibrary.h"
 
@@ -18,10 +20,35 @@ void UEquipment::Spawn()
   ID = FGuid::NewGuid();
 }
 
-void UEquipment::Equip()
+void UEquipment::Equip(UObject* Object, bool bForcesUnequip)
 {
+  if (!IsValid(Object) || !Object->Implements<UEquipperInterface>()) return;
+  
+  if (Owner.IsValid())
+  {
+    if (bForcesUnequip)
+    {
+      Unequip(Owner.Get());
+    }
+    else
+    {
+      UE_LOG(
+        LogAura,
+        Error,
+        TEXT("[Equipment] %s is already equipped by %s"),
+        *GetName(),
+        *Owner.Get()->GetName()
+        );
+      return;
+    }
+  }
+
+  IEquipperInterface::
+  
+  Owner = Object;
 }
 
-void UEquipment::Unequip()
+void UEquipment::Unequip(UObject* Object)
 {
+  Owner = nullptr;
 }

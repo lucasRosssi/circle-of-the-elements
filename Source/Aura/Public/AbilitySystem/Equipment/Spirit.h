@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
 #include "AbilitySystem/Equipment/Equipment.h"
+#include "Interfaces/EquipperInterface.h"
 #include "Spirit.generated.h"
 
 class URune;
@@ -34,7 +35,7 @@ struct FSpiritInfo
  * 
  */
 UCLASS()
-class AURA_API USpirit : public UEquipment
+class AURA_API USpirit : public UEquipment, public IEquipperInterface
 {
 	GENERATED_BODY()
 
@@ -50,8 +51,8 @@ public:
     const TArray<FGuid>& InRunesIDs
   );
 
-  virtual void Equip() override;
-  virtual void Unequip() override;
+  virtual void Equip(UObject* Object, bool bForcesUnequip = false) override;
+  virtual void Unequip(UObject* Object) override;
 
   FSpiritInfo MakeSpiritInfo();
   

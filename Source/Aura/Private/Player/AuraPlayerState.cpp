@@ -74,6 +74,21 @@ void AAuraPlayerState::SetTimeDilation_Implementation(float InTimeDilation)
   GetPawn()->CustomTimeDilation = InTimeDilation;
 }
 
+bool AAuraPlayerState::Equip_Implementation(const FGuid& ID, int32 Slot)
+{
+  if (!ID.IsValid()) return false;
+  
+  USpirit** FoundSpirit = SpiritsInventory.FindByPredicate(
+    [ID](const USpirit* Spirit) { return Spirit->GetID() == ID; }
+    );
+
+  if (FoundSpirit == nullptr) return false;
+
+  USpirit* Spirit = *FoundSpirit;
+
+  return true;
+}
+
 void AAuraPlayerState::SetLevel(int32 InLevel)
 {
   Level = InLevel;

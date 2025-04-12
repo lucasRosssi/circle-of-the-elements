@@ -55,15 +55,15 @@ void USpirit::Load(
   }
 }
 
-void USpirit::Equip()
+void USpirit::Equip(UObject* Object, bool bForcesUnequip)
 {
-  Super::Equip();
+  Super::Equip(Object, bForcesUnequip);
   
 }
 
-void USpirit::Unequip()
+void USpirit::Unequip(UObject* Object)
 {
-  Super::Unequip();
+  Super::Unequip(Object);
   
 }
 
