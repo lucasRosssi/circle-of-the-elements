@@ -18,35 +18,32 @@ void USpirit::Spawn(UObject* WorldContextObject)
 
   const UAbilityInfo* AbilityData = UAuraSystemsLibrary::GetAbilitiesInfo(WorldContextObject);
   const FAuraAbilityInfo& AbilityInfo = AbilityData->FindAbilityInfoByTag(AbilityTag);
-  EquipmentName = AbilityInfo.Name;
   
   const FAuraGameplayTags& AuraTags = FAuraGameplayTags::Get();
   const int32 RandomModifierIndex = FMath::RandRange(0, AuraTags.ParentsToChildren[AuraTags.Modifiers].Num() - 1);
   ModifierTag = AuraTags.ParentsToChildren[AuraTags.Modifiers][RandomModifierIndex];
+  
+  EquipmentName = FText::FormatOrdered(
+    FText::FromString("{0} - {1}"),
+    AbilityInfo.Name,
+    FText::FromString(ModifierTag.ToString())
+  );
 }
 
-void USpirit::Load(
-  const FGuid& InID,
-  const FText& InEquipmentName,
-  int32 InLevel,
-  const FGameplayTag& InAbilityTag,
-  const FGameplayTag& InModiferTag,
-  int32 InSlots,
-  const TArray<FGuid>& InRunesIDs
-)
+void USpirit::Load(const FSpiritInfo& SpiritInfo)
 {
-  ID = InID;
-  EquipmentName = InEquipmentName;
-  Level = InLevel;
-  Slots = InSlots;
-  AbilityTag = InAbilityTag;
-  ModifierTag = InModiferTag;
+  ID = SpiritInfo.ID;
+  EquipmentName = SpiritInfo.EquipmentName;
+  Level = SpiritInfo.Level;
+  Slots = SpiritInfo.Slots;
+  AbilityTag = SpiritInfo.AbilityTag;
+  ModifierTag = SpiritInfo.ModifierTag;
 
   const AAuraPlayerState* AuraPS = UAuraSystemsLibrary::GetAuraPlayerState(this);
 
   if (!AuraPS) return;
 
-  for (const FGuid& RuneID : InRunesIDs)
+  for (const FGuid& RuneID : SpiritInfo.Runes)
   {
     for (URune* Rune : AuraPS->GetRunesInventory())
     {

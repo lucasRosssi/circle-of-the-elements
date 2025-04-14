@@ -32,12 +32,7 @@ class AURA_API URune : public UEquipment
 
 public:
   virtual void Spawn(UObject* WorldContextObject) override;
-  void Load(
-    const FGuid& InID,
-    const FText& InEquipmentName,
-    int32 InLevel,
-    const FGameplayTag& InRuneTag
-  );
+  void Load(const FRuneInfo& RuneInfo);
 
   virtual bool Equip(UObject* Object, int32 Slot, bool bForcesUnequip = false) override;
   virtual void Unequip(UObject* Object) override;

@@ -41,15 +41,7 @@ class AURA_API USpirit : public UEquipment, public IEquipperInterface
 
 public:
   virtual void Spawn(UObject* WorldContextObject) override;
-  void Load(
-    const FGuid& InID,
-    const FText& InEquipmentName,
-    int32 InLevel,
-    const FGameplayTag& InAbilityTag,
-    const FGameplayTag& InModiferTag,
-    int32 InSlots,
-    const TArray<FGuid>& InRunesIDs
-  );
+  void Load(const FSpiritInfo& SpiritInfo);
 
   virtual bool Equip(UObject* Object, int32 Slot, bool bForcesUnequip = false) override;
   virtual void Unequip(UObject* Object) override;

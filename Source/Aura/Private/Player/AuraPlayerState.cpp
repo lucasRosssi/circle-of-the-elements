@@ -18,7 +18,7 @@
 AAuraPlayerState::AAuraPlayerState()
 {
   AbilitySystemComponent = CreateDefaultSubobject<UAuraAbilitySystemComponent>("AbilitySystemComponent");
-  AbilitySystemComponent->SetIsReplicated((true));
+  AbilitySystemComponent->SetIsReplicated(true);
   AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
 
   AttributeSet = CreateDefaultSubobject<UAuraAttributeSet>("AttributeSet");
@@ -289,6 +289,20 @@ void AAuraPlayerState::InitializeState()
       {
         *PlayerAmount = SaveAmount;
       }
+    }
+
+    for (const FSpiritInfo& SpiritInfo : SaveGame->PlayerState.SpiritsInventory)
+    {
+      USpirit* Spirit = NewObject<USpirit>();
+      Spirit->Load(SpiritInfo);
+      SpiritsInventory.Add(Spirit);
+    }
+
+    for (const FRuneInfo& RuneInfo : SaveGame->PlayerState.RunesInventory)
+    {
+      URune* Rune = NewObject<URune>();
+      Rune->Load(RuneInfo);
+      RunesInventory.Add(Rune);
     }
   }
 }

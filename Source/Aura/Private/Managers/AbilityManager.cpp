@@ -229,7 +229,7 @@ void UAbilityManager::SelectAbilityReward(
   Spirit->SetAbilityTag(AbilityInfo.AbilityTag);
   Spirit->Spawn(GetOwner());
 
-  UAuraSystemsLibrary::GetMatchManager(this)->RegisterLoot(Spirit);
+  UAuraSystemsLibrary::GetMatchManager(GetOwner())->RegisterLoot(Spirit);
 
   if (!bOverrideAbilitiesContainer)
   {

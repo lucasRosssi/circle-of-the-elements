@@ -53,32 +53,32 @@ void UMatchManager::RegisterLoot(UEquipment* Equipment)
 
 void UMatchManager::EndMatch(bool bVictory)
 {
-  if (bVictory)
-  {
-    for (const auto Equipment : Loot)
-    {
-      AuraPlayerState->AddEquipmentToInventory(Equipment);
-    }
-  }
-  else
-  {
-    Scores.XP *= 0.5;
-  }
-
   if (GetAuraPlayerState())
   {
+    if (bVictory)
+    {
+      for (const auto Equipment : Loot)
+      {
+        AuraPlayerState->AddEquipmentToInventory(Equipment);
+      }
+    }
+    else
+    {
+      Scores.XP *= 0.5;
+    }
+    
     AuraPlayerState->AddXP(Scores.XP);
   }
   
-  UAuraSystemsLibrary::SaveCurrentGame(this);
-  UAuraSystemsLibrary::BackToHome(this);
+  UAuraSystemsLibrary::SaveCurrentGame(GetOwner());
+  UAuraSystemsLibrary::BackToHome(GetOwner());
 }
 
 AAuraPlayerState* UMatchManager::GetAuraPlayerState()
 {
   if (!AuraPlayerState.IsValid())
   {
-    AuraPlayerState = UAuraSystemsLibrary::GetAuraPlayerState(this);
+    AuraPlayerState = UAuraSystemsLibrary::GetAuraPlayerState(GetOwner());
   }
 
   return AuraPlayerState.Get();

@@ -104,21 +104,21 @@ protected:
   TMap<FGameplayTag, int32> Resources;
 
   UPROPERTY(
-    EditAnywhere,
+    VisibleAnywhere,
     BlueprintReadWrite,
     Category="Player"
   )
   TArray<USpirit*> SpiritsInventory;
 
   UPROPERTY(
-    EditAnywhere,
+    VisibleAnywhere,
     BlueprintReadWrite,
     Category="Player"
   )
   TArray<URune*> RunesInventory;
 
   UPROPERTY(
-    EditAnywhere,
+    VisibleAnywhere,
     BlueprintReadWrite,
     Category="Player"
   )

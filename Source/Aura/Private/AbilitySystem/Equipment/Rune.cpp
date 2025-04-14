@@ -8,17 +8,12 @@ void URune::Spawn(UObject* WorldContextObject)
   Super::Spawn(WorldContextObject);
 }
 
-void URune::Load(
-  const FGuid& InID,
-  const FText& InEquipmentName,
-  int32 InLevel,
-  const FGameplayTag& InRuneTag
-)
+void URune::Load(const FRuneInfo& RuneInfo)
 {
-  ID = InID;
-  EquipmentName = InEquipmentName;
-  Level = InLevel;
-  RuneTag = InRuneTag;
+  ID = RuneInfo.ID;
+  EquipmentName = RuneInfo.EquipmentName;
+  Level = RuneInfo.Level;
+  RuneTag = RuneInfo.RuneTag;
 }
 
 bool URune::Equip(UObject* Object, int32 Slot, bool bForcesUnequip)
