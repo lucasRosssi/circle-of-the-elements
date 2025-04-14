@@ -16,7 +16,7 @@ class AURA_API UEquipment : public UObject
 	GENERATED_BODY()
 
 public:
-  virtual void Spawn();
+  virtual void Spawn(UObject* WorldContextObject);
   
   virtual bool Equip(UObject* Object, int32 Slot, bool bForcesUnequip = false);
   virtual void Unequip(UObject* Object);

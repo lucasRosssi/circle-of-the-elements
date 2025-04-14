@@ -40,7 +40,7 @@ class AURA_API USpirit : public UEquipment, public IEquipperInterface
 	GENERATED_BODY()
 
 public:
-  virtual void Spawn() override;
+  virtual void Spawn(UObject* WorldContextObject) override;
   void Load(
     const FGuid& InID,
     const FText& InEquipmentName,
@@ -55,6 +55,8 @@ public:
   virtual void Unequip(UObject* Object) override;
 
   FSpiritInfo MakeSpiritInfo();
+
+  void SetAbilityTag(const FGameplayTag& InAbilityTag) { AbilityTag = InAbilityTag; }
   
 protected:
   FGameplayTag AbilityTag;

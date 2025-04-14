@@ -8,6 +8,7 @@
 #include "AbilitySystem/Data/AbilityInfo.h"
 #include "AbilityManager.generated.h"
 
+class AAuraPlayerState;
 class UAuraAbilitySystemComponent;
 struct FAbilityInfoParams;
 enum class ECharacterName : uint8;
@@ -64,8 +65,7 @@ public:
   UFUNCTION(BlueprintCallable, Category="Manager|Ability")
   void SelectAbilityReward(
     const FGameplayTag& ElementTag,
-    const FAuraAbilityInfo& AbilityInfo,
-    UAuraAbilitySystemComponent* AuraASC
+    const FAuraAbilityInfo& AbilityInfo
   );
 
   UPROPERTY(BlueprintAssignable, BlueprintCallable, Category="Manager|Ability")

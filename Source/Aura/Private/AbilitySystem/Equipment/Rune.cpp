@@ -3,9 +3,9 @@
 
 #include "AbilitySystem/Equipment/Rune.h"
 
-void URune::Spawn()
+void URune::Spawn(UObject* WorldContextObject)
 {
-  Super::Spawn();
+  Super::Spawn(WorldContextObject);
 }
 
 void URune::Load(

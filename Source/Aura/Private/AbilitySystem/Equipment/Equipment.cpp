@@ -9,9 +9,9 @@
 #include "Managers/LocationManager.h"
 #include "Utils/AuraSystemsLibrary.h"
 
-void UEquipment::Spawn()
+void UEquipment::Spawn(UObject* WorldContextObject)
 {
-  const int32 RecommendedLevel = UAuraSystemsLibrary::GetLocationManager(this)
+  const int32 RecommendedLevel = UAuraSystemsLibrary::GetLocationManager(WorldContextObject)
     ->GetCurrentLocationRecommendedLevel();
   
   const int32 Max = FMath::Min(RecommendedLevel + 3, MAX_LEVEL);

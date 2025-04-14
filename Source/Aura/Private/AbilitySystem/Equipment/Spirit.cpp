@@ -12,11 +12,11 @@
 #include "Player/AuraPlayerState.h"
 #include "Utils/AuraSystemsLibrary.h"
 
-void USpirit::Spawn()
+void USpirit::Spawn(UObject* WorldContextObject)
 {
-  Super::Spawn();
+  Super::Spawn(WorldContextObject);
 
-  const UAbilityInfo* AbilityData = UAuraSystemsLibrary::GetAbilitiesInfo(this);
+  const UAbilityInfo* AbilityData = UAuraSystemsLibrary::GetAbilitiesInfo(WorldContextObject);
   const FAuraAbilityInfo& AbilityInfo = AbilityData->FindAbilityInfoByTag(AbilityTag);
   EquipmentName = AbilityInfo.Name;
   

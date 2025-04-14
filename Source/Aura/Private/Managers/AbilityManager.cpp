@@ -11,6 +11,7 @@
 #include "AbilitySystem/Abilities/BaseAbility.h"
 #include "Character/Data/HeroInfo.h"
 #include "Game/AuraSaveGame.h"
+#include "Managers/MatchManager.h"
 #include "Managers/RewardManager.h"
 #include "UI/WidgetController/OverlayWidgetController.h"
 #include "Utils/AuraSystemsLibrary.h"
@@ -219,18 +220,16 @@ void UAbilityManager::GetAbilityFormattedTexts(
 
 void UAbilityManager::SelectAbilityReward(
   const FGameplayTag& ElementTag,
-  const FAuraAbilityInfo& AbilityInfo,
-  UAuraAbilitySystemComponent* AuraASC
+  const FAuraAbilityInfo& AbilityInfo
 )
 {
-  constexpr int32 Level = 1;
-  GiveAbility(AuraASC, AbilityInfo);
-  AcquiredAbilities.Add(AbilityInfo.AbilityTag, Level);
+  // AcquiredAbilities.Add(AbilityInfo.AbilityTag, Level);
+  
+  USpirit* Spirit = NewObject<USpirit>();
+  Spirit->SetAbilityTag(AbilityInfo.AbilityTag);
+  Spirit->Spawn(GetOwner());
 
-  if (GetSaveGame())
-  {
-    SaveGame->AbilityManager.AcquiredAbilities.Add(AbilityInfo.AbilityTag, Level);
-  }
+  UAuraSystemsLibrary::GetMatchManager(this)->RegisterLoot(Spirit);
 
   if (!bOverrideAbilitiesContainer)
   {

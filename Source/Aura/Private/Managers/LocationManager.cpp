@@ -119,5 +119,11 @@ void ULocationManager::ExitLocation()
 
 int32 ULocationManager::GetCurrentLocationRecommendedLevel()
 {
-  return UAuraSystemsLibrary::GetRegionInfo(this)->GetLocationData(Location, Region)->RecommendedLevel;
+  if (!Location.IsValid() || Region == ERegion::Undefined) return 1;
+  
+  URegionInfo* RegionInfo = UAuraSystemsLibrary::GetRegionInfo(GetOwner());
+
+  if (!RegionInfo) return 1;
+  
+  return RegionInfo->GetLocationData(Location, Region)->RecommendedLevel;
 }

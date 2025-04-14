@@ -31,7 +31,7 @@ class AURA_API URune : public UEquipment
 	GENERATED_BODY()
 
 public:
-  virtual void Spawn() override;
+  virtual void Spawn(UObject* WorldContextObject) override;
   void Load(
     const FGuid& InID,
     const FText& InEquipmentName,
