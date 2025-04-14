@@ -51,7 +51,7 @@ public:
     const TArray<FGuid>& InRunesIDs
   );
 
-  virtual void Equip(UObject* Object, bool bForcesUnequip = false) override;
+  virtual bool Equip(UObject* Object, int32 Slot, bool bForcesUnequip = false) override;
   virtual void Unequip(UObject* Object) override;
 
   FSpiritInfo MakeSpiritInfo();

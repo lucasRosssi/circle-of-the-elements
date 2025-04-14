@@ -21,9 +21,9 @@ void URune::Load(
   RuneTag = InRuneTag;
 }
 
-void URune::Equip(UObject* Object, bool bForcesUnequip)
+bool URune::Equip(UObject* Object, int32 Slot, bool bForcesUnequip)
 {
-  Super::Equip(Object, bForcesUnequip);
+  return Super::Equip(Object, bForcesUnequip);
 }
 
 void URune::Unequip(UObject* Object)

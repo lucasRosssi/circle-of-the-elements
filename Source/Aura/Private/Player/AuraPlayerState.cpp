@@ -86,6 +86,8 @@ bool AAuraPlayerState::Equip_Implementation(const FGuid& ID, int32 Slot)
 
   USpirit* Spirit = *FoundSpirit;
 
+  Spirit->Equip(this, Slot);
+
   return true;
 }
 

@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Equipment.generated.h"
 
+class UAuraSaveGame;
 class UBaseAbility;
 /**
  * 
@@ -17,7 +18,7 @@ class AURA_API UEquipment : public UObject
 public:
   virtual void Spawn();
   
-  virtual void Equip(UObject* Object, bool bForcesUnequip = false);
+  virtual bool Equip(UObject* Object, int32 Slot, bool bForcesUnequip = false);
   virtual void Unequip(UObject* Object);
 
   FGuid GetID() const { return ID; }
@@ -28,6 +29,7 @@ public:
   void SetLevel(int32 InLevel) { Level = InLevel; }
   
 protected:
+  
   FGuid ID;
   
   FText EquipmentName = FText();
@@ -36,4 +38,5 @@ protected:
   
   TWeakObjectPtr<UObject> Owner = nullptr;
 private:
+
 };

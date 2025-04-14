@@ -39,7 +39,7 @@ public:
     const FGameplayTag& InRuneTag
   );
 
-  virtual void Equip(UObject* Object, bool bForcesUnequip = false) override;
+  virtual bool Equip(UObject* Object, int32 Slot, bool bForcesUnequip = false) override;
   virtual void Unequip(UObject* Object) override;
 
   FRuneInfo MakeRuneInfo();

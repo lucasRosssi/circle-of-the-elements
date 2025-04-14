@@ -20,9 +20,9 @@ void UEquipment::Spawn()
   ID = FGuid::NewGuid();
 }
 
-void UEquipment::Equip(UObject* Object, bool bForcesUnequip)
+bool UEquipment::Equip(UObject* Object, int32 Slot, bool bForcesUnequip)
 {
-  if (!IsValid(Object) || !Object->Implements<UEquipperInterface>()) return;
+  if (!IsValid(Object) || !Object->Implements<UEquipperInterface>()) return false;
   
   if (Owner.IsValid())
   {
@@ -39,13 +39,13 @@ void UEquipment::Equip(UObject* Object, bool bForcesUnequip)
         *GetName(),
         *Owner.Get()->GetName()
         );
-      return;
+      return false;
     }
   }
 
-  IEquipperInterface::
-  
-  Owner = Object;
+  const bool bEquipped = IEquipperInterface::Execute_Equip(Object, ID, Slot);
+
+  return bEquipped;
 }
 
 void UEquipment::Unequip(UObject* Object)

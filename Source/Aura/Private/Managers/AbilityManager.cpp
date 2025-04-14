@@ -405,6 +405,14 @@ void UAbilityManager::GiveAbility(
   }
 }
 
+void UAbilityManager::RemoveAbility(UAuraAbilitySystemComponent* AuraASC, const FGameplayTag& AbilityTag)
+{
+  const FGameplayAbilitySpec* AbilitySpec = AuraASC->GetSpecFromAbilityTag(AbilityTag);
+  if (!AbilitySpec) return;
+  
+  AuraASC->ClearAbility(AbilitySpec->Handle);
+}
+
 ECharacterName UAbilityManager::GetHeroName()
 {
   if (HeroName == ECharacterName::Undefined)
