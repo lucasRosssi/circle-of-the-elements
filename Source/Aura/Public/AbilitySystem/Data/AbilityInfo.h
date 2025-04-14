@@ -60,6 +60,8 @@ struct FAuraAbilityInfo
   
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
   TArray<FScalableFloat> DescriptionPercents;
+
+  bool IsValid() const { return AbilityTag.IsValid(); }
 };
 
 USTRUCT(BlueprintType)

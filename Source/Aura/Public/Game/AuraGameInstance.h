@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
 #include "Enums/CharacterName.h"
+#include "Enums/Region.h"
 #include "AuraGameInstance.generated.h"
 
 class ULevelInfo;
@@ -38,6 +39,10 @@ public:
 
   ECharacterName GetCurrentCharacterName() const { return CurrentHeroName; }
   FHeroData GetCurrentHeroData() const;
+  ERegion GetCurrentRegion() const { return CurrentRegion; }
+  void SetCurrentRegion(ERegion Region) { CurrentRegion = Region; }
+  FName GetCurrentLocation() const { return CurrentLocation; }
+  void SetCurrentLocation(FName Location) { CurrentLocation = Location; }
 
   UAbilityInfo* GetAbilityInfo() const { return AbilityInfo; }
   UCharacterInfo* GetCharacterInfo() const { return CharacterClassInfo; }
@@ -54,6 +59,10 @@ public:
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Player|Hero")
 	ECharacterName CurrentHeroName = ECharacterName::Aura;
+  UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="Location")
+  ERegion CurrentRegion = ERegion::Undefined;
+  UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="Location")
+  FName CurrentLocation = NAME_None;
 
   UPROPERTY(EditDefaultsOnly, Category="Info")
   TObjectPtr<UAbilityInfo> AbilityInfo;

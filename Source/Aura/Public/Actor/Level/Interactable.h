@@ -7,6 +7,8 @@
 #include "Interfaces/InteractInterface.h"
 #include "Interactable.generated.h"
 
+class UInteractComponent;
+
 UCLASS()
 class AURA_API AInteractable : public AActor, public IInteractInterface
 {

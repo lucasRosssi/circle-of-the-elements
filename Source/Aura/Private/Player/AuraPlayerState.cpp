@@ -6,6 +6,8 @@
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
 #include "AbilitySystem/AuraAttributeSet.h"
 #include "AbilitySystem/Data/LevelInfo.h"
+#include "AbilitySystem/Equipment/Rune.h"
+#include "AbilitySystem/Equipment/Spirit.h"
 #include "Aura/AuraLogChannels.h"
 #include "Character/AuraCharacterBase.h"
 #include "Game/AuraSaveGame.h"
@@ -16,7 +18,7 @@
 AAuraPlayerState::AAuraPlayerState()
 {
   AbilitySystemComponent = CreateDefaultSubobject<UAuraAbilitySystemComponent>("AbilitySystemComponent");
-  AbilitySystemComponent->SetIsReplicated((true));
+  AbilitySystemComponent->SetIsReplicated(true);
   AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
 
   AttributeSet = CreateDefaultSubobject<UAuraAttributeSet>("AttributeSet");
@@ -70,6 +72,23 @@ float AAuraPlayerState::GetPower_Implementation()
 void AAuraPlayerState::SetTimeDilation_Implementation(float InTimeDilation)
 {
   GetPawn()->CustomTimeDilation = InTimeDilation;
+}
+
+bool AAuraPlayerState::Equip_Implementation(const FGuid& ID, int32 Slot)
+{
+  if (!ID.IsValid()) return false;
+  
+  USpirit** FoundSpirit = SpiritsInventory.FindByPredicate(
+    [ID](const USpirit* Spirit) { return Spirit->GetID() == ID; }
+    );
+
+  if (FoundSpirit == nullptr) return false;
+
+  USpirit* Spirit = *FoundSpirit;
+
+  Spirit->Equip(this, Slot);
+
+  return true;
 }
 
 void AAuraPlayerState::SetLevel(int32 InLevel)
@@ -171,6 +190,30 @@ void AAuraPlayerState::AddSkillPoints(int32 InSkillPoints)
   OnSkillPointsChangedDelegate.Broadcast(SkillPoints);
 }
 
+void AAuraPlayerState::AddEquipmentToInventory(UEquipment* InEquipment)
+{
+  if (USpirit* Spirit = Cast<USpirit>(InEquipment))
+  {
+    SpiritsInventory.Add(Spirit);
+
+    if (GetSaveGame())
+    {
+      const FSpiritInfo& SpiritInfo = Spirit->MakeSpiritInfo();
+      SaveGame->PlayerState.SpiritsInventory.Add(SpiritInfo);
+    }
+  }
+  else if (URune* Rune = Cast<URune>(InEquipment))
+  {
+    RunesInventory.Add(Rune);
+
+    if (GetSaveGame())
+    {
+      const FRuneInfo& RuneInfo = Rune->MakeRuneInfo();
+      SaveGame->PlayerState.RunesInventory.Add(RuneInfo);
+    }
+  }
+}
+
 void AAuraPlayerState::AddPlayerResource(const FGameplayTag& ResourceTag, int32 Amount)
 {
   if (int32* CurrentAmount = Resources.Find(ResourceTag))
@@ -246,6 +289,20 @@ void AAuraPlayerState::InitializeState()
       {
         *PlayerAmount = SaveAmount;
       }
+    }
+
+    for (const FSpiritInfo& SpiritInfo : SaveGame->PlayerState.SpiritsInventory)
+    {
+      USpirit* Spirit = NewObject<USpirit>();
+      Spirit->Load(SpiritInfo);
+      SpiritsInventory.Add(Spirit);
+    }
+
+    for (const FRuneInfo& RuneInfo : SaveGame->PlayerState.RunesInventory)
+    {
+      URune* Rune = NewObject<URune>();
+      Rune->Load(RuneInfo);
+      RunesInventory.Add(Rune);
     }
   }
 }

@@ -5,6 +5,8 @@
 
 #include "GameFramework/PlayerStart.h"
 #include "Kismet/GameplayStatics.h"
+#include "Level/RegionInfo.h"
+#include "Utils/AuraSystemsLibrary.h"
 
 // TSoftObjectPtr<UWorld> ULocationManager::GetNextLocation(
 //   ERegion InRegion
@@ -102,6 +104,9 @@ void ULocationManager::PlacePlayerInStartingPoint()
 
 void ULocationManager::InitLocation()
 {
+  Region = UAuraSystemsLibrary::GetCurrentRegion(this);
+  Location = UAuraSystemsLibrary::GetCurrentLocation(this);
+  
   PlacePlayerInStartingPoint();
   OnInitLocationDelegate.Broadcast();
 }
@@ -110,4 +115,15 @@ void ULocationManager::ExitLocation()
 {
   CameraBoundaryActors.Empty();
   OnExitLocationDelegate.Broadcast();
+}
+
+int32 ULocationManager::GetCurrentLocationRecommendedLevel()
+{
+  if (!Location.IsValid() || Region == ERegion::Undefined) return 1;
+  
+  URegionInfo* RegionInfo = UAuraSystemsLibrary::GetRegionInfo(GetOwner());
+
+  if (!RegionInfo) return 1;
+  
+  return RegionInfo->GetLocationData(Location, Region)->RecommendedLevel;
 }

@@ -320,14 +320,16 @@ void UAuraAbilitySystemComponent::AddAttribute(const FGameplayTag& AttributeTag,
     AttributeTag,
     Payload
   );
+
+  if (!GetSaveGame()) return;
   
-  if (float* Attribute = GetSaveGame()->AttributeSet.Attributes.Find(AttributeTag))
+  if (float* Attribute = SaveGame->AttributeSet.Attributes.Find(AttributeTag))
   {
     *Attribute += Amount;
   }
   else
   {
-    GetSaveGame()->AttributeSet.Attributes.Add(AttributeTag, 10 + Amount);
+    SaveGame->AttributeSet.Attributes.Add(AttributeTag, 10 + Amount);
   }
 }
 

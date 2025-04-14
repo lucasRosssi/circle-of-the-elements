@@ -8,7 +8,6 @@
 
 enum class ECharacterName : uint8;
 class UAuraUserWidget;
-class UInteractComponent;
 
 UCLASS()
 class AURA_API AWidgetInteractable : public AInteractable
