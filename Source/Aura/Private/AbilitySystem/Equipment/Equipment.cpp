@@ -52,3 +52,8 @@ void UEquipment::Unequip(UObject* Object)
 {
   Owner = nullptr;
 }
+
+FString UEquipment::GetEquipmentDescription()
+{
+  return FString();
+}

@@ -25,7 +25,7 @@ struct FRuneInfo
 /**
  * 
  */
-UCLASS()
+UCLASS(BlueprintType)
 class AURA_API URune : public UEquipment
 {
 	GENERATED_BODY()

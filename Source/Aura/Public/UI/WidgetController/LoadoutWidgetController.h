@@ -6,12 +6,45 @@
 #include "UI/WidgetController/AuraWidgetController.h"
 #include "LoadoutWidgetController.generated.h"
 
+class URune;
+class USpirit;
+class UEquipment;
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(
+  FEquipmentGlobeSelected,
+  UEquipment*,
+  SelectedEquipment
+);
+
 /**
  * 
  */
-UCLASS()
+UCLASS(BlueprintType, Blueprintable)
 class AURA_API ULoadoutWidgetController : public UAuraWidgetController
 {
-	GENERATED_BODY()
-	
+  GENERATED_BODY()
+
+public:
+  virtual void BroadcastInitialValues() override;
+  virtual void BindCallbacksToDependencies() override;
+
+  UPROPERTY(BlueprintAssignable)
+  FEquipmentGlobeSelected EquipmentGlobeSelectedDelegate;
+
+  UFUNCTION(BlueprintCallable)
+  void EquipmentGlobeSelected(UEquipment* Equipment);
+
+  UFUNCTION(BlueprintCallable)
+  FString GetEquipmentDescription(UEquipment* Equipment);
+
+  UFUNCTION(BlueprintCallable)
+  void EquipToInputPressed(USpirit* Spirit, const int32 Slot);
+
+  UFUNCTION(BlueprintPure)
+  TArray<USpirit*> GetPlayerSpirits();
+  UFUNCTION(BlueprintPure)
+  TArray<URune*> GetPlayerRunes();
+  UFUNCTION(BlueprintPure)
+  TMap<FGameplayTag, FGuid> GetPlayerLoadout();
+
+private:
 };

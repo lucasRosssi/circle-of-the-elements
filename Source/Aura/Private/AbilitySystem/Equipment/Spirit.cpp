@@ -6,6 +6,7 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AuraGameplayTags.h"
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
+#include "AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "AbilitySystem/Data/AbilityInfo.h"
 #include "AbilitySystem/Equipment/Rune.h"
 #include "Managers/AbilityManager.h"
@@ -131,6 +132,15 @@ void USpirit::Unequip(UObject* Object)
 
 
   AbilityManager->RemoveAbility(AuraASC, AbilityTag);
+}
+
+FString USpirit::GetEquipmentDescription()
+{
+  return UAuraAbilitySystemLibrary::GetAbilityDescription(
+    UAuraSystemsLibrary::GetAbilitiesInfo(this),
+    AbilityTag,
+    Level
+  );
 }
 
 FSpiritInfo USpirit::MakeSpiritInfo()

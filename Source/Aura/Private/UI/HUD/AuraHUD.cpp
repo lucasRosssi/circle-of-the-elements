@@ -7,6 +7,7 @@
 #include "Player/AuraPlayerController.h"
 #include "UI/Widget/AuraUserWidget.h"
 #include "UI/WidgetController/AttributeMenuWidgetController.h"
+#include "UI/WidgetController/LoadoutWidgetController.h"
 #include "UI/WidgetController/OverlayWidgetController.h"
 #include "UI/WidgetController/SkillMenuWidgetController.h"
 #include "UI/WidgetController/UpgradeMenuWidgetController.h"
@@ -72,6 +73,21 @@ UUpgradeMenuWidgetController* AAuraHUD::GetUpgradeMenuWidgetController(const FWi
   }
 
   return UpgradeMenuWidgetController;
+}
+
+ULoadoutWidgetController* AAuraHUD::GetLoadoutWidgetController(const FWidgetControllerParams& WCParams)
+{
+  if (LoadoutWidgetController == nullptr)
+  {
+    LoadoutWidgetController = NewObject<ULoadoutWidgetController>(
+      this,
+      LoadoutWidgetControllerClass
+      );
+    LoadoutWidgetController->SetWidgetControllerParams(WCParams);
+    LoadoutWidgetController->BindCallbacksToDependencies();
+  }
+
+  return LoadoutWidgetController;
 }
 
 void AAuraHUD::InitOverlay(APlayerController* PC, APlayerState* PS, UAbilitySystemComponent* ASC,

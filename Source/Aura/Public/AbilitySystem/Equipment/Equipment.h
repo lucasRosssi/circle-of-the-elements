@@ -10,7 +10,7 @@ class UBaseAbility;
 /**
  * 
  */
-UCLASS()
+UCLASS(BlueprintType)
 class AURA_API UEquipment : public UObject
 {
 	GENERATED_BODY()
@@ -20,6 +20,8 @@ public:
   
   virtual bool Equip(UObject* Object, int32 Slot, bool bForcesUnequip = false);
   virtual void Unequip(UObject* Object);
+
+  virtual FString GetEquipmentDescription();
 
   FGuid GetID() const { return ID; }
   void SetID(const FGuid InID) { ID = InID; }

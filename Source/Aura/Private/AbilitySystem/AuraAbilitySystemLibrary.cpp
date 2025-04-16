@@ -97,6 +97,17 @@ UUpgradeMenuWidgetController* UAuraAbilitySystemLibrary::GetUpgradeMenuWidgetCon
   return AuraHUD->GetUpgradeMenuWidgetController(WidgetControllerParams);
 }
 
+ULoadoutWidgetController* UAuraAbilitySystemLibrary::GetLoadoutWidgetController(const UObject* WorldContextObject)
+{
+  const FWidgetControllerParams WidgetControllerParams = MakeWidgetControllerParams(WorldContextObject);
+  if (!WidgetControllerParams.IsValid()) return nullptr;
+
+  AAuraHUD* AuraHUD = WidgetControllerParams.PlayerController->GetHUD<AAuraHUD>();
+  if (!AuraHUD) return nullptr;
+
+  return AuraHUD->GetLoadoutWidgetController(WidgetControllerParams);
+}
+
 UMainMenuWidgetController* UAuraAbilitySystemLibrary::GetMainMenuWidgetController(const UObject* WorldContextObject)
 {
   AMainMenuHUD* MainMenuHUD = WorldContextObject->GetWorld()->GetFirstPlayerController()->GetHUD<AMainMenuHUD>();
@@ -484,7 +495,7 @@ void UAuraAbilitySystemLibrary::GetAliveCharactersWithinCone(
   FCollisionQueryParams ConeParams;
   ConeParams.AddIgnoredActors(ActorsToIgnore);
 
-  TArray<FOverlapResult> Overlaps;
+  const TArray<FOverlapResult> Overlaps;
   if (const UWorld* World = GEngine->GetWorldFromContextObject(ContextActor, EGetWorldErrorMode::LogAndReturnNull))
   {
     //TODO: Cone logic

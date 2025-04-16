@@ -34,7 +34,7 @@ struct FSpiritInfo
 /**
  * 
  */
-UCLASS()
+UCLASS(BlueprintType)
 class AURA_API USpirit : public UEquipment, public IEquipperInterface
 {
 	GENERATED_BODY()
@@ -45,10 +45,12 @@ public:
 
   virtual bool Equip(UObject* Object, int32 Slot, bool bForcesUnequip = false) override;
   virtual void Unequip(UObject* Object) override;
+  virtual FString GetEquipmentDescription() override;
 
   FSpiritInfo MakeSpiritInfo();
 
   void SetAbilityTag(const FGameplayTag& InAbilityTag) { AbilityTag = InAbilityTag; }
+  FGameplayTag GetAbilityTag() { return AbilityTag; }
   
 protected:
   FGameplayTag AbilityTag;
