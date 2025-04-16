@@ -40,15 +40,21 @@ void ULoadoutWidgetController::EquipToInputPressed(
 
 TArray<USpirit*> ULoadoutWidgetController::GetPlayerSpirits()
 {
-  return TArray<USpirit*>();
+  if (!GetAuraPlayerState()) return TArray<USpirit*>();
+  
+  return AuraPlayerState->GetSpiritsInventory();
 }
 
 TArray<URune*> ULoadoutWidgetController::GetPlayerRunes()
 {
-  return TArray<URune*>();
+  if (!GetAuraPlayerState()) return TArray<URune*>();
+  
+  return AuraPlayerState->GetRunesInventory();
 }
 
 TMap<FGameplayTag, FGuid> ULoadoutWidgetController::GetPlayerLoadout()
 {
-  return TMap<FGameplayTag, FGuid>();
+  if (!GetAuraPlayerState()) return TMap<FGameplayTag, FGuid>();
+  
+  return AuraPlayerState->GetLoadout();
 }

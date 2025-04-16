@@ -69,6 +69,7 @@ public:
   void AddEquipmentToInventory(UEquipment* InEquipment);
   TArray<USpirit*> GetSpiritsInventory() const { return SpiritsInventory; }
   TArray<URune*> GetRunesInventory() const { return RunesInventory; }
+  TMap<FGameplayTag, FGuid> GetLoadout() const { return Loadout; }
 
   void AddPlayerResource(const FGameplayTag& ResourceTag, int32 Amount);
   int32 GetPlayerResourceByTag(const FGameplayTag& ResourceTag);

@@ -47,6 +47,7 @@ public:
   virtual void Unequip(UObject* Object) override;
   virtual FString GetEquipmentDescription() override;
 
+  UFUNCTION(BlueprintCallable)
   FSpiritInfo MakeSpiritInfo();
 
   void SetAbilityTag(const FGameplayTag& InAbilityTag) { AbilityTag = InAbilityTag; }

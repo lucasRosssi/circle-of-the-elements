@@ -22,7 +22,7 @@ public:
   virtual void Unequip(UObject* Object);
 
   virtual FString GetEquipmentDescription();
-
+  
   FGuid GetID() const { return ID; }
   void SetID(const FGuid InID) { ID = InID; }
   FText GetEquipmentName() const { return EquipmentName; }
