@@ -7,6 +7,7 @@
 #include "UI/WidgetController/AuraWidgetController.h"
 #include "AuraHUD.generated.h"
 
+class ULoadoutWidgetController;
 class UUpgradeMenuWidgetController;
 class USkillMenuWidgetController;
 class UAttributeSet;
@@ -34,6 +35,9 @@ public:
   UUpgradeMenuWidgetController* GetUpgradeMenuWidgetController(
     const FWidgetControllerParams& WCParams
   );
+  ULoadoutWidgetController* GetLoadoutWidgetController(
+    const FWidgetControllerParams& WCParams
+  );
 
 	UFUNCTION(BlueprintPure)
 	UAuraUserWidget* GetOverlayWidget() const { return OverlayWidget; }
@@ -55,6 +59,8 @@ protected:
 	TSubclassOf<USkillMenuWidgetController> SkillMenuWidgetControllerClass;
   UPROPERTY(EditDefaultsOnly, Category="Widget Controller")
   TSubclassOf<UUpgradeMenuWidgetController> UpgradeMenuWidgetControllerClass;
+  UPROPERTY(EditDefaultsOnly, Category="Widget Controller")
+  TSubclassOf<ULoadoutWidgetController> LoadoutWidgetControllerClass;
 
 private:
 	UPROPERTY()
@@ -67,4 +73,6 @@ private:
 	TObjectPtr<USkillMenuWidgetController> SkillMenuWidgetController;
   UPROPERTY()
   TObjectPtr<UUpgradeMenuWidgetController> UpgradeMenuWidgetController;
+  UPROPERTY()
+  TObjectPtr<ULoadoutWidgetController> LoadoutWidgetController;
 };

@@ -8,6 +8,7 @@
 #include "UI/WidgetController/AuraWidgetController.h"
 #include "AuraAbilitySystemLibrary.generated.h"
 
+class ULoadoutWidgetController;
 enum class ECharacterType : uint8;
 class UMainMenuWidgetController;
 struct FAuraAbilityInfo;
@@ -90,6 +91,14 @@ public:
     meta = (HidePin = "WorldContextObject", DefaultToSelf = "WorldContextObject")
   )
   static UUpgradeMenuWidgetController* GetUpgradeMenuWidgetController(
+    const UObject* WorldContextObject
+  );
+  UFUNCTION(
+    BlueprintPure,
+    Category = "AuraAbilitySystemLibrary|WidgetController",
+    meta = (HidePin = "WorldContextObject", DefaultToSelf = "WorldContextObject")
+  )
+  static ULoadoutWidgetController* GetLoadoutWidgetController(
     const UObject* WorldContextObject
   );
   UFUNCTION(

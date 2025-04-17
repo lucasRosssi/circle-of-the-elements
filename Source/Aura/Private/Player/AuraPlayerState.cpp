@@ -78,15 +78,26 @@ bool AAuraPlayerState::Equip_Implementation(const FGuid& ID, int32 Slot)
 {
   if (!ID.IsValid()) return false;
   
-  USpirit** FoundSpirit = SpiritsInventory.FindByPredicate(
-    [ID](const USpirit* Spirit) { return Spirit->GetID() == ID; }
-    );
+  const USpirit* FoundSpirit = FindSpirit(ID);
 
   if (FoundSpirit == nullptr) return false;
 
-  USpirit* Spirit = *FoundSpirit;
+  if (Loadout.Contains(Slot) && Loadout[Slot].IsValid())
+  {
+    USpirit* SlotSpirit = FindSpirit(Loadout[Slot]);
 
-  Spirit->Equip(this, Slot);
+    if (SlotSpirit)
+    {
+      SlotSpirit->Unequip();
+    }
+  }
+  
+  Loadout.Add(Slot, ID);
+
+  if (GetSaveGame() && bInitialized)
+  {
+    SaveGame->PlayerState.Loadout = Loadout;
+  }
 
   return true;
 }
@@ -192,6 +203,8 @@ void AAuraPlayerState::AddSkillPoints(int32 InSkillPoints)
 
 void AAuraPlayerState::AddEquipmentToInventory(UEquipment* InEquipment)
 {
+  InEquipment->SetOwner(this);
+  
   if (USpirit* Spirit = Cast<USpirit>(InEquipment))
   {
     SpiritsInventory.Add(Spirit);
@@ -291,20 +304,32 @@ void AAuraPlayerState::InitializeState()
       }
     }
 
-    for (const FSpiritInfo& SpiritInfo : SaveGame->PlayerState.SpiritsInventory)
-    {
-      USpirit* Spirit = NewObject<USpirit>();
-      Spirit->Load(SpiritInfo);
-      SpiritsInventory.Add(Spirit);
-    }
-
     for (const FRuneInfo& RuneInfo : SaveGame->PlayerState.RunesInventory)
     {
       URune* Rune = NewObject<URune>();
       Rune->Load(RuneInfo);
+      Rune->SetOwner(this);
       RunesInventory.Add(Rune);
     }
+    
+    for (const FSpiritInfo& SpiritInfo : SaveGame->PlayerState.SpiritsInventory)
+    {
+      USpirit* Spirit = NewObject<USpirit>();
+      Spirit->Load(SpiritInfo);
+      Spirit->SetOwner(this);
+      SpiritsInventory.Add(Spirit);
+    }
+
+    for (const auto& [Slot, SpiritID] : SaveGame->PlayerState.Loadout)
+    {
+      if (USpirit* Spirit = FindSpirit(SpiritID))
+      {
+        Spirit->Equip(Slot);
+      }
+    }
   }
+
+  bInitialized = true;
 }
 
 AAuraCharacterBase* AAuraPlayerState::GetCharacterBase()
@@ -325,6 +350,17 @@ UAuraSaveGame* AAuraPlayerState::GetSaveGame()
   }
 
   return SaveGame;
+}
+
+USpirit* AAuraPlayerState::FindSpirit(const FGuid& ID)
+{
+  USpirit** FoundSpirit = SpiritsInventory.FindByPredicate(
+    [ID](const USpirit* Spirit) { return Spirit->GetID() == ID; }
+    );
+
+  if (!FoundSpirit) return nullptr;
+
+  return *FoundSpirit;
 }
 
 void AAuraPlayerState::OnRep_Level(int32 OldLevel)

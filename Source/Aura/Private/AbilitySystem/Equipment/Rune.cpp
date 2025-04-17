@@ -16,14 +16,14 @@ void URune::Load(const FRuneInfo& RuneInfo)
   RuneTag = RuneInfo.RuneTag;
 }
 
-bool URune::Equip(UObject* Object, int32 Slot, bool bForcesUnequip)
+bool URune::Equip(int32 Slot)
 {
-  return Super::Equip(Object, bForcesUnequip);
+  return Super::Equip(Slot);
 }
 
-void URune::Unequip(UObject* Object)
+void URune::Unequip()
 {
-  Super::Unequip(Object);
+  Super::Unequip();
 }
 
 FRuneInfo URune::MakeRuneInfo()

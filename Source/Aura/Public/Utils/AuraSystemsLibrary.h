@@ -7,6 +7,7 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "AuraSystemsLibrary.generated.h"
 
+struct FGameplayTag;
 class FOnCombatFinished;
 class UMatchManager;
 enum class ECharacterType : uint8;

@@ -25,7 +25,7 @@ struct FRuneInfo
 /**
  * 
  */
-UCLASS()
+UCLASS(BlueprintType)
 class AURA_API URune : public UEquipment
 {
 	GENERATED_BODY()
@@ -34,8 +34,8 @@ public:
   virtual void Spawn(UObject* WorldContextObject) override;
   void Load(const FRuneInfo& RuneInfo);
 
-  virtual bool Equip(UObject* Object, int32 Slot, bool bForcesUnequip = false) override;
-  virtual void Unequip(UObject* Object) override;
+  virtual bool Equip(int32 Slot) override;
+  virtual void Unequip() override;
 
   FRuneInfo MakeRuneInfo();
   

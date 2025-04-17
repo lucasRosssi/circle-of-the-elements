@@ -69,6 +69,7 @@ public:
   void AddEquipmentToInventory(UEquipment* InEquipment);
   TArray<USpirit*> GetSpiritsInventory() const { return SpiritsInventory; }
   TArray<URune*> GetRunesInventory() const { return RunesInventory; }
+  TMap<int32, FGuid> GetLoadout() const { return Loadout; }
 
   void AddPlayerResource(const FGameplayTag& ResourceTag, int32 Amount);
   int32 GetPlayerResourceByTag(const FGameplayTag& ResourceTag);
@@ -122,11 +123,13 @@ protected:
     BlueprintReadWrite,
     Category="Player"
   )
-  TMap<FGameplayTag, FGuid> Loadout;
+  TMap<int32, FGuid> Loadout;
 
 private:
   AAuraCharacterBase* GetCharacterBase();
   UAuraSaveGame* GetSaveGame();
+
+  USpirit* FindSpirit(const FGuid& ID);
 
   UPROPERTY(VisibleAnywhere, ReplicatedUsing=OnRep_Level)
   int32 Level = 1;
@@ -156,4 +159,6 @@ private:
 
   UPROPERTY()
   UAuraSaveGame* SaveGame;
+
+  bool bInitialized = false;
 };

@@ -35,14 +35,7 @@ UAbilityManager::UAbilityManager()
 
 void UAbilityManager::GiveAcquiredAbilities(AActor* Actor)
 {
-  if (AcquiredAbilities.IsEmpty())
-  {
-    if (GetSaveGame())
-    {
-      AcquiredAbilities = SaveGame->AbilityManager.AcquiredAbilities;
-    }
-  }
-  else
+  if (!AcquiredAbilities.IsEmpty())
   {
     UE_LOG(
       LogAura,
@@ -57,10 +50,7 @@ void UAbilityManager::GiveAcquiredAbilities(AActor* Actor)
   for (const auto& [Ability, Level] : AcquiredAbilities)
   {
     const FAuraAbilityInfo& AbilityInfo = AbilitiesDataAsset->FindAbilityInfoByTag(Ability);
-    const FGameplayTag& InputTag = GetSaveGame()
-      ? SaveGame->AbilityInput.FindAbilityInput(Ability)
-      : FGameplayTag();
-    GiveAbility(AuraASC, AbilityInfo, Level, InputTag);
+    GiveAbility(AuraASC, AbilityInfo, Level);
     OnAbilitySelectedDelegate.Broadcast(AbilityInfo);
   }
 }
@@ -76,23 +66,8 @@ void UAbilityManager::BeginPlay()
     OverridenAbilitiesContainer = AbilitiesContainer;
     return;
   }
-
-  if (GetSaveGame())
-  {
-    if (SaveGame->AbilityManager.bIsStarting)
-    {
-      AssignInitialAbilities();
-    }
-    else
-    {
-      ElementalTierPool = SaveGame->AbilityManager.ElementalTierPool;
-      AbilitiesContainer = SaveGame->AbilityManager.AbilitiesContainer;
-    }
-  }
-  else
-  {
-    AssignInitialAbilities();
-  }
+  
+  AssignInitialAbilities();
 }
 
 TMap<FGameplayTag, FAuraAbilityInfo> UAbilityManager::GetElementAbilities(
@@ -106,6 +81,11 @@ TMap<FGameplayTag, FAuraAbilityInfo> UAbilityManager::GetElementAbilities(
 FAuraAbilityInfo UAbilityManager::GetAbilityInfo(const FAbilityInfoParams& Params)
 {
   return UAuraSystemsLibrary::GetAbilitiesInfo(this)->FindAbilityInfoWithParams(Params);
+}
+
+FAuraAbilityInfo UAbilityManager::FindAbilityInfoByTag(const FGameplayTag& AbilityTag)
+{
+  return UAuraSystemsLibrary::GetAbilitiesInfo(this)->FindAbilityInfoByTag(AbilityTag);
 }
 
 TArray<FAuraAbilityInfo> UAbilityManager::RandomizeElementAbilities(
@@ -142,12 +122,6 @@ TArray<FAuraAbilityInfo> UAbilityManager::RandomizeElementAbilities(
     ElementAbilities.Remove(RemainingAbilities[RandomAbilityIndex].AbilityTag);
 
     AbilitiesContainer.Find(ElementTag)->AddTag(RemainingAbilities[RandomAbilityIndex].AbilityTag);
-  }
-
-  if (GetSaveGame())
-  {
-    SaveGame->AbilityManager.AbilitiesContainer = AbilitiesContainer;
-    SaveGame->AbilityManager.ElementalTierPool = ElementalTierPool;
   }
 
   return SelectedAbilities;
@@ -256,11 +230,6 @@ void UAbilityManager::AssignInitialAbilities()
   for (const FGameplayTag& ElementTag : Tags.ParentsToChildren[Tags.Abilities_Element])
   {
     RandomizeElementAbilities(GetHeroName(), ElementTag);
-  }
-
-  if (GetSaveGame())
-  {
-    SaveGame->AbilityManager.bIsStarting = false;
   }
 }
 

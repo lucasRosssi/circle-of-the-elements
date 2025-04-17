@@ -6,8 +6,10 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AuraGameplayTags.h"
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
+#include "AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "AbilitySystem/Data/AbilityInfo.h"
 #include "AbilitySystem/Equipment/Rune.h"
+#include "Aura/AuraLogChannels.h"
 #include "Managers/AbilityManager.h"
 #include "Player/AuraPlayerState.h"
 #include "Utils/AuraSystemsLibrary.h"
@@ -55,11 +57,11 @@ void USpirit::Load(const FSpiritInfo& SpiritInfo)
   }
 }
 
-bool USpirit::Equip(UObject* Object, int32 Slot, bool bForcesUnequip)
+bool USpirit::Equip(int32 Slot)
 {
-  if (!Super::Equip(Object, Slot, bForcesUnequip)) return false;
+  if (!Super::Equip(Slot)) return false;
 
-  AActor* Actor = Cast<AActor>(Object);
+  AActor* Actor = Cast<AActor>(Owner.Get());
   if (!Actor) return false;
 
   UAuraAbilitySystemComponent* AuraASC = Cast<UAuraAbilitySystemComponent>(
@@ -97,10 +99,21 @@ bool USpirit::Equip(UObject* Object, int32 Slot, bool bForcesUnequip)
       }
   }
 
-  UAbilityManager* AbilityManager = UAuraSystemsLibrary::GetAbilityManager(this);
-  if (!AbilityManager) return false;
+  if (!InputTag.IsValid())
+  {
+    UE_LOG(
+      LogAura,
+      Error,
+      TEXT("Slot %d is invalid for equipping %s!"),
+      Slot,
+      *EquipmentName.ToString()
+    );
+    return false;
+  }
 
-  const UAbilityInfo* AbilitiesDataAsset = UAuraSystemsLibrary::GetAbilitiesInfo(this);
+  UAbilityManager* AbilityManager = UAuraSystemsLibrary::GetAbilityManager(Actor);
+
+  const UAbilityInfo* AbilitiesDataAsset = UAuraSystemsLibrary::GetAbilitiesInfo(Actor);
   const FAuraAbilityInfo& AbilityInfo = AbilitiesDataAsset->FindAbilityInfoByTag(AbilityTag);
   if (!AbilityInfo.IsValid()) return false;
 
@@ -114,11 +127,11 @@ bool USpirit::Equip(UObject* Object, int32 Slot, bool bForcesUnequip)
   return true;
 }
 
-void USpirit::Unequip(UObject* Object)
+void USpirit::Unequip()
 {
-  Super::Unequip(Object);
+  Super::Unequip();
 
-  AActor* Actor = Cast<AActor>(Object);
+  AActor* Actor = Cast<AActor>(Owner.Get());
   if (!Actor) return;
 
   UAuraAbilitySystemComponent* AuraASC = Cast<UAuraAbilitySystemComponent>(
@@ -126,11 +139,17 @@ void USpirit::Unequip(UObject* Object)
     );
   if (!AuraASC) return;
   
-  UAbilityManager* AbilityManager = UAuraSystemsLibrary::GetAbilityManager(this);
-  if (!AbilityManager) return;
-
-
+  UAbilityManager* AbilityManager = UAuraSystemsLibrary::GetAbilityManager(Actor);
   AbilityManager->RemoveAbility(AuraASC, AbilityTag);
+}
+
+FString USpirit::GetEquipmentDescription()
+{
+  return UAuraAbilitySystemLibrary::GetAbilityDescription(
+    UAuraSystemsLibrary::GetAbilitiesInfo(Owner.Get()),
+    AbilityTag,
+    Level
+  );
 }
 
 FSpiritInfo USpirit::MakeSpiritInfo()

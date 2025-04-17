@@ -8,7 +8,6 @@
 #include "AbilitySystem/Data/AbilityInfo.h"
 #include "Player/AuraPlayerState.h"
 #include "Player/AuraPlayerController.h"
-#include "Utils/AuraSystemsLibrary.h"
 
 void UAuraWidgetController::SetWidgetControllerParams(const FWidgetControllerParams& WCParams)
 {

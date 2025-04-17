@@ -9,7 +9,6 @@
 #include "Aura/AuraLogChannels.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/InteractComponent.h"
-#include "Game/AuraSaveGame.h"
 #include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -25,14 +24,7 @@ void URewardManager::BeginPlay()
   }
   else
   {
-    if (GetSaveGame() && SaveGame->bJustLoaded)
-    {
-      RewardBag = SaveGame->RewardManager.RewardBag;
-    }
-    else
-    {
-      RewardBag.Empty();
-    }
+    RewardBag.Empty();
   }
 }
 
@@ -89,10 +81,6 @@ void URewardManager::RemoveRewardFromPool(const FGameplayTag& RewardTag)
   });
 
   BlockedRewards.AddTag(RewardTag);
-  if (GetSaveGame())
-  {
-    SaveGame->RewardManager.BlockedRewards = BlockedRewards;
-  }
 }
 
 FGameplayTag URewardManager::GetNextRewardInBag()

@@ -52,7 +52,7 @@ struct FPlayerStateSave
   UPROPERTY(BlueprintReadWrite)
   TArray<FRuneInfo> RunesInventory = TArray<FRuneInfo>();
   UPROPERTY(BlueprintReadWrite)
-  TMap<FGameplayTag, FGuid> Loadout;
+  TMap<int32, FGuid> Loadout = TMap<int32, FGuid>();
 
   void Reset()
   {
@@ -74,62 +74,6 @@ struct FAttributeSetSave
     for (auto& [Attribute, Value] : Attributes)
     {
       Value = 10;
-    }
-  }
-};
-
-USTRUCT(BlueprintType)
-struct FAbilityManagerSave
-{
-  GENERATED_BODY()
-
-  UPROPERTY(BlueprintReadWrite)
-  TMap<FGameplayTag, int32> AcquiredAbilities = TMap<FGameplayTag, int32>();
-  UPROPERTY(BlueprintReadWrite)
-  FGameplayTagContainer BlockedAbilities = FGameplayTagContainer();
-  UPROPERTY(BlueprintReadWrite)
-  TMap<FGameplayTag, FGameplayTagContainer> AbilitiesContainer = TMap<FGameplayTag, FGameplayTagContainer>();
-  UPROPERTY(BlueprintReadWrite)
-  TMap<FGameplayTag, FGameplayTagContainer> ElementalTierPool = TMap<FGameplayTag, FGameplayTagContainer>();
-
-  UPROPERTY(BlueprintReadWrite)
-  bool bIsStarting = true;
-
-  void Reset()
-  {
-    AcquiredAbilities.Empty();
-    BlockedAbilities = FGameplayTagContainer();
-    AbilitiesContainer.Empty();
-    ElementalTierPool.Empty();
-
-    bIsStarting = true;
-  }
-};
-
-USTRUCT(BlueprintType)
-struct FAbilityInputSave
-{
-  GENERATED_BODY()
-
-  // Keys: Input tags; Values: Ability tags
-  UPROPERTY(BlueprintReadWrite, meta=(Categories="Abilities.Active,InputTag.1,InputTag.2,InputTag.3,InputTag.4"))
-  TMap<FGameplayTag, FGameplayTag> Inputs = TMap<FGameplayTag, FGameplayTag>();
-
-  FGameplayTag FindAbilityInput(const FGameplayTag& AbilityTag)
-  {
-    for (auto& [Input, Ability] : Inputs)
-    {
-      if (Ability == AbilityTag) return Input;
-    }
-
-    return FGameplayTag();
-  }
-
-  void Reset()
-  {
-    for (auto& Item : Inputs)
-    {
-      Item.Value = FGameplayTag();
     }
   }
 };
@@ -160,26 +104,6 @@ struct FLocationManagerSave
   void Reset()
   {
     Index = -1;
-  }
-};
-
-USTRUCT(BlueprintType)
-struct FRewardManagerSave
-{
-  GENERATED_BODY()
-
-  UPROPERTY(BlueprintReadWrite)
-  FGameplayTagContainer BlockedRewards = FGameplayTagContainer();
-  UPROPERTY(BlueprintReadWrite)
-  FGameplayTag NextRewardTag = FGameplayTag();
-  UPROPERTY(BlueprintReadWrite)
-  TArray<FGameplayTag> RewardBag = TArray<FGameplayTag>();
-
-  void Reset()
-  {
-    BlockedRewards = FGameplayTagContainer();
-    NextRewardTag = FGameplayTag();
-    RewardBag.Empty();
   }
 };
 
@@ -221,15 +145,9 @@ public:
   UPROPERTY(BlueprintReadWrite)
   FAttributeSetSave AttributeSet = FAttributeSetSave();
   UPROPERTY(BlueprintReadWrite)
-  FAbilityManagerSave AbilityManager = FAbilityManagerSave();
-  UPROPERTY(BlueprintReadWrite)
-  FAbilityInputSave AbilityInput = FAbilityInputSave();
-  UPROPERTY(BlueprintReadWrite)
   FCombatManagerSave CombatManager = FCombatManagerSave();
   UPROPERTY(BlueprintReadWrite)
   FLocationManagerSave LocationManager = FLocationManagerSave();
-  UPROPERTY(BlueprintReadWrite)
-  FRewardManagerSave RewardManager = FRewardManagerSave();
   UPROPERTY(BlueprintReadWrite)
   FUpgradeManagerSave UpgradeManager = FUpgradeManagerSave();
 
@@ -241,5 +159,4 @@ protected:
 private:
   void InitPlayerState();
   void InitAttributeSet();
-  void InitAbilityInputs();
 };
