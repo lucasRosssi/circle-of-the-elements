@@ -45,6 +45,8 @@ public:
   );
   UFUNCTION(BlueprintPure, Category="Manager|Ability")
   FAuraAbilityInfo GetAbilityInfo(const FAbilityInfoParams& Params);
+  UFUNCTION(BlueprintPure, Category="Manager|Ability")
+  FAuraAbilityInfo FindAbilityInfoByTag(const FGameplayTag& AbilityTag);
   UFUNCTION(BlueprintCallable, Category="Manager|Ability")
   TArray<FAuraAbilityInfo> RandomizeElementAbilities(
     ECharacterName CharacterName,

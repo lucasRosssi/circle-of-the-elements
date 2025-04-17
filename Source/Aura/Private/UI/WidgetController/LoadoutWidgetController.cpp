@@ -23,6 +23,13 @@ void ULoadoutWidgetController::EquipmentGlobeSelected(UEquipment* Equipment)
   EquipmentGlobeSelectedDelegate.Broadcast(Equipment);
 }
 
+void ULoadoutWidgetController::OnEquipped(UEquipment* Equipment)
+{
+  if (!Equipment) return;
+  
+  OnEquippedDelegate.Broadcast(Equipment);
+}
+
 FString ULoadoutWidgetController::GetEquipmentDescription(UEquipment* Equipment)
 {
   return Equipment->GetEquipmentDescription();
@@ -35,7 +42,7 @@ void ULoadoutWidgetController::EquipToInputPressed(
 {
 	if (!Spirit) return;
 
-  Spirit->Equip(GetAuraPlayerState(), Slot);
+  Spirit->Equip(Slot);
 }
 
 TArray<USpirit*> ULoadoutWidgetController::GetPlayerSpirits()
@@ -52,9 +59,9 @@ TArray<URune*> ULoadoutWidgetController::GetPlayerRunes()
   return AuraPlayerState->GetRunesInventory();
 }
 
-TMap<FGameplayTag, FGuid> ULoadoutWidgetController::GetPlayerLoadout()
+TMap<int32, FGuid> ULoadoutWidgetController::GetPlayerLoadout()
 {
-  if (!GetAuraPlayerState()) return TMap<FGameplayTag, FGuid>();
+  if (!GetAuraPlayerState()) return TMap<int32, FGuid>();
   
   return AuraPlayerState->GetLoadout();
 }

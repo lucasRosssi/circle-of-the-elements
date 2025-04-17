@@ -14,6 +14,11 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(
   UEquipment*,
   SelectedEquipment
 );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(
+  FOnEquipped,
+  UEquipment*,
+  Equipment
+);
 
 /**
  * 
@@ -29,9 +34,13 @@ public:
 
   UPROPERTY(BlueprintAssignable)
   FEquipmentGlobeSelected EquipmentGlobeSelectedDelegate;
+  UPROPERTY(BlueprintAssignable)
+  FOnEquipped OnEquippedDelegate;
 
   UFUNCTION(BlueprintCallable)
   void EquipmentGlobeSelected(UEquipment* Equipment);
+  UFUNCTION(BlueprintCallable)
+  void OnEquipped(UEquipment* Equipment);
 
   UFUNCTION(BlueprintCallable)
   FString GetEquipmentDescription(UEquipment* Equipment);
@@ -44,7 +53,7 @@ public:
   UFUNCTION(BlueprintPure)
   TArray<URune*> GetPlayerRunes();
   UFUNCTION(BlueprintPure)
-  TMap<FGameplayTag, FGuid> GetPlayerLoadout();
+  TMap<int32, FGuid> GetPlayerLoadout();
 
 private:
 };

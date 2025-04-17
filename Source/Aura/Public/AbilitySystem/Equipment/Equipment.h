@@ -18,11 +18,13 @@ class AURA_API UEquipment : public UObject
 public:
   virtual void Spawn(UObject* WorldContextObject);
   
-  virtual bool Equip(UObject* Object, int32 Slot, bool bForcesUnequip = false);
-  virtual void Unequip(UObject* Object);
+  virtual bool Equip(int32 Slot);
+  virtual void Unequip();
+
+  void SetOwner(UObject* NewOwner) { Owner = NewOwner; }
 
   virtual FString GetEquipmentDescription();
-  
+
   FGuid GetID() const { return ID; }
   void SetID(const FGuid InID) { ID = InID; }
   FText GetEquipmentName() const { return EquipmentName; }

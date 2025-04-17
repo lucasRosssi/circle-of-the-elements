@@ -20,37 +20,27 @@ void UEquipment::Spawn(UObject* WorldContextObject)
   ID = FGuid::NewGuid();
 }
 
-bool UEquipment::Equip(UObject* Object, int32 Slot, bool bForcesUnequip)
+bool UEquipment::Equip(int32 Slot)
 {
-  if (!IsValid(Object) || !Object->Implements<UEquipperInterface>()) return false;
-  
-  if (Owner.IsValid())
+  if (!Owner.IsValid() || !Owner->Implements<UEquipperInterface>())
   {
-    if (bForcesUnequip)
-    {
-      Unequip(Owner.Get());
-    }
-    else
-    {
-      UE_LOG(
-        LogAura,
-        Error,
-        TEXT("[Equipment] %s is already equipped by %s"),
-        *GetName(),
-        *Owner.Get()->GetName()
-        );
-      return false;
-    }
+    UE_LOG(
+      LogAura,
+      Error,
+      TEXT("[Equipment] %s doesn't belong to any Owner"),
+      *GetName()
+      );
+    return false;
   }
 
-  const bool bEquipped = IEquipperInterface::Execute_Equip(Object, ID, Slot);
+  const bool bEquipped = IEquipperInterface::Execute_Equip(Owner.Get(), ID, Slot);
 
   return bEquipped;
 }
 
-void UEquipment::Unequip(UObject* Object)
+void UEquipment::Unequip()
 {
-  Owner = nullptr;
+  
 }
 
 FString UEquipment::GetEquipmentDescription()

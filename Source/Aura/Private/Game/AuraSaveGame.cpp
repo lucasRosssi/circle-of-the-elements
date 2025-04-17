@@ -9,7 +9,6 @@ UAuraSaveGame::UAuraSaveGame()
 {
   InitPlayerState();
   InitAttributeSet();
-  InitAbilityInputs();
 }
 
 void UAuraSaveGame::PostInitProperties()
@@ -57,14 +56,4 @@ void UAuraSaveGame::InitAttributeSet()
       AttributeSet.Attributes.Add(Tag, 10);
     }
   }
-}
-
-void UAuraSaveGame::InitAbilityInputs()
-{
-  const FAuraGameplayTags& AuraTags = FAuraGameplayTags::Get();
-  
-  AbilityInput.Inputs.Add(AuraTags.InputTag_1, FGameplayTag());
-  AbilityInput.Inputs.Add(AuraTags.InputTag_2, FGameplayTag());
-  AbilityInput.Inputs.Add(AuraTags.InputTag_3, FGameplayTag());
-  AbilityInput.Inputs.Add(AuraTags.InputTag_4, FGameplayTag());
 }
