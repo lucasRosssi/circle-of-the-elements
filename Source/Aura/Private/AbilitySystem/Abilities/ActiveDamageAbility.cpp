@@ -91,10 +91,11 @@ int32 UActiveDamageAbility::GetRoundedDamageAtLevel_Implementation(int32 Level) 
 
 void UActiveDamageAbility::HandleComboSequence()
 {
-	if (bIsPlayerAbility && !bComboInputPressed) return;
+	if (bIsPlayerAbility && (!bComboInputPressed || !bInComboWindow)) return;
 
 	ComboIndex += 1;
 	bComboInputPressed = false;
+  bInComboWindow = false;
 
 	if (!ComboSequenceData.IsValidIndex(ComboIndex)) return;
 

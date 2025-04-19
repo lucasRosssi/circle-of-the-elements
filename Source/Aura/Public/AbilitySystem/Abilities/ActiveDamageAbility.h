@@ -161,6 +161,8 @@ protected:
 
   UPROPERTY(BlueprintReadWrite, Category="Ability Defaults|Combo")
   bool bComboInputPressed = false;
+  UPROPERTY(BlueprintReadWrite, Category="Ability Defaults|Combo")
+  bool bInComboWindow = false;
 
   UPROPERTY(BlueprintReadWrite, Category="Ability Defaults|Combo")
   int32 ComboIndex = 0;
