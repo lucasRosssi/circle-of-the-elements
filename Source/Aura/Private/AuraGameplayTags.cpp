@@ -342,6 +342,26 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
   );
 
   /*
+   * State Tags
+   */
+
+  GameplayTags.State = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("State"),
+    FString("State tags")
+  );
+
+  GameplayTags.State_Default = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("State.Default"),
+    FString("Default state tag")
+  );
+
+  GameplayTags.State_InCombat = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("State.InCombat"),
+    FString("In combat state tag")
+  );
+
+
+  /*
    * Resistances Tags
    */
 

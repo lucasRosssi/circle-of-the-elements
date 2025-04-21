@@ -13,6 +13,7 @@
 #include "Interfaces/TargetInterface.h"
 #include "AuraCharacterBase.generated.h"
 
+class UCharacterAnimInstance;
 class UAuraAbilitySystemComponent;
 class UBoxComponent;
 class UImage;
@@ -74,6 +75,7 @@ public:
   virtual bool IsFriend_Implementation(AActor* Actor) override;
   virtual bool IsEnemy_Implementation(AActor* Actor) override;
   virtual void SetCustomDepth_Implementation(int32 Value) override;
+  virtual void SetStateTag_Implementation(const FGameplayTag& StateTag) override;
   /** END Combat Interface */
 
   void InitSummon(int32 TeamID);
@@ -205,6 +207,10 @@ protected:
   TObjectPtr<USceneComponent> BottomStatusEffectSceneComponent;
 
 private:
+  UCharacterAnimInstance* GetAnimInstance();
+
+  TWeakObjectPtr<UCharacterAnimInstance> AnimInstance = nullptr;
+  
   void CheckVelocityNearStop();
 
   FTimerHandle VelocityCheckTimer;

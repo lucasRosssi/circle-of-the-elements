@@ -334,6 +334,14 @@ void AAuraCharacterBase::SetCustomDepth_Implementation(int32 Value)
   GetMesh()->SetCustomDepthStencilValue(Value);
 }
 
+void AAuraCharacterBase::SetStateTag_Implementation(const FGameplayTag& StateTag)
+{
+  if (GetAnimInstance())
+  {
+    AnimInstance->SetStateTag(StateTag);
+  }
+}
+
 void AAuraCharacterBase::InitAbilityActorInfo()
 {
 }
@@ -412,6 +420,16 @@ void AAuraCharacterBase::DissolveCharacter()
   }
 }
 
+UCharacterAnimInstance* AAuraCharacterBase::GetAnimInstance()
+{
+  if (!AnimInstance.IsValid())
+  {
+    AnimInstance = Cast<UCharacterAnimInstance>(GetMesh()->GetAnimInstance());
+  }
+
+  return AnimInstance.IsValid() ? AnimInstance.Get() : nullptr;
+}
+
 void AAuraCharacterBase::CheckVelocityNearStop()
 {
   if (GetVelocity().Length() > 1.f) return;
@@ -431,8 +449,7 @@ void AAuraCharacterBase::ChangeActionSpeed(float InActionSpeed)
 {
   GetCharacterMovement()->MaxWalkSpeed = DefaultWalkSpeed * InActionSpeed;
 
-  UCharacterAnimInstance* AnimInstance = Cast<UCharacterAnimInstance>(GetMesh()->GetAnimInstance());
-  if (AnimInstance)
+  if (GetAnimInstance())
   {
     AnimInstance->SetActionPlayRate(InActionSpeed);
   }

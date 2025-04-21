@@ -82,6 +82,10 @@ public:
 
 	TMap<FGameplayTag, FGameplayTag> DamageTypesToResistances;
 
+  FGameplayTag State;
+  FGameplayTag State_Default;
+  FGameplayTag State_InCombat;
+
   /* STATUS EFFECTS */
 
 	FGameplayTag StatusEffects;
