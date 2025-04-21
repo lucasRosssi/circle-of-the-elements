@@ -19,6 +19,7 @@ void UCombatManager::SetCurrentCombatData()
 
 void UCombatManager::StartCombat(FName AreaName)
 {
+  OnCombatStartedDelegate.Broadcast(AreaName);
   CurrentAreaName = AreaName;
   SetCurrentCombatData();
   NextWave();
@@ -40,6 +41,7 @@ void UCombatManager::NextWave()
   }
 
   CurrentWave += 1;
+  EnemyCount = EnemyWaves[0].Enemies.Num();
 
   TArray<AEnemySpawner*> Spawners = EnemySpawners;
   for (const auto Enemy : EnemyWaves[0].Enemies)
@@ -144,7 +146,7 @@ void UCombatManager::GetEnemyWaves()
 
 void UCombatManager::OnEnemySpawned(AActor* Enemy)
 {
-  EnemyCount += 1;
+  // EnemyCount += 1;
 }
 
 void UCombatManager::OnEnemyKilled(AActor* Enemy)

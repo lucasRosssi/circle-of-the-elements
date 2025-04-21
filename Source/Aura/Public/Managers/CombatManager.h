@@ -8,6 +8,7 @@
 #include "Enums/Region.h"
 #include "CombatManager.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCombatStarted, FName, AreaName);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCombatFinished, FName, AreaName);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnLastEnemyKilled);
@@ -36,6 +37,8 @@ public:
   UFUNCTION()
   void OnEnemyKilled(AActor* Enemy);
 
+  UPROPERTY(BlueprintAssignable)
+  FOnCombatFinished OnCombatStartedDelegate;
   UPROPERTY(BlueprintAssignable)
   FOnCombatFinished OnCombatFinishedDelegate;
   UPROPERTY(BlueprintAssignable)

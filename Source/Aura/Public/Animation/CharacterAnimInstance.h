@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
 #include "Animation/AnimInstance.h"
 #include "CharacterAnimInstance.generated.h"
 
@@ -16,6 +17,7 @@ class AURA_API UCharacterAnimInstance : public UAnimInstance
 public:
 	void SetMovementPlayRate(float InPlayRate);
 	void SetActionPlayRate(float InPlayRate);
+  void SetStateTag(const FGameplayTag& InStateTag) { StateTag = InStateTag; }
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
@@ -23,4 +25,7 @@ protected:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float ActionPlayRate = 1.f;
+
+  UPROPERTY(EditAnywhere, BlueprintReadWrite)
+  FGameplayTag StateTag;
 };
