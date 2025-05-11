@@ -48,7 +48,7 @@ protected:
   UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Location")
   ERegion Region = ERegion::Undefined;
   UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Location")
-  FName LocationName = FName("Crystal Cave I");
+  FName LocationName = NAME_None;
 
   UPROPERTY(
     EditDefaultsOnly,

@@ -53,12 +53,6 @@ struct FPlayerStateSave
   TArray<FRuneInfo> RunesInventory = TArray<FRuneInfo>();
   UPROPERTY(BlueprintReadWrite)
   TMap<int32, FGuid> Loadout = TMap<int32, FGuid>();
-
-  void Reset()
-  {
-    AttributePoints = 0;
-    SkillPoints = 0;
-  }
 };
 
 USTRUCT(BlueprintType)
@@ -68,43 +62,15 @@ struct FAttributeSetSave
 
   UPROPERTY(BlueprintReadWrite)
   TMap<FGameplayTag, float> Attributes = TMap<FGameplayTag, float>();
-
-  void Reset()
-  {
-    for (auto& [Attribute, Value] : Attributes)
-    {
-      Value = 10;
-    }
-  }
-};
-
-USTRUCT(BlueprintType)
-struct FCombatManagerSave
-{
-  GENERATED_BODY()
-  UPROPERTY(BlueprintReadWrite)
-  int32 CombatsCount = 0;
-
-  void Reset()
-  {
-    CombatsCount = 0;
-  }
 };
 
 USTRUCT(BlueprintType)
 struct FLocationManagerSave
 {
   GENERATED_BODY()
-
+  
   UPROPERTY(BlueprintReadWrite)
-  int32 Index = -1;
-  UPROPERTY(BlueprintReadWrite)
-  TArray<int32> SelectedLocationsIndex;
-
-  void Reset()
-  {
-    Index = -1;
-  }
+  int32 LastLocationCleared = 0;
 };
 
 USTRUCT(BlueprintType)
@@ -134,8 +100,6 @@ public:
 
   virtual void PostInitProperties() override;
 
-  void OnPlayerDeath();
-
   bool bJustLoaded = false;
 
   UPROPERTY(BlueprintReadWrite)
@@ -144,8 +108,6 @@ public:
   FPlayerStateSave PlayerState = FPlayerStateSave();
   UPROPERTY(BlueprintReadWrite)
   FAttributeSetSave AttributeSet = FAttributeSetSave();
-  UPROPERTY(BlueprintReadWrite)
-  FCombatManagerSave CombatManager = FCombatManagerSave();
   UPROPERTY(BlueprintReadWrite)
   FLocationManagerSave LocationManager = FLocationManagerSave();
   UPROPERTY(BlueprintReadWrite)

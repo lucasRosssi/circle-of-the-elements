@@ -31,7 +31,11 @@ struct FEnemyWave
 {
 	GENERATED_BODY()
 	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(
+	  EditAnywhere,
+	  BlueprintReadOnly,
+	  meta=(TitleProperty="Lv.{Level} {EnemyClass}")
+	  )
 	TArray<FEnemySpawnData> Enemies;
 };
 
@@ -91,7 +95,8 @@ public:
   
 	FRegionData* GetRegionData(ERegion Region);
 
-  FLocation* GetLocationData(FName LocationName, ERegion Region = ERegion::Undefined);
+  UFUNCTION(BlueprintPure)
+  FLocation GetLocationData(FName LocationName, ERegion Region = ERegion::Undefined);
   UFUNCTION(BlueprintPure)
   TSoftObjectPtr<UWorld> GetLocationLevel(FName LocationName, ERegion Region = ERegion::Undefined);
 
