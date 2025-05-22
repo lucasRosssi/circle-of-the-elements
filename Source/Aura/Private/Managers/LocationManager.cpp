@@ -125,5 +125,5 @@ int32 ULocationManager::GetCurrentLocationRecommendedLevel()
 
   if (!RegionInfo) return 1;
   
-  return RegionInfo->GetLocationData(Location, Region)->RecommendedLevel;
+  return RegionInfo->GetLocationData(Location, Region).RecommendedLevel;
 }

@@ -19,7 +19,7 @@
 #define MAX_SAVE_SLOTS 3
 #define SLOT_DEFAULT_NAME FString("SaveSlot_")
 
-#define MAX_LEVEL 50
+#define MAX_LEVEL 20
 
 #define BOSS_LOCATION 100
 

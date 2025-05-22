@@ -20,7 +20,8 @@ void UCombatManager::SetCurrentCombatData()
 void UCombatManager::StartCombat(FName AreaName)
 {
   OnCombatStartedDelegate.Broadcast(AreaName);
-  CurrentAreaName = AreaName;
+  LocationName = UAuraSystemsLibrary::GetCurrentLocation(GetOwner());
+   CurrentAreaName = AreaName;
   SetCurrentCombatData();
   NextWave();
 }

@@ -10,32 +10,32 @@ FRegionData* URegionInfo::GetRegionData(ERegion Region)
 	return RegionData.Find(Region);
 }
 
-FLocation* URegionInfo::GetLocationData(FName LocationName, ERegion Region)
+FLocation URegionInfo::GetLocationData(FName LocationName, ERegion Region)
 {
   if (Region != ERegion::Undefined)
   {
     FRegionData* Data = RegionData.Find(Region);
-    if (!Data) return nullptr;
+    if (!Data) return FLocation();
 
-    return Data->Locations.Find(LocationName);
+    return *Data->Locations.Find(LocationName);
   }
 
   for (auto [ItRegion, ItRegionData] : RegionData)
   {
     if (const auto Location = ItRegionData.Locations.Find(LocationName))
     {
-      return Location;
+      return *Location;
     }
   }
 
   UE_LOG(LogAura, Error, TEXT("[RegionInfo] Location not found!"));
 
-  return nullptr;
+  return FLocation();
 }
 
 TSoftObjectPtr<UWorld> URegionInfo::GetLocationLevel(FName LocationName, ERegion Region)
 {
-  return GetLocationData(LocationName, Region)->World;
+  return GetLocationData(LocationName, Region).World;
 }
 
 TArray<FEnemyWave> URegionInfo::GetEnemyWaves(
@@ -48,7 +48,6 @@ TArray<FEnemyWave> URegionInfo::GetEnemyWaves(
 
 	if (!Data) return TArray<FEnemyWave>();
 
-  Data->Locations[LocationName].Combats[AreaName];
   if (const auto LocationData = Data->Locations.Find(LocationName))
   {
     if (const auto Combat = LocationData->Combats.Find(AreaName))

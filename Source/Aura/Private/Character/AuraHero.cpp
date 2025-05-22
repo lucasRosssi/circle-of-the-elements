@@ -19,7 +19,6 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Managers/AbilityManager.h"
-#include "Managers/CombatManager.h"
 #include "Managers/UpgradeManager.h"
 #include "Player/AuraPlayerState.h"
 #include "Player/AuraPlayerController.h"
@@ -95,7 +94,6 @@ void AAuraHero::Die(const FVector& DeathImpulse)
 
   if (GetSaveGame())
   {
-    SaveGame->OnPlayerDeath();
     UAuraSystemsLibrary::SaveCurrentGame(this);
   }
 

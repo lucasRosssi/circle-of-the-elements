@@ -65,6 +65,7 @@ AAuraCharacterBase::AAuraCharacterBase()
   CurrentWalkSpeed = DefaultWalkSpeed;
   GetCharacterMovement()->MaxWalkSpeed = CurrentWalkSpeed;
   GetCharacterMovement()->BrakingFriction = 1.f;
+  GetCharacterMovement()->bCanWalkOffLedges = false;
 }
 
 UAbilitySystemComponent* AAuraCharacterBase::GetAbilitySystemComponent() const
