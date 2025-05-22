@@ -21,7 +21,7 @@ void UCombatManager::StartCombat(FName AreaName)
 {
   OnCombatStartedDelegate.Broadcast(AreaName);
   LocationName = UAuraSystemsLibrary::GetCurrentLocation(GetOwner());
-   CurrentAreaName = AreaName;
+  CurrentAreaName = AreaName;
   SetCurrentCombatData();
   NextWave();
 }
@@ -51,6 +51,7 @@ void UCombatManager::NextWave()
     if (Spawners.IsValidIndex(SpawnerIndex))
     {
       Spawners[SpawnerIndex]->AddEnemyClassToQueue(Enemy.EnemyClass);
+      Spawners[SpawnerIndex]->SetEnemyLevel(Enemy.Level);
       Spawners[SpawnerIndex]->PrepareSpawn();
       Spawners.RemoveAt(SpawnerIndex);
     }
@@ -125,7 +126,7 @@ void UCombatManager::GetAvailableSpawners()
       if (EnemySpawner->GetAreaName() != CurrentAreaName) continue;
 
       EnemySpawners.Add(EnemySpawner);
-      EnemySpawner->EnemySpawnedDelegate.AddDynamic(this, &UCombatManager::OnEnemySpawned);
+      // EnemySpawner->EnemySpawnedDelegate.AddDynamic(this, &UCombatManager::OnEnemySpawned);
       EnemySpawner->SpawnedEnemyDeathDelegate.AddDynamic(this, &UCombatManager::OnEnemyKilled);
     }
   }
@@ -147,7 +148,7 @@ void UCombatManager::GetEnemyWaves()
 
 void UCombatManager::OnEnemySpawned(AActor* Enemy)
 {
-  // EnemyCount += 1;
+  EnemyCount += 1;
 }
 
 void UCombatManager::OnEnemyKilled(AActor* Enemy)

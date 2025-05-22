@@ -290,7 +290,7 @@ bool AAuraPlayerState::CanAffordResourceCost(const TMap<FGameplayTag, int32>& Co
 
 void AAuraPlayerState::InitializeState()
 {
-  if (GetSaveGame())
+  if (!bOverridePlayerLevel && GetSaveGame())
   {
     SetXP(SaveGame->PlayerState.XP);
     SetSkillPoints(SaveGame->PlayerState.SkillPoints);

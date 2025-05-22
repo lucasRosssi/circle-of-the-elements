@@ -21,6 +21,7 @@ public:
 	AEnemySpawner();
 
   FName GetAreaName() const { return AreaName; }
+  void SetEnemyLevel(int32 InLevel) { EnemyLevel = InLevel;  }
 
 	UFUNCTION(BlueprintCallable)
 	void AddEnemyClassToQueue(TSubclassOf<AAuraEnemy> EnemyClass);
