@@ -33,5 +33,5 @@ float UMMC_MaxMana::CalculateBaseMagnitude_Implementation(const FGameplayEffectS
 		Spec.GetContext().GetSourceObject()
 	);		
 
-	return 40.f + 5.f * (Intelligence - 10.f) + 5.f * (Level - 1);
+	return 50.f + 3.f * (Intelligence - 10.f) + 9.f * (Level - 1);
 }

@@ -6,8 +6,6 @@
 #include "NiagaraFunctionLibrary.h"
 #include "Character/AuraEnemy.h"
 #include "Components/CapsuleComponent.h"
-#include "Game/AuraGameModeBase.h"
-#include "Kismet/GameplayStatics.h"
 #include "Managers/CombatManager.h"
 #include "Utils/AuraSystemsLibrary.h"
 

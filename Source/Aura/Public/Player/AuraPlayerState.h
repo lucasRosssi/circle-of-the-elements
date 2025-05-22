@@ -96,6 +96,40 @@ protected:
   UPROPERTY()
   TObjectPtr<UAuraAttributeSet> AttributeSet;
 
+  UPROPERTY(EditDefaultsOnly, Category="Level")
+  bool bOverridePlayerLevel = false;
+
+  UPROPERTY(
+    EditDefaultsOnly,
+    ReplicatedUsing=OnRep_Level,
+    Category="Level",
+    meta=(EditCondition="bOverridePlayerLevel")
+    )
+  int32 Level = 1;
+
+  UPROPERTY(
+    VisibleAnywhere,
+    ReplicatedUsing=OnRep_XP,
+    Category="Level"
+    )
+  int32 XP = 0;
+
+  UPROPERTY(
+    EditDefaultsOnly,
+    ReplicatedUsing=OnRep_AttributePoints,
+    Category="Level",
+    meta=(EditCondition="bOverridePlayerLevel")
+    )
+  int32 AttributePoints = 0;
+
+  UPROPERTY(
+    EditDefaultsOnly,
+    ReplicatedUsing=OnRep_SkillPoints,
+    Category="Level",
+    meta=(EditCondition="bOverridePlayerLevel")
+    )
+  int32 SkillPoints = 0;
+
   UPROPERTY(
     EditAnywhere,
     BlueprintReadWrite,
@@ -130,24 +164,16 @@ private:
   UAuraSaveGame* GetSaveGame();
 
   USpirit* FindSpirit(const FGuid& ID);
-
-  UPROPERTY(VisibleAnywhere, ReplicatedUsing=OnRep_Level)
-  int32 Level = 1;
+  
   UFUNCTION()
   void OnRep_Level(int32 OldLevel);
-
-  UPROPERTY(VisibleAnywhere, ReplicatedUsing=OnRep_XP)
-  int32 XP = 0;
+  
   UFUNCTION()
   void OnRep_XP(int32 OldXP);
-
-  UPROPERTY(VisibleAnywhere, ReplicatedUsing=OnRep_AttributePoints)
-  int32 AttributePoints = 0;
+  
   UFUNCTION()
   void OnRep_AttributePoints(int32 OldAttributePoints);
-
-  UPROPERTY(VisibleAnywhere, ReplicatedUsing=OnRep_SkillPoints)
-  int32 SkillPoints = 0;
+  
   UFUNCTION()
   void OnRep_SkillPoints(int32 OldSkillPoints);
 
