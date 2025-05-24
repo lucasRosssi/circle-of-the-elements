@@ -107,6 +107,16 @@ void AAuraHero::SetCustomDepth_Implementation(int32 Value)
   Weapon->SetCustomDepthStencilValue(Value);
 }
 
+int32 AAuraHero::GetCharacterLevel_Implementation()
+{
+  if (GetAuraPlayerState())
+  {
+    return AuraPlayerState->GetCharacterLevel();
+  }
+
+  return 1;
+}
+
 void AAuraHero::DeathMontageEndRagdoll()
 {
   RagdollMesh();
@@ -355,12 +365,12 @@ void AAuraHero::InitializeAttributes()
     EffectContextHandle
     );
 
-  float InitialStrength = 10.f;
-  float InitialDexterity = 10.f;
-  float InitialConstitution = 10.f;
-  float InitialIntelligence = 10.f;
-  float InitialWisdom = 10.f;
-  float InitialCharisma = 10.f;
+  float InitialStrength = 1.f;
+  float InitialDexterity = 1.f;
+  float InitialConstitution = 1.f;
+  float InitialIntelligence = 1.f;
+  float InitialWisdom = 1.f;
+  float InitialCharisma = 1.f;
 
   if (GetSaveGame())
   {
@@ -424,6 +434,17 @@ void AAuraHero::InitAbilityActorInfo()
 
   GetAuraASC()->AbilityActorInfoSet();
   AuraPlayerState->InitializeState();
+
+  if (GetSaveGame())
+  {
+    const FAuraGameplayTags& AuraTags = FAuraGameplayTags::Get();
+    AttributeSet->SetStrength(SaveGame->AttributeSet.Attributes[AuraTags.Attributes_Primary_Strength]);
+    AttributeSet->SetDexterity(SaveGame->AttributeSet.Attributes[AuraTags.Attributes_Primary_Dexterity]);
+    AttributeSet->SetConstitution(SaveGame->AttributeSet.Attributes[AuraTags.Attributes_Primary_Constitution]);
+    AttributeSet->SetIntelligence(SaveGame->AttributeSet.Attributes[AuraTags.Attributes_Primary_Intelligence]);
+    AttributeSet->SetWisdom(SaveGame->AttributeSet.Attributes[AuraTags.Attributes_Primary_Wisdom]);
+    AttributeSet->SetCharisma(SaveGame->AttributeSet.Attributes[AuraTags.Attributes_Primary_Charisma]);
+  }
   
   if (AAuraHUD* AuraHUD = GetAuraPlayerController()->GetHUD<AAuraHUD>())
   {

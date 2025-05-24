@@ -61,7 +61,7 @@ void AAuraEnemy::HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCou
 	AuraAIController->GetBlackboardComponent()->SetValueAsBool(FName("HitReacting"), bHitReacting);
 }
 
-int32 AAuraEnemy::GetCharacterLevel_Implementation() const
+int32 AAuraEnemy::GetCharacterLevel_Implementation()
 {
 	return Level;
 }

@@ -100,7 +100,7 @@ protected:
   bool bOverridePlayerLevel = false;
 
   UPROPERTY(
-    EditDefaultsOnly,
+    EditAnywhere,
     ReplicatedUsing=OnRep_Level,
     Category="Level",
     meta=(EditCondition="bOverridePlayerLevel")
@@ -115,7 +115,7 @@ protected:
   int32 XP = 0;
 
   UPROPERTY(
-    EditDefaultsOnly,
+    EditAnywhere,
     ReplicatedUsing=OnRep_AttributePoints,
     Category="Level",
     meta=(EditCondition="bOverridePlayerLevel")
@@ -123,7 +123,7 @@ protected:
   int32 AttributePoints = 0;
 
   UPROPERTY(
-    EditDefaultsOnly,
+    EditAnywhere,
     ReplicatedUsing=OnRep_SkillPoints,
     Category="Level",
     meta=(EditCondition="bOverridePlayerLevel")

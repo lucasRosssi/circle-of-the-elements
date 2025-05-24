@@ -36,6 +36,7 @@ public:
 	/** Combat Interface */
 	virtual void Die(const FVector& DeathImpulse) override;
   virtual void SetCustomDepth_Implementation(int32 Value) override;
+  virtual int32 GetCharacterLevel_Implementation() override;
 	/** end Combat Interface */
 	void DeathMontageEndRagdoll();
 

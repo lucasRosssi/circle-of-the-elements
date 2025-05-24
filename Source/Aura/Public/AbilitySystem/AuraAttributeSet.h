@@ -63,8 +63,6 @@ public:
 	
 	void AssignPrimeAttribute(const FGameplayTag& InAttributeTag);
 
-  float GetEssenceMultiplierByTag(const FGameplayTag& EssenceTag);
-
 	/*
 	 * Primary attributes
 	 */
@@ -201,33 +199,7 @@ public:
 
   // Resources
 
-  UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_SoulEssenceMultiplier, Category = "Special Attributes")
-  FGameplayAttributeData SoulEssenceMultiplier;
-  ATTRIBUTE_ACCESSORS(UAuraAttributeSet, SoulEssenceMultiplier);
 
-  UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_FireEssenceMultiplier, Category = "Special Attributes")
-  FGameplayAttributeData FireEssenceMultiplier;
-  ATTRIBUTE_ACCESSORS(UAuraAttributeSet, FireEssenceMultiplier);
-
-  UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_IceEssenceMultiplier, Category = "Special Attributes")
-  FGameplayAttributeData IceEssenceMultiplier;
-  ATTRIBUTE_ACCESSORS(UAuraAttributeSet, IceEssenceMultiplier);
-
-  UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_LightningEssenceMultiplier, Category = "Special Attributes")
-  FGameplayAttributeData LightningEssenceMultiplier;
-  ATTRIBUTE_ACCESSORS(UAuraAttributeSet, LightningEssenceMultiplier);
-  
-  UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_NecroticEssenceMultiplier, Category = "Special Attributes")
-  FGameplayAttributeData NecroticEssenceMultiplier;
-  ATTRIBUTE_ACCESSORS(UAuraAttributeSet, NecroticEssenceMultiplier);
-
-  UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_ArcaneEssenceMultiplier, Category = "Special Attributes")
-  FGameplayAttributeData ArcaneEssenceMultiplier;
-  ATTRIBUTE_ACCESSORS(UAuraAttributeSet, ArcaneEssenceMultiplier);
-
-  UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_PhysicalEssenceMultiplier, Category = "Special Attributes")
-  FGameplayAttributeData PhysicalEssenceMultiplier;
-  ATTRIBUTE_ACCESSORS(UAuraAttributeSet, PhysicalEssenceMultiplier);
 
 	/*
 	 * Meta attributes
@@ -355,27 +327,6 @@ public:
 
 	UFUNCTION()
 	void OnRep_TimeDilation(const FGameplayAttributeData& OldTimeDilation) const;
-
-  UFUNCTION()
-  void OnRep_SoulEssenceMultiplier(const FGameplayAttributeData& OldSoulEssenceMultiplier) const;
-
-  UFUNCTION()
-  void OnRep_FireEssenceMultiplier(const FGameplayAttributeData& OldFireEssenceMultiplier) const;
-
-  UFUNCTION()
-  void OnRep_IceEssenceMultiplier(const FGameplayAttributeData& OldIceEssenceMultiplier) const;
-
-  UFUNCTION()
-  void OnRep_LightningEssenceMultiplier(const FGameplayAttributeData& OldLightningEssenceMultiplier) const;
-
-  UFUNCTION()
-  void OnRep_NecroticEssenceMultiplier(const FGameplayAttributeData& OldNecroticEssenceMultiplier) const;
-  
-  UFUNCTION()
-  void OnRep_ArcaneEssenceMultiplier(const FGameplayAttributeData& OldArcaneEssenceMultiplier) const;
-
-  UFUNCTION()
-  void OnRep_PhysicalEssenceMultiplier(const FGameplayAttributeData& OldPhysicalEssenceMultiplier) const;
 
 private:
 	void HandleIncomingDamage(const FEffectProperties& Props, const FGameplayAttribute& Attribute);

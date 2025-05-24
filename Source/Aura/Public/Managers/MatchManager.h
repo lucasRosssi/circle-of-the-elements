@@ -10,7 +10,7 @@
 class UEquipment;
 class AAuraPlayerState;
 
-USTRUCT(BlueprintType)
+USTRUCT(BlueprintType, Blueprintable)
 struct FMatchScores
 {
   GENERATED_BODY()

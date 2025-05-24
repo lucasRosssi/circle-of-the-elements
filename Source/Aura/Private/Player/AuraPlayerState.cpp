@@ -8,6 +8,7 @@
 #include "AbilitySystem/Data/LevelInfo.h"
 #include "AbilitySystem/Equipment/Rune.h"
 #include "AbilitySystem/Equipment/Spirit.h"
+#include "Aura/Aura.h"
 #include "Aura/AuraLogChannels.h"
 #include "Character/AuraCharacterBase.h"
 #include "Game/AuraSaveGame.h"
@@ -104,13 +105,13 @@ bool AAuraPlayerState::Equip_Implementation(const FGuid& ID, int32 Slot)
 
 void AAuraPlayerState::SetLevel(int32 InLevel)
 {
-  Level = InLevel;
+  Level = FMath::Clamp(InLevel, 1, MAX_LEVEL);
   OnLevelChangedDelegate.Broadcast(Level);
 }
 
 void AAuraPlayerState::AddLevel(int32 InLevel)
 {
-  if (InLevel < 1) return;
+  if (InLevel < 1 || Level + InLevel > MAX_LEVEL) return;
 
   const int32 OldLevel = Level;
   Level += InLevel;
