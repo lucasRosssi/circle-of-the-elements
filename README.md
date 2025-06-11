@@ -1,60 +1,35 @@
-# Welcome to Aura! 👋
+# Welcome to Circle of the Elements! 👋
 
-Aura is a Top-Down roguelite, with some RPG mechanics and revolves around different elements. The player can learn new element abilities through their run, collect elemental essences and permanently upgrade their character using the available resources.
+Circle of the Elements is a Top Down RPG with a druid protagonist that fights goblins to free the elemental spirits they imprisioned in jewels. The freed spirits join the druid by providing new elemental powers.
 
-## Project Structure
+## Tech Stack
 
-## Classes
+### Gameplay Ability System
+GAS has a huge part in this project. It is involved in the character skills, attributes, status effects, object interactions and progression. There is a variety of abilities such as melee, projectiles, beam (trace), area and passive. The most difficult part of it is its setup as it requires a lot of boilerplate work, but as soon as it is ready it is really scalable and allowed me to easily expand it with a lot of new mechanics, such as a melee combo system and ability charges.
 
-### Abilities
+#### Melee Abilities
 
-#### BaseAbility
-It is the base gameplay ability class used in the project, almost all other ability classes derive from it.
+#### Projectile Abilities
 
+#### Beam Abilities
 
-#### ActiveAbility
-It is the base gameplay ability class that needs an input to be activated.
+#### Area Abilities
+1) Instant
+2) Periodic
 
-
-#### PassiveAbility
-It is the base gameplay ability class that are always active on its own, as soon as the character acquires it.
-
-
-#### ActiveDamageAbility
-It is the base gameplay ability class that applies damage.
-
-
-#### ProjectileAbility
-Long ranged abilities that launches a projectile of the class AuraProjectile, and the projectile is responsible for applying the ability effects on targets it hits.
-
-
-#### MeleeAttackAbility
-Close ranged abilities that applies its effects on close targets. Has different trace modes, such as Sphere, Box, Cone, WeaponBox and Line.
-
-
-#### BeamAbility
-Long ranged abilities that uses line trace to project beam-type particle effects and applies its effects on the first target hit by the trace.
-
-
-#### AreaAbility
-Long ranged area abilities that first uses a targeting state and then perform its effects directly in the selected targeting location. Usually applies effects instantly.
-
-
-#### AreaEffectAbility
-Longe ranged area abilities that first uses a targeting state and then spawns an actor of the class AreaEffectActor in the selected targeting location. Usually applies effects periodically in the area, but can also apply instantly. The area "active" state can be delayed after selecting the targeting location.
+#### Status Effects
 
 
 ### Components
 
-#### InteractComponent
-#### TeamComponent
+#### Interact Component
+#### Team Component
+#### Status Effects Manager Component
 
 ### Managers
 
-#### EncounterManager
-#### LocationManager
-#### RewardManager
-#### AbilityManager
-#### UIManager
-
-## Blueprints
+#### Combat Manager
+#### Location Manager
+#### Reward Manager
+#### Ability Manager
+#### UI Manager
