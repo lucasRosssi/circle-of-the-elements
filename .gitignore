@@ -6,6 +6,7 @@ Build
 Content/*
 !Content/Blueprints
 !**/Animations/
+Plugins
 
 .vscode
 .vs
