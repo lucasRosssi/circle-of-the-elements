@@ -28,4 +28,15 @@ https://github.com/user-attachments/assets/cfdeb5d6-37f9-4614-a934-8d8d8aa08598
 
 https://github.com/user-attachments/assets/edc9fa4b-e461-4415-8b00-458b2aa9c6cc
 
-A difficult part of implementing GAS was to integrate it with the widgets. The project uses the MVC pattern with widget controller classes that work as links between the ability system information and the widgets. Abilities descriptions, icons, properties, cooldowns, charges and other information are stored in data assets and organized with Gameplay Tags that maps abilities, attributes and status effects.
+### UI
+The project uses the MVC pattern with widget controller classes that work as links between the ability system information and the widgets. Abilities descriptions, icons, properties, cooldowns, charges and other data are stored in data assets and organized with Gameplay Tags that maps abilities, attributes and status effects.
+
+### Components
+#### Team Component
+Handles team assignment and integrates with the ability system by validating ability targets (allies, enemies). Summon abilities and mental status effects (such as Charm) also interact with this component.
+
+#### Status Effects Manager Component
+A single component that handles all status effects visual effects. Spawns the corresponding niagara based on the gameplay effect applied (based on the tags).
+
+#### Game Mode Managers
+Components that handle gameplay logic, such as combat encounters, enemy spawn, loot randomness (weighted probability, shuffle bag). 
