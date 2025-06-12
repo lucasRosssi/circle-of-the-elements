@@ -9,27 +9,21 @@ GAS has a huge part in this project. It is involved in the character skills, att
 
 #### Melee Abilities
 
+https://github.com/user-attachments/assets/fbb60be8-5ba2-464f-a0b8-b87077576a86
+
 #### Projectile Abilities
+
+https://github.com/user-attachments/assets/d3462069-abce-4c89-87d0-732138a193ce
 
 #### Beam Abilities
 
+https://github.com/user-attachments/assets/f2bcd2dd-485a-471a-8b7b-60782731c6fa
+
 #### Area Abilities
 1) Instant
-2) Periodic
+   
+https://github.com/user-attachments/assets/cfdeb5d6-37f9-4614-a934-8d8d8aa08598
 
-#### Status Effects
+3) Periodic
 
-
-### Components
-
-#### Interact Component
-#### Team Component
-#### Status Effects Manager Component
-
-### Managers
-
-#### Combat Manager
-#### Location Manager
-#### Reward Manager
-#### Ability Manager
-#### UI Manager
+https://github.com/user-attachments/assets/edc9fa4b-e461-4415-8b00-458b2aa9c6cc
