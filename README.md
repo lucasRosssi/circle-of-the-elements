@@ -27,3 +27,5 @@ https://github.com/user-attachments/assets/cfdeb5d6-37f9-4614-a934-8d8d8aa08598
 3) Periodic
 
 https://github.com/user-attachments/assets/edc9fa4b-e461-4415-8b00-458b2aa9c6cc
+
+A difficult part of implementing GAS was to integrate it with the widgets. The project uses the MVC pattern with widget controller classes that work as links between the ability system information and the widgets. Abilities descriptions, icons, properties, cooldowns, charges and other information are stored in data assets and organized with Gameplay Tags that maps abilities, attributes and status effects.
