@@ -51,6 +51,7 @@ public:
 
   /* Equipper Interface */
   virtual bool Equip_Implementation(const FGuid& ID, int32 Slot) override;
+  virtual void Unequip_Implementation(const FGuid& ID) override;
   /* END Equipper Interface*/
 
   int32 GetCharacterLevel() const { return Level; }
@@ -67,6 +68,7 @@ public:
   void SetSkillPoints(int32 InSkillPoints);
   void AddSkillPoints(int32 InSkillPoints);
   void AddEquipmentToInventory(UEquipment* InEquipment);
+  void RemoveEquipmentFromInventory(UEquipment* InEquipment);
   TArray<USpirit*> GetSpiritsInventory() const { return SpiritsInventory; }
   TArray<URune*> GetRunesInventory() const { return RunesInventory; }
   TMap<int32, FGuid> GetLoadout() const { return Loadout; }

@@ -25,6 +25,7 @@ public:
 
   virtual FString GetEquipmentDescription();
 
+  UFUNCTION(BlueprintPure)
   FGuid GetID() const { return ID; }
   void SetID(const FGuid InID) { ID = InID; }
   FText GetEquipmentName() const { return EquipmentName; }

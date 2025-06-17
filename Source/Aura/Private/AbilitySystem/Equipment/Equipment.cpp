@@ -40,7 +40,18 @@ bool UEquipment::Equip(int32 Slot)
 
 void UEquipment::Unequip()
 {
-  
+  if (!Owner.IsValid() || !Owner->Implements<UEquipperInterface>())
+  {
+    UE_LOG(
+      LogAura,
+      Error,
+      TEXT("[Equipment] %s doesn't belong to any Owner"),
+      *GetName()
+      );
+    return;
+  }
+
+  IEquipperInterface::Execute_Unequip(Owner.Get(), ID);
 }
 
 FString UEquipment::GetEquipmentDescription()

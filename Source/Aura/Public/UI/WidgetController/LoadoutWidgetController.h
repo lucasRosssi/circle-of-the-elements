@@ -19,6 +19,11 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(
   UEquipment*,
   Equipment
 );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(
+  FOnRemoved,
+  UEquipment*,
+  Equipment
+);
 
 /**
  * 
@@ -36,6 +41,8 @@ public:
   FEquipmentGlobeSelected EquipmentGlobeSelectedDelegate;
   UPROPERTY(BlueprintAssignable)
   FOnEquipped OnEquippedDelegate;
+  UPROPERTY(BlueprintAssignable)
+  FOnRemoved OnRemovedDelegate;
 
   UFUNCTION(BlueprintCallable)
   void EquipmentGlobeSelected(UEquipment* Equipment);
@@ -47,6 +54,9 @@ public:
 
   UFUNCTION(BlueprintCallable)
   void EquipToInputPressed(USpirit* Spirit, const int32 Slot);
+
+  UFUNCTION(BlueprintCallable)
+  void RemoveEquipment(UEquipment* InEquipment);
 
   UFUNCTION(BlueprintPure)
   TArray<USpirit*> GetPlayerSpirits();
