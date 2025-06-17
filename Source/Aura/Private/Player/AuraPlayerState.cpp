@@ -3,16 +3,22 @@
 
 #include "Player/AuraPlayerState.h"
 
+#include "AuraGameplayTags.h"
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
+#include "AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "AbilitySystem/AuraAttributeSet.h"
+#include "AbilitySystem/Data/AbilityInfo.h"
 #include "AbilitySystem/Data/LevelInfo.h"
 #include "AbilitySystem/Equipment/Rune.h"
 #include "AbilitySystem/Equipment/Spirit.h"
+#include "Aura/Aura.h"
 #include "Aura/AuraLogChannels.h"
 #include "Character/AuraCharacterBase.h"
 #include "Game/AuraSaveGame.h"
 #include "Interfaces/PlayerInterface.h"
 #include "Net/UnrealNetwork.h"
+#include "UI/WidgetController/LoadoutWidgetController.h"
+#include "UI/WidgetController/OverlayWidgetController.h"
 #include "Utils/AuraSystemsLibrary.h"
 
 AAuraPlayerState::AAuraPlayerState()
@@ -102,15 +108,40 @@ bool AAuraPlayerState::Equip_Implementation(const FGuid& ID, int32 Slot)
   return true;
 }
 
+void AAuraPlayerState::Unequip_Implementation(const FGuid& ID)
+{
+  if (!ID.IsValid()) return;
+
+  const int32* Slot = Loadout.FindKey(ID);
+
+  if (Slot && *Slot >= 0)
+  {
+    const int32 SlotNum = *Slot;
+    Loadout.Remove(SlotNum);
+
+    const FAuraGameplayTags& AuraTags = FAuraGameplayTags::Get();
+    FAuraAbilityInfo AbilityInfo;
+    AbilityInfo.AbilityTag = AuraTags.Abilities_NONE;
+    AbilityInfo.InputTag = AuraTags.ParentsToChildren[AuraTags.InputTag][SlotNum];
+    UAuraAbilitySystemLibrary::GetOverlayWidgetController(this)
+      ->AbilityInfoDelegate.Broadcast(AbilityInfo);
+    
+    if (GetSaveGame())
+    {
+      SaveGame->PlayerState.Loadout = Loadout;
+    }
+  }
+}
+
 void AAuraPlayerState::SetLevel(int32 InLevel)
 {
-  Level = InLevel;
+  Level = FMath::Clamp(InLevel, 1, MAX_LEVEL);
   OnLevelChangedDelegate.Broadcast(Level);
 }
 
 void AAuraPlayerState::AddLevel(int32 InLevel)
 {
-  if (InLevel < 1) return;
+  if (InLevel < 1 || Level + InLevel > MAX_LEVEL) return;
 
   const int32 OldLevel = Level;
   Level += InLevel;
@@ -227,6 +258,45 @@ void AAuraPlayerState::AddEquipmentToInventory(UEquipment* InEquipment)
   }
 }
 
+void AAuraPlayerState::RemoveEquipmentFromInventory(UEquipment* InEquipment)
+{
+  if (USpirit* Spirit = Cast<USpirit>(InEquipment))
+  {
+    SpiritsInventory.Remove(Spirit);
+
+    UAuraAbilitySystemLibrary::GetLoadoutWidgetController(this)
+      ->OnRemovedDelegate.Broadcast(Spirit);
+
+    if (GetSaveGame())
+    {
+      int32 SpiritToRemoveIndex = -1;
+      for (int32 i = 0; i < SaveGame->PlayerState.SpiritsInventory.Num(); i++)
+      {
+        if (SaveGame->PlayerState.SpiritsInventory[i].ID == Spirit->GetID())
+        {
+          SpiritToRemoveIndex = i;
+          break;
+        }
+      }
+
+      if (SpiritToRemoveIndex >= 0)
+      {
+        SaveGame->PlayerState.SpiritsInventory.RemoveAt(SpiritToRemoveIndex);
+      }
+    }
+  }
+  else if (URune* Rune = Cast<URune>(InEquipment))
+  {
+    // RunesInventory.Add(Rune);
+    //
+    // if (GetSaveGame())
+    // {
+    //   const FRuneInfo& RuneInfo = Rune->MakeRuneInfo();
+    //   SaveGame->PlayerState.RunesInventory.Add(RuneInfo);
+    // }
+  }
+}
+
 void AAuraPlayerState::AddPlayerResource(const FGameplayTag& ResourceTag, int32 Amount)
 {
   if (int32* CurrentAmount = Resources.Find(ResourceTag))
@@ -315,8 +385,8 @@ void AAuraPlayerState::InitializeState()
     for (const FSpiritInfo& SpiritInfo : SaveGame->PlayerState.SpiritsInventory)
     {
       USpirit* Spirit = NewObject<USpirit>();
-      Spirit->Load(SpiritInfo);
       Spirit->SetOwner(this);
+      Spirit->Load(SpiritInfo);
       SpiritsInventory.Add(Spirit);
     }
 

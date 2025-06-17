@@ -45,6 +45,14 @@ void ULoadoutWidgetController::EquipToInputPressed(
   Spirit->Equip(Slot);
 }
 
+void ULoadoutWidgetController::RemoveEquipment(UEquipment* InEquipment)
+{
+  if (!InEquipment || !GetAuraPlayerState()) return;
+
+  InEquipment->Unequip();
+  AuraPlayerState->RemoveEquipmentFromInventory(InEquipment);
+}
+
 TArray<USpirit*> ULoadoutWidgetController::GetPlayerSpirits()
 {
   if (!GetAuraPlayerState()) return TArray<USpirit*>();

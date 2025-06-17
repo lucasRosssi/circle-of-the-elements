@@ -39,7 +39,7 @@ void UAuraSaveGame::InitAttributeSet()
   {
     for (const auto& Tag : AuraTags.ParentsToChildren[AuraTags.Attributes_Primary])
     {
-      AttributeSet.Attributes.Add(Tag, 10);
+      AttributeSet.Attributes.Add(Tag, 1.f);
     }
   }
 }

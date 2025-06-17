@@ -26,4 +26,6 @@ class AURA_API IEquipperInterface
 public:
   UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
   bool Equip(const FGuid& ID, int32 Slot);
+  UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+  void Unequip(const FGuid& ID);
 };

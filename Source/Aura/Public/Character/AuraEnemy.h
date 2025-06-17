@@ -28,7 +28,7 @@ public:
 	int32 GetMyLevel() const { return Level; }
 
 	/** Combat Interface */
-	virtual int32 GetCharacterLevel_Implementation() const override;
+	virtual int32 GetCharacterLevel_Implementation() override;
 	virtual void Die(const FVector& DeathImpulse = FVector::ZeroVector) override;
 	/** end Combat Interface */
 

@@ -12,6 +12,7 @@
 #include "Aura/AuraLogChannels.h"
 #include "Managers/AbilityManager.h"
 #include "Player/AuraPlayerState.h"
+#include "UI/WidgetController/OverlayWidgetController.h"
 #include "Utils/AuraSystemsLibrary.h"
 
 void USpirit::Spawn(UObject* WorldContextObject)
@@ -41,7 +42,9 @@ void USpirit::Load(const FSpiritInfo& SpiritInfo)
   AbilityTag = SpiritInfo.AbilityTag;
   ModifierTag = SpiritInfo.ModifierTag;
 
-  const AAuraPlayerState* AuraPS = UAuraSystemsLibrary::GetAuraPlayerState(this);
+  if (!Owner.IsValid()) return;
+  
+  const AAuraPlayerState* AuraPS = Cast<AAuraPlayerState>(Owner.Get());
 
   if (!AuraPS) return;
 
@@ -130,7 +133,7 @@ bool USpirit::Equip(int32 Slot)
 void USpirit::Unequip()
 {
   Super::Unequip();
-
+  
   AActor* Actor = Cast<AActor>(Owner.Get());
   if (!Actor) return;
 

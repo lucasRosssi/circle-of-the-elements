@@ -8,7 +8,6 @@
 #include "Net/UnrealNetwork.h"
 #include "GameplayEffectExtension.h"
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
-#include "AbilitySystem/Data/LevelInfo.h"
 #include "Enums/CharacterType.h"
 #include "GameFramework/Character.h"
 #include "Interfaces/AttributeSetInterface.h"
@@ -68,13 +67,6 @@ void UAuraAttributeSet::GetLifetimeReplicatedProps(
   // Special
   DOREPLIFETIME_CONDITION_NOTIFY(UAuraAttributeSet, Power, COND_None, REPNOTIFY_Always);
   DOREPLIFETIME_CONDITION_NOTIFY(UAuraAttributeSet, TimeDilation, COND_None, REPNOTIFY_Always);
-  DOREPLIFETIME_CONDITION_NOTIFY(UAuraAttributeSet, SoulEssenceMultiplier, COND_None, REPNOTIFY_Always);
-  DOREPLIFETIME_CONDITION_NOTIFY(UAuraAttributeSet, FireEssenceMultiplier, COND_None, REPNOTIFY_Always);
-  DOREPLIFETIME_CONDITION_NOTIFY(UAuraAttributeSet, IceEssenceMultiplier, COND_None, REPNOTIFY_Always);
-  DOREPLIFETIME_CONDITION_NOTIFY(UAuraAttributeSet, LightningEssenceMultiplier, COND_None, REPNOTIFY_Always);
-  DOREPLIFETIME_CONDITION_NOTIFY(UAuraAttributeSet, NecroticEssenceMultiplier, COND_None, REPNOTIFY_Always);
-  DOREPLIFETIME_CONDITION_NOTIFY(UAuraAttributeSet, ArcaneEssenceMultiplier, COND_None, REPNOTIFY_Always);
-  DOREPLIFETIME_CONDITION_NOTIFY(UAuraAttributeSet, PhysicalEssenceMultiplier, COND_None, REPNOTIFY_Always);
 }
 
 void UAuraAttributeSet::PreAttributeChange(
@@ -414,48 +406,6 @@ void UAuraAttributeSet::AssignPrimeAttribute(const FGameplayTag& InAttributeTag)
   }
 }
 
-float UAuraAttributeSet::GetEssenceMultiplierByTag(const FGameplayTag& EssenceTag)
-{
-  const FAuraGameplayTags AuraTags = FAuraGameplayTags::Get();
-
-  const int32 EssenceIndex = AuraTags.ParentsToChildren[AuraTags.Resources_Essence].IndexOfByKey(EssenceTag);
-  switch (EssenceIndex)
-  {
-    case 0:
-      {
-        return GetSoulEssenceMultiplier();
-      }
-  case 1:
-      {
-        return GetFireEssenceMultiplier();
-      }
-  case 2:
-      {
-        return GetIceEssenceMultiplier();
-      }
-  case 3:
-      {
-        return GetLightningEssenceMultiplier();
-      }
-  case 4:
-      {
-        return GetNecroticEssenceMultiplier();
-      }
-  case 5:
-      {
-        return GetArcaneEssenceMultiplier();
-      }
-  case 6:
-      {
-        return GetPhysicalEssenceMultiplier();
-      }
-  default:
-      {
-        return 1.f;
-      }
-  }
-}
-
 void UAuraAttributeSet::ShowDamageFloatingText(
   const FEffectProperties& Props,
   float Damage,
@@ -684,45 +634,4 @@ void UAuraAttributeSet::OnRep_Power(
 void UAuraAttributeSet::OnRep_TimeDilation(const FGameplayAttributeData& OldTimeDilation) const
 {
   GAMEPLAYATTRIBUTE_REPNOTIFY(UAuraAttributeSet, TimeDilation, OldTimeDilation);
-}
-
-void UAuraAttributeSet::OnRep_SoulEssenceMultiplier(const FGameplayAttributeData& OldSoulEssenceMultiplier) const
-{
-  GAMEPLAYATTRIBUTE_REPNOTIFY(UAuraAttributeSet, SoulEssenceMultiplier, OldSoulEssenceMultiplier);
-}
-
-void UAuraAttributeSet::OnRep_FireEssenceMultiplier(const FGameplayAttributeData& OldFireEssenceMultiplier) const
-{
-  GAMEPLAYATTRIBUTE_REPNOTIFY(UAuraAttributeSet, FireEssenceMultiplier, OldFireEssenceMultiplier);
-}
-
-void UAuraAttributeSet::OnRep_IceEssenceMultiplier(const FGameplayAttributeData& OldIceEssenceMultiplier) const
-{
-  GAMEPLAYATTRIBUTE_REPNOTIFY(UAuraAttributeSet, IceEssenceMultiplier, OldIceEssenceMultiplier);
-}
-
-void UAuraAttributeSet::OnRep_LightningEssenceMultiplier(
-  const FGameplayAttributeData& OldLightningEssenceMultiplier
-) const
-{
-  GAMEPLAYATTRIBUTE_REPNOTIFY(UAuraAttributeSet, LightningEssenceMultiplier, OldLightningEssenceMultiplier);
-}
-
-void UAuraAttributeSet::OnRep_NecroticEssenceMultiplier(
-  const FGameplayAttributeData& OldNecroticEssenceMultiplier
-) const
-{
-  GAMEPLAYATTRIBUTE_REPNOTIFY(UAuraAttributeSet, NecroticEssenceMultiplier, OldNecroticEssenceMultiplier);
-}
-
-void UAuraAttributeSet::OnRep_ArcaneEssenceMultiplier(const FGameplayAttributeData& OldArcaneEssenceMultiplier) const
-{
-  GAMEPLAYATTRIBUTE_REPNOTIFY(UAuraAttributeSet, ArcaneEssenceMultiplier, OldArcaneEssenceMultiplier);
-}
-
-void UAuraAttributeSet::OnRep_PhysicalEssenceMultiplier(
-  const FGameplayAttributeData& OldPhysicalEssenceMultiplier
-) const
-{
-  GAMEPLAYATTRIBUTE_REPNOTIFY(UAuraAttributeSet, PhysicalEssenceMultiplier, OldPhysicalEssenceMultiplier);
 }
