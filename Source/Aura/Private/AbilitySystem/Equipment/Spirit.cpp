@@ -9,7 +9,10 @@
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "AbilitySystem/Data/AbilityInfo.h"
 #include "AbilitySystem/Equipment/Rune.h"
+#include "Actor/SpiritActor.h"
 #include "Aura/AuraLogChannels.h"
+#include "Components/OrbitManagerComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "Managers/AbilityManager.h"
 #include "Player/AuraPlayerState.h"
 #include "UI/WidgetController/OverlayWidgetController.h"
@@ -126,6 +129,30 @@ bool USpirit::Equip(int32 Slot)
     Level,
     InputTag
   );
+
+  AActor* AvatarActor = AuraASC->GetAvatarActor();
+  if (IsValid(AbilityInfo.SpiritActor) && IsValid(AvatarActor))
+  {
+    FTransform SpawnTransform;
+    SpawnTransform.SetLocation(AvatarActor->GetActorLocation() + FVector(50.f, 50.f, 50.f) * (Slot + 1));
+    
+    SpiritActor = AvatarActor->GetWorld()->SpawnActorDeferred<ASpiritActor>(
+        AbilityInfo.SpiritActor,
+        SpawnTransform,
+        AvatarActor,
+        nullptr,
+        ESpawnActorCollisionHandlingMethod::AlwaysSpawn
+      );
+    
+    if (SpiritActor)
+    {
+      SpiritActor->FinishSpawning(SpawnTransform);
+      if (UOrbitManagerComponent* OrbitManager = AvatarActor->FindComponentByClass<UOrbitManagerComponent>())
+      {
+        OrbitManager->RegisterSpirit(SpiritActor);
+      }
+    }
+  }
   
   return true;
 }
@@ -144,6 +171,13 @@ void USpirit::Unequip()
   
   UAbilityManager* AbilityManager = UAuraSystemsLibrary::GetAbilityManager(Actor);
   AbilityManager->RemoveAbility(AuraASC, AbilityTag);
+
+  if (!IsValid(SpiritActor)) return;
+
+  if (UOrbitManagerComponent* OrbitManager = AuraASC->GetAvatarActor()->FindComponentByClass<UOrbitManagerComponent>())
+  {
+    OrbitManager->UnregisterSpirit(SpiritActor);
+  }
 }
 
 FString USpirit::GetEquipmentDescription()

@@ -8,6 +8,7 @@
 #include "Interfaces/EquipperInterface.h"
 #include "Spirit.generated.h"
 
+class ASpiritActor;
 class URune;
 
 USTRUCT(BlueprintType)
@@ -63,5 +64,6 @@ protected:
   TArray<URune*> Runes;
 
 private:
-  
+  UPROPERTY()
+  TObjectPtr<ASpiritActor> SpiritActor = nullptr;
 };

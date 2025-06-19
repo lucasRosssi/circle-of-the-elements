@@ -9,6 +9,7 @@
 #include "Enums/CharacterName.h"
 #include "AbilityInfo.generated.h"
 
+class ASpiritActor;
 class UBaseAbility;
 
 USTRUCT(BlueprintType)
@@ -42,6 +43,9 @@ struct FAuraAbilityInfo
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TObjectPtr<const UMaterialInterface> BackgroundMaterial = nullptr;
+
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+  TSubclassOf<ASpiritActor> SpiritActor;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(Categories="Abilities"))
 	FGameplayTagContainer AbilitiesRequirement;

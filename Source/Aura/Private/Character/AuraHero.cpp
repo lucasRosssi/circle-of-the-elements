@@ -12,6 +12,7 @@
 #include "AbilitySystem/AuraAttributeSet.h"
 #include "Aura/Aura.h"
 #include "Components/AuraCamera.h"
+#include "Components/OrbitManagerComponent.h"
 #include "Components/TeamComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Enums/CameraState.h"
@@ -27,6 +28,7 @@
 
 AAuraHero::AAuraHero()
 {
+  OrbitManager = CreateDefaultSubobject<UOrbitManagerComponent>(TEXT("OrbitManager"));
   InteractWidgetComponent = CreateDefaultSubobject<UWidgetComponent>("InteractMessage");
   InteractWidgetComponent->SetupAttachment(GetRootComponent());
   InteractWidgetComponent->SetVisibility(false);
