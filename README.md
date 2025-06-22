@@ -24,7 +24,7 @@ https://github.com/user-attachments/assets/f2bcd2dd-485a-471a-8b7b-60782731c6fa
    
 https://github.com/user-attachments/assets/cfdeb5d6-37f9-4614-a934-8d8d8aa08598
 
-3) Periodic
+2) Periodic
 
 https://github.com/user-attachments/assets/edc9fa4b-e461-4415-8b00-458b2aa9c6cc
 
@@ -37,6 +37,21 @@ Handles team assignment and integrates with the ability system by validating abi
 
 #### Status Effects Manager Component
 A single component that handles all status effects visual effects. Spawns the corresponding niagara based on the gameplay effect applied (based on the tags).
+
+#### Orbit Manager Component
+Component that handles orbiting equipped spirits, positioning them in their corresponding ability socket when being used, hiding/showing with cooldown and scaling with charges.
+
+1) Orbiting
+
+https://github.com/user-attachments/assets/fde2126d-de62-48bd-ba81-1338a7ea3d22
+
+2) Attaching and hiding
+
+https://github.com/user-attachments/assets/f301a166-66d7-458f-b86a-dc420d025b62
+
+3) Scaling
+
+https://github.com/user-attachments/assets/d5ab295b-a6db-41c1-8e89-05aefb753e63
 
 #### Game Mode Managers
 Components that handle gameplay logic, such as combat encounters, enemy spawn, loot randomness (weighted probability, shuffle bag). 
