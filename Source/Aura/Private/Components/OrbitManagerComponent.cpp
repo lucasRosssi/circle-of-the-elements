@@ -9,8 +9,6 @@ UOrbitManagerComponent::UOrbitManagerComponent()
 void UOrbitManagerComponent::BeginPlay()
 {
   Super::BeginPlay();
-
-  
 }
 
 void UOrbitManagerComponent::RegisterSpirit(ASpiritActor* Spirit)
@@ -43,7 +41,9 @@ void UOrbitManagerComponent::UnregisterSpirit(ASpiritActor* Spirit)
   }
 }
 
-void UOrbitManagerComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void UOrbitManagerComponent::TickComponent(
+  float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction
+)
 {
   Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
@@ -59,17 +59,36 @@ void UOrbitManagerComponent::TickComponent(float DeltaTime, ELevelTick TickType,
     ASpiritActor* Spirit = ActiveSpirits[i];
     if (!IsValid(Spirit)) continue;
 
-    CurrentOrbitAngle[i] += OrbitSpeed[i] * DeltaTime;
-    float AngleDegrees = CurrentOrbitAngle[i] + (i * AngleStep);
-    const float AngleRadians = FMath::DegreesToRadians(AngleDegrees);
+    if (Spirit->IsUsingAbility())
+    {
+      FVector TargetLocation = Spirit->GetAbilityUseLocation();
+      FVector SmoothedLocation = FMath::VInterpConstantTo(
+        Spirit->GetActorLocation(),
+        TargetLocation,
+        DeltaTime,
+        AbilityActivationInterpSpeed
+      );
+      Spirit->SetActorLocation(SmoothedLocation);
+    }
+    else
+    {
+      CurrentOrbitAngle[i] += OrbitSpeed[i] * DeltaTime;
+      float AngleDegrees = CurrentOrbitAngle[i] + (i * AngleStep);
+      const float AngleRadians = FMath::DegreesToRadians(AngleDegrees);
 
-    FVector Offset;
-    Offset.X = FMath::Cos(AngleRadians) * OrbitRadius[i];
-    Offset.Y = FMath::Sin(AngleRadians) * OrbitRadius[i];
-    Offset.Z = OrbitHeightOffset[i];
+      FVector Offset;
+      Offset.X = FMath::Cos(AngleRadians) * OrbitRadius[i];
+      Offset.Y = FMath::Sin(AngleRadians) * OrbitRadius[i];
+      Offset.Z = OrbitHeightOffset[i];
 
-    FVector TargetLocation = OwnerLocation + Offset;
-    FVector SmoothedLocation = FMath::VInterpTo(Spirit->GetActorLocation(), TargetLocation, DeltaTime, InterpSpeed[i]);
-    Spirit->SetActorLocation(SmoothedLocation);
+      FVector TargetLocation = OwnerLocation + Offset;
+      FVector SmoothedLocation = FMath::VInterpTo(
+        Spirit->GetActorLocation(),
+        TargetLocation,
+        DeltaTime,
+        InterpSpeed[i]
+      );
+      Spirit->SetActorLocation(SmoothedLocation);
+    }
   }
 }

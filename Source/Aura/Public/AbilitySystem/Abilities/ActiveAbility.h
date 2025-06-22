@@ -28,12 +28,18 @@ public:
 	virtual int32 GetMaxHitCountAtLevel_Implementation (int32 Level) const override;
 	virtual float GetEffectChangePerHitAtLevel_Implementation(int32 Level) const override;
 	virtual bool IsActiveAbility_Implementation() const override;
+  virtual FName GetActiveAbilitySocketName_Implementation() const override { return GetAbilitySocketName(); }
+  virtual bool IsAbilityUsingWeapon_Implementation() const override { return IsUsingWeapon(); }
   virtual void ApplyUpgrade_Implementation(const FGameplayTag& UpgradeTag) override;
   virtual void RemoveUpgrade_Implementation(const FGameplayTag& UpgradeTag) override;
 	// END Ability Interface overrides
   
 	UFUNCTION(BlueprintCallable)
 	AActor* GetNextRicochetTarget(AActor* HitTarget);
+  UFUNCTION(BlueprintPure, Category="Ability Defaults", meta=(DefaultToSelf="Target", HidePin="Target"))
+  virtual FName GetAbilitySocketName() const { return AbilitySocketName; }
+  UFUNCTION(BlueprintPure, Category="Ability Defaults", meta=(DefaultToSelf="Target", HidePin="Target"))
+  virtual bool IsUsingWeapon() const { return bUseWeaponSocket; }
 
   // Starting input for the player, when the ability is granted
 	UPROPERTY(EditDefaultsOnly, Category="Input", meta=(EditCondition="bIsPlayerAbility", DisplayPriority=1))

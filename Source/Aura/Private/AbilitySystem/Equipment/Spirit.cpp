@@ -7,6 +7,7 @@
 #include "AuraGameplayTags.h"
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
+#include "AbilitySystem/Abilities/BaseAbility.h"
 #include "AbilitySystem/Data/AbilityInfo.h"
 #include "AbilitySystem/Equipment/Rune.h"
 #include "Actor/SpiritActor.h"
@@ -123,7 +124,7 @@ bool USpirit::Equip(int32 Slot)
   const FAuraAbilityInfo& AbilityInfo = AbilitiesDataAsset->FindAbilityInfoByTag(AbilityTag);
   if (!AbilityInfo.IsValid()) return false;
 
-  AbilityManager->GiveAbility(
+  const FGameplayAbilitySpec& AbilitySpec = AbilityManager->GiveAbility(
     AuraASC,
     AbilityInfo,
     Level,
@@ -146,6 +147,12 @@ bool USpirit::Equip(int32 Slot)
     
     if (SpiritActor)
     {
+      SpiritActor->SetAbilityTag(AbilityTag);
+      SpiritActor->SetCooldownTag(AbilityInfo.CooldownTag);
+      if (const UBaseAbility* BaseAbility = Cast<UBaseAbility>(AbilitySpec.Ability))
+      {
+        SpiritActor->SetChargeTagAndCount(AbilityInfo.ChargesTag, BaseAbility->GetMaxChargesAtLevel(Level));
+      }
       SpiritActor->FinishSpawning(SpawnTransform);
       if (UOrbitManagerComponent* OrbitManager = AvatarActor->FindComponentByClass<UOrbitManagerComponent>())
       {
