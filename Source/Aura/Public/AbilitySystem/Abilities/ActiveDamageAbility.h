@@ -99,17 +99,15 @@ public:
   virtual void HandleComboSequence();
   UFUNCTION(BlueprintImplementableEvent, Category="Ability Defaults|Combo")
   void OnNextComboSequence();
+ 
+  virtual FName GetAbilitySocketName() const override;
+  virtual bool IsUsingWeapon() const override;
 
 protected:
   // Active Ability overrides
   UFUNCTION(BlueprintPure, Category="AbilityDefaults", meta=(DefaultToSelf="Target", HidePin="Target"))
   virtual UAnimMontage* GetAnimMontage() const override;
   // END Active Ability overrides
-  
-  UFUNCTION(BlueprintPure, Category="Ability Defaults", meta=(DefaultToSelf="Target", HidePin="Target"))
-  FName GetAbilitySocketName() const;
-  UFUNCTION(BlueprintPure, Category="Ability Defaults", meta=(DefaultToSelf="Target", HidePin="Target"))
-  bool IsUsingWeapon() const;
 
   UFUNCTION(BlueprintPure, Category="Ability Defaults|Combo", meta=(DefaultToSelf="Target", HidePin="Target"))
   virtual FComboData GetComboData() const;

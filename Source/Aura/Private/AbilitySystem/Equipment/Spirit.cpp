@@ -7,9 +7,13 @@
 #include "AuraGameplayTags.h"
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
+#include "AbilitySystem/Abilities/BaseAbility.h"
 #include "AbilitySystem/Data/AbilityInfo.h"
 #include "AbilitySystem/Equipment/Rune.h"
+#include "Actor/SpiritActor.h"
 #include "Aura/AuraLogChannels.h"
+#include "Components/OrbitManagerComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "Managers/AbilityManager.h"
 #include "Player/AuraPlayerState.h"
 #include "UI/WidgetController/OverlayWidgetController.h"
@@ -120,12 +124,61 @@ bool USpirit::Equip(int32 Slot)
   const FAuraAbilityInfo& AbilityInfo = AbilitiesDataAsset->FindAbilityInfoByTag(AbilityTag);
   if (!AbilityInfo.IsValid()) return false;
 
-  AbilityManager->GiveAbility(
+  const FGameplayAbilitySpec& AbilitySpec = AbilityManager->GiveAbility(
     AuraASC,
     AbilityInfo,
     Level,
     InputTag
   );
+
+  AActor* AvatarActor = AuraASC->GetAvatarActor();
+  if (!IsValid(AvatarActor)) return true;
+
+  TSubclassOf<ASpiritActor> SpiritActorClass;
+  if (IsValid(AbilityInfo.SpiritActor))
+  {
+    SpiritActorClass = AbilityInfo.SpiritActor;
+  }
+  else if (AbilityInfo.ElementTag.IsValid())
+  {
+    SpiritActorClass = AbilitiesDataAsset
+      ->FindCharacterAbilities(ECharacterName::Aura)
+      .Elements[AbilityInfo.ElementTag]
+      .ElementSpiritActorDefault;
+  }
+  
+  if (IsValid(SpiritActorClass))
+  {
+    FTransform SpawnTransform;
+    SpawnTransform.SetLocation(AvatarActor->GetActorLocation() + FVector(50.f, 50.f, 50.f) * (Slot + 1));
+    
+    SpiritActor = AvatarActor->GetWorld()->SpawnActorDeferred<ASpiritActor>(
+        SpiritActorClass,
+        SpawnTransform,
+        AvatarActor,
+        nullptr,
+        ESpawnActorCollisionHandlingMethod::AlwaysSpawn
+      );
+    
+    if (SpiritActor)
+    {
+      SpiritActor->SetAbilityTag(AbilityTag);
+      SpiritActor->SetCooldownTag(AbilityInfo.CooldownTag);
+      if (const UBaseAbility* BaseAbility = Cast<UBaseAbility>(AbilitySpec.Ability))
+      {
+        SpiritActor->SetChargeTagAndCount(AbilityInfo.ChargesTag, BaseAbility->GetMaxChargesAtLevel(Level));
+      }
+      SpiritActor->FinishSpawning(SpawnTransform);
+      if (UOrbitManagerComponent* OrbitManager = AvatarActor->FindComponentByClass<UOrbitManagerComponent>())
+      {
+        OrbitManager->RegisterSpirit(SpiritActor);
+      }
+    }
+  }
+  else
+  {
+    UE_LOG(LogAura, Error, TEXT("[%s]: SpiritActor class is invalid for spawning!"), *GetName())
+  }
   
   return true;
 }
@@ -144,6 +197,13 @@ void USpirit::Unequip()
   
   UAbilityManager* AbilityManager = UAuraSystemsLibrary::GetAbilityManager(Actor);
   AbilityManager->RemoveAbility(AuraASC, AbilityTag);
+
+  if (!IsValid(SpiritActor)) return;
+
+  if (UOrbitManagerComponent* OrbitManager = AuraASC->GetAvatarActor()->FindComponentByClass<UOrbitManagerComponent>())
+  {
+    OrbitManager->UnregisterSpirit(SpiritActor);
+  }
 }
 
 FString USpirit::GetEquipmentDescription()

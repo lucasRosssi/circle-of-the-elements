@@ -66,7 +66,7 @@ void UAbilityManager::BeginPlay()
     OverridenAbilitiesContainer = AbilitiesContainer;
     return;
   }
-  
+
   AssignInitialAbilities();
 }
 
@@ -198,7 +198,7 @@ void UAbilityManager::SelectAbilityReward(
 )
 {
   // AcquiredAbilities.Add(AbilityInfo.AbilityTag, Level);
-  
+
   USpirit* Spirit = NewObject<USpirit>();
   Spirit->SetAbilityTag(AbilityInfo.AbilityTag);
   Spirit->Spawn(GetOwner());
@@ -347,7 +347,7 @@ FGameplayTag UAbilityManager::GetAvailableInputTag(UAuraAbilitySystemComponent* 
   return FGameplayTag();
 }
 
-void UAbilityManager::GiveAbility(
+FGameplayAbilitySpec UAbilityManager::GiveAbility(
   UAuraAbilitySystemComponent* AuraASC,
   const FAuraAbilityInfo& AbilityInfo,
   int32 Level,
@@ -362,22 +362,24 @@ void UAbilityManager::GiveAbility(
     if (InputTag.IsValid())
     {
       AuraASC->ServerEquipAbility(AbilityInfo.AbilityTag, InputTag);
-      return;
+      return AbilitySpec;
     }
-    
+
     const FGameplayTag& AvailableInputTag = GetAvailableInputTag(AuraASC);
     if (AvailableInputTag.IsValid())
     {
       AuraASC->ServerEquipAbility(AbilityInfo.AbilityTag, AvailableInputTag);
     }
   }
+
+  return AbilitySpec;
 }
 
 void UAbilityManager::RemoveAbility(UAuraAbilitySystemComponent* AuraASC, const FGameplayTag& AbilityTag)
 {
   const FGameplayAbilitySpec* AbilitySpec = AuraASC->GetSpecFromAbilityTag(AbilityTag);
   if (!AbilitySpec) return;
-  
+
   AuraASC->ClearAbility(AbilitySpec->Handle);
 }
 

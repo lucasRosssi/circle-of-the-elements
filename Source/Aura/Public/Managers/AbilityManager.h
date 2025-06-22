@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "AuraSystemComponent.h"
+#include "GameplayAbilitySpec.h"
 #include "GameplayTagContainer.h"
 #include "AbilitySystem/Data/AbilityInfo.h"
 #include "AbilityManager.generated.h"
@@ -26,7 +27,7 @@ class AURA_API UAbilityManager : public UAuraSystemComponent
 public:
   UAbilityManager();
 
-  void GiveAbility(
+  FGameplayAbilitySpec GiveAbility(
     UAuraAbilitySystemComponent* AuraASC,
     const FAuraAbilityInfo& AbilityInfo,
     int32 Level = 1,

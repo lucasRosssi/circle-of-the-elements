@@ -7,6 +7,7 @@
 #include "Interfaces/PlayerInterface.h"
 #include "AuraHero.generated.h"
 
+class UOrbitManagerComponent;
 class UAuraSaveGame;
 class AAuraCamera;
 class USpotLightComponent;
@@ -78,6 +79,9 @@ protected:
 
   UFUNCTION(BlueprintImplementableEvent)
   void SetInteractionWidgetText(const FText& Text);
+
+  UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+  TObjectPtr<UOrbitManagerComponent> OrbitManager;
   
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Camera")
 	TSubclassOf<AAuraCamera> CameraClass;

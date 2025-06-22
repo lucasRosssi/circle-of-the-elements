@@ -51,6 +51,11 @@ public:
   int32 GetRoundedHealAtLevel(int32 Level) const;
 
   UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+  FName GetActiveAbilitySocketName() const;
+  UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+  bool IsAbilityUsingWeapon() const;
+
+  UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
   void ApplyUpgrade(const FGameplayTag& UpgradeTag);
   UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
   void RemoveUpgrade(const FGameplayTag& UpgradeTag);

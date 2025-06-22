@@ -15,6 +15,8 @@ class AAuraHero;
 class AAuraCharacterBase;
 struct FAuraAbilityInfo;
 
+DECLARE_MULTICAST_DELEGATE_OneParam(OnAbilityStateChangedDelegate, bool)
+
 USTRUCT(BlueprintType)
 struct FStatusEffectApplicationData
 {
@@ -47,6 +49,8 @@ public:
   UBaseAbility();
 
   virtual void OnAvatarSet(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec) override;
+  virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
+  virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
   virtual bool CommitAbility(
     const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
     const FGameplayAbilityActivationInfo ActivationInfo, FGameplayTagContainer* OptionalRelevantTags
@@ -96,6 +100,8 @@ public:
   float GetHealAtLevel(int32 Level) const;
   UFUNCTION(BlueprintPure, Category="Ability Defaults|Heal")
   virtual int32 GetRoundedHealAtLevel_Implementation(int32 Level) const override;
+
+  OnAbilityStateChangedDelegate OnAbilityStateChanged;
 
 protected:
 #if WITH_EDITORONLY_DATA

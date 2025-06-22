@@ -53,6 +53,26 @@ void UBaseAbility::OnAvatarSet(const FGameplayAbilityActorInfo* ActorInfo, const
   }
 }
 
+void UBaseAbility::ActivateAbility(
+  const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
+  const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData
+)
+{
+  Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
+  
+  OnAbilityStateChanged.Broadcast(true);
+}
+
+void UBaseAbility::EndAbility(
+  const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
+  const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled
+)
+{
+  Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
+
+  OnAbilityStateChanged.Broadcast(false);
+}
+
 bool UBaseAbility::CommitAbility(
 	const FGameplayAbilitySpecHandle Handle,
 	const FGameplayAbilityActorInfo* ActorInfo,
