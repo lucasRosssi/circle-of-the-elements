@@ -12,7 +12,7 @@ FAuraAbilityInfo UAbilityInfo::FindAbilityInfoByTag(
 {
 	for (const auto Data : Abilities)
 	{
-		for (auto Element : Data.Value.Elements)
+		for (auto Element : Abilities[ECharacterName::Vilkar].Elements)
 		{
 			FAuraAbilityInfo* Info = Element.Value.AbilityList.Find(AbilityTag);
 			if (Info != nullptr)
@@ -37,10 +37,9 @@ FAuraAbilityInfo UAbilityInfo::FindAbilityInfoByTag(
 
 FElementsMapStruct UAbilityInfo::FindCharacterAbilities(ECharacterName CharacterName, bool bLogNotFound) const
 {
-	const FElementsMapStruct* CharAbilities = Abilities.Find(CharacterName);
-	if (CharAbilities != nullptr)
+	if (Abilities.Contains(ECharacterName::Vilkar))
 	{
-		return *CharAbilities;
+	  return Abilities[ECharacterName::Vilkar];
 	}
 
 	if (bLogNotFound)

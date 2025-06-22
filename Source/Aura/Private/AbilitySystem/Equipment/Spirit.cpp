@@ -132,13 +132,28 @@ bool USpirit::Equip(int32 Slot)
   );
 
   AActor* AvatarActor = AuraASC->GetAvatarActor();
-  if (IsValid(AbilityInfo.SpiritActor) && IsValid(AvatarActor))
+  if (!IsValid(AvatarActor)) return true;
+
+  TSubclassOf<ASpiritActor> SpiritActorClass;
+  if (IsValid(AbilityInfo.SpiritActor))
+  {
+    SpiritActorClass = AbilityInfo.SpiritActor;
+  }
+  else if (AbilityInfo.ElementTag.IsValid())
+  {
+    SpiritActorClass = AbilitiesDataAsset
+      ->FindCharacterAbilities(ECharacterName::Aura)
+      .Elements[AbilityInfo.ElementTag]
+      .ElementSpiritActorDefault;
+  }
+  
+  if (IsValid(SpiritActorClass))
   {
     FTransform SpawnTransform;
     SpawnTransform.SetLocation(AvatarActor->GetActorLocation() + FVector(50.f, 50.f, 50.f) * (Slot + 1));
     
     SpiritActor = AvatarActor->GetWorld()->SpawnActorDeferred<ASpiritActor>(
-        AbilityInfo.SpiritActor,
+        SpiritActorClass,
         SpawnTransform,
         AvatarActor,
         nullptr,
@@ -159,6 +174,10 @@ bool USpirit::Equip(int32 Slot)
         OrbitManager->RegisterSpirit(SpiritActor);
       }
     }
+  }
+  else
+  {
+    UE_LOG(LogAura, Error, TEXT("[%s]: SpiritActor class is invalid for spawning!"), *GetName())
   }
   
   return true;
