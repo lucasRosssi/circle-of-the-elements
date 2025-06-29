@@ -12,7 +12,4 @@ void AMainMenuController::BeginPlay()
 {
   Super::BeginPlay();
 
-  FInputModeUIOnly InputMode = FInputModeUIOnly();
-  InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
-  SetInputMode(InputMode);
 }

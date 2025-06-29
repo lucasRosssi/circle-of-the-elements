@@ -83,7 +83,7 @@ void ASpiritActor::ListenForAbilityActivation()
 
 void ASpiritActor::AbilityActivated(UGameplayAbility* InAbility)
 {
-  if (InAbility->AbilityTags.HasTagExact(AbilityTag))
+  if (InAbility->GetAssetTags().HasTagExact(AbilityTag))
   {
     bUsingAbility = true;
     Ability = Cast<UBaseAbility>(InAbility);

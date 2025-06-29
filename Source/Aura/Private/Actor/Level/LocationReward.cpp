@@ -37,7 +37,10 @@ void ALocationReward::Interact_Implementation(const AController* Controller)
   }
 
   const URewardManager* RewardManager = UAuraSystemsLibrary::GetRewardManager(this);
-  RewardManager->OnRewardTakenDelegate.Broadcast();
+  if (RewardManager)
+  {
+    RewardManager->OnRewardTakenDelegate.Broadcast();
+  }
 
   Destroy();
 }

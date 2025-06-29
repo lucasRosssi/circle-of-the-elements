@@ -16,6 +16,7 @@
 #include "Character/AuraCharacterBase.h"
 #include "Components/TeamComponent.h"
 #include "Engine/DamageEvents.h"
+#include "Engine/OverlapResult.h"
 #include "Enums/TargetTeam.h"
 #include "Kismet/GameplayStatics.h"
 #include "Player/AuraPlayerState.h"

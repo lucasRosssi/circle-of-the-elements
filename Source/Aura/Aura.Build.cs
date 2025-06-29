@@ -16,8 +16,7 @@ public class Aura : ModuleRules
             "EnhancedInput", 
             "GameplayAbilities",
             "UINavigation",
-            "UMG",
-            "GameplayCameras"
+            "UMG"
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] { 

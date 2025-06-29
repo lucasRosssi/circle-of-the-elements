@@ -1,9 +1,9 @@
 // Copyright Lucas Rossi
 
 
-#include "AbilitySystem/GameplayEffects/StatusEffect.h"
+#include "AbilitySystem/GameplayEffects/AuraStatusEffect.h"
 
-UStatusEffect::UStatusEffect()
+UAuraStatusEffect::UAuraStatusEffect()
 {
 	StackingType = EGameplayEffectStackingType::AggregateByTarget;
 	StackPeriodResetPolicy = EGameplayEffectStackingPeriodPolicy::NeverReset;
