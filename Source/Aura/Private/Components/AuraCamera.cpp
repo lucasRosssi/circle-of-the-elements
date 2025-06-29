@@ -7,6 +7,7 @@
 #include "Camera/CameraComponent.h"
 #include "Components/SpotLightComponent.h"
 #include "Engine/PostProcessVolume.h"
+#include "Engine/OverlapResult.h"
 #include "Enums/CameraState.h"
 #include "Interfaces/CombatInterface.h"
 #include "Kismet/GameplayStatics.h"
@@ -23,7 +24,7 @@ AAuraCamera::AAuraCamera()
   MovementLagSpeed = 12.f;
   IgnoreTimeDilation = true;
   ConstrainLocationToShape = true;
-  bFollowActorIgnoreRestrictions = false;
+  bFollowTargetIgnoreRestrictions = false;
 
   SpringArmComponent->SetUsingAbsoluteRotation(true);
   SpringArmComponent->bDoCollisionTest = false;
@@ -160,7 +161,7 @@ void AAuraCamera::OnExitLocation()
 
 void AAuraCamera::HandleDefaultState()
 {
-  bFollowActorIgnoreRestrictions = false;
+  bFollowTargetIgnoreRestrictions = false;
 
   FollowTarget(
     AUniversalCamera::UseActor(PlayerActor.Get()),
@@ -181,7 +182,7 @@ void AAuraCamera::HandleDefaultState()
 
 void AAuraCamera::HandlePlayerDeathState()
 {
-  bFollowActorIgnoreRestrictions = true;
+  bFollowTargetIgnoreRestrictions = true;
 
   FCollisionQueryParams SphereParams;
   SphereParams.AddIgnoredActor(this);
@@ -221,7 +222,7 @@ void AAuraCamera::HandleBossDeathState()
   AActor* Boss = UAuraSystemsLibrary::GetCombatManager(this)->GetCurrentBoss();
   if (!Boss) return;
 
-  bFollowActorIgnoreRestrictions = true;
+  bFollowTargetIgnoreRestrictions = true;
   FollowTarget(
     AUniversalCamera::UseActor(Boss),
     FConstrainVector2(),
@@ -237,7 +238,7 @@ void AAuraCamera::HandleBossDeathState()
 
 void AAuraCamera::HandleSecondWindState()
 {
-  bFollowActorIgnoreRestrictions = true;
+  bFollowTargetIgnoreRestrictions = true;
 
   GetPostProcessVolume()->Settings.WeightedBlendables.Array[2].Weight = 1.f;
 

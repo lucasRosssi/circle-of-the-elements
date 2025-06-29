@@ -4,17 +4,17 @@
 
 #include "CoreMinimal.h"
 #include "GameplayEffect.h"
-#include "StatusEffect.generated.h"
+#include "AuraStatusEffect.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class AURA_API UStatusEffect : public UGameplayEffect
+class AURA_API UAuraStatusEffect : public UGameplayEffect
 {
 	GENERATED_BODY()
 
 public:
-	UStatusEffect();
+	UAuraStatusEffect();
 	
 };

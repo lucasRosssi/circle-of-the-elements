@@ -5,7 +5,6 @@
 
 UPassiveAbility::UPassiveAbility()
 {
-  InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
   NetExecutionPolicy = EGameplayAbilityNetExecutionPolicy::ServerInitiated;
   AbilityTargetTeam = ETargetTeam::Self;
 }
@@ -16,6 +15,9 @@ void UPassiveAbility::OnGiveAbility(
 )
 {
 	Super::OnGiveAbility(ActorInfo, Spec);
-
-	if (bActivatesOnGranted) CallActivateAbility(Spec.Handle, ActorInfo, Spec.ActivationInfo);
+  
+	if (bActivatesOnGranted && Spec.GetPrimaryInstance())
+	{
+	  CallActivateAbility(Spec.Handle, ActorInfo, Spec.GetPrimaryInstance()->GetCurrentActivationInfo());
+	}
 }

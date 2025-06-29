@@ -102,7 +102,7 @@ TArray<FAuraAbilityInfo> UAbilityManager::RandomizeElementAbilities(
 
   TMap<FGameplayTag, FAuraAbilityInfo> ElementAbilities = GetRemainingElementAbilities(CharacterName, ElementTag);
   TArray<FAuraAbilityInfo> SelectedAbilities;
-  for (int32 i = 0; i < Amount; i++)
+  while (SelectedAbilities.Num() < Amount && !AvailableTiers.IsEmpty())
   {
     const FGameplayTag& SelectedTierTag = RandomizeTier(AvailableTiers);
     const TArray<FAuraAbilityInfo>& RemainingAbilities = GetRemainingTierAbilities(SelectedTierTag, ElementAbilities);
@@ -110,18 +110,23 @@ TArray<FAuraAbilityInfo> UAbilityManager::RandomizeElementAbilities(
     if (RemainingAbilities.IsEmpty())
     {
       AvailableTiers.Remove(SelectedTierTag);
-      ElementalTierPool.Find(ElementTag)->RemoveTag(SelectedTierTag);
-
-      if (AvailableTiers.IsEmpty()) break;
+      if (FGameplayTagContainer* TierContainer = ElementalTierPool.Find(ElementTag))
+      {
+        TierContainer->RemoveTag(SelectedTierTag);
+      }
       continue;
     }
 
     const int32 RandomAbilityIndex = FMath::RandRange(0, RemainingAbilities.Num() - 1);
+    const FAuraAbilityInfo& ChosenAbility = RemainingAbilities[RandomAbilityIndex];
 
-    SelectedAbilities.Add(RemainingAbilities[RandomAbilityIndex]);
-    ElementAbilities.Remove(RemainingAbilities[RandomAbilityIndex].AbilityTag);
+    SelectedAbilities.Add(ChosenAbility);
+    ElementAbilities.Remove(ChosenAbility.AbilityTag);
 
-    AbilitiesContainer.Find(ElementTag)->AddTag(RemainingAbilities[RandomAbilityIndex].AbilityTag);
+    if (FGameplayTagContainer* AbilitiesTagContainer = AbilitiesContainer.Find(ElementTag))
+    {
+      AbilitiesTagContainer->AddTag(ChosenAbility.AbilityTag);
+    }
   }
 
   return SelectedAbilities;
@@ -243,7 +248,7 @@ FGameplayTag UAbilityManager::RandomizeTier(const TMap<FGameplayTag, int32>& Tie
   float RandomFloat = FMath::FRandRange(0.f, TiersSum);
   for (const auto& Tier : TierMap)
   {
-    if (Tier.Value < RandomFloat)
+    if (Tier.Value > RandomFloat)
     {
       return Tier.Key;
     }
@@ -278,14 +283,14 @@ TArray<FAuraAbilityInfo> UAbilityManager::GetRemainingTierAbilities(
 {
   TArray<FAuraAbilityInfo> Abilities;
   ElementAbilities.GenerateValueArray(Abilities);
-  Abilities.FilterByPredicate(
+  TArray<FAuraAbilityInfo> FilteredAbilities = Abilities.FilterByPredicate(
     [this, TierTag](const FAuraAbilityInfo& Ability)
     {
       return TierTag.MatchesTagExact(Ability.TierTag);
     }
   );
 
-  if (Abilities.IsEmpty())
+  if (FilteredAbilities.IsEmpty())
   {
     UE_LOG(
       LogAura,
@@ -295,7 +300,7 @@ TArray<FAuraAbilityInfo> UAbilityManager::GetRemainingTierAbilities(
     );
   }
 
-  return Abilities;
+  return FilteredAbilities;
 }
 
 TMap<FGameplayTag, int32> UAbilityManager::GetAvailableTiers(const FGameplayTag& ElementTag)

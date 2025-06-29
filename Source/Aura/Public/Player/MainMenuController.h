@@ -18,11 +18,11 @@ public:
   AMainMenuController();
 
   UPROPERTY()
-  FString PlayerName;
+  FString PlayerName = FString();
   UPROPERTY()
-  FString SaveSlotName;
+  FString SaveSlotName = FString();
   UPROPERTY()
-  int32 SlotIndex;
+  int32 SlotIndex = 0;
 
 protected:
   virtual void BeginPlay() override;

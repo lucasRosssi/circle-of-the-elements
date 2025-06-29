@@ -7,7 +7,7 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystem/AuraAttributeSet.h"
 #include "AbilitySystem/Data/StatusEffectInfo.h"
-#include "AbilitySystem/GameplayEffects/StatusEffect.h"
+#include "AbilitySystem/GameplayEffects/AuraStatusEffect.h"
 #include "Aura/AuraLogChannels.h"
 #include "Character/AuraCharacterBase.h"
 #include "Character/AuraHero.h"
@@ -38,14 +38,13 @@ void UBaseAbility::OnAvatarSet(const FGameplayAbilityActorInfo* ActorInfo, const
     ApplyGameplayEffectToOwner(
       Spec.Handle,
       ActorInfo,
-      Spec.ActivationInfo,
+      Spec.GetPrimaryInstance() ? Spec.GetPrimaryInstance()->GetCurrentActivationInfo() : FGameplayAbilityActivationInfo(),
       GetChargesEffect(),
       1.f,
       GetMaxCharges()
       );
 		
-    FGameplayTagContainer ChargesTags;
-    GetChargesEffect()->GetOwnedGameplayTags(ChargesTags);
+    const FGameplayTagContainer& ChargesTags = GetChargesEffect()->GetGrantedTags();
 		
     ActivationRequiredTags.AppendTags(ChargesTags);
 
@@ -84,8 +83,7 @@ bool UBaseAbility::CommitAbility(
 	
 	if (IsChargesModeActive())
 	{
-		FGameplayTagContainer ChargesTags;
-		GetChargesEffect()->GetOwnedGameplayTags(ChargesTags);
+		const FGameplayTagContainer& ChargesTags = GetChargesEffect()->GetGrantedTags();
 		
 		const FGameplayEffectQuery Query = FGameplayEffectQuery
 			::MakeQuery_MatchAnyOwningTags(ChargesTags);
@@ -112,8 +110,7 @@ bool UBaseAbility::CommitAbilityCooldown(
 	
 	if (IsChargesModeActive())
 	{
-		FGameplayTagContainer ChargesTags;
-		GetChargesEffect()->GetOwnedGameplayTags(ChargesTags);
+		const FGameplayTagContainer& ChargesTags = GetChargesEffect()->GetGrantedTags();
 		
 		const FGameplayEffectQuery Query = FGameplayEffectQuery
 			::MakeQuery_MatchAnyOwningTags(ChargesTags);
@@ -138,8 +135,7 @@ bool UBaseAbility::CheckCooldown(
 	{
 	  if (ChargesEffect)
 	  {
-	    FGameplayTagContainer ChargesTags;
-	    ChargesEffect->GetOwnedGameplayTags(ChargesTags);
+	  	const FGameplayTagContainer& ChargesTags = ChargesEffect->GetGrantedTags();
 
 	    const int32 ChargesCount = ActorInfo->AbilitySystemComponent->GetGameplayTagCount(ChargesTags.First());
 
@@ -169,7 +165,7 @@ void UBaseAbility::OnAbilityLevelUp(
 		ApplyGameplayEffectToOwner(
 			Spec->Handle,
 			ActorInfo,
-			Spec->ActivationInfo,
+			Spec->Ability->GetCurrentActivationInfo(),
 			GetChargesEffect(),
 			1.f,
 			GetMaxChargesAtLevel(Spec->Level)
@@ -380,7 +376,7 @@ FGameplayTag UBaseAbility::GetAbilityTag()
 	if (AbilityTag.IsValid()) return AbilityTag;
 	
 	TArray<FGameplayTag> GameplayTags;
-	AbilityTags.GetGameplayTagArray(GameplayTags);
+	GetAssetTags().GetGameplayTagArray(GameplayTags);
 	for (auto Tag : GameplayTags)
 	{
 		if (Tag.MatchesTag(FGameplayTag::RequestGameplayTag(FName("Abilities"))))

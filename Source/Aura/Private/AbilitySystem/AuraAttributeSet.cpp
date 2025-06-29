@@ -14,7 +14,6 @@
 #include "Interfaces/CombatInterface.h"
 #include "Kismet/GameplayStatics.h"
 #include "Player/AuraPlayerController.h"
-#include "Player/DamageCameraShake.h"
 #include "Utils/AuraSystemsLibrary.h"
 
 UAuraAttributeSet::UAuraAttributeSet()
@@ -291,12 +290,6 @@ void UAuraAttributeSet::HandleIncomingDamage(
       FAuraGameplayTags::Get().Abilities_Reaction_HitReact
     });
     Props.TargetASC->TryActivateAbilitiesByTag(TagContainer);
-    if (Props.TargetCharacter->IsPlayerControlled() && Props.TargetCharacter->IsLocallyControlled())
-    {
-      UGameplayStatics::GetPlayerCameraManager(
-        Props.TargetAvatarActor,
-        0)->StartCameraShake(UDamageCameraShake::StaticClass());
-    }
   }
 
   ShowDamageFloatingText(Props, LocalIncomingDamage, bParried, bCriticalHit);

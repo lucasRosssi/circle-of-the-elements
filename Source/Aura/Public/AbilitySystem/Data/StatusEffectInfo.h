@@ -8,9 +8,8 @@
 #include "Enums/StatusEffectPosition.h"
 #include "StatusEffectInfo.generated.h"
 
-enum class EStatusEffectPosition : uint8;
 class UNiagaraSystem;
-class UStatusEffect;
+class UAuraStatusEffect;
 
 USTRUCT(BlueprintType)
 struct FStatusEffectData
@@ -18,7 +17,7 @@ struct FStatusEffectData
 	GENERATED_BODY()
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	TSubclassOf<UStatusEffect> StatusEffectClass;
+	TSubclassOf<UAuraStatusEffect> StatusEffectClass;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TObjectPtr<UNiagaraSystem> NiagaraSystem;
@@ -44,6 +43,7 @@ UCLASS()
 class AURA_API UStatusEffectInfo : public UDataAsset
 {
 	GENERATED_BODY()
+  
 public:
 	UPROPERTY(
 		EditDefaultsOnly,
