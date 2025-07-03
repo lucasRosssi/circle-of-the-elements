@@ -27,7 +27,9 @@ struct FSpiritInfo
   UPROPERTY(BlueprintReadWrite)
   FGameplayTag ModifierTag;
   UPROPERTY(BlueprintReadWrite)
-  int32 Slots = 1;
+  int32 MySlot = -1;
+  UPROPERTY(BlueprintReadWrite)
+  int32 RuneSlots = 1;
   UPROPERTY(BlueprintReadWrite)
   TArray<FGuid> Runes;
 };
@@ -48,6 +50,9 @@ public:
   virtual void Unequip() override;
   virtual FString GetEquipmentDescription() override;
 
+  UFUNCTION(BlueprintPure)
+  int32 GetSlot() const { return MySlot; }
+
   UFUNCTION(BlueprintCallable)
   FSpiritInfo MakeSpiritInfo();
 
@@ -57,9 +62,11 @@ public:
 protected:
   FGameplayTag AbilityTag;
 
-  FGameplayTag ModifierTag;  
+  FGameplayTag ModifierTag;
 
-  int32 Slots = 1;
+  int32 MySlot = -1;
+
+  int32 RuneSlots = 1;
   
   TArray<URune*> Runes;
 

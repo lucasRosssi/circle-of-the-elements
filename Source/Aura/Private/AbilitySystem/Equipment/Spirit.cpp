@@ -42,9 +42,10 @@ void USpirit::Load(const FSpiritInfo& SpiritInfo)
   ID = SpiritInfo.ID;
   EquipmentName = SpiritInfo.EquipmentName;
   Level = SpiritInfo.Level;
-  Slots = SpiritInfo.Slots;
   AbilityTag = SpiritInfo.AbilityTag;
   ModifierTag = SpiritInfo.ModifierTag;
+  MySlot = SpiritInfo.MySlot;
+  RuneSlots = SpiritInfo.RuneSlots;
 
   if (!Owner.IsValid()) return;
   
@@ -117,7 +118,7 @@ bool USpirit::Equip(int32 Slot)
     );
     return false;
   }
-
+  
   UAbilityManager* AbilityManager = UAuraSystemsLibrary::GetAbilityManager(Actor);
 
   const UAbilityInfo* AbilitiesDataAsset = UAuraSystemsLibrary::GetAbilitiesInfo(Actor);
@@ -130,7 +131,13 @@ bool USpirit::Equip(int32 Slot)
     Level,
     InputTag
   );
-
+  
+  if (MySlot != -1)
+  {
+    MySlot = Slot;
+    return true;
+  }
+  
   AActor* AvatarActor = AuraASC->GetAvatarActor();
   if (!IsValid(AvatarActor)) return true;
 
@@ -146,12 +153,12 @@ bool USpirit::Equip(int32 Slot)
       .Elements[AbilityInfo.ElementTag]
       .ElementSpiritActorDefault;
   }
-  
+    
   if (IsValid(SpiritActorClass))
   {
     FTransform SpawnTransform;
     SpawnTransform.SetLocation(AvatarActor->GetActorLocation() + FVector(50.f, 50.f, 50.f) * (Slot + 1));
-    
+      
     SpiritActor = AvatarActor->GetWorld()->SpawnActorDeferred<ASpiritActor>(
         SpiritActorClass,
         SpawnTransform,
@@ -159,7 +166,7 @@ bool USpirit::Equip(int32 Slot)
         nullptr,
         ESpawnActorCollisionHandlingMethod::AlwaysSpawn
       );
-    
+      
     if (SpiritActor)
     {
       SpiritActor->SetAbilityTag(AbilityTag);
@@ -180,12 +187,16 @@ bool USpirit::Equip(int32 Slot)
     UE_LOG(LogAura, Error, TEXT("[%s]: SpiritActor class is invalid for spawning!"), *GetName())
   }
   
+  MySlot = Slot;
+  
   return true;
 }
 
 void USpirit::Unequip()
 {
   Super::Unequip();
+
+  MySlot = -1;
   
   AActor* Actor = Cast<AActor>(Owner.Get());
   if (!Actor) return;
@@ -221,9 +232,10 @@ FSpiritInfo USpirit::MakeSpiritInfo()
   SpiritInfo.ID = ID;
   SpiritInfo.EquipmentName = EquipmentName;
   SpiritInfo.Level = Level;
-  SpiritInfo.Slots = Slots;
   SpiritInfo.AbilityTag = AbilityTag;
   SpiritInfo.ModifierTag = ModifierTag;
+  SpiritInfo.MySlot = MySlot;
+  SpiritInfo.RuneSlots = RuneSlots;
   for (const auto Rune : Runes)
   {
     SpiritInfo.Runes.Add(Rune->GetID());

@@ -45,6 +45,13 @@ void ULoadoutWidgetController::EquipToInputPressed(
   Spirit->Equip(Slot);
 }
 
+void ULoadoutWidgetController::Unequip(UEquipment* Equipment)
+{
+  if (!Equipment) return;
+
+  Equipment->Unequip();
+}
+
 void ULoadoutWidgetController::RemoveEquipment(UEquipment* InEquipment)
 {
   if (!InEquipment || !GetAuraPlayerState()) return;

@@ -38,6 +38,8 @@ void UOrbitManagerComponent::UnregisterSpirit(ASpiritActor* Spirit)
       InterpSpeed.RemoveAt(Index);
       CurrentOrbitAngle.RemoveAt(Index);
     }
+
+    Spirit->Destroy();
   }
 }
 

@@ -137,13 +137,14 @@ void ASpiritActor::ChargeTagChanged(const FGameplayTag CallbackTag, int32 NewCou
     {
       GetSpiritNiagara()->SetFloatParameter(ParameterName, NewScale);
     }
+    
+    if (!GetSpiritNiagara()->IsActive())
+    {
+      GetSpiritNiagara()->Activate();
+      SetActorTickEnabled(true);
+    }
   }
 
-  if (!GetSpiritNiagara()->IsActive())
-  {
-    GetSpiritNiagara()->Activate();
-    SetActorTickEnabled(true);
-  }
 }
 
 UAbilitySystemComponent* ASpiritActor::GetOwnerASC()
