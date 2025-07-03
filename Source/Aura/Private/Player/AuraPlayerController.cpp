@@ -195,12 +195,10 @@ void AAuraPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 	check(MainContext);
-
-	UEnhancedInputLocalPlayerSubsystem* Subsystem = 
-	ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer());
-	if (Subsystem)
+  
+	if (GetEnhancedInputSubsystem())
 	{
-		Subsystem->AddMappingContext(MainContext, 0);
+		EnhancedInputSubsystem->AddMappingContext(MainContext, 0);
 	}
 
 	bShowMouseCursor = true;
@@ -475,16 +473,22 @@ void AAuraPlayerController::CursorTrace()
 
 void AAuraPlayerController::AbilityInputTagPressed(FGameplayTag InputTag)
 {
+  if (!HasInputContext(MainContext)) return;
+  
 	GetASC()->AbilityInputTagPressed(InputTag);
 }
 
 void AAuraPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 {
+  if (!HasInputContext(MainContext)) return;
+  
 	GetASC()->AbilityInputTagReleased(InputTag);
 }
 
 void AAuraPlayerController::AbilityInputTagHeld(FGameplayTag InputTag)
 {
+  if (!HasInputContext(MainContext)) return;
+  
 	GetASC()->AbilityInputTagHeld(InputTag);
 }
 
@@ -543,6 +547,27 @@ void AAuraPlayerController::RemoveInteractableInRange(const UInteractComponent* 
   }
 }
 
+void AAuraPlayerController::AddInputContext(UInputMappingContext* InputContext, int32 Priority)
+{
+  if (GetEnhancedInputSubsystem())
+  {
+    EnhancedInputSubsystem->AddMappingContext(InputContext, Priority);
+  }
+}
+
+void AAuraPlayerController::RemoveInputContext(UInputMappingContext* InputContext, const FModifyContextOptions& Options)
+{
+  if (GetEnhancedInputSubsystem())
+  {
+    EnhancedInputSubsystem->RemoveMappingContext(InputContext, Options);
+  }
+}
+
+bool AAuraPlayerController::HasInputContext(const UInputMappingContext* InputContext)
+{
+  return GetEnhancedInputSubsystem() && EnhancedInputSubsystem->HasMappingContext(InputContext);
+}
+
 UAuraAbilitySystemComponent* AAuraPlayerController::GetASC()
 {
 	if (AuraAbilitySystemComponent == nullptr)
@@ -554,6 +579,16 @@ UAuraAbilitySystemComponent* AAuraPlayerController::GetASC()
 	}
 	
 	return AuraAbilitySystemComponent;
+}
+
+UEnhancedInputLocalPlayerSubsystem* AAuraPlayerController::GetEnhancedInputSubsystem()
+{
+  if (EnhancedInputSubsystem == nullptr)
+  {
+    EnhancedInputSubsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer());
+  }
+
+  return EnhancedInputSubsystem;
 }
 
 void AAuraPlayerController::UpdateTargetingActorLocation()

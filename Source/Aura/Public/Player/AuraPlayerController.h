@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "EnhancedInputSubsystemInterface.h"
 #include "UINavigation/Public/UINavController.h"
 #include "GameplayTagContainer.h"
 #include "InputActionValue.h"
@@ -12,6 +13,7 @@
 
 #include "AuraPlayerController.generated.h"
 
+class UEnhancedInputLocalPlayerSubsystem;
 class UHealTextComponent;
 class UInteractComponent;
 class AAuraHUD;
@@ -96,6 +98,13 @@ public:
 
   void AddInteractableInRange(const UInteractComponent* InteractComponent);
   void RemoveInteractableInRange(const UInteractComponent* InteractComponent);
+
+  UFUNCTION(BlueprintCallable)
+  void AddInputContext(UInputMappingContext* InputContext, int32 Priority = 0);
+  UFUNCTION(BlueprintCallable)
+  void RemoveInputContext(UInputMappingContext* InputContext, const FModifyContextOptions& Options = FModifyContextOptions());
+  UFUNCTION(BlueprintPure)
+  bool HasInputContext(const UInputMappingContext* InputContext);
 
   UPROPERTY(BlueprintAssignable, BlueprintCallable, Category="ControllerDevice")
   FOnControllerDeviceChanged ControllerDeviceChangedDelegate;
@@ -188,6 +197,8 @@ private:
   void UpdatePlayerLocationParameterCollection();
   UAuraAbilitySystemComponent* GetASC();
 
+  UEnhancedInputLocalPlayerSubsystem* GetEnhancedInputSubsystem();
+
   UPROPERTY()
   TObjectPtr<UAuraAbilitySystemComponent> AuraAbilitySystemComponent;
 
@@ -216,4 +227,7 @@ private:
 
   UPROPERTY()
   TArray<const UInteractComponent*> InteractablesInRange;
+
+  UPROPERTY()
+  TObjectPtr<UEnhancedInputLocalPlayerSubsystem> EnhancedInputSubsystem;
 };

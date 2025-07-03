@@ -54,6 +54,8 @@ public:
 
   UFUNCTION(BlueprintCallable)
   void EquipToInputPressed(USpirit* Spirit, const int32 Slot);
+  UFUNCTION(BlueprintCallable)
+  void Unequip(UEquipment* Equipment);
 
   UFUNCTION(BlueprintCallable)
   void RemoveEquipment(UEquipment* InEquipment);
