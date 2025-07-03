@@ -473,22 +473,16 @@ void AAuraPlayerController::CursorTrace()
 
 void AAuraPlayerController::AbilityInputTagPressed(FGameplayTag InputTag)
 {
-  if (!HasInputContext(MainContext)) return;
-  
 	GetASC()->AbilityInputTagPressed(InputTag);
 }
 
 void AAuraPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 {
-  if (!HasInputContext(MainContext)) return;
-  
 	GetASC()->AbilityInputTagReleased(InputTag);
 }
 
 void AAuraPlayerController::AbilityInputTagHeld(FGameplayTag InputTag)
 {
-  if (!HasInputContext(MainContext)) return;
-  
 	GetASC()->AbilityInputTagHeld(InputTag);
 }
 
