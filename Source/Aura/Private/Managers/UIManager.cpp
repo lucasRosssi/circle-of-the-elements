@@ -16,6 +16,11 @@ void UUIManager::SetOverlayWidget(UAuraUserWidget* InWidget)
   OverlayWidget = InWidget;
 }
 
+void UUIManager::SetOverlayWidgetController(UOverlayWidgetController* InWidgetController)
+{
+  OverlayWidgetController = InWidgetController;
+}
+
 void UUIManager::SetAuraHUD(AAuraHUD* InHUD)
 {
   AuraHUD = InHUD;

@@ -35,6 +35,8 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMessageWidgetRowSignature, FUIWidge
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FTransitionChange, bool, bStarting);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FShowBossHealthBar, ABossEnemy*, Boss);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FHideBossHealthBar);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FShowControls, UAuraUserWidget*, AuraWidget);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FHideControls);
 
 /**
  * 
@@ -73,6 +75,11 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category = "Location")
 	FHideBossHealthBar HideBossHealthBarDelegate;
+
+  UPROPERTY(BlueprintAssignable, Category="Input")
+  FShowControls ShowControlsDelegate;
+  UPROPERTY(BlueprintAssignable, Category="Input")
+  FHideControls HideControlsDelegate;
 	
 	UFUNCTION(BlueprintCallable)
 	void StartTransition();
@@ -83,6 +90,11 @@ public:
 	void ShowBossHealthBar(ABossEnemy* Boss);
 	UFUNCTION(BlueprintCallable)
 	void HideBossHealthBar();
+
+  UFUNCTION(BlueprintCallable)
+  void ShowControls(UAuraUserWidget* AuraWidget);
+  UFUNCTION(BlueprintCallable)
+  void HideControls();
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Data")

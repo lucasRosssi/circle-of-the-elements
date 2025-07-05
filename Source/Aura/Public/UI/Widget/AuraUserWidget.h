@@ -4,9 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "BaseWidget.h"
+#include "GameplayTagContainer.h"
 #include "Interfaces/WidgetControllerInterface.h"
 #include "AuraUserWidget.generated.h"
 
+struct FAuraMenuInput;
 enum class EMenuBlurMode : uint8;
 class UUIManager;
 class UInputAction;
@@ -38,10 +40,16 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent, Category="Input")
 	void OnChangeInputDevice(EInputType InputType);
+
+  UFUNCTION(BlueprintPure, Category="Input")
+  TArray<FAuraMenuInput> GetMenuInputs();
   
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Focus")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Menu Info")
 	EMenuBlurMode BlurMode;
 
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Menu Info", meta=(Categories="Menu"))
+  FGameplayTag MenuTag = FGameplayTag();
+  
 protected:
 	UFUNCTION(BlueprintPure)
 	UUIManager* GetUIManager();

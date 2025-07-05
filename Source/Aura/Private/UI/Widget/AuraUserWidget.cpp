@@ -5,6 +5,7 @@
 
 #include "Blueprint/WidgetTree.h"
 #include "Character/AuraHero.h"
+#include "Input/AuraInputConfig.h"
 #include "Player/AuraPlayerState.h"
 #include "Player/AuraPlayerController.h"
 
@@ -68,6 +69,16 @@ UTexture2D* UAuraUserWidget::GetInputActionIcon(const UInputAction* Action)
 		EAxisType::None,
 		InputRestriction
 		);
+}
+
+TArray<FAuraMenuInput> UAuraUserWidget::GetMenuInputs()
+{
+  if (const FMenuInputs* MenuInputs = GetOwningAuraPlayerController()->GetInputConfig()->MenuInputs.Find(MenuTag))
+  {
+    return MenuInputs->Inputs;
+  }
+  
+  return TArray<FAuraMenuInput>();
 }
 
 UUIManager* UAuraUserWidget::GetUIManager()

@@ -112,6 +112,7 @@ void AAuraHUD::InitOverlay(APlayerController* PC, APlayerState* PS, UAbilitySyst
 	if (const AAuraPlayerController* AuraPC = Cast<AAuraPlayerController>(PC))
 	{
 		AuraPC->GetUIManager()->SetOverlayWidget(OverlayWidget);
+	  AuraPC->GetUIManager()->SetOverlayWidgetController(WidgetController);
 		AuraPC->GetUIManager()->SetAuraHUD(this);
 	}
 }
