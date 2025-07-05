@@ -135,6 +135,16 @@ void UOverlayWidgetController::HideBossHealthBar()
 	HideBossHealthBarDelegate.Broadcast();
 }
 
+void UOverlayWidgetController::ShowControls(UAuraUserWidget* AuraWidget)
+{
+  ShowControlsDelegate.Broadcast(AuraWidget);
+}
+
+void UOverlayWidgetController::HideControls()
+{
+  HideControlsDelegate.Broadcast();
+}
+
 void UOverlayWidgetController::OnAbilityEquipped(
 	const FGameplayTag& AbilityTag,
 	const FGameplayTag& StatusTag,

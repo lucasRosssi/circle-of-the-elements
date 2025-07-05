@@ -6,6 +6,7 @@
 #include "AuraSystemComponent.h"
 #include "UIManager.generated.h"
 
+class UOverlayWidgetController;
 class AAuraHUD;
 struct FGameplayTag;
 class UAuraUserWidget;
@@ -23,9 +24,12 @@ class AURA_API UUIManager : public UAuraSystemComponent
 public:	
 	void SetPlayerController(APlayerController* InPlayerController);
 	void SetOverlayWidget(UAuraUserWidget* InWidget);
+	void SetOverlayWidgetController(UOverlayWidgetController* InWidgetController);
 	void SetAuraHUD(AAuraHUD* InHUD);
 	UFUNCTION(BlueprintPure)
 	UAuraUserWidget* GetOverlayWidget() const { return OverlayWidget.Get(); }
+  UFUNCTION(BlueprintPure)
+  UOverlayWidgetController* GetOverlayWidgetController() { return OverlayWidgetController; }
 	UFUNCTION(BlueprintPure)
 	AAuraHUD* GetAuraHUD() const { return AuraHUD.Get(); }
 
@@ -49,5 +53,6 @@ protected:
 private:
 	TWeakObjectPtr<APlayerController> PlayerController;
 	TWeakObjectPtr<UAuraUserWidget> OverlayWidget;
+	UOverlayWidgetController* OverlayWidgetController;
 	TWeakObjectPtr<AAuraHUD> AuraHUD;
 };

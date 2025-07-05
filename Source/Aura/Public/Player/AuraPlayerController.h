@@ -106,6 +106,8 @@ public:
   UFUNCTION(BlueprintPure)
   bool HasInputContext(const UInputMappingContext* InputContext);
 
+  UAuraInputConfig* GetInputConfig() const { return InputConfig; }
+
   UPROPERTY(BlueprintAssignable, BlueprintCallable, Category="ControllerDevice")
   FOnControllerDeviceChanged ControllerDeviceChangedDelegate;
 

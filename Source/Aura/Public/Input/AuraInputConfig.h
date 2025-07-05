@@ -7,16 +7,47 @@
 #include "Engine/DataAsset.h"
 #include "AuraInputConfig.generated.h"
 
+class UInputAction;
+
 USTRUCT(BlueprintType)
 struct FAuraInputAction
 {
 	GENERATED_BODY()
 
 	UPROPERTY(EditDefaultsOnly)
-	const class UInputAction* InputAction = nullptr;
+	const UInputAction* InputAction = nullptr;
 
 	UPROPERTY(EditDefaultsOnly)
 	FGameplayTag InputTag = FGameplayTag();
+};
+
+USTRUCT(BlueprintType)
+struct FAuraMenuInput
+{
+  GENERATED_BODY()
+
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+  UInputAction* InputAction = nullptr;
+
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+  FText Label = FText();
+
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=Brush, meta=( DisplayThumbnail="true", 
+  AllowedClasses="/Script/Engine.Texture,/Script/Engine.MaterialInterface,/Script/Engine.SlateTextureAtlasInterface", DisallowedClasses = "/Script/MediaAssets.MediaTexture"))
+  TObjectPtr<UObject> GamepadImage;
+
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=Brush, meta=( DisplayThumbnail="true", 
+  AllowedClasses="/Script/Engine.Texture,/Script/Engine.MaterialInterface,/Script/Engine.SlateTextureAtlasInterface", DisallowedClasses = "/Script/MediaAssets.MediaTexture"))
+  TObjectPtr<UObject> KeyboardMouseImage;
+};
+
+USTRUCT(BlueprintType)
+struct FMenuInputs
+{
+  GENERATED_BODY()
+
+  UPROPERTY(EditDefaultsOnly, meta=(TitleProperty="Label"))
+  TArray<FAuraMenuInput> Inputs;
 };
 
 /**
@@ -34,4 +65,12 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(TitleProperty="InputTag"))
 	TArray<FAuraInputAction> AbilityInputActions;
+
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(
+    ShowOnlyInnerProperties,
+    NoResetToDefault,
+    ForceInlineRow
+    )
+  )
+  TMap<FGameplayTag, FMenuInputs> MenuInputs;
 };
