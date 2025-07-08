@@ -7,36 +7,36 @@
 
 UMMC_Power::UMMC_Power()
 {
-	StrengthDef.AttributeToCapture = UAuraAttributeSet::GetStrengthAttribute();
-	StrengthDef.AttributeSource = EGameplayEffectAttributeCaptureSource::Target;
-	StrengthDef.bSnapshot = false;
+	FerocityDef.AttributeToCapture = UAuraAttributeSet::GetFerocityAttribute();
+	FerocityDef.AttributeSource = EGameplayEffectAttributeCaptureSource::Target;
+	FerocityDef.bSnapshot = false;
 
-  DexterityDef.AttributeToCapture = UAuraAttributeSet::GetDexterityAttribute();
-  DexterityDef.AttributeSource = EGameplayEffectAttributeCaptureSource::Target;
-  DexterityDef.bSnapshot = false;
+  AgilityDef.AttributeToCapture = UAuraAttributeSet::GetAgilityAttribute();
+  AgilityDef.AttributeSource = EGameplayEffectAttributeCaptureSource::Target;
+  AgilityDef.bSnapshot = false;
 
-  ConstitutionDef.AttributeToCapture = UAuraAttributeSet::GetConstitutionAttribute();
-  ConstitutionDef.AttributeSource = EGameplayEffectAttributeCaptureSource::Target;
-  ConstitutionDef.bSnapshot = false;
+  ToughnessDef.AttributeToCapture = UAuraAttributeSet::GetToughnessAttribute();
+  ToughnessDef.AttributeSource = EGameplayEffectAttributeCaptureSource::Target;
+  ToughnessDef.bSnapshot = false;
 
-  IntelligenceDef.AttributeToCapture = UAuraAttributeSet::GetIntelligenceAttribute();
-  IntelligenceDef.AttributeSource = EGameplayEffectAttributeCaptureSource::Target;
-  IntelligenceDef.bSnapshot = false;
+  AttunementDef.AttributeToCapture = UAuraAttributeSet::GetAttunementAttribute();
+  AttunementDef.AttributeSource = EGameplayEffectAttributeCaptureSource::Target;
+  AttunementDef.bSnapshot = false;
   
-  WisdomDef.AttributeToCapture = UAuraAttributeSet::GetWisdomAttribute();
-  WisdomDef.AttributeSource = EGameplayEffectAttributeCaptureSource::Target;
-  WisdomDef.bSnapshot = false;
+  WillpowerDef.AttributeToCapture = UAuraAttributeSet::GetWillpowerAttribute();
+  WillpowerDef.AttributeSource = EGameplayEffectAttributeCaptureSource::Target;
+  WillpowerDef.bSnapshot = false;
 
-  CharismaDef.AttributeToCapture = UAuraAttributeSet::GetCharismaAttribute();
-  CharismaDef.AttributeSource = EGameplayEffectAttributeCaptureSource::Target;
-  CharismaDef.bSnapshot = false;
+  FaithDef.AttributeToCapture = UAuraAttributeSet::GetFaithAttribute();
+  FaithDef.AttributeSource = EGameplayEffectAttributeCaptureSource::Target;
+  FaithDef.bSnapshot = false;
 
-	RelevantAttributesToCapture.Add(StrengthDef);
-	RelevantAttributesToCapture.Add(DexterityDef);
-	RelevantAttributesToCapture.Add(ConstitutionDef);
-	RelevantAttributesToCapture.Add(IntelligenceDef);
-	RelevantAttributesToCapture.Add(WisdomDef);
-	RelevantAttributesToCapture.Add(CharismaDef);
+	RelevantAttributesToCapture.Add(FerocityDef);
+	RelevantAttributesToCapture.Add(AgilityDef);
+	RelevantAttributesToCapture.Add(ToughnessDef);
+	RelevantAttributesToCapture.Add(AttunementDef);
+	RelevantAttributesToCapture.Add(WillpowerDef);
+	RelevantAttributesToCapture.Add(FaithDef);
 }
 
 float UMMC_Power::CalculateBaseMagnitude_Implementation(const FGameplayEffectSpec& Spec) const
@@ -52,36 +52,36 @@ float UMMC_Power::CalculateBaseMagnitude_Implementation(const FGameplayEffectSpe
     Spec.GetContext().GetSourceObject()
   );
   
-  float Strength = 0;
-  GetCapturedAttributeMagnitude(StrengthDef, Spec, EvaluationParameters, Strength);
-  Strength = FMath::Max<float>(Strength, 0.f);
+  float Ferocity = 0;
+  GetCapturedAttributeMagnitude(FerocityDef, Spec, EvaluationParameters, Ferocity);
+  Ferocity = FMath::Max<float>(Ferocity, 0.f);
 
-  float Dexterity = 0;
-  GetCapturedAttributeMagnitude(DexterityDef, Spec, EvaluationParameters, Dexterity);
-  Dexterity = FMath::Max<float>(Dexterity, 0.f);
+  float Agility = 0;
+  GetCapturedAttributeMagnitude(AgilityDef, Spec, EvaluationParameters, Agility);
+  Agility = FMath::Max<float>(Agility, 0.f);
 
-  float Constitution = 0;
-  GetCapturedAttributeMagnitude(ConstitutionDef, Spec, EvaluationParameters, Constitution);
-  Constitution = FMath::Max<float>(Constitution, 0.f);
+  float Toughness = 0;
+  GetCapturedAttributeMagnitude(ToughnessDef, Spec, EvaluationParameters, Toughness);
+  Toughness = FMath::Max<float>(Toughness, 0.f);
 
-  float Intelligence = 0;
-  GetCapturedAttributeMagnitude(IntelligenceDef, Spec, EvaluationParameters, Intelligence);
-  Intelligence = FMath::Max<float>(Intelligence, 0.f);
+  float Attunement = 0;
+  GetCapturedAttributeMagnitude(AttunementDef, Spec, EvaluationParameters, Attunement);
+  Attunement = FMath::Max<float>(Attunement, 0.f);
   
-  float Wisdom = 0;
-  GetCapturedAttributeMagnitude(WisdomDef, Spec, EvaluationParameters, Wisdom);
-  Wisdom = FMath::Max<float>(Wisdom, 0.f);
+  float Willpower = 0;
+  GetCapturedAttributeMagnitude(WillpowerDef, Spec, EvaluationParameters, Willpower);
+  Willpower = FMath::Max<float>(Willpower, 0.f);
   
-  float Charisma = 0;
-  GetCapturedAttributeMagnitude(CharismaDef, Spec, EvaluationParameters, Charisma);
-  Charisma = FMath::Max<float>(Charisma, 0.f);
+  float Faith = 0;
+  GetCapturedAttributeMagnitude(FaithDef, Spec, EvaluationParameters, Faith);
+  Faith = FMath::Max<float>(Faith, 0.f);
 	
 	return 1
     + CharacterLevel * 0.05f
-    + Strength * 0.005f
-    + Dexterity * 0.005f
-    + Constitution * 0.005f
-    + Intelligence * 0.005f
-    + Wisdom * 0.005f
-    + Charisma * 0.005f;
+    + Ferocity * 0.005f
+    + Agility * 0.005f
+    + Toughness * 0.005f
+    + Attunement * 0.005f
+    + Willpower * 0.005f
+    + Faith * 0.005f;
 }

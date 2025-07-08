@@ -886,74 +886,77 @@ FString UAuraAbilitySystemLibrary::GetAbilityNextLevelDescription(
 }
 
 void UAuraAbilitySystemLibrary::FormatAbilityDescriptionAtLevel(
-    const FAuraAbilityInfo& AbilityInfo,
-    int32 Level,
-    FText& OutDescription
+  const FAuraAbilityInfo& AbilityInfo,
+  int32 Level,
+  FText& OutDescription
 )
 {
-    const FAuraNamedArguments& Args = FAuraNamedArguments::Get();
-    const UBaseAbility* Ability = AbilityInfo.Ability.GetDefaultObject();
-    if (!Ability) return;
+  const FAuraNamedArguments& Args = FAuraNamedArguments::Get();
+  const UBaseAbility* Ability = AbilityInfo.Ability.GetDefaultObject();
 
-    FNumberFormattingOptions NumberFormatOptions;
-    NumberFormatOptions.MinimumFractionalDigits = 0;
-    NumberFormatOptions.MaximumFractionalDigits = 2;
-
-    TMap<FString, FFormatArgumentValue> FormatArgs;
-
-    if (IAbilityInterface::Execute_IsDamageAbility(Ability))
+  if (IAbilityInterface::Execute_IsDamageAbility(Ability))
+  {
+    const FGameplayTag& DamageTypeTag = IAbilityInterface::Execute_GetDamageTypeTag(Ability);
+    if (const auto Tuple = Args.DamageTypeTexts.Find(DamageTypeTag))
     {
-        const auto& DamageTypeTag = IAbilityInterface::Execute_GetDamageTypeTag(Ability);
-
-        if (const auto Tuple = Args.DamageTypeTexts.Find(DamageTypeTag))
-        {
-            FormatArgs.Add(Tuple->Key, Tuple->Value);
-        }
-
-        if (const auto NextTuple = Args.NextDamageTypeTexts.Find(DamageTypeTag))
-        {
-            FormatArgs.Add(NextTuple->Key, NextTuple->Value);
-        }
-
-        FormatArgs.Add(Args.Dmg, IAbilityInterface::Execute_GetRoundedDamageAtLevel(Ability, Level));
-        FormatArgs.Add(Args.Dmg_, IAbilityInterface::Execute_GetRoundedDamageAtLevel(Ability, Level + 1));
+      OutDescription = FText::FormatNamed(
+        OutDescription,
+        Tuple->Key,
+        Tuple->Value
+      );
+    }
+    if (const auto NextTuple = Args.NextDamageTypeTexts.Find(DamageTypeTag))
+    {
+      OutDescription = FText::FormatNamed(
+        OutDescription,
+        NextTuple->Key,
+        NextTuple->Value
+      );
     }
 
-    const auto& Percents = AbilityInfo.DescriptionPercents;
-    for (int32 i = 0; i < Percents.Num(); ++i)
+    OutDescription = FText::FormatNamed(
+      OutDescription,
+      Args.Dmg,
+      IAbilityInterface::Execute_GetRoundedDamageAtLevel(Ability, Level),
+      Args.Dmg_,
+      IAbilityInterface::Execute_GetRoundedDamageAtLevel(Ability, Level + 1)
+    );
+  }
+
+  FNumberFormattingOptions NumberFormatOptions;
+  NumberFormatOptions.MinimumFractionalDigits = 0;
+  NumberFormatOptions.MaximumFractionalDigits = 2;
+
+  const TArray<FScalableFloat>& Percents = AbilityInfo.DescriptionPercents;
+  if (Percents.Num() > 0)
+  {
+    for (int32 i = 0; i < Percents.Num(); i++)
     {
-        if (!Args.AbilityGenericArgs.IsValidIndex(i)) continue;
-        const auto& Arg = Args.AbilityGenericArgs[i];
-
-        FormatArgs.Add(
-            Arg.Percent,
-            FText::AsNumber(Percents[i].GetValueAtLevel(Level) * 100.f, &NumberFormatOptions)
-        );
-        FormatArgs.Add(
-            Arg.Percent_,
-            FText::AsNumber(Percents[i].GetValueAtLevel(Level + 1) * 100.f, &NumberFormatOptions)
-        );
+      OutDescription = FText::FormatNamed(
+        OutDescription,
+        Args.AbilityGenericArgs[i].Percent,
+        FText::AsNumber(Percents[i].GetValueAtLevel(Level) * 100, &NumberFormatOptions),
+        Args.AbilityGenericArgs[i].Percent_,
+        FText::AsNumber(Percents[i].GetValueAtLevel(Level + 1) * 100, &NumberFormatOptions)
+      );
     }
+  }
 
-    const auto& Values = AbilityInfo.DescriptionValues;
-    for (int32 i = 0; i < Values.Num(); ++i)
+  const TArray<FScalableFloat>& Values = AbilityInfo.DescriptionValues;
+  if (Values.Num() > 0)
+  {
+    for (int32 i = 0; i < Values.Num(); i++)
     {
-        if (!Args.AbilityGenericArgs.IsValidIndex(i)) continue;
-        const auto& Arg = Args.AbilityGenericArgs[i];
-
-        FormatArgs.Add(
-            Arg.Value,
-            FText::AsNumber(Values[i].GetValueAtLevel(Level), &NumberFormatOptions)
-        );
-        FormatArgs.Add(
-            Arg.Value_,
-            FText::AsNumber(Values[i].GetValueAtLevel(Level + 1), &NumberFormatOptions)
-        );
+      OutDescription = FText::FormatNamed(
+        OutDescription,
+        Args.AbilityGenericArgs[i].Value,
+        FText::AsNumber(Values[i].GetValueAtLevel(Level), &NumberFormatOptions),
+        Args.AbilityGenericArgs[i].Value_,
+        FText::AsNumber(Values[i].GetValueAtLevel(Level + 1), &NumberFormatOptions)
+      );
     }
-
-    OutDescription = FText::Format(OutDescription, FormatArgs);
+  }
 }
-
 
 void UAuraAbilitySystemLibrary::FormatUpgradeDescriptionAtLevel(
   const FAuraUpgradeInfo& UpgradeInfo, int32 Level, FText& OutDescription

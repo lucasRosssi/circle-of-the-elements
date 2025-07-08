@@ -57,16 +57,26 @@ UAuraAbilitySystemComponent* AAuraPlayerState::GetAuraASC()
   return AuraASC;
 }
 
-float AAuraPlayerState::GetActionSpeed_Implementation()
+float AAuraPlayerState::GetAttackSpeed_Implementation()
 {
-  return AttributeSet->GetActionSpeed();
+  return AttributeSet->GetAttackSpeed();
 }
 
-void AAuraPlayerState::SetActionSpeed_Implementation(float InActionSpeed)
+float AAuraPlayerState::GetCastSpeed_Implementation()
+{
+  return AttributeSet->GetCastSpeed();
+}
+
+float AAuraPlayerState::GetMovementSpeed_Implementation()
+{
+  return AttributeSet->GetMovementSpeed();
+}
+
+void AAuraPlayerState::SetMovementSpeed_Implementation(float InMovementSpeed)
 {
   if (GetCharacterBase())
   {
-    CharacterBase->ChangeActionSpeed(InActionSpeed);
+    CharacterBase->ChangeMovementSpeed(InMovementSpeed);
   }
 }
 

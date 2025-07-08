@@ -77,9 +77,9 @@ void AAuraEnemy::Die(const FVector& DeathImpulse)
 	Super::Die(DeathImpulse);
 }
 
-void AAuraEnemy::SetActionSpeed_Implementation(float InActionSpeed)
+void AAuraEnemy::SetMovementSpeed_Implementation(float InMovementSpeed)
 {
-	ChangeActionSpeed(InActionSpeed);
+	ChangeMovementSpeed(InMovementSpeed);
 }
 
 float AAuraEnemy::GetPower_Implementation()
@@ -97,9 +97,19 @@ float AAuraEnemy::GetHealth_Implementation()
 	return AttributeSet->GetHealth();
 }
 
-float AAuraEnemy::GetActionSpeed_Implementation()
+float AAuraEnemy::GetAttackSpeed_Implementation()
 {
-  return AttributeSet->GetActionSpeed();
+  return AttributeSet->GetAttackSpeed();
+}
+
+float AAuraEnemy::GetCastSpeed_Implementation()
+{
+  return AttributeSet->GetCastSpeed();
+}
+
+float AAuraEnemy::GetMovementSpeed_Implementation()
+{
+  return AttributeSet->GetMovementSpeed();
 }
 
 void AAuraEnemy::SetTimeDilation_Implementation(float InTimeDilation)

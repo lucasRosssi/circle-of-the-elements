@@ -41,7 +41,7 @@ void FAuraNamedArguments::InitializeNamedArguments()
 		{NamedArguments.FireDmg, FText::FromString("<Fire>{$Dmg} fire</> damage")}
 		);
 	NamedArguments.DamageTypeTexts.Add(
-		AuraTags.Damage_Ice,
+		AuraTags.Damage_Water,
 		{NamedArguments.IceDmg, FText::FromString("<Ice>{$Dmg} ice</> damage")}
 		);
 	NamedArguments.DamageTypeTexts.Add(
@@ -49,15 +49,15 @@ void FAuraNamedArguments::InitializeNamedArguments()
 		{NamedArguments.LightningDmg, FText::FromString("<Lightning>{$Dmg} lightning</> damage")}
 		);
 	NamedArguments.DamageTypeTexts.Add(
-		AuraTags.Damage_Energy,
+		AuraTags.Damage_Chaos,
 		{NamedArguments.ArcaneDmg, FText::FromString("<Arcane>{$Dmg} arcane</> damage")}
 		);
 	NamedArguments.DamageTypeTexts.Add(
-		AuraTags.Damage_Necrotic,
+		AuraTags.Damage_Earth,
 		{NamedArguments.NecroticDmg, FText::FromString("<Necrotic>{$Dmg} necrotic</> damage")}
 		);
 	NamedArguments.DamageTypeTexts.Add(
-		AuraTags.Damage_Physical,
+		AuraTags.Damage_Air,
 		{NamedArguments.PhysicalDmg, FText::FromString("<Physical>{$Dmg} physical</> damage")}
 		);
 	
@@ -66,7 +66,7 @@ void FAuraNamedArguments::InitializeNamedArguments()
 		{NamedArguments.NextFireDmg, FText::FromString("<Old>{$Dmg}</> > <Fire>{$Dmg_} fire</> damage")}
 		);
 	NamedArguments.NextDamageTypeTexts.Add(
-		AuraTags.Damage_Ice,
+		AuraTags.Damage_Water,
 		{NamedArguments.NextIceDmg, FText::FromString("<Old>{$Dmg}</> > <Ice>{$Dmg_} ice</> damage")}
 		);
 	NamedArguments.NextDamageTypeTexts.Add(
@@ -74,15 +74,15 @@ void FAuraNamedArguments::InitializeNamedArguments()
 		{NamedArguments.NextLightningDmg, FText::FromString("<Old>{$Dmg}</> > <Lightning>{$Dmg_} lightning</> damage")}
 		);
 	NamedArguments.NextDamageTypeTexts.Add(
-		AuraTags.Damage_Energy,
+		AuraTags.Damage_Chaos,
 		{NamedArguments.NextArcaneDmg, FText::FromString("<Old>{$Dmg}</> > <Arcane>{$Dmg_} arcane</> damage")}
 		);
 	NamedArguments.NextDamageTypeTexts.Add(
-		AuraTags.Damage_Necrotic,
+		AuraTags.Damage_Earth,
 		{NamedArguments.NextNecroticDmg, FText::FromString("<Old>{$Dmg}</> > <Necrotic>{$Dmg_} necrotic</> damage")}
 		);
 	NamedArguments.NextDamageTypeTexts.Add(
-		AuraTags.Damage_Physical,
+		AuraTags.Damage_Air,
 		{NamedArguments.NextPhysicalDmg, FText::FromString("<Old>{$Dmg}</> > <Physical>{$Dmg_} physical</> damage")}
 		);
 

@@ -148,10 +148,7 @@ bool USpirit::Equip(int32 Slot)
   }
   else if (AbilityInfo.ElementTag.IsValid())
   {
-    SpiritActorClass = AbilitiesDataAsset
-      ->FindCharacterAbilities(ECharacterName::Aura)
-      .Elements[AbilityInfo.ElementTag]
-      .ElementSpiritActorDefault;
+    SpiritActorClass = AbilitiesDataAsset->FindElementInfo(AbilityInfo.ElementTag).ElementSpiritActorDefault;
   }
     
   if (IsValid(SpiritActorClass))

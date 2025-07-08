@@ -202,12 +202,12 @@ void AAuraHero::SpendAttributePointsRandomly_Implementation()
   {
     const FAuraGameplayTags& AuraTags = FAuraGameplayTags::Get();
     const TArray AttributeTags = TArray({
-      AuraTags.Attributes_Primary_Strength,
-      AuraTags.Attributes_Primary_Dexterity,
-      AuraTags.Attributes_Primary_Constitution,
-      AuraTags.Attributes_Primary_Intelligence,
-      AuraTags.Attributes_Primary_Wisdom,
-      AuraTags.Attributes_Primary_Charisma
+      AuraTags.Attributes_Primary_Ferocity,
+      AuraTags.Attributes_Primary_Agility,
+      AuraTags.Attributes_Primary_Toughness,
+      AuraTags.Attributes_Primary_Attunement,
+      AuraTags.Attributes_Primary_Willpower,
+      AuraTags.Attributes_Primary_Faith
     });
 
     const int32 AttributePoints = GetAuraPlayerState()->GetAttributePoints();
@@ -376,42 +376,42 @@ void AAuraHero::InitializeAttributes()
 
   if (GetSaveGame())
   {
-    InitialStrength = SaveGame->AttributeSet.Attributes[AuraTags.Attributes_Primary_Strength];
-    InitialDexterity = SaveGame->AttributeSet.Attributes[AuraTags.Attributes_Primary_Dexterity];
-    InitialConstitution = SaveGame->AttributeSet.Attributes[AuraTags.Attributes_Primary_Constitution];
-    InitialIntelligence = SaveGame->AttributeSet.Attributes[AuraTags.Attributes_Primary_Intelligence];
-    InitialWisdom = SaveGame->AttributeSet.Attributes[AuraTags.Attributes_Primary_Wisdom];
-    InitialCharisma = SaveGame->AttributeSet.Attributes[AuraTags.Attributes_Primary_Charisma];
+    InitialStrength = SaveGame->AttributeSet.Attributes[AuraTags.Attributes_Primary_Ferocity];
+    InitialDexterity = SaveGame->AttributeSet.Attributes[AuraTags.Attributes_Primary_Agility];
+    InitialConstitution = SaveGame->AttributeSet.Attributes[AuraTags.Attributes_Primary_Toughness];
+    InitialIntelligence = SaveGame->AttributeSet.Attributes[AuraTags.Attributes_Primary_Attunement];
+    InitialWisdom = SaveGame->AttributeSet.Attributes[AuraTags.Attributes_Primary_Willpower];
+    InitialCharisma = SaveGame->AttributeSet.Attributes[AuraTags.Attributes_Primary_Faith];
   }
   
   UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(
     SpecHandle,
-    AuraTags.Attributes_Primary_Strength,
+    AuraTags.Attributes_Primary_Ferocity,
     InitialStrength
     );
   UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(
     SpecHandle,
-    AuraTags.Attributes_Primary_Dexterity,
+    AuraTags.Attributes_Primary_Agility,
     InitialDexterity
     );
   UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(
     SpecHandle,
-    AuraTags.Attributes_Primary_Constitution,
+    AuraTags.Attributes_Primary_Toughness,
     InitialConstitution
     );
   UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(
     SpecHandle,
-    AuraTags.Attributes_Primary_Intelligence,
+    AuraTags.Attributes_Primary_Attunement,
     InitialIntelligence
     );
   UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(
     SpecHandle,
-    AuraTags.Attributes_Primary_Wisdom,
+    AuraTags.Attributes_Primary_Willpower,
     InitialWisdom
     );
   UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(
     SpecHandle,
-    AuraTags.Attributes_Primary_Charisma,
+    AuraTags.Attributes_Primary_Faith,
     InitialCharisma
     );
   
@@ -430,7 +430,6 @@ void AAuraHero::InitAbilityActorInfo()
   AbilitySystemComponent = GetAuraPlayerState()->GetAbilitySystemComponent();
   OnASCRegistered.Broadcast(AbilitySystemComponent);
   AttributeSet = AuraPlayerState->GetAttributeSet();
-  AttributeSet->AssignPrimeAttribute(PrimeAttributeTag);
 
   AbilitySystemComponent->InitAbilityActorInfo(AuraPlayerState, this);
 
@@ -440,12 +439,12 @@ void AAuraHero::InitAbilityActorInfo()
   if (GetSaveGame())
   {
     const FAuraGameplayTags& AuraTags = FAuraGameplayTags::Get();
-    AttributeSet->SetStrength(SaveGame->AttributeSet.Attributes[AuraTags.Attributes_Primary_Strength]);
-    AttributeSet->SetDexterity(SaveGame->AttributeSet.Attributes[AuraTags.Attributes_Primary_Dexterity]);
-    AttributeSet->SetConstitution(SaveGame->AttributeSet.Attributes[AuraTags.Attributes_Primary_Constitution]);
-    AttributeSet->SetIntelligence(SaveGame->AttributeSet.Attributes[AuraTags.Attributes_Primary_Intelligence]);
-    AttributeSet->SetWisdom(SaveGame->AttributeSet.Attributes[AuraTags.Attributes_Primary_Wisdom]);
-    AttributeSet->SetCharisma(SaveGame->AttributeSet.Attributes[AuraTags.Attributes_Primary_Charisma]);
+    AttributeSet->SetFerocity(SaveGame->AttributeSet.Attributes[AuraTags.Attributes_Primary_Ferocity]);
+    AttributeSet->SetAgility(SaveGame->AttributeSet.Attributes[AuraTags.Attributes_Primary_Agility]);
+    AttributeSet->SetToughness(SaveGame->AttributeSet.Attributes[AuraTags.Attributes_Primary_Toughness]);
+    AttributeSet->SetAttunement(SaveGame->AttributeSet.Attributes[AuraTags.Attributes_Primary_Attunement]);
+    AttributeSet->SetWillpower(SaveGame->AttributeSet.Attributes[AuraTags.Attributes_Primary_Willpower]);
+    AttributeSet->SetFaith(SaveGame->AttributeSet.Attributes[AuraTags.Attributes_Primary_Faith]);
   }
   
   if (AAuraHUD* AuraHUD = GetAuraPlayerController()->GetHUD<AAuraHUD>())

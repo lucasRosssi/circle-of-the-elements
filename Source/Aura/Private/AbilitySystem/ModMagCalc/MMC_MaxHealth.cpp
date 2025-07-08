@@ -8,11 +8,21 @@
 
 UMMC_MaxHealth::UMMC_MaxHealth()
 {
-	ConstitutionDef.AttributeToCapture = UAuraAttributeSet::GetConstitutionAttribute();
-	ConstitutionDef.AttributeSource = EGameplayEffectAttributeCaptureSource::Target;
-	ConstitutionDef.bSnapshot = false;
+	FerocityDef.AttributeToCapture = UAuraAttributeSet::GetFerocityAttribute();
+	FerocityDef.AttributeSource = EGameplayEffectAttributeCaptureSource::Target;
+	FerocityDef.bSnapshot = false;
 
-	RelevantAttributesToCapture.Add(ConstitutionDef);
+  AgilityDef.AttributeToCapture = UAuraAttributeSet::GetAgilityAttribute();
+  AgilityDef.AttributeSource = EGameplayEffectAttributeCaptureSource::Target;
+  AgilityDef.bSnapshot = false;
+
+  ToughnessDef.AttributeToCapture = UAuraAttributeSet::GetToughnessAttribute();
+  ToughnessDef.AttributeSource = EGameplayEffectAttributeCaptureSource::Target;
+  ToughnessDef.bSnapshot = false;
+
+	RelevantAttributesToCapture.Add(FerocityDef);
+	RelevantAttributesToCapture.Add(AgilityDef);
+	RelevantAttributesToCapture.Add(ToughnessDef);
 }
 
 float UMMC_MaxHealth::CalculateBaseMagnitude_Implementation(const FGameplayEffectSpec& Spec) const
@@ -25,13 +35,25 @@ float UMMC_MaxHealth::CalculateBaseMagnitude_Implementation(const FGameplayEffec
 	EvaluationParameters.SourceTags = SourceTags;
 	EvaluationParameters.TargetTags = TargetTags;
 
-	float Constitution = 0;
-	GetCapturedAttributeMagnitude(ConstitutionDef, Spec, EvaluationParameters, Constitution);
-	Constitution = FMath::Max<float>(Constitution, 0.f);
+	float Ferocity = 0;
+	GetCapturedAttributeMagnitude(FerocityDef, Spec, EvaluationParameters, Ferocity);
+	Ferocity = FMath::Max<float>(Ferocity, 0.f);
+
+  float Agility = 0;
+  GetCapturedAttributeMagnitude(AgilityDef, Spec, EvaluationParameters, Agility);
+  Agility = FMath::Max<float>(Agility, 0.f);
+
+  float Toughness = 0;
+  GetCapturedAttributeMagnitude(ToughnessDef, Spec, EvaluationParameters, Toughness);
+  Toughness = FMath::Max<float>(Toughness, 0.f);
 
 	const int32	CharacterLevel = ICombatInterface::Execute_GetCharacterLevel(
 		Spec.GetContext().GetSourceObject()
 	);
 
-	return 50.f + 5.f * (Constitution - 10.f) + 15.f * (CharacterLevel - 1);
+	return 50.f
+    + 3.f * Ferocity
+    + 3.f * Agility
+    + 3.f * Toughness
+    + 10.f * (CharacterLevel - 1);
 }

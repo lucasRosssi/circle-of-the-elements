@@ -118,6 +118,14 @@ protected:
 	FScalableFloat AnimRootMotionTranslateScale = 1.0f;
   UPROPERTY(BlueprintReadWrite)
   float AdditionalAnimRootMotionTranslateScale = 0.f;
+
+  UPROPERTY(
+    EditDefaultsOnly,
+    BlueprintReadWrite,
+    Category="Ability Defaults",
+    meta=(Categories="Attributes.Secondary.AttackSpeed,Attributes.Secondary.CastSpeed,Attributes.Secondary.MovementSpeed")
+  )
+  FGameplayTag SpeedAttributeTag = FGameplayTag();
   
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Ability Defaults")
 	FName AbilitySocketName;

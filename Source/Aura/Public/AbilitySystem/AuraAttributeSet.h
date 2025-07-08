@@ -61,55 +61,57 @@ public:
 
 	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
 	
-	void AssignPrimeAttribute(const FGameplayTag& InAttributeTag);
-
 	/*
 	 * Primary attributes
 	 */
 
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Strength, Category = "Primary Attributes")
-	FGameplayAttributeData Prime;
-	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Prime);
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Ferocity, Category = "Primary Attributes")
+	FGameplayAttributeData Ferocity;
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Ferocity);
 
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Strength, Category = "Primary Attributes")
-	FGameplayAttributeData Strength;
-	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Strength);
-
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Dexterity, Category = "Primary Attributes")
-	FGameplayAttributeData Dexterity;
-	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Dexterity);
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Agility, Category = "Primary Attributes")
+	FGameplayAttributeData Agility;
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Agility);
 	
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Constitution, Category = "Primary Attributes")
-	FGameplayAttributeData Constitution;
-	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Constitution);
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Toughness, Category = "Primary Attributes")
+	FGameplayAttributeData Toughness;
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Toughness);
 	
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Intelligence, Category = "Primary Attributes")
-	FGameplayAttributeData Intelligence;
-	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Intelligence);
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Attunement, Category = "Primary Attributes")
+	FGameplayAttributeData Attunement;
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Attunement);
 
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Wisdom, Category = "Primary Attributes")
-	FGameplayAttributeData Wisdom;
-	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Wisdom);
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Willpower, Category = "Primary Attributes")
+	FGameplayAttributeData Willpower;
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Willpower);
 
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Charisma, Category = "Primary Attributes")
-	FGameplayAttributeData Charisma;
-	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Charisma);
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Faith, Category = "Primary Attributes")
+	FGameplayAttributeData Faith;
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Faith);
 
 	/*
 	 * Secondary attributes
 	 */
 
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_ActionSpeed, Category = "Secondary Attributes")
-	FGameplayAttributeData ActionSpeed;
-	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, ActionSpeed);
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_AttackSpeed, Category = "Secondary Attributes")
+	FGameplayAttributeData AttackSpeed;
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, AttackSpeed);
+
+  UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_CastSpeed, Category = "Secondary Attributes")
+  FGameplayAttributeData CastSpeed;
+  ATTRIBUTE_ACCESSORS(UAuraAttributeSet, CastSpeed);
+
+  UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_MovementSpeed, Category = "Secondary Attributes")
+  FGameplayAttributeData MovementSpeed;
+  ATTRIBUTE_ACCESSORS(UAuraAttributeSet, MovementSpeed);
 
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Armor, Category = "Secondary Attributes")
 	FGameplayAttributeData Armor;
 	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Armor);
 
-  UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_CooldownReduction, Category = "Secondary Attributes")
-  FGameplayAttributeData CooldownReduction;
-  ATTRIBUTE_ACCESSORS(UAuraAttributeSet, CooldownReduction);
+  UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_CooldownSpeed, Category = "Secondary Attributes")
+  FGameplayAttributeData CooldownSpeed;
+  ATTRIBUTE_ACCESSORS(UAuraAttributeSet, CooldownSpeed);
 
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_CriticalDamage, Category = "Secondary Attributes")
 	FGameplayAttributeData CriticalDamage;
@@ -135,13 +137,13 @@ public:
 	FGameplayAttributeData MaxMana;
 	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, MaxMana);
 
-  UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_ParryChance, Category = "Secondary Attributes")
-  FGameplayAttributeData ParryChance;
-  ATTRIBUTE_ACCESSORS(UAuraAttributeSet, ParryChance);
+  UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Dodge, Category = "Secondary Attributes")
+  FGameplayAttributeData Dodge;
+  ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Dodge);
 
-  UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Restoration, Category = "Secondary Attributes")
-  FGameplayAttributeData Restoration;
-  ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Restoration);
+  UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Parry, Category = "Secondary Attributes")
+  FGameplayAttributeData Parry;
+  ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Parry);
 	
 	/*
 	 * Vital attributes
@@ -159,31 +161,32 @@ public:
 	 * Resistance attributes
 	 */
 
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_PhysicalResistance, Category = "Resistance Attributes")
-	FGameplayAttributeData PhysicalResistance;
-	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, PhysicalResistance);
-
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_EnergyResistance, Category = "Resistance Attributes")
-	FGameplayAttributeData EnergyResistance;
-	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, EnergyResistance);
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_ChaosResistance, Category = "Resistance Attributes")
+	FGameplayAttributeData ChaosResistance;
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, ChaosResistance);
+  
 
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_FireResistance, Category = "Resistance Attributes")
 	FGameplayAttributeData FireResistance;
 	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, FireResistance);
 
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_IceResistance, Category = "Resistance Attributes")
-	FGameplayAttributeData IceResistance;
-	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, IceResistance);
-
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_WaterResistance, Category = "Resistance Attributes")
+	FGameplayAttributeData WaterResistance;
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, WaterResistance);
+  
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_AirResistance, Category = "Resistance Attributes")
+	FGameplayAttributeData AirResistance;
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, AirResistance);
+  
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_EarthResistance, Category = 
+	"Resistance Attributes")
+	FGameplayAttributeData EarthResistance;
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, EarthResistance);
+  
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_LightningResistance, Category = 
 	"Resistance Attributes")
 	FGameplayAttributeData LightningResistance;
 	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, LightningResistance);
-
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_NecroticResistance, Category = 
-	"Resistance Attributes")
-	FGameplayAttributeData NecroticResistance;
-	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, NecroticResistance);
 
 	/*
 	 * Special attributes
@@ -238,26 +241,24 @@ public:
 	/*
 	 * Primary
 	 */
+  
 	UFUNCTION()
-	void OnRep_Prime(const FGameplayAttributeData& OldPrime) const;
+	void OnRep_Ferocity(const FGameplayAttributeData& OldFerocity) const;
 
 	UFUNCTION()
-	void OnRep_Strength(const FGameplayAttributeData& OldStrength) const;
+	void OnRep_Agility(const FGameplayAttributeData& OldAgility) const;
+	
+	UFUNCTION()
+	void OnRep_Toughness(const FGameplayAttributeData& OldToughness) const;
+	
+	UFUNCTION()
+	void OnRep_Attunement(const FGameplayAttributeData& OldAttunement) const;
+	
+	UFUNCTION()
+	void OnRep_Willpower(const FGameplayAttributeData& OldWillpower) const;
 
 	UFUNCTION()
-	void OnRep_Dexterity(const FGameplayAttributeData& OldDexterity) const;
-	
-	UFUNCTION()
-	void OnRep_Constitution(const FGameplayAttributeData& OldConstitution) const;
-	
-	UFUNCTION()
-	void OnRep_Intelligence(const FGameplayAttributeData& OldIntelligence) const;
-	
-	UFUNCTION()
-	void OnRep_Wisdom(const FGameplayAttributeData& OldWisdom) const;
-
-	UFUNCTION()
-	void OnRep_Charisma(const FGameplayAttributeData& OldCharisma) const;
+	void OnRep_Faith(const FGameplayAttributeData& OldFaith) const;
 
 	/*
 	 * Secondary
@@ -270,13 +271,19 @@ public:
 	void OnRep_MaxMana(const FGameplayAttributeData& OldMaxMana) const;
 
 	UFUNCTION()
-	void OnRep_ActionSpeed(const FGameplayAttributeData& OldActionSpeed) const;
+	void OnRep_AttackSpeed(const FGameplayAttributeData& OldAttackSpeed) const;
+
+  UFUNCTION()
+  void OnRep_CastSpeed(const FGameplayAttributeData& OldCastSpeed) const;
+
+  UFUNCTION()
+  void OnRep_MovementSpeed(const FGameplayAttributeData& OldMovementSpeed) const;
 
 	UFUNCTION()
 	void OnRep_Armor(const FGameplayAttributeData& OldArmor) const;
 
   UFUNCTION()
-  void OnRep_CooldownReduction(const FGameplayAttributeData& OldCooldownReduction) const;
+  void OnRep_CooldownSpeed(const FGameplayAttributeData& OldCooldownSpeed) const;
 
 	UFUNCTION()
 	void OnRep_CriticalDamage(const FGameplayAttributeData& OldCriticalDamage) const;
@@ -291,32 +298,32 @@ public:
 	void OnRep_ManaRegeneration(const FGameplayAttributeData& OldManaRegeneration) const;
 
   UFUNCTION()
-  void OnRep_ParryChance(const FGameplayAttributeData& OldParryChance) const;
+  void OnRep_Dodge(const FGameplayAttributeData& OldDodge) const;
   
   UFUNCTION()
-  void OnRep_Restoration(const FGameplayAttributeData& OldRestoration) const;
+  void OnRep_Parry(const FGameplayAttributeData& OldParry) const;
 
 	/*
 	 * Resistance
 	 */
 
 	UFUNCTION()
-	void OnRep_PhysicalResistance(const FGameplayAttributeData& OldPhysicalResistance) const;
+	void OnRep_AirResistance(const FGameplayAttributeData& OldAirResistance) const;
 
 	UFUNCTION()
-	void OnRep_EnergyResistance(const FGameplayAttributeData& OldEnergyResistance) const;
+	void OnRep_ChaosResistance(const FGameplayAttributeData& OldChaosResistance) const;
 
 	UFUNCTION()
 	void OnRep_FireResistance(const FGameplayAttributeData& OldFireResistance) const;
 
 	UFUNCTION()
-	void OnRep_IceResistance(const FGameplayAttributeData& OldIceResistance) const;
+	void OnRep_WaterResistance(const FGameplayAttributeData& OldWaterResistance) const;
 
 	UFUNCTION()
 	void OnRep_LightningResistance(const FGameplayAttributeData& OldLightningResistance) const;
 
 	UFUNCTION()
-	void OnRep_NecroticResistance(const FGameplayAttributeData& OldNecroticResistance) const;
+	void OnRep_EarthResistance(const FGameplayAttributeData& OldEarthResistance) const;
 
 	/*
 	 * Special
@@ -353,6 +360,4 @@ private:
 	ICombatInterface* AvatarCombatInterface;
 
 	bool bAvatarDead = false;
-
-	FGameplayAttribute PrimeAttribute = FGameplayAttribute();
 };

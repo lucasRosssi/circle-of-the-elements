@@ -103,8 +103,23 @@ UAnimMontage* UActiveAbility::GetAnimMontage() const
 
 float UActiveAbility::GetMontagePlayRate() const
 {
-  const float ActionSpeed = IAttributeSetInterface::Execute_GetActionSpeed(GetOwningActorFromActorInfo());
-	return (MontagePlayRate.GetValueAtLevel(GetAbilityLevel()) + AdditionalMontagePlayRate) * ActionSpeed;
+  float AbilitySpeed = 0.f;
+
+  const FAuraGameplayTags& AuraTags = FAuraGameplayTags::Get();
+  if (SpeedAttributeTag.MatchesTagExact(AuraTags.Attributes_Secondary_AttackSpeed))
+  {
+    AbilitySpeed = IAttributeSetInterface::Execute_GetAttackSpeed(GetOwningActorFromActorInfo());
+  }
+  else if (SpeedAttributeTag.MatchesTagExact(AuraTags.Attributes_Secondary_CastSpeed))
+  {
+    AbilitySpeed = IAttributeSetInterface::Execute_GetCastSpeed(GetOwningActorFromActorInfo());
+  }
+  else if (SpeedAttributeTag.MatchesTagExact(AuraTags.Attributes_Secondary_MovementSpeed))
+  {
+    AbilitySpeed = IAttributeSetInterface::Execute_GetMovementSpeed(GetOwningActorFromActorInfo());
+  }
+    
+	return (MontagePlayRate.GetValueAtLevel(GetAbilityLevel()) + AdditionalMontagePlayRate) * AbilitySpeed;
 }
 
 float UActiveAbility::GetAnimRootMotionTranslateScale() const
