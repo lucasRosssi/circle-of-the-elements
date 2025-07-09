@@ -12,6 +12,28 @@
 class ASpiritActor;
 class UBaseAbility;
 
+UENUM(BlueprintType)
+enum class EDescriptionValueType : uint8
+{
+  Integer UMETA(DisplayName = "Integer"),
+  Float UMETA(DisplayName = "Float"),
+  Percent UMETA(DisplayName = "Percent"),
+
+  MAX UMETA(Hidden)
+};
+
+USTRUCT(BlueprintType)
+struct FDescriptionData
+{
+  GENERATED_BODY()
+
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+  EDescriptionValueType ValueType = EDescriptionValueType::Integer;
+
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+  FScalableFloat Value;
+};
+
 USTRUCT(BlueprintType)
 struct FAuraAbilityInfo
 {
@@ -56,17 +78,8 @@ struct FAuraAbilityInfo
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(MultiLine=true))
   FText Description = FText();
 
-  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(MultiLine=true))
-  FText NextLevelDescription = FText();
-
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-  TArray<FScalableFloat> DescriptionIntegers;
-
-  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-  TArray<FScalableFloat> DescriptionValues;
-
-  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-  TArray<FScalableFloat> DescriptionPercents;
+  TArray<FDescriptionData> DescriptionData;
 
   bool IsValid() const { return AbilityTag.IsValid(); }
 };

@@ -58,6 +58,7 @@ public:
   UFUNCTION(BlueprintCallable, Category="Manager|Ability|Description")
   void GetAbilityFormattedTexts(
     const FAuraAbilityInfo& AbilityInfo,
+    bool bNextLevel,
     FText& AbilityName,
     FText& AbilityDescription,
     FText& AbilityDetails

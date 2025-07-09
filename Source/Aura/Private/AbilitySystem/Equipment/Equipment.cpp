@@ -54,7 +54,7 @@ void UEquipment::Unequip()
   IEquipperInterface::Execute_Unequip(Owner.Get(), ID);
 }
 
-FString UEquipment::GetEquipmentDescription()
+FString UEquipment::GetEquipmentDescription(bool bNextLevel)
 {
   return FString();
 }

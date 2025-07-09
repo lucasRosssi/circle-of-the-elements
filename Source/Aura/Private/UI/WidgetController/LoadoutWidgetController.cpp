@@ -30,9 +30,9 @@ void ULoadoutWidgetController::OnEquipped(UEquipment* Equipment)
   OnEquippedDelegate.Broadcast(Equipment);
 }
 
-FString ULoadoutWidgetController::GetEquipmentDescription(UEquipment* Equipment)
+FString ULoadoutWidgetController::GetEquipmentDescription(UEquipment* Equipment, bool bNextLevel)
 {
-  return Equipment->GetEquipmentDescription();
+  return Equipment->GetEquipmentDescription(bNextLevel);
 }
 
 void ULoadoutWidgetController::EquipToInputPressed(

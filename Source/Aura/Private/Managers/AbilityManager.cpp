@@ -147,6 +147,7 @@ TArray<FAuraAbilityInfo> UAbilityManager::GetAbilitiesFromBag(const FGameplayTag
 
 void UAbilityManager::GetAbilityFormattedTexts(
   const FAuraAbilityInfo& AbilityInfo,
+  bool bNextLevel,
   FText& AbilityName,
   FText& AbilityDescription,
   FText& AbilityDetails
@@ -165,7 +166,8 @@ void UAbilityManager::GetAbilityFormattedTexts(
   UAuraAbilitySystemLibrary::FormatAbilityDescriptionAtLevel(
     AbilityInfo,
     1,
-    AbilityDescription
+    AbilityDescription,
+    bNextLevel
   );
 
   FString ManaCostText;

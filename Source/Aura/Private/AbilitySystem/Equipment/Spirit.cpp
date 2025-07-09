@@ -214,12 +214,13 @@ void USpirit::Unequip()
   }
 }
 
-FString USpirit::GetEquipmentDescription()
+FString USpirit::GetEquipmentDescription(bool bNextLevel)
 {
   return UAuraAbilitySystemLibrary::GetAbilityDescription(
     UAuraSystemsLibrary::GetAbilitiesInfo(Owner.Get()),
     AbilityTag,
-    Level
+    Level,
+    bNextLevel
   );
 }
 

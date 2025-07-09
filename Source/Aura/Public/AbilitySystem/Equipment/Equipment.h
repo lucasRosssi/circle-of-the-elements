@@ -23,7 +23,7 @@ public:
 
   void SetOwner(UObject* NewOwner) { Owner = NewOwner; }
 
-  virtual FString GetEquipmentDescription();
+  virtual FString GetEquipmentDescription(bool bNextLevel);
 
   UFUNCTION(BlueprintPure)
   FGuid GetID() const { return ID; }

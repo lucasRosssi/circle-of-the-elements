@@ -821,12 +821,13 @@ bool UAuraAbilitySystemLibrary::IsTargetInvulnerable(AActor* TargetActor)
 FString UAuraAbilitySystemLibrary::GetAbilityDescription(
   const UAbilityInfo* AbilityInfo,
   const FGameplayTag& AbilityTag,
-  int32 Level
+  int32 Level,
+  bool bNextLevel
 )
 {
   FAuraAbilityInfo Info = AbilityInfo->FindAbilityInfoByTag(AbilityTag);
   const UBaseAbility* Ability = Info.Ability.GetDefaultObject();
-  FormatAbilityDescriptionAtLevel(Info, Level, Info.Description);
+  FormatAbilityDescriptionAtLevel(Info, Level, Info.Description, bNextLevel);
 
   FString ManaCostText;
   FString CooldownText;
@@ -860,7 +861,7 @@ FString UAuraAbilitySystemLibrary::GetAbilityNextLevelDescription(
 {
   FAuraAbilityInfo Info = AbilityInfo->FindAbilityInfoByTag(AbilityTag);
   const UBaseAbility* Ability = Info.Ability.GetDefaultObject();
-  FormatAbilityDescriptionAtLevel(Info, Level, Info.NextLevelDescription);
+  FormatAbilityDescriptionAtLevel(Info, Level, Info.NextLevelDescription, true);
 
   FString ManaCostText;
   FString CooldownText;
@@ -888,71 +889,134 @@ FString UAuraAbilitySystemLibrary::GetAbilityNextLevelDescription(
 void UAuraAbilitySystemLibrary::FormatAbilityDescriptionAtLevel(
   const FAuraAbilityInfo& AbilityInfo,
   int32 Level,
-  FText& OutDescription
+  FText& OutDescription,
+  bool bNextLevel
 )
 {
   const FAuraNamedArguments& Args = FAuraNamedArguments::Get();
+  const FAuraGameplayTags& AuraTags = FAuraGameplayTags::Get();
   const UBaseAbility* Ability = AbilityInfo.Ability.GetDefaultObject();
+  if (!Ability) return;
+  const FGameplayTag& ElementTag = AbilityInfo.ElementTag;
+  if (!ElementTag.IsValid()) return;
+  
+  const TMap<FGameplayTag, FString> ElementTagMap = {
+    {AuraTags.Abilities_Element_Air, FString("<Air>")},
+    {AuraTags.Abilities_Element_Water, FString("<Water>")},
+    {AuraTags.Abilities_Element_Fire, FString("<Fire>")},
+    {AuraTags.Abilities_Element_Earth, FString("<Earth>")},
+    {AuraTags.Abilities_Element_Lightning, FString("<Lightning>")},
+    {AuraTags.Abilities_Element_Chaos, FString("<Chaos>")},
+  };
+  const TMap<FGameplayTag, FString> ElementNameMap = {
+    {AuraTags.Abilities_Element_Air, FString("air")},
+    {AuraTags.Abilities_Element_Water, FString("water")},
+    {AuraTags.Abilities_Element_Fire, FString("fire")},
+    {AuraTags.Abilities_Element_Earth, FString("earth")},
+    {AuraTags.Abilities_Element_Lightning, FString("lightning")},
+    {AuraTags.Abilities_Element_Chaos, FString("chaos")},
+  };
+  const FString& DescriptionElementTag = ElementTagMap[ElementTag];
+  const FString& DescriptionElementName = ElementNameMap[ElementTag];
 
   if (IAbilityInterface::Execute_IsDamageAbility(Ability))
   {
-    const FGameplayTag& DamageTypeTag = IAbilityInterface::Execute_GetDamageTypeTag(Ability);
-    if (const auto Tuple = Args.DamageTypeTexts.Find(DamageTypeTag))
+    FString DmgString;
+    if (bNextLevel)
     {
-      OutDescription = FText::FormatNamed(
-        OutDescription,
-        Tuple->Key,
-        Tuple->Value
+      DmgString = FString::Printf(
+        TEXT("<Old>%d</> > %s%d %s</>"),
+        IAbilityInterface::Execute_GetRoundedDamageAtLevel(Ability, Level),
+        *DescriptionElementTag,
+        IAbilityInterface::Execute_GetRoundedDamageAtLevel(Ability, Level + 1),
+        *DescriptionElementName
       );
     }
-    if (const auto NextTuple = Args.NextDamageTypeTexts.Find(DamageTypeTag))
+    else
     {
-      OutDescription = FText::FormatNamed(
-        OutDescription,
-        NextTuple->Key,
-        NextTuple->Value
+      DmgString = FString::Printf(
+        TEXT("%s%d %s</>"),
+        *DescriptionElementTag,
+        IAbilityInterface::Execute_GetRoundedDamageAtLevel(Ability, Level),
+        *DescriptionElementName
       );
     }
-
+    
     OutDescription = FText::FormatNamed(
       OutDescription,
       Args.Dmg,
-      IAbilityInterface::Execute_GetRoundedDamageAtLevel(Ability, Level),
-      Args.Dmg_,
-      IAbilityInterface::Execute_GetRoundedDamageAtLevel(Ability, Level + 1)
+      FText::FromString(DmgString)
     );
   }
 
-  FNumberFormattingOptions NumberFormatOptions;
-  NumberFormatOptions.MinimumFractionalDigits = 0;
-  NumberFormatOptions.MaximumFractionalDigits = 2;
-
-  const TArray<FScalableFloat>& Percents = AbilityInfo.DescriptionPercents;
-  if (Percents.Num() > 0)
+  const TArray<FDescriptionData>& Data = AbilityInfo.DescriptionData;
+  if (Data.Num() > 0)
   {
-    for (int32 i = 0; i < Percents.Num(); i++)
+    for (int32 i = 0; i < Data.Num(); i++)
     {
+      FText Value;
+      FText NextValue;
+      
+      switch (Data[i].ValueType)
+      {
+      case EDescriptionValueType::Integer:
+        {
+          FNumberFormattingOptions IntFormatOptions;
+          IntFormatOptions.MaximumFractionalDigits = 0;
+          
+          Value = FText::AsNumber(Data[i].Value.AsInteger(Level), &IntFormatOptions);
+          NextValue = FText::AsNumber(Data[i].Value.AsInteger(Level + 1), &IntFormatOptions);
+          break;
+        }
+      case EDescriptionValueType::Float:
+        {
+          FNumberFormattingOptions NumberFormatOptions;
+          NumberFormatOptions.MinimumFractionalDigits = 0;
+          NumberFormatOptions.MaximumFractionalDigits = 2;
+          
+          Value = FText::AsNumber(Data[i].Value.GetValueAtLevel(Level), &NumberFormatOptions);
+          NextValue = FText::AsNumber(Data[i].Value.GetValueAtLevel(Level), &NumberFormatOptions);
+          break;
+        }
+      case EDescriptionValueType::Percent:
+        {
+          FNumberFormattingOptions NumberFormatOptions;
+          NumberFormatOptions.MinimumFractionalDigits = 0;
+          NumberFormatOptions.MaximumFractionalDigits = 2;
+
+          Value = FText::AsPercent(Data[i].Value.GetValueAtLevel(Level), &NumberFormatOptions);
+          NextValue = FText::AsPercent(Data[i].Value.GetValueAtLevel(Level), &NumberFormatOptions);
+          break;
+        }
+      default:
+        {
+          break;
+        }
+      }
+
+      FString ValueString;
+      if (bNextLevel && !NextValue.EqualTo(Value))
+      {
+        ValueString = FString::Printf(
+          TEXT("<Old>%s</> > %s%s</>"),
+          *Value.ToString(),
+          *DescriptionElementTag,
+          *NextValue.ToString()
+        );
+      }
+      else
+      {
+        ValueString = FString::Printf(
+          TEXT("%s%s</>"),
+          *DescriptionElementTag,
+          *Value.ToString()
+        );
+      }
+
       OutDescription = FText::FormatNamed(
         OutDescription,
-        Args.AbilityGenericArgs[i].Percent,
-        FText::AsNumber(Percents[i].GetValueAtLevel(Level) * 100, &NumberFormatOptions),
-        Args.AbilityGenericArgs[i].Percent_,
-        FText::AsNumber(Percents[i].GetValueAtLevel(Level + 1) * 100, &NumberFormatOptions)
-      );
-    }
-  }
-
-  const TArray<FScalableFloat>& Values = AbilityInfo.DescriptionValues;
-  if (Values.Num() > 0)
-  {
-    for (int32 i = 0; i < Values.Num(); i++)
-    {
-      OutDescription = FText::FormatNamed(
-        OutDescription,
-        Args.AbilityGenericArgs[i].Value,
-        FText::AsNumber(Values[i].GetValueAtLevel(Level), &NumberFormatOptions),
-        Args.AbilityGenericArgs[i].Value_,
-        FText::AsNumber(Values[i].GetValueAtLevel(Level + 1), &NumberFormatOptions)
+        Args.AbilityGenericArgs[i],
+        FText::FromString(ValueString)
       );
     }
   }
@@ -971,9 +1035,9 @@ void UAuraAbilitySystemLibrary::FormatUpgradeDescriptionAtLevel(
     {
       OutDescription = FText::FormatNamed(
         OutDescription,
-        Args.AbilityGenericArgs[i].Percent,
+        Args.AbilityGenericArgs[i],
         Percents[i].GetValueAtLevel(Level) * 100,
-        Args.AbilityGenericArgs[i].Percent_,
+        Args.AbilityGenericArgs[i],
         Percents[i].GetValueAtLevel(Level + 1) * 100
       );
     }
@@ -986,9 +1050,9 @@ void UAuraAbilitySystemLibrary::FormatUpgradeDescriptionAtLevel(
     {
       OutDescription = FText::FormatNamed(
         OutDescription,
-        Args.AbilityGenericArgs[i].Value,
+        Args.AbilityGenericArgs[i],
         Values[i].GetValueAtLevel(Level),
-        Args.AbilityGenericArgs[i].Value_,
+        Args.AbilityGenericArgs[i],
         Values[i].GetValueAtLevel(Level + 1)
       );
     }

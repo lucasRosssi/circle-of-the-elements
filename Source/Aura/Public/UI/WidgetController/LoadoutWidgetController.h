@@ -50,7 +50,7 @@ public:
   void OnEquipped(UEquipment* Equipment);
 
   UFUNCTION(BlueprintCallable)
-  FString GetEquipmentDescription(UEquipment* Equipment);
+  FString GetEquipmentDescription(UEquipment* Equipment, bool bNextLevel);
 
   UFUNCTION(BlueprintCallable)
   void EquipToInputPressed(USpirit* Spirit, const int32 Slot);

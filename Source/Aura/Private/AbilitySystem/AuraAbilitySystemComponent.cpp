@@ -426,7 +426,8 @@ void UAuraAbilitySystemComponent::UnlockAbility(FGameplayAbilitySpec& AbilitySpe
 
 FString UAuraAbilitySystemComponent::GetDescriptionByAbilityTag(
 	const UAbilityInfo* AbilityInfo,
-	const FGameplayTag& AbilityTag
+	const FGameplayTag& AbilityTag,
+	bool bNextLevel
 	)
 {
 	if (const FGameplayAbilitySpec* AbilitySpec = GetSpecFromAbilityTag(AbilityTag))
@@ -434,7 +435,8 @@ FString UAuraAbilitySystemComponent::GetDescriptionByAbilityTag(
 		return UAuraAbilitySystemLibrary::GetAbilityDescription(
 			AbilityInfo,
 			AbilityTag,
-			AbilitySpec->Level
+			AbilitySpec->Level,
+			bNextLevel
 		);
 	}
 
