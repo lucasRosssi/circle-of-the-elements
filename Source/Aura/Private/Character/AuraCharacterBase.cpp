@@ -449,6 +449,7 @@ void AAuraCharacterBase::CheckVelocityNearStop()
 void AAuraCharacterBase::ChangeMovementSpeed(float InMovementSpeed)
 {
   GetCharacterMovement()->MaxWalkSpeed = DefaultWalkSpeed * InMovementSpeed;
+  GetAnimInstance()->SetMovementPlayRate(InMovementSpeed);
 }
 
 UAuraAbilitySystemComponent* AAuraCharacterBase::GetAuraASC()
