@@ -829,15 +829,25 @@ FString UAuraAbilitySystemLibrary::GetAbilityDescription(
   const UBaseAbility* Ability = Info.Ability.GetDefaultObject();
   FormatAbilityDescriptionAtLevel(Info, Level, Info.Description, bNextLevel);
 
+  FString LevelText;
   FString ManaCostText;
   FString CooldownText;
   FString ChargesText;
-  MakeAbilityDetailsText(Ability, Level, ManaCostText, CooldownText, ChargesText);
+  if (bNextLevel)
+  {
+    LevelText = FString::Printf(TEXT("Level <Old>%d</> > <Level>%d</>"), Level, Level + 1);
+    MakeAbilityDetailsTextNextLevel(Ability, Level, ManaCostText, CooldownText);
+  }
+  else
+  {
+    LevelText = FString::Printf(TEXT("Level <Level>%d</>"), Level);
+    MakeAbilityDetailsText(Ability, Level, ManaCostText, CooldownText, ChargesText);
+  }
 
   return FString::Printf(
     TEXT(
       "<Title>%s </>\n"
-      "<Title18>Level </><Level>%d</>\n"
+      "%s\n"
       "\n"
       "%s\n"
       "%s"
@@ -845,7 +855,7 @@ FString UAuraAbilitySystemLibrary::GetAbilityDescription(
       "%s"
     ),
     *Info.Name.ToString(),
-    Level,
+    *LevelText,
     *Info.Description.ToString(),
     *ManaCostText,
     *ChargesText,
@@ -861,11 +871,11 @@ FString UAuraAbilitySystemLibrary::GetAbilityNextLevelDescription(
 {
   FAuraAbilityInfo Info = AbilityInfo->FindAbilityInfoByTag(AbilityTag);
   const UBaseAbility* Ability = Info.Ability.GetDefaultObject();
-  FormatAbilityDescriptionAtLevel(Info, Level, Info.NextLevelDescription, true);
+  FormatAbilityDescriptionAtLevel(Info, Level, Info.Description, true);
 
   FString ManaCostText;
   FString CooldownText;
-  MakeManaAndCooldownTextNextLevel(Ability, Level, ManaCostText, CooldownText);
+  MakeAbilityDetailsTextNextLevel(Ability, Level, ManaCostText, CooldownText);
 
   return FString::Printf(
     TEXT(
@@ -880,7 +890,7 @@ FString UAuraAbilitySystemLibrary::GetAbilityNextLevelDescription(
     *Info.Name.ToString(),
     Level,
     Level + 1,
-    *Info.NextLevelDescription.ToString(),
+    *Info.Description.ToString(),
     *ManaCostText,
     *CooldownText
   );
@@ -919,13 +929,15 @@ void UAuraAbilitySystemLibrary::FormatAbilityDescriptionAtLevel(
   const FString& DescriptionElementTag = ElementTagMap[ElementTag];
   const FString& DescriptionElementName = ElementNameMap[ElementTag];
 
+  FFormatNamedArguments Arguments;
+
   if (IAbilityInterface::Execute_IsDamageAbility(Ability))
   {
     FString DmgString;
     if (bNextLevel)
     {
       DmgString = FString::Printf(
-        TEXT("<Old>%d</> > %s%d %s</>"),
+        TEXT("<Old>%d</> > %s%d %s</> damage"),
         IAbilityInterface::Execute_GetRoundedDamageAtLevel(Ability, Level),
         *DescriptionElementTag,
         IAbilityInterface::Execute_GetRoundedDamageAtLevel(Ability, Level + 1),
@@ -941,12 +953,8 @@ void UAuraAbilitySystemLibrary::FormatAbilityDescriptionAtLevel(
         *DescriptionElementName
       );
     }
-    
-    OutDescription = FText::FormatNamed(
-      OutDescription,
-      Args.Dmg,
-      FText::FromString(DmgString)
-    );
+
+    Arguments.Add(Args.Dmg, FText::FromString(DmgString));
   }
 
   const TArray<FDescriptionData>& Data = AbilityInfo.DescriptionData;
@@ -956,43 +964,44 @@ void UAuraAbilitySystemLibrary::FormatAbilityDescriptionAtLevel(
     {
       FText Value;
       FText NextValue;
-      
+      FText PluralText;
+
+      FNumberFormattingOptions FormatOptions;
+      FormatOptions.MinimumFractionalDigits = 0;
+      FormatOptions.MaximumFractionalDigits = Data[i].ValueType == EDescriptionValueType::Integer ? 0 : 2;
+
+      float CurrentValue = 0.f;
+      float NextLevelValue = 0.f;
+
       switch (Data[i].ValueType)
       {
       case EDescriptionValueType::Integer:
-        {
-          FNumberFormattingOptions IntFormatOptions;
-          IntFormatOptions.MaximumFractionalDigits = 0;
-          
-          Value = FText::AsNumber(Data[i].Value.AsInteger(Level), &IntFormatOptions);
-          NextValue = FText::AsNumber(Data[i].Value.AsInteger(Level + 1), &IntFormatOptions);
-          break;
-        }
+        CurrentValue = static_cast<float>(Data[i].Value.AsInteger(Level));
+        NextLevelValue = static_cast<float>(Data[i].Value.AsInteger(Level + 1));
+        break;
       case EDescriptionValueType::Float:
-        {
-          FNumberFormattingOptions NumberFormatOptions;
-          NumberFormatOptions.MinimumFractionalDigits = 0;
-          NumberFormatOptions.MaximumFractionalDigits = 2;
-          
-          Value = FText::AsNumber(Data[i].Value.GetValueAtLevel(Level), &NumberFormatOptions);
-          NextValue = FText::AsNumber(Data[i].Value.GetValueAtLevel(Level), &NumberFormatOptions);
-          break;
-        }
       case EDescriptionValueType::Percent:
-        {
-          FNumberFormattingOptions NumberFormatOptions;
-          NumberFormatOptions.MinimumFractionalDigits = 0;
-          NumberFormatOptions.MaximumFractionalDigits = 2;
-
-          Value = FText::AsPercent(Data[i].Value.GetValueAtLevel(Level), &NumberFormatOptions);
-          NextValue = FText::AsPercent(Data[i].Value.GetValueAtLevel(Level), &NumberFormatOptions);
-          break;
-        }
+        CurrentValue = Data[i].Value.GetValueAtLevel(Level);
+        NextLevelValue = Data[i].Value.GetValueAtLevel(Level + 1);
+        break;
       default:
-        {
-          break;
-        }
+        continue;
       }
+
+      if (Data[i].ValueType == EDescriptionValueType::Percent)
+      {
+        Value = FText::AsPercent(CurrentValue, &FormatOptions);
+        NextValue = FText::AsPercent(NextLevelValue, &FormatOptions);
+      }
+      else
+      {
+        Value = FText::AsNumber(CurrentValue, &FormatOptions);
+        NextValue = FText::AsNumber(NextLevelValue, &FormatOptions);
+      }
+
+      PluralText = !bNextLevel && CurrentValue > 1.f || (bNextLevel && NextLevelValue > 1.f)
+          ? FText::FromString("s") 
+          : FText();
 
       FString ValueString;
       if (bNextLevel && !NextValue.EqualTo(Value))
@@ -1013,13 +1022,15 @@ void UAuraAbilitySystemLibrary::FormatAbilityDescriptionAtLevel(
         );
       }
 
-      OutDescription = FText::FormatNamed(
-        OutDescription,
-        Args.AbilityGenericArgs[i],
-        FText::FromString(ValueString)
-      );
+      Arguments.Add(Args.AbilityGenericArgs[i], FText::FromString(ValueString));
+      Arguments.Add(Args.AbilityPluralArgs[i], PluralText);
     }
   }
+
+  OutDescription = FText::Format(
+    FTextFormat::FromString(OutDescription.ToString()),
+    Arguments
+  );
 }
 
 void UAuraAbilitySystemLibrary::FormatUpgradeDescriptionAtLevel(
@@ -1153,7 +1164,7 @@ void UAuraAbilitySystemLibrary::MakeAbilityDetailsText(
   }
 }
 
-void UAuraAbilitySystemLibrary::MakeManaAndCooldownTextNextLevel(
+void UAuraAbilitySystemLibrary::MakeAbilityDetailsTextNextLevel(
   const UBaseAbility* Ability,
   int32 Level,
   FString& OutManaText,
@@ -1173,7 +1184,7 @@ void UAuraAbilitySystemLibrary::MakeManaAndCooldownTextNextLevel(
     else
     {
       OutManaText = FString::Printf(
-        TEXT("<Info>Mana - </><Mana>%d</>"),
+        TEXT("\n<Info>Mana - </><Mana>%d</>"),
         ManaCost
       );
     }
@@ -1181,7 +1192,7 @@ void UAuraAbilitySystemLibrary::MakeManaAndCooldownTextNextLevel(
   else
   {
     OutManaText = FString::Printf(
-      TEXT("<Info>Mana - </><Old>%d</> > <Mana>%d</>"),
+      TEXT("\n<Info>Mana - </><Old>%d</> > <Mana>%d</>"),
       ManaCost,
       NextManaCost
     );
@@ -1196,7 +1207,7 @@ void UAuraAbilitySystemLibrary::MakeManaAndCooldownTextNextLevel(
     else
     {
       OutCooldownText = FString::Printf(
-        TEXT("<Info>Cooldown - </>%ds"),
+        TEXT("\n<Info>Cooldown - </>%ds"),
         Cooldown
       );
     }
@@ -1204,7 +1215,7 @@ void UAuraAbilitySystemLibrary::MakeManaAndCooldownTextNextLevel(
   else
   {
     OutCooldownText = FString::Printf(
-      TEXT("<Info>Cooldown - </><Old>%d</> > %ds"),
+      TEXT("\n<Info>Cooldown - </><Old>%d</> > %ds"),
       Cooldown,
       NextCooldown
     );

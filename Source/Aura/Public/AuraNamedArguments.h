@@ -27,6 +27,7 @@ public:
 	FString Dmg;
 
   TArray<FString> AbilityGenericArgs;
+  TArray<FString> AbilityPluralArgs;
 
 private:
 	static FAuraNamedArguments NamedArguments;

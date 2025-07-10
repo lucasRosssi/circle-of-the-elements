@@ -32,6 +32,9 @@ struct FDescriptionData
 
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
   FScalableFloat Value;
+
+  UPROPERTY(VisibleDefaultsOnly, meta=(HideInDetailPanel))
+  FName Name;
 };
 
 USTRUCT(BlueprintType)
@@ -78,7 +81,7 @@ struct FAuraAbilityInfo
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(MultiLine=true))
   FText Description = FText();
 
-  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(TitleProperty="Name"))
   TArray<FDescriptionData> DescriptionData;
 
   bool IsValid() const { return AbilityTag.IsValid(); }

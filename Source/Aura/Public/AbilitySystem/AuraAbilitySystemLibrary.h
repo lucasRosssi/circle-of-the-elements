@@ -437,7 +437,7 @@ public:
 		FString& OutChargesText
 		);
 	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|UI")
-	static void MakeManaAndCooldownTextNextLevel(
+	static void MakeAbilityDetailsTextNextLevel(
 		const UBaseAbility* Ability,
 		int32 Level,
 		FString& OutManaText,

@@ -20,6 +20,11 @@ void UAbilityInfo::PostEditChangeChainProperty(FPropertyChangedChainEvent& Prope
         AbilityInfo.ElementTag = ElementTag;
         AbilityInfo.AbilityTag = AbilityTag;
         AbilityInfo.BackgroundMaterial = ElementInfo.BackgroundMaterial;
+
+        for (FDescriptionData& Desc : AbilityInfo.DescriptionData)
+        {
+          Desc.Name = Desc.Value.Curve.RowName;
+        }
       }
     }
   }

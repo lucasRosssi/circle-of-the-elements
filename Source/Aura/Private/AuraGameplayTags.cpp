@@ -1684,6 +1684,36 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
     FString("Soul essence resource")
   );
 
+  GameplayTags.Resources_Essence_Air = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Resources.Essence.Air"),
+    FString("Air essence resource")
+  );
+
+  GameplayTags.Resources_Essence_Fire = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Resources.Essence.Fire"),
+    FString("Fire essence resource")
+  );
+
+  GameplayTags.Resources_Essence_Water = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Resources.Essence.Water"),
+    FString("Water essence resource")
+  );
+
+  GameplayTags.Resources_Essence_Earth = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Resources.Essence.Earth"),
+    FString("Earth essence resource")
+  );
+
+  GameplayTags.Resources_Essence_Lightning = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Resources.Essence.Lightning"),
+    FString("Lightning essence resource")
+  );
+
+  GameplayTags.Resources_Essence_Chaos = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Resources.Essence.Chaos"),
+    FString("Chaos essence resource")
+  );
+
   /*
    * MODIFIERS
    */

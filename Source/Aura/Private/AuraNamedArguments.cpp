@@ -14,9 +14,9 @@ void FAuraNamedArguments::InitializeNamedArguments()
   
 	NamedArguments.Dmg = FString("Dmg");
 
-  NamedArguments.AbilityGenericArgs.Add(FString("x"));
-  NamedArguments.AbilityGenericArgs.Add(FString("x2"));
-  NamedArguments.AbilityGenericArgs.Add(FString("x3"));
-  NamedArguments.AbilityGenericArgs.Add(FString("x4"));
-  NamedArguments.AbilityGenericArgs.Add(FString("x5"));
+  for (int32 i = 1; i <= 10; i++)
+  {
+    NamedArguments.AbilityGenericArgs.Add(FString::Printf(TEXT("v%d"), i));
+    NamedArguments.AbilityPluralArgs.Add(FString::Printf(TEXT("v%d_s"), i));
+  }
 }

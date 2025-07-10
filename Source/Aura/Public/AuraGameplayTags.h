@@ -459,6 +459,12 @@ public:
 
   FGameplayTag Resources_Essence;
   FGameplayTag Resources_Essence_Soul;
+  FGameplayTag Resources_Essence_Air;
+  FGameplayTag Resources_Essence_Fire;
+  FGameplayTag Resources_Essence_Water;
+  FGameplayTag Resources_Essence_Earth;
+  FGameplayTag Resources_Essence_Lightning;
+  FGameplayTag Resources_Essence_Chaos;
 
   /* MODIFIERS */
 
