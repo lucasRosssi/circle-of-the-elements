@@ -7,11 +7,11 @@
 
 UMMC_Cooldown::UMMC_Cooldown()
 {
-	CooldownReductionDef.AttributeToCapture = UAuraAttributeSet::GetCooldownReductionAttribute();
-	CooldownReductionDef.AttributeSource = EGameplayEffectAttributeCaptureSource::Target;
-	CooldownReductionDef.bSnapshot = false;
+	CooldownSpeedDef.AttributeToCapture = UAuraAttributeSet::GetCooldownSpeedAttribute();
+	CooldownSpeedDef.AttributeSource = EGameplayEffectAttributeCaptureSource::Target;
+	CooldownSpeedDef.bSnapshot = false;
 
-	RelevantAttributesToCapture.Add(CooldownReductionDef);
+	RelevantAttributesToCapture.Add(CooldownSpeedDef);
 }
 
 float UMMC_Cooldown::CalculateBaseMagnitude_Implementation(const FGameplayEffectSpec& Spec) const
@@ -23,10 +23,9 @@ float UMMC_Cooldown::CalculateBaseMagnitude_Implementation(const FGameplayEffect
 	EvaluationParameters.SourceTags = SourceTags;
 	EvaluationParameters.TargetTags = TargetTags;
 
-	float CooldownReduction = 0;
-	GetCapturedAttributeMagnitude(CooldownReductionDef, Spec, EvaluationParameters, CooldownReduction);
-	CooldownReduction = FMath::Min<float>(CooldownReduction, 1.f);
+	float CooldownSpeed = 0;
+	GetCapturedAttributeMagnitude(CooldownSpeedDef, Spec, EvaluationParameters, CooldownSpeed);
+	CooldownSpeed = FMath::Max<float>(CooldownSpeed, 0.5f);
 	
-	return 1.f - CooldownReduction;
+	return 1.f / CooldownSpeed;
 }
-

@@ -41,7 +41,6 @@ public:
 
   UFUNCTION(BlueprintPure, Category="Manager|Ability")
   TMap<FGameplayTag, FAuraAbilityInfo> GetElementAbilities(
-    ECharacterName CharacterName,
     const FGameplayTag ElementTag
   );
   UFUNCTION(BlueprintPure, Category="Manager|Ability")
@@ -50,7 +49,6 @@ public:
   FAuraAbilityInfo FindAbilityInfoByTag(const FGameplayTag& AbilityTag);
   UFUNCTION(BlueprintCallable, Category="Manager|Ability")
   TArray<FAuraAbilityInfo> RandomizeElementAbilities(
-    ECharacterName CharacterName,
     const FGameplayTag& ElementTag,
     int32 Amount = 3
   );
@@ -60,6 +58,7 @@ public:
   UFUNCTION(BlueprintCallable, Category="Manager|Ability|Description")
   void GetAbilityFormattedTexts(
     const FAuraAbilityInfo& AbilityInfo,
+    bool bNextLevel,
     FText& AbilityName,
     FText& AbilityDescription,
     FText& AbilityDetails
@@ -118,7 +117,6 @@ private:
   void AssignInitialAbilities();
   FGameplayTag RandomizeTier(const TMap<FGameplayTag, int32>& TierMap);
   TMap<FGameplayTag, FAuraAbilityInfo> GetRemainingElementAbilities(
-    ECharacterName CharacterName,
     const FGameplayTag ElementTag
   );
   TArray<FAuraAbilityInfo> GetRemainingTierAbilities(
@@ -130,9 +128,5 @@ private:
 
   FGameplayTag GetAvailableInputTag(UAuraAbilitySystemComponent* AuraASC);
 
-  ECharacterName GetHeroName();
-
   TMap<FGameplayTag, FGameplayTagContainer> OverridenAbilitiesContainer;
-
-  ECharacterName HeroName = ECharacterName::Undefined;
 };

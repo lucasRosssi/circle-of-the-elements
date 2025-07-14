@@ -48,7 +48,7 @@ public:
 
   virtual bool Equip(int32 Slot) override;
   virtual void Unequip() override;
-  virtual FString GetEquipmentDescription() override;
+  virtual FString GetEquipmentDescription(bool bNextLevel) override;
 
   UFUNCTION(BlueprintPure)
   int32 GetSlot() const { return MySlot; }

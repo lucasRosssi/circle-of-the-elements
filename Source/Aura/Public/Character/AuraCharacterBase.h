@@ -82,7 +82,7 @@ public:
   UFUNCTION(BlueprintImplementableEvent)
   void OnSpawned();
 
-  void ChangeActionSpeed(float InActionSpeed);
+  void ChangeMovementSpeed(float InMovementSpeed);
 
   UTeamComponent* GetTeamComponent() const { return TeamComponent; }
 
@@ -107,14 +107,6 @@ public:
   TArray<TSubclassOf<UGameplayAbility>> NativeCharacterAbilities;
   UPROPERTY(EditDefaultsOnly, Category="Character Defaults|Effects|Startup", meta=(DisplayPriority=3))
   TArray<TSubclassOf<UGameplayEffect>> NativeEffects;
-
-  UPROPERTY(
-    EditDefaultsOnly,
-    BlueprintReadOnly,
-    Category="Character Defaults|Attributes",
-    meta=(Categories="Attributes.Primary")
-  )
-  FGameplayTag PrimeAttributeTag = FGameplayTag();
 
 protected:
   virtual void BeginPlay() override;

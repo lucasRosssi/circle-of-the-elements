@@ -118,7 +118,8 @@ public:
 
 	FString GetDescriptionByAbilityTag(
 		const UAbilityInfo* AbilityInfo,
-		const FGameplayTag& AbilityTag
+		const FGameplayTag& AbilityTag,
+		bool bNextLevel
 		);
 	FString GetNextLevelDescriptionByAbilityTag(
 		const UAbilityInfo* AbilityInfo,

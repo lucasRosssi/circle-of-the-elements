@@ -12,6 +12,31 @@
 class ASpiritActor;
 class UBaseAbility;
 
+UENUM(BlueprintType)
+enum class EDescriptionValueType : uint8
+{
+  Integer UMETA(DisplayName = "Integer"),
+  Float UMETA(DisplayName = "Float"),
+  Percent UMETA(DisplayName = "Percent"),
+
+  MAX UMETA(Hidden)
+};
+
+USTRUCT(BlueprintType)
+struct FDescriptionData
+{
+  GENERATED_BODY()
+
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+  EDescriptionValueType ValueType = EDescriptionValueType::Integer;
+
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+  FScalableFloat Value;
+
+  UPROPERTY(VisibleDefaultsOnly, meta=(HideInDetailPanel))
+  FName Name;
+};
+
 USTRUCT(BlueprintType)
 struct FAuraAbilityInfo
 {
@@ -20,10 +45,10 @@ struct FAuraAbilityInfo
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
   TSubclassOf<UBaseAbility> Ability;
 
-  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(Categories="Abilities"))
+  UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
   FGameplayTag AbilityTag = FGameplayTag();
 
-  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(Categories="Abilities.Element"))
+  UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
   FGameplayTag ElementTag = FGameplayTag();
 
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(Categories="Abilities.Tier"))
@@ -44,14 +69,11 @@ struct FAuraAbilityInfo
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
   TObjectPtr<const UTexture2D> Icon = nullptr;
 
-  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+  UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
   TObjectPtr<const UMaterialInterface> BackgroundMaterial = nullptr;
 
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
   TSubclassOf<ASpiritActor> SpiritActor;
-
-  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(Categories="Abilities"))
-  FGameplayTagContainer AbilitiesRequirement;
 
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
   FText Name = FText();
@@ -59,14 +81,8 @@ struct FAuraAbilityInfo
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(MultiLine=true))
   FText Description = FText();
 
-  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(MultiLine=true))
-  FText NextLevelDescription = FText();
-
-  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-  TArray<FScalableFloat> DescriptionValues;
-
-  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-  TArray<FScalableFloat> DescriptionPercents;
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(TitleProperty="Name"))
+  TArray<FDescriptionData> DescriptionData;
 
   bool IsValid() const { return AbilityTag.IsValid(); }
 };
@@ -81,15 +97,18 @@ struct FAbilityInfoParams
 
   UPROPERTY(BlueprintReadWrite)
   FGameplayTag ElementTag = FGameplayTag();
-
-  UPROPERTY(BlueprintReadWrite)
-  ECharacterName HeroName = ECharacterName::Undefined;
 };
 
 USTRUCT(BlueprintType)
-struct FAbilityListMapStruct
+struct FAbilityElementInfo
 {
   GENERATED_BODY()
+
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+  TObjectPtr<const UMaterialInterface> BackgroundMaterial = nullptr;
+
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+  TSubclassOf<ASpiritActor> ElementSpiritActorDefault;
 
   UPROPERTY(
     EditDefaultsOnly,
@@ -103,27 +122,6 @@ struct FAbilityListMapStruct
     )
   )
   TMap<FGameplayTag, FAuraAbilityInfo> AbilityList;
-
-  
-  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-  TSubclassOf<ASpiritActor> ElementSpiritActorDefault;
-};
-
-USTRUCT(BlueprintType)
-struct FElementsMapStruct
-{
-  GENERATED_BODY()
-
-  UPROPERTY(
-    EditDefaultsOnly,
-    BlueprintReadOnly,
-    meta=(
-      NoResetToDefault,
-      ForceInlineRow,
-      Categories="Abilities.Element"
-    )
-  )
-  TMap<FGameplayTag, FAbilityListMapStruct> Elements;
 };
 
 /**
@@ -135,34 +133,29 @@ class AURA_API UAbilityInfo : public UDataAsset
   GENERATED_BODY()
 
 public:
-  FAuraAbilityInfo FindAbilityInfoByTag(
-    const FGameplayTag& AbilityTag,
-    bool bLogNotFound = false
-  ) const;
+#if WITH_EDITOR
+  virtual void PostEditChangeChainProperty(FPropertyChangedChainEvent& PropertyChangedEvent) override;;
+#endif
+  
+  FAuraAbilityInfo FindAbilityInfoByTag(const FGameplayTag& AbilityTag) const;
 
-  FElementsMapStruct FindCharacterAbilities(
-    ECharacterName CharacterName,
-    bool bLogNotFound = false
-  ) const;
+  TMap<FGameplayTag, FAuraAbilityInfo> FindElementAbilities(const FGameplayTag& ElementTag) const;
 
-  TMap<FGameplayTag, FAuraAbilityInfo> FindCharacterAbilitiesOfElement(
-    ECharacterName CharacterName,
-    const FGameplayTag& ElementTag,
-    bool bLogNotFound = false
-  ) const;
+  FAuraAbilityInfo FindAbilityInfoWithParams(const FAbilityInfoParams& Params) const;
 
-  FAuraAbilityInfo FindAbilityInfoWithParams(
-    const FAbilityInfoParams& Params,
-    bool bLogNotFound = false
-  ) const;
+  FAbilityElementInfo FindElementInfo(const FGameplayTag& ElementTag) const;
 
   UPROPERTY(
     EditDefaultsOnly,
     BlueprintReadOnly,
     Category="AbilityInformation",
-    meta=(NoResetToDefault)
+    meta=(
+      NoResetToDefault,
+      ForceInlineRow,
+      Categories="Abilities.Element"
+    )
   )
-  TMap<ECharacterName, FElementsMapStruct> Abilities;
+  TMap<FGameplayTag, FAbilityElementInfo> Abilities;
 
   UPROPERTY(
     EditDefaultsOnly,

@@ -5,92 +5,84 @@
 
 #include "Aura/AuraLogChannels.h"
 
+void UAbilityInfo::PostEditChangeChainProperty(FPropertyChangedChainEvent& PropertyChangedEvent)
+{
+  Super::PostEditChangeChainProperty(PropertyChangedEvent);
+
+  const FName MemberPropertyName = PropertyChangedEvent.PropertyChain.GetActiveMemberNode()->GetValue()->GetFName();
+
+  if (MemberPropertyName == GET_MEMBER_NAME_CHECKED(UAbilityInfo, Abilities))
+  {
+    for (auto& [ElementTag, ElementInfo] : Abilities)
+    {
+      for (auto& [AbilityTag, AbilityInfo] : ElementInfo.AbilityList)
+      {
+        AbilityInfo.ElementTag = ElementTag;
+        AbilityInfo.AbilityTag = AbilityTag;
+        AbilityInfo.BackgroundMaterial = ElementInfo.BackgroundMaterial;
+
+        for (FDescriptionData& Desc : AbilityInfo.DescriptionData)
+        {
+          Desc.Name = Desc.Value.Curve.RowName;
+        }
+      }
+    }
+  }
+}
+
 FAuraAbilityInfo UAbilityInfo::FindAbilityInfoByTag(
-	const FGameplayTag& AbilityTag,
-	bool bLogNotFound
+	const FGameplayTag& AbilityTag
 ) const
 {
-	for (const auto Data : Abilities)
+	for (auto Element : Abilities)
 	{
-		for (auto Element : Abilities[ECharacterName::Vilkar].Elements)
+		FAuraAbilityInfo* Info = Element.Value.AbilityList.Find(AbilityTag);
+		if (Info != nullptr)
 		{
-			FAuraAbilityInfo* Info = Element.Value.AbilityList.Find(AbilityTag);
-			if (Info != nullptr)
-			{
-				return *Info;
-			}
+		  Info->ElementTag = Element.Key;
+			return *Info;
 		}
 	}
 
-	if (bLogNotFound)
-	{
-		UE_LOG(
-			LogAura,
-			Error,
-			TEXT("Can't find Info for AbilityTag [%s] on AbilityInfo [%s]"), 
-			*AbilityTag.ToString(), *GetNameSafe(this)
-		);
-	}
+	UE_LOG(
+		LogAura,
+		Error,
+		TEXT("Can't find Info for AbilityTag [%s] on AbilityInfo [%s]"), 
+		*AbilityTag.ToString(), *GetNameSafe(this)
+	);
+	
 
 	return FAuraAbilityInfo();
 }
 
-FElementsMapStruct UAbilityInfo::FindCharacterAbilities(ECharacterName CharacterName, bool bLogNotFound) const
+TMap<FGameplayTag, FAuraAbilityInfo> UAbilityInfo::FindElementAbilities(const FGameplayTag& ElementTag) const
 {
-	if (Abilities.Contains(ECharacterName::Vilkar))
-	{
-	  return Abilities[ECharacterName::Vilkar];
-	}
-
-	if (bLogNotFound)
-	{
-		UE_LOG(
-			LogAura,
-			Error,
-			TEXT("Can't find Abilities Info for Character [%hhd] on AbilityInfo [%s]"), 
-			CharacterName, *GetNameSafe(this)
-		);
-	}
-
-	return FElementsMapStruct();
+	return FindElementInfo(ElementTag).AbilityList;
 }
 
-TMap<FGameplayTag, FAuraAbilityInfo> UAbilityInfo::FindCharacterAbilitiesOfElement(
-	ECharacterName CharacterName,
-	const FGameplayTag& ElementTag,
-	bool bLogNotFound
-	) const
+FAbilityElementInfo UAbilityInfo::FindElementInfo(const FGameplayTag& ElementTag) const
 {
-	const FElementsMapStruct& CharacterAbilities = FindCharacterAbilities(CharacterName, bLogNotFound);
-	const FAbilityListMapStruct* List = CharacterAbilities.Elements.Find(ElementTag);
+  const FAbilityElementInfo* ElementInfo = Abilities.Find(ElementTag);
 
-	if (List != nullptr)
-	{
-		return List->AbilityList;
-	}
-
-	if (bLogNotFound)
-	{
-		UE_LOG(
-			LogAura,
-			Error,
-			TEXT("Can't find Abilities of Element [%s] for Character [%hhd] on AbilityInfo [%s]"),
-			*ElementTag.ToString(),
-			CharacterName,
-			*GetNameSafe(this)
-		);
-	}
-
-	return TMap<FGameplayTag, FAuraAbilityInfo>();
+  if (ElementInfo)
+  {
+    return *ElementInfo;
+  }
+  
+  UE_LOG(
+    LogAura,
+    Error,
+    TEXT("Can't find Element [%s] on AbilityInfo [%s]"),
+    *ElementTag.ToString(),
+    *GetNameSafe(this)
+  );
+  
+  return FAbilityElementInfo();
 }
 
-FAuraAbilityInfo UAbilityInfo::FindAbilityInfoWithParams(const FAbilityInfoParams& Params, bool bLogNotFound) const
+FAuraAbilityInfo UAbilityInfo::FindAbilityInfoWithParams(const FAbilityInfoParams& Params) const
 {
-	TMap<FGameplayTag, FAuraAbilityInfo> AbilityInfos = FindCharacterAbilitiesOfElement(
-		Params.HeroName,
-		Params.ElementTag,
-		bLogNotFound
-		);
+	TMap<FGameplayTag, FAuraAbilityInfo> AbilityInfos = FindElementAbilities(Params.ElementTag);
 
 	const FAuraAbilityInfo* Info = AbilityInfos.Find(Params.AbilityTag);
 	if (Info != nullptr)
@@ -98,16 +90,13 @@ FAuraAbilityInfo UAbilityInfo::FindAbilityInfoWithParams(const FAbilityInfoParam
 		return *Info;
 	}
 
-	if (bLogNotFound)
-	{
-		UE_LOG(
-			LogAura,
-			Error,
-			TEXT("Can't find Info for AbilityTag [%s] on AbilityInfo [%s]"), 
-			*Params.AbilityTag.ToString(),
-			*GetNameSafe(this)
-		);
-	}
-
+	UE_LOG(
+		LogAura,
+		Error,
+		TEXT("Can't find Info for AbilityTag [%s] on AbilityInfo [%s]"), 
+		*Params.AbilityTag.ToString(),
+		*GetNameSafe(this)
+	);
+  
 	return FAuraAbilityInfo();
 }

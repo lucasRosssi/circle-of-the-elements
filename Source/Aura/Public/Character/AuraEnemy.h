@@ -36,8 +36,10 @@ public:
 	virtual float GetPower_Implementation() override;
 	virtual float GetMaxHealth_Implementation() override;
 	virtual float GetHealth_Implementation() override;
-  virtual float GetActionSpeed_Implementation() override;
-	virtual void SetActionSpeed_Implementation(float InActionSpeed) override;
+  virtual float GetAttackSpeed_Implementation() override;
+  virtual float GetCastSpeed_Implementation() override;
+  virtual float GetMovementSpeed_Implementation() override;
+	virtual void SetMovementSpeed_Implementation(float InMovementSpeed) override;
 	virtual void SetTimeDilation_Implementation(float InTimeDilation) override;
 	/* END Attribute Set Interface */
 

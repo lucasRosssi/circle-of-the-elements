@@ -82,46 +82,6 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
     FString("Attribute tags")
   );
 
-  GameplayTags.Attributes_Primary = UGameplayTagsManager::Get().AddNativeGameplayTag(
-    FName("Attributes.Primary"),
-    FString("Primary attribute tags")
-  );
-
-  GameplayTags.Attributes_Primary_Strength = UGameplayTagsManager::Get().AddNativeGameplayTag(
-    FName("Attributes.Primary.Strength"),
-    FString("Increases Armor and Incapacitation Resistance")
-  );
-
-  GameplayTags.Attributes_Primary_Dexterity = UGameplayTagsManager::Get().AddNativeGameplayTag(
-    FName("Attributes.Primary.Dexterity"),
-    FString("Increases Action Speed and Parry Chance")
-  );
-
-  GameplayTags.Attributes_Primary_Constitution = UGameplayTagsManager::Get().AddNativeGameplayTag(
-    FName("Attributes.Primary.Constitution"),
-    FString("Increases Maximum Health and Health Recovery")
-  );
-
-  GameplayTags.Attributes_Primary_Intelligence = UGameplayTagsManager::Get().AddNativeGameplayTag(
-    FName("Attributes.Primary.Intelligence"),
-    FString("Increases Maximum Mana and Mana Regeneration")
-  );
-
-  GameplayTags.Attributes_Primary_Wisdom = UGameplayTagsManager::Get().AddNativeGameplayTag(
-    FName("Attributes.Primary.Wisdom"),
-    FString("Increases Critical Rate and Critical Damage")
-  );
-
-  GameplayTags.Attributes_Primary_Charisma = UGameplayTagsManager::Get().AddNativeGameplayTag(
-    FName("Attributes.Primary.Charisma"),
-    FString("Increases Cooldown Reduction")
-  );
-
-  GameplayTags.Attributes_Primary_Prime = UGameplayTagsManager::Get().AddNativeGameplayTag(
-    FName("Attributes.Primary.Prime"),
-    FString("Increases Power")
-  );
-
   /*
    * VITAL ATTRIBUTES
    */
@@ -142,6 +102,45 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
   );
 
   /*
+   * PRIMARY ATTRIBUTES
+   */
+
+  GameplayTags.Attributes_Primary = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Attributes.Primary"),
+    FString("Primary attribute tags")
+  );
+  
+  GameplayTags.Attributes_Primary_Ferocity = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Attributes.Primary.Ferocity"),
+    FString("Ferocity attribute tag")
+  );
+
+  GameplayTags.Attributes_Primary_Agility = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Attributes.Primary.Agility"),
+    FString("Agility attribute tag")
+  );
+
+  GameplayTags.Attributes_Primary_Toughness = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Attributes.Primary.Toughness"),
+    FString("Toughness attribute tag")
+  );
+
+  GameplayTags.Attributes_Primary_Attunement = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Attributes.Primary.Attunement"),
+    FString("Attunement attribute tag")
+  );
+
+  GameplayTags.Attributes_Primary_Willpower = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Attributes.Primary.Willpower"),
+    FString("Willpower attribute tag")
+  );
+
+  GameplayTags.Attributes_Primary_Faith = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Attributes.Primary.Faith"),
+    FString("Faith attribute tag")
+  );
+
+  /*
    * SECONDARY ATTRIBUTES
    */
 
@@ -155,14 +154,24 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
     FString("Reduces damage taken")
   );
 
-  GameplayTags.Attributes_Secondary_ActionSpeed = UGameplayTagsManager::Get().AddNativeGameplayTag(
-    FName("Attributes.Secondary.ActionSpeed"),
-    FString("Movement, attack, cast and skill speed")
+  GameplayTags.Attributes_Secondary_AttackSpeed = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Attributes.Secondary.AttackSpeed"),
+    FString("Attack speed")
   );
 
-  GameplayTags.Attributes_Secondary_CooldownReduction = UGameplayTagsManager::Get().AddNativeGameplayTag(
-    FName("Attributes.Secondary.CooldownReduction"),
-    FString("Percentage of cooldown time reduced")
+  GameplayTags.Attributes_Secondary_CastSpeed = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Attributes.Secondary.CastSpeed"),
+    FString("Cast speed")
+  );
+
+  GameplayTags.Attributes_Secondary_MovementSpeed = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Attributes.Secondary.MovementSpeed"),
+    FString("Movement speed")
+  );
+
+  GameplayTags.Attributes_Secondary_CooldownSpeed = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Attributes.Secondary.CooldownSpeed"),
+    FString("Cooldown recovery speed")
   );
 
   GameplayTags.Attributes_Secondary_CriticalRate = UGameplayTagsManager::Get().AddNativeGameplayTag(
@@ -187,14 +196,14 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
       FString("Amount of mana recovered over time")
     );
 
-  GameplayTags.Attributes_Secondary_ParryChance = UGameplayTagsManager::Get().AddNativeGameplayTag(
-    FName("Attributes.Secondary.ParryChance"),
-    FString("Chance to parry an attack and negate damage")
+  GameplayTags.Attributes_Secondary_Dodge = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Attributes.Secondary.Dodge"),
+    FString("Chance to dodge a hit attack and negate damage")
   );
 
-  GameplayTags.Attributes_Secondary_Restoration = UGameplayTagsManager::Get().AddNativeGameplayTag(
-    FName("Attributes.Secondary.Restoration"),
-    FString("Magnitude of any healing received")
+  GameplayTags.Attributes_Secondary_Parry = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Attributes.Secondary.Parry"),
+    FString("Increases Parry window, health recovered and counter attack damage")
   );
 
   /*
@@ -302,24 +311,24 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
     FString("Damage tags")
   );
 
-  GameplayTags.Damage_Physical = UGameplayTagsManager::Get().AddNativeGameplayTag(
-    FName("Damage.Physical"),
-    FString("Physical damage type")
+  GameplayTags.Damage_Chaos = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Damage.Chaos"),
+    FString("Chaos damage type")
   );
-
-  GameplayTags.Damage_Energy = UGameplayTagsManager::Get().AddNativeGameplayTag(
-    FName("Damage.Energy"),
-    FString("Energy damage type")
+  
+  GameplayTags.Damage_Air = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Damage.Air"),
+    FString("Air damage type")
   );
-
+  
   GameplayTags.Damage_Fire = UGameplayTagsManager::Get().AddNativeGameplayTag(
     FName("Damage.Fire"),
     FString("Fire damage type")
   );
 
-  GameplayTags.Damage_Ice = UGameplayTagsManager::Get().AddNativeGameplayTag(
-    FName("Damage.Ice"),
-    FString("Ice damage type")
+  GameplayTags.Damage_Water = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Damage.Water"),
+    FString("Water damage type")
   );
 
   GameplayTags.Damage_Lightning = UGameplayTagsManager::Get().AddNativeGameplayTag(
@@ -327,9 +336,9 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
     FString("Lightning damage type")
   );
 
-  GameplayTags.Damage_Necrotic = UGameplayTagsManager::Get().AddNativeGameplayTag(
-    FName("Damage.Necrotic"),
-    FString("Necrotic damage type")
+  GameplayTags.Damage_Earth = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Damage.Earth"),
+    FString("Earth damage type")
   );
 
   /*
@@ -370,24 +379,24 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
     FString("Resistance attribute tags")
   );
 
-  GameplayTags.Attributes_Resistance_Physical = UGameplayTagsManager::Get().AddNativeGameplayTag(
-    FName("Attributes.Resistance.Physical"),
-    FString("Resistance to Physical damage")
-  );
-
-  GameplayTags.Attributes_Resistance_Energy = UGameplayTagsManager::Get().AddNativeGameplayTag(
+  GameplayTags.Attributes_Resistance_Chaos = UGameplayTagsManager::Get().AddNativeGameplayTag(
     FName("Attributes.Resistance.Energy"),
     FString("Resistance to Energy damage")
   );
-
+  
+  GameplayTags.Attributes_Resistance_Air = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Attributes.Resistance.Air"),
+    FString("Resistance to Air damage")
+  );
+  
   GameplayTags.Attributes_Resistance_Fire = UGameplayTagsManager::Get().AddNativeGameplayTag(
     FName("Attributes.Resistance.Fire"),
     FString("Resistance to Fire damage")
   );
 
-  GameplayTags.Attributes_Resistance_Ice = UGameplayTagsManager::Get().AddNativeGameplayTag(
-    FName("Attributes.Resistance.Ice"),
-    FString("Resistance to Ice damage")
+  GameplayTags.Attributes_Resistance_Water = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Attributes.Resistance.Water"),
+    FString("Resistance to Water damage")
   );
 
   GameplayTags.Attributes_Resistance_Lightning = UGameplayTagsManager::Get().AddNativeGameplayTag(
@@ -395,9 +404,9 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
     FString("Resistance to Lightning damage")
   );
 
-  GameplayTags.Attributes_Resistance_Necrotic = UGameplayTagsManager::Get().AddNativeGameplayTag(
-    FName("Attributes.Resistance.Necrotic"),
-    FString("Resistance to Necrotic damage")
+  GameplayTags.Attributes_Resistance_Earth = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Attributes.Resistance.Earth"),
+    FString("Resistance to Earth damage")
   );
 
   /*
@@ -405,34 +414,34 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
    */
 
   GameplayTags.DamageTypesToResistances.Add(
-    GameplayTags.Damage_Physical,
-    GameplayTags.Attributes_Resistance_Physical
+    GameplayTags.Damage_Chaos,
+    GameplayTags.Attributes_Resistance_Chaos
   );
-
-  GameplayTags.DamageTypesToResistances.Add(
-    GameplayTags.Damage_Energy,
-    GameplayTags.Attributes_Resistance_Energy
-  );
-
+  
   GameplayTags.DamageTypesToResistances.Add(
     GameplayTags.Damage_Fire,
     GameplayTags.Attributes_Resistance_Fire
   );
 
   GameplayTags.DamageTypesToResistances.Add(
-    GameplayTags.Damage_Ice,
-    GameplayTags.Attributes_Resistance_Ice
+    GameplayTags.Damage_Water,
+    GameplayTags.Attributes_Resistance_Water
+  );
+  GameplayTags.DamageTypesToResistances.Add(
+    GameplayTags.Damage_Air,
+    GameplayTags.Attributes_Resistance_Air
   );
 
+  GameplayTags.DamageTypesToResistances.Add(
+    GameplayTags.Damage_Earth,
+    GameplayTags.Attributes_Resistance_Earth
+  );
+  
   GameplayTags.DamageTypesToResistances.Add(
     GameplayTags.Damage_Lightning,
     GameplayTags.Attributes_Resistance_Lightning
   );
 
-  GameplayTags.DamageTypesToResistances.Add(
-    GameplayTags.Damage_Necrotic,
-    GameplayTags.Attributes_Resistance_Necrotic
-  );
 
   /*
    * Status Effects Tags
@@ -834,44 +843,35 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
     FString("Ability element tags.")
   );
 
-  GameplayTags.Abilities_Element_None = UGameplayTagsManager::Get().AddNativeGameplayTag(
-    FName("Abilities.Element.None"),
-    FString("Non-elemental ability tag.")
+  GameplayTags.Abilities_Element_Chaos = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Abilities.Element.Chaos"),
+    FString("Chaos element ability tag.")
   );
-
-  GameplayTags.Abilities_Element_Physical = UGameplayTagsManager::Get().AddNativeGameplayTag(
-    FName("Abilities.Element.Physical"),
-    FString("Physical element ability tag.")
-  );
-
-  GameplayTags.Abilities_Element_Arcane = UGameplayTagsManager::Get().AddNativeGameplayTag(
-    FName("Abilities.Element.Arcane"),
-    FString("Arcane element ability tag.")
-  );
+  
 
   GameplayTags.Abilities_Element_Fire = UGameplayTagsManager::Get().AddNativeGameplayTag(
     FName("Abilities.Element.Fire"),
     FString("Fire element ability tag.")
   );
 
-  GameplayTags.Abilities_Element_Ice = UGameplayTagsManager::Get().AddNativeGameplayTag(
-    FName("Abilities.Element.Ice"),
-    FString("Ice element ability tag.")
+  GameplayTags.Abilities_Element_Water = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Abilities.Element.Water"),
+    FString("Water element ability tag.")
   );
 
+  GameplayTags.Abilities_Element_Air = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Abilities.Element.Air"),
+    FString("Air element ability tag.")
+  );
+  
+  GameplayTags.Abilities_Element_Earth = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Abilities.Element.Earth"),
+    FString("Earth element ability tag.")
+  );
+  
   GameplayTags.Abilities_Element_Lightning = UGameplayTagsManager::Get().AddNativeGameplayTag(
     FName("Abilities.Element.Lightning"),
     FString("Lightning element ability tag.")
-  );
-
-  GameplayTags.Abilities_Element_Necrotic = UGameplayTagsManager::Get().AddNativeGameplayTag(
-    FName("Abilities.Element.Necrotic"),
-    FString("Necrotic element ability tag.")
-  );
-
-  GameplayTags.Abilities_Element_Duo = UGameplayTagsManager::Get().AddNativeGameplayTag(
-    FName("Abilities.Element.Duo"),
-    FString("Two elements ability tag.")
   );
 
   // Reactions
@@ -1079,7 +1079,7 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
     FString("LightningMissiles ability cooldown")
   );
 
-  // Aura Ice Abilities
+  // Aura Water Abilities
 
   GameplayTags.Abilities_Active_Aura_FrostRay = UGameplayTagsManager::Get().AddNativeGameplayTag(
     FName("Abilities.Active.Aura.FrostRay"),
@@ -1126,7 +1126,7 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
     FString("IceMissiles ability cooldown")
   );
 
-  // Aura Arcane Abilities
+  // Aura Chaos Abilities
 
   GameplayTags.Abilities_Active_Aura_ArcaneMissiles = UGameplayTagsManager::Get().AddNativeGameplayTag(
     FName("Abilities.Active.Aura.ArcaneMissiles"),
@@ -1168,7 +1168,7 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
     FString("ArcaneBolt ability cooldown")
   );
 
-  // Aura Necrotic Abilities
+  // Aura Earth Abilities
 
   GameplayTags.Abilities_Active_Aura_NecroBolt = UGameplayTagsManager::Get().AddNativeGameplayTag(
     FName("Abilities.Active.Aura.NecroBolt"),
@@ -1190,7 +1190,7 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
     FString("NecroMissiles ability cooldown")
   );
 
-  // Aura Physical Abilities
+  // Aura Air Abilities
 
   GameplayTags.Abilities_Active_Aura_WindGust = UGameplayTagsManager::Get().AddNativeGameplayTag(
     FName("Abilities.Active.Aura.WindGust"),
@@ -1302,7 +1302,7 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
     FString("Pyromania ability")
   );
 
-  // Ice upgrade abilities
+  // Water upgrade abilities
 
   GameplayTags.Abilities_Passive_Upgrade_IceAbsorption = UGameplayTagsManager::Get().AddNativeGameplayTag(
     FName("Abilities.Passive.Upgrade.IceAbsorption"),
@@ -1336,7 +1336,7 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
     FString("Stormbound ability")
   );
 
-  // Necrotic upgrade abilities
+  // Earth upgrade abilities
   
   GameplayTags.Abilities_Passive_Upgrade_NecroticAbsorption = UGameplayTagsManager::Get().AddNativeGameplayTag(
     FName("Abilities.Passive.Upgrade.NecroticAbsorption"),
@@ -1353,7 +1353,7 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
     FString("FeedOnTheWeak ability")
   );
 
-  // Arcane upgrade abilities
+  // Chaos upgrade abilities
 
   GameplayTags.Abilities_Passive_Upgrade_ArcaneAbsorption = UGameplayTagsManager::Get().AddNativeGameplayTag(
     FName("Abilities.Passive.Upgrade.ArcaneAbsorption"),
@@ -1370,7 +1370,7 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
     FString("MysticSurge ability")
   );
 
-  // Physical upgrade abilities
+  // Air upgrade abilities
 
   GameplayTags.Abilities_Passive_Upgrade_PhysicalAbsorption = UGameplayTagsManager::Get().AddNativeGameplayTag(
     FName("Abilities.Passive.Upgrade.PhysicalAbsorption"),
@@ -1513,7 +1513,7 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
     FString("Pyromania upgrade tag")
   );
 
-  // Ice
+  // Water
 
   GameplayTags.Upgrades_Ice = UGameplayTagsManager::Get().AddNativeGameplayTag(
     FName("Upgrades.Ice"),
@@ -1557,7 +1557,7 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
     FString("Stormbound upgrade tag")
   );
 
-  // Necrotic
+  // Earth
 
   GameplayTags.Upgrades_Necrotic = UGameplayTagsManager::Get().AddNativeGameplayTag(
     FName("Upgrades.Necrotic"),
@@ -1579,7 +1579,7 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
     FString("FeedOnTheWeak upgrade tag")
   );
 
-  // Arcane
+  // Chaos
 
   GameplayTags.Upgrades_Arcane = UGameplayTagsManager::Get().AddNativeGameplayTag(
     FName("Upgrades.Arcane"),
@@ -1601,7 +1601,7 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
     FString("MysticSurge upgrade tag")
   );
 
-  // Physical
+  // Air
 
   GameplayTags.Upgrades_Physical = UGameplayTagsManager::Get().AddNativeGameplayTag(
     FName("Upgrades.Physical"),
@@ -1684,14 +1684,9 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
     FString("Soul essence resource")
   );
 
-  GameplayTags.Resources_Essence_Physical = UGameplayTagsManager::Get().AddNativeGameplayTag(
-    FName("Resources.Essence.Physical"),
-    FString("Physical essence resource")
-  );
-
-  GameplayTags.Resources_Essence_Arcane = UGameplayTagsManager::Get().AddNativeGameplayTag(
-    FName("Resources.Essence.Arcane"),
-    FString("Arcane essence resource")
+  GameplayTags.Resources_Essence_Air = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Resources.Essence.Air"),
+    FString("Air essence resource")
   );
 
   GameplayTags.Resources_Essence_Fire = UGameplayTagsManager::Get().AddNativeGameplayTag(
@@ -1699,9 +1694,14 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
     FString("Fire essence resource")
   );
 
-  GameplayTags.Resources_Essence_Ice = UGameplayTagsManager::Get().AddNativeGameplayTag(
-    FName("Resources.Essence.Ice"),
-    FString("Ice essence resource")
+  GameplayTags.Resources_Essence_Water = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Resources.Essence.Water"),
+    FString("Water essence resource")
+  );
+
+  GameplayTags.Resources_Essence_Earth = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Resources.Essence.Earth"),
+    FString("Earth essence resource")
   );
 
   GameplayTags.Resources_Essence_Lightning = UGameplayTagsManager::Get().AddNativeGameplayTag(
@@ -1709,9 +1709,9 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
     FString("Lightning essence resource")
   );
 
-  GameplayTags.Resources_Essence_Necrotic = UGameplayTagsManager::Get().AddNativeGameplayTag(
-    FName("Resources.Essence.Necrotic"),
-    FString("Necrotic essence resource")
+  GameplayTags.Resources_Essence_Chaos = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Resources.Essence.Chaos"),
+    FString("Chaos essence resource")
   );
 
   /*
@@ -1833,32 +1833,6 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
     FString("The World modifier. Stats increased by 25%, mana cost reduced by 50%.")
   );
 
-  
-  GameplayTags.EssenceToAbility.Add(
-    GameplayTags.Resources_Essence_Physical,
-    GameplayTags.Abilities_Element_Physical
-  );
-  GameplayTags.EssenceToAbility.Add(
-    GameplayTags.Resources_Essence_Arcane,
-    GameplayTags.Abilities_Element_Arcane
-  );
-  GameplayTags.EssenceToAbility.Add(
-    GameplayTags.Resources_Essence_Fire,
-    GameplayTags.Abilities_Element_Fire
-  );
-  GameplayTags.EssenceToAbility.Add(
-    GameplayTags.Resources_Essence_Ice,
-    GameplayTags.Abilities_Element_Ice
-  );
-  GameplayTags.EssenceToAbility.Add(
-    GameplayTags.Resources_Essence_Lightning,
-    GameplayTags.Abilities_Element_Lightning
-  );
-  GameplayTags.EssenceToAbility.Add(
-    GameplayTags.Resources_Essence_Necrotic,
-    GameplayTags.Abilities_Element_Necrotic
-  );
-
   /*
    * Map of Tags to their children
    */
@@ -1924,14 +1898,12 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 
   const TArray ElementTags(
     {
-      GameplayTags.Abilities_Element_None,
-      GameplayTags.Abilities_Element_Duo,
-      GameplayTags.Abilities_Element_Physical,
-      GameplayTags.Abilities_Element_Arcane,
+      GameplayTags.Abilities_Element_Air,
+      GameplayTags.Abilities_Element_Chaos,
       GameplayTags.Abilities_Element_Fire,
-      GameplayTags.Abilities_Element_Ice,
+      GameplayTags.Abilities_Element_Water,
       GameplayTags.Abilities_Element_Lightning,
-      GameplayTags.Abilities_Element_Necrotic,
+      GameplayTags.Abilities_Element_Earth,
     }
   );
 
@@ -1951,13 +1923,7 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 
   const TArray EssenceTags = TArray(
     {
-      GameplayTags.Resources_Essence_Soul,
-      GameplayTags.Resources_Essence_Fire,
-      GameplayTags.Resources_Essence_Ice,
-      GameplayTags.Resources_Essence_Lightning,
-      GameplayTags.Resources_Essence_Necrotic,
-      GameplayTags.Resources_Essence_Arcane,
-      GameplayTags.Resources_Essence_Physical,
+      GameplayTags.Resources_Essence_Soul
     }
   );
 
@@ -1965,12 +1931,12 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 
   const TArray PrimaryAttributeTags = TArray(
     {
-      GameplayTags.Attributes_Primary_Strength,
-      GameplayTags.Attributes_Primary_Dexterity,
-      GameplayTags.Attributes_Primary_Constitution,
-      GameplayTags.Attributes_Primary_Intelligence,
-      GameplayTags.Attributes_Primary_Wisdom,
-      GameplayTags.Attributes_Primary_Charisma,
+      GameplayTags.Attributes_Primary_Ferocity,
+      GameplayTags.Attributes_Primary_Agility,
+      GameplayTags.Attributes_Primary_Toughness,
+      GameplayTags.Attributes_Primary_Attunement,
+      GameplayTags.Attributes_Primary_Willpower,
+      GameplayTags.Attributes_Primary_Faith,
     }
   );
 

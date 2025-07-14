@@ -821,22 +821,33 @@ bool UAuraAbilitySystemLibrary::IsTargetInvulnerable(AActor* TargetActor)
 FString UAuraAbilitySystemLibrary::GetAbilityDescription(
   const UAbilityInfo* AbilityInfo,
   const FGameplayTag& AbilityTag,
-  int32 Level
+  int32 Level,
+  bool bNextLevel
 )
 {
   FAuraAbilityInfo Info = AbilityInfo->FindAbilityInfoByTag(AbilityTag);
   const UBaseAbility* Ability = Info.Ability.GetDefaultObject();
-  FormatAbilityDescriptionAtLevel(Info, Level, Info.Description);
+  FormatAbilityDescriptionAtLevel(Info, Level, Info.Description, bNextLevel);
 
+  FString LevelText;
   FString ManaCostText;
   FString CooldownText;
   FString ChargesText;
-  MakeAbilityDetailsText(Ability, Level, ManaCostText, CooldownText, ChargesText);
+  if (bNextLevel)
+  {
+    LevelText = FString::Printf(TEXT("Level <Old>%d</> > <Level>%d</>"), Level, Level + 1);
+    MakeAbilityDetailsTextNextLevel(Ability, Level, ManaCostText, CooldownText);
+  }
+  else
+  {
+    LevelText = FString::Printf(TEXT("Level <Level>%d</>"), Level);
+    MakeAbilityDetailsText(Ability, Level, ManaCostText, CooldownText, ChargesText);
+  }
 
   return FString::Printf(
     TEXT(
       "<Title>%s </>\n"
-      "<Title18>Level </><Level>%d</>\n"
+      "%s\n"
       "\n"
       "%s\n"
       "%s"
@@ -844,7 +855,7 @@ FString UAuraAbilitySystemLibrary::GetAbilityDescription(
       "%s"
     ),
     *Info.Name.ToString(),
-    Level,
+    *LevelText,
     *Info.Description.ToString(),
     *ManaCostText,
     *ChargesText,
@@ -860,11 +871,11 @@ FString UAuraAbilitySystemLibrary::GetAbilityNextLevelDescription(
 {
   FAuraAbilityInfo Info = AbilityInfo->FindAbilityInfoByTag(AbilityTag);
   const UBaseAbility* Ability = Info.Ability.GetDefaultObject();
-  FormatAbilityDescriptionAtLevel(Info, Level, Info.NextLevelDescription);
+  FormatAbilityDescriptionAtLevel(Info, Level, Info.Description, true);
 
   FString ManaCostText;
   FString CooldownText;
-  MakeManaAndCooldownTextNextLevel(Ability, Level, ManaCostText, CooldownText);
+  MakeAbilityDetailsTextNextLevel(Ability, Level, ManaCostText, CooldownText);
 
   return FString::Printf(
     TEXT(
@@ -879,7 +890,7 @@ FString UAuraAbilitySystemLibrary::GetAbilityNextLevelDescription(
     *Info.Name.ToString(),
     Level,
     Level + 1,
-    *Info.NextLevelDescription.ToString(),
+    *Info.Description.ToString(),
     *ManaCostText,
     *CooldownText
   );
@@ -888,70 +899,138 @@ FString UAuraAbilitySystemLibrary::GetAbilityNextLevelDescription(
 void UAuraAbilitySystemLibrary::FormatAbilityDescriptionAtLevel(
   const FAuraAbilityInfo& AbilityInfo,
   int32 Level,
-  FText& OutDescription
+  FText& OutDescription,
+  bool bNextLevel
 )
 {
   const FAuraNamedArguments& Args = FAuraNamedArguments::Get();
+  const FAuraGameplayTags& AuraTags = FAuraGameplayTags::Get();
   const UBaseAbility* Ability = AbilityInfo.Ability.GetDefaultObject();
+  if (!Ability) return;
+  const FGameplayTag& ElementTag = AbilityInfo.ElementTag;
+  if (!ElementTag.IsValid()) return;
+  
+  const TMap<FGameplayTag, FString> ElementTagMap = {
+    {AuraTags.Abilities_Element_Air, FString("<Air>")},
+    {AuraTags.Abilities_Element_Water, FString("<Water>")},
+    {AuraTags.Abilities_Element_Fire, FString("<Fire>")},
+    {AuraTags.Abilities_Element_Earth, FString("<Earth>")},
+    {AuraTags.Abilities_Element_Lightning, FString("<Lightning>")},
+    {AuraTags.Abilities_Element_Chaos, FString("<Chaos>")},
+  };
+  const TMap<FGameplayTag, FString> ElementNameMap = {
+    {AuraTags.Abilities_Element_Air, FString("air")},
+    {AuraTags.Abilities_Element_Water, FString("water")},
+    {AuraTags.Abilities_Element_Fire, FString("fire")},
+    {AuraTags.Abilities_Element_Earth, FString("earth")},
+    {AuraTags.Abilities_Element_Lightning, FString("lightning")},
+    {AuraTags.Abilities_Element_Chaos, FString("chaos")},
+  };
+  const FString& DescriptionElementTag = ElementTagMap[ElementTag];
+  const FString& DescriptionElementName = ElementNameMap[ElementTag];
+
+  FFormatNamedArguments Arguments;
 
   if (IAbilityInterface::Execute_IsDamageAbility(Ability))
   {
-    const FGameplayTag& DamageTypeTag = IAbilityInterface::Execute_GetDamageTypeTag(Ability);
-    if (const auto Tuple = Args.DamageTypeTexts.Find(DamageTypeTag))
+    FString DmgString;
+    if (bNextLevel)
     {
-      OutDescription = FText::FormatNamed(
-        OutDescription,
-        Tuple->Key,
-        Tuple->Value
+      DmgString = FString::Printf(
+        TEXT("<Old>%d</> > %s%d %s</> damage"),
+        IAbilityInterface::Execute_GetRoundedDamageAtLevel(Ability, Level),
+        *DescriptionElementTag,
+        IAbilityInterface::Execute_GetRoundedDamageAtLevel(Ability, Level + 1),
+        *DescriptionElementName
       );
     }
-    if (const auto NextTuple = Args.NextDamageTypeTexts.Find(DamageTypeTag))
+    else
     {
-      OutDescription = FText::FormatNamed(
-        OutDescription,
-        NextTuple->Key,
-        NextTuple->Value
+      DmgString = FString::Printf(
+        TEXT("%s%d %s</>"),
+        *DescriptionElementTag,
+        IAbilityInterface::Execute_GetRoundedDamageAtLevel(Ability, Level),
+        *DescriptionElementName
       );
     }
 
-    OutDescription = FText::FormatNamed(
-      OutDescription,
-      Args.Dmg,
-      IAbilityInterface::Execute_GetRoundedDamageAtLevel(Ability, Level),
-      Args.Dmg_,
-      IAbilityInterface::Execute_GetRoundedDamageAtLevel(Ability, Level + 1)
-    );
+    Arguments.Add(Args.Dmg, FText::FromString(DmgString));
   }
 
-  const TArray<FScalableFloat>& Percents = AbilityInfo.DescriptionPercents;
-  if (Percents.Num() > 0)
+  const TArray<FDescriptionData>& Data = AbilityInfo.DescriptionData;
+  if (Data.Num() > 0)
   {
-    for (int32 i = 0; i < Percents.Num(); i++)
+    for (int32 i = 0; i < Data.Num(); i++)
     {
-      OutDescription = FText::FormatNamed(
-        OutDescription,
-        Args.AbilityGenericArgs[i].Percent,
-        Percents[i].GetValueAtLevel(Level) * 100,
-        Args.AbilityGenericArgs[i].Percent_,
-        Percents[i].GetValueAtLevel(Level + 1) * 100
-      );
+      FText Value;
+      FText NextValue;
+      FText PluralText;
+
+      FNumberFormattingOptions FormatOptions;
+      FormatOptions.MinimumFractionalDigits = 0;
+      FormatOptions.MaximumFractionalDigits = Data[i].ValueType == EDescriptionValueType::Integer ? 0 : 2;
+
+      float CurrentValue = 0.f;
+      float NextLevelValue = 0.f;
+
+      switch (Data[i].ValueType)
+      {
+      case EDescriptionValueType::Integer:
+        CurrentValue = static_cast<float>(Data[i].Value.AsInteger(Level));
+        NextLevelValue = static_cast<float>(Data[i].Value.AsInteger(Level + 1));
+        break;
+      case EDescriptionValueType::Float:
+      case EDescriptionValueType::Percent:
+        CurrentValue = Data[i].Value.GetValueAtLevel(Level);
+        NextLevelValue = Data[i].Value.GetValueAtLevel(Level + 1);
+        break;
+      default:
+        continue;
+      }
+
+      if (Data[i].ValueType == EDescriptionValueType::Percent)
+      {
+        Value = FText::AsPercent(CurrentValue, &FormatOptions);
+        NextValue = FText::AsPercent(NextLevelValue, &FormatOptions);
+      }
+      else
+      {
+        Value = FText::AsNumber(CurrentValue, &FormatOptions);
+        NextValue = FText::AsNumber(NextLevelValue, &FormatOptions);
+      }
+
+      PluralText = !bNextLevel && CurrentValue > 1.f || (bNextLevel && NextLevelValue > 1.f)
+          ? FText::FromString("s") 
+          : FText();
+
+      FString ValueString;
+      if (bNextLevel && !NextValue.EqualTo(Value))
+      {
+        ValueString = FString::Printf(
+          TEXT("<Old>%s</> > %s%s</>"),
+          *Value.ToString(),
+          *DescriptionElementTag,
+          *NextValue.ToString()
+        );
+      }
+      else
+      {
+        ValueString = FString::Printf(
+          TEXT("%s%s</>"),
+          *DescriptionElementTag,
+          *Value.ToString()
+        );
+      }
+
+      Arguments.Add(Args.AbilityGenericArgs[i], FText::FromString(ValueString));
+      Arguments.Add(Args.AbilityPluralArgs[i], PluralText);
     }
   }
 
-  const TArray<FScalableFloat>& Values = AbilityInfo.DescriptionValues;
-  if (Values.Num() > 0)
-  {
-    for (int32 i = 0; i < Values.Num(); i++)
-    {
-      OutDescription = FText::FormatNamed(
-        OutDescription,
-        Args.AbilityGenericArgs[i].Value,
-        Values[i].GetValueAtLevel(Level),
-        Args.AbilityGenericArgs[i].Value_,
-        Values[i].GetValueAtLevel(Level + 1)
-      );
-    }
-  }
+  OutDescription = FText::Format(
+    FTextFormat::FromString(OutDescription.ToString()),
+    Arguments
+  );
 }
 
 void UAuraAbilitySystemLibrary::FormatUpgradeDescriptionAtLevel(
@@ -967,9 +1046,9 @@ void UAuraAbilitySystemLibrary::FormatUpgradeDescriptionAtLevel(
     {
       OutDescription = FText::FormatNamed(
         OutDescription,
-        Args.AbilityGenericArgs[i].Percent,
+        Args.AbilityGenericArgs[i],
         Percents[i].GetValueAtLevel(Level) * 100,
-        Args.AbilityGenericArgs[i].Percent_,
+        Args.AbilityGenericArgs[i],
         Percents[i].GetValueAtLevel(Level + 1) * 100
       );
     }
@@ -982,9 +1061,9 @@ void UAuraAbilitySystemLibrary::FormatUpgradeDescriptionAtLevel(
     {
       OutDescription = FText::FormatNamed(
         OutDescription,
-        Args.AbilityGenericArgs[i].Value,
+        Args.AbilityGenericArgs[i],
         Values[i].GetValueAtLevel(Level),
-        Args.AbilityGenericArgs[i].Value_,
+        Args.AbilityGenericArgs[i],
         Values[i].GetValueAtLevel(Level + 1)
       );
     }
@@ -1085,7 +1164,7 @@ void UAuraAbilitySystemLibrary::MakeAbilityDetailsText(
   }
 }
 
-void UAuraAbilitySystemLibrary::MakeManaAndCooldownTextNextLevel(
+void UAuraAbilitySystemLibrary::MakeAbilityDetailsTextNextLevel(
   const UBaseAbility* Ability,
   int32 Level,
   FString& OutManaText,
@@ -1105,7 +1184,7 @@ void UAuraAbilitySystemLibrary::MakeManaAndCooldownTextNextLevel(
     else
     {
       OutManaText = FString::Printf(
-        TEXT("<Info>Mana - </><Mana>%d</>"),
+        TEXT("\n<Info>Mana - </><Mana>%d</>"),
         ManaCost
       );
     }
@@ -1113,7 +1192,7 @@ void UAuraAbilitySystemLibrary::MakeManaAndCooldownTextNextLevel(
   else
   {
     OutManaText = FString::Printf(
-      TEXT("<Info>Mana - </><Old>%d</> > <Mana>%d</>"),
+      TEXT("\n<Info>Mana - </><Old>%d</> > <Mana>%d</>"),
       ManaCost,
       NextManaCost
     );
@@ -1128,7 +1207,7 @@ void UAuraAbilitySystemLibrary::MakeManaAndCooldownTextNextLevel(
     else
     {
       OutCooldownText = FString::Printf(
-        TEXT("<Info>Cooldown - </>%ds"),
+        TEXT("\n<Info>Cooldown - </>%ds"),
         Cooldown
       );
     }
@@ -1136,7 +1215,7 @@ void UAuraAbilitySystemLibrary::MakeManaAndCooldownTextNextLevel(
   else
   {
     OutCooldownText = FString::Printf(
-      TEXT("<Info>Cooldown - </><Old>%d</> > %ds"),
+      TEXT("\n<Info>Cooldown - </><Old>%d</> > %ds"),
       Cooldown,
       NextCooldown
     );

@@ -8,11 +8,21 @@
 
 UMMC_MaxMana::UMMC_MaxMana()
 {
-	IntelligenceDef.AttributeToCapture = UAuraAttributeSet::GetIntelligenceAttribute();
-	IntelligenceDef.AttributeSource = EGameplayEffectAttributeCaptureSource::Target;
-	IntelligenceDef.bSnapshot = false;
+	AttunementDef.AttributeToCapture = UAuraAttributeSet::GetAttunementAttribute();
+	AttunementDef.AttributeSource = EGameplayEffectAttributeCaptureSource::Target;
+	AttunementDef.bSnapshot = false;
 
-	RelevantAttributesToCapture.Add(IntelligenceDef);
+  WillpowerDef.AttributeToCapture = UAuraAttributeSet::GetWillpowerAttribute();
+  WillpowerDef.AttributeSource = EGameplayEffectAttributeCaptureSource::Target;
+  WillpowerDef.bSnapshot = false;
+
+  FaithDef.AttributeToCapture = UAuraAttributeSet::GetFaithAttribute();
+  FaithDef.AttributeSource = EGameplayEffectAttributeCaptureSource::Target;
+  FaithDef.bSnapshot = false;
+
+	RelevantAttributesToCapture.Add(AttunementDef);
+	RelevantAttributesToCapture.Add(WillpowerDef);
+	RelevantAttributesToCapture.Add(FaithDef);
 }
 
 float UMMC_MaxMana::CalculateBaseMagnitude_Implementation(const FGameplayEffectSpec& Spec) const
@@ -25,13 +35,25 @@ float UMMC_MaxMana::CalculateBaseMagnitude_Implementation(const FGameplayEffectS
 	EvaluationParams.SourceTags = SourceTags;
 	EvaluationParams.TargetTags = TargetTags;
 
-	float Intelligence = 0;
-	GetCapturedAttributeMagnitude(IntelligenceDef, Spec, EvaluationParams, Intelligence);
-	Intelligence = FMath::Max(Intelligence, 0.f);
+	float Attunement = 0;
+	GetCapturedAttributeMagnitude(AttunementDef, Spec, EvaluationParams, Attunement);
+	Attunement = FMath::Max(Attunement, 0.f);
+
+  float Willpower = 0;
+  GetCapturedAttributeMagnitude(WillpowerDef, Spec, EvaluationParams, Willpower);
+  Willpower = FMath::Max(Willpower, 0.f);
+
+  float Faith = 0;
+  GetCapturedAttributeMagnitude(FaithDef, Spec, EvaluationParams, Faith);
+  Faith = FMath::Max(Faith, 0.f);
 
 	const int32	Level = ICombatInterface::Execute_GetCharacterLevel(
 		Spec.GetContext().GetSourceObject()
 	);		
 
-	return 50.f + 3.f * (Intelligence - 10.f) + 9.f * (Level - 1);
+	return 50.f
+    + 2.f * Attunement
+    + 2.f * Willpower
+    + 2.f * Faith
+    + 5.f * (Level - 1);
 }

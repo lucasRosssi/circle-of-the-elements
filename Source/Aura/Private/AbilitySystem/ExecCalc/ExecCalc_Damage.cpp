@@ -14,15 +14,15 @@ struct AuraDamageStatics
 {
 	DECLARE_ATTRIBUTE_CAPTUREDEF(Power);
 	DECLARE_ATTRIBUTE_CAPTUREDEF(Armor);
-	DECLARE_ATTRIBUTE_CAPTUREDEF(ParryChance);
+	DECLARE_ATTRIBUTE_CAPTUREDEF(Dodge);
 	DECLARE_ATTRIBUTE_CAPTUREDEF(CriticalRate);
 	DECLARE_ATTRIBUTE_CAPTUREDEF(CriticalDamage);
-	DECLARE_ATTRIBUTE_CAPTUREDEF(PhysicalResistance);
-	DECLARE_ATTRIBUTE_CAPTUREDEF(EnergyResistance);
+	DECLARE_ATTRIBUTE_CAPTUREDEF(ChaosResistance);
+	DECLARE_ATTRIBUTE_CAPTUREDEF(AirResistance);
 	DECLARE_ATTRIBUTE_CAPTUREDEF(FireResistance);
-	DECLARE_ATTRIBUTE_CAPTUREDEF(IceResistance);
+	DECLARE_ATTRIBUTE_CAPTUREDEF(WaterResistance);
 	DECLARE_ATTRIBUTE_CAPTUREDEF(LightningResistance);
-	DECLARE_ATTRIBUTE_CAPTUREDEF(NecroticResistance);
+	DECLARE_ATTRIBUTE_CAPTUREDEF(EarthResistance);
 
 	TMap<FGameplayTag, FGameplayEffectAttributeCaptureDefinition> TagsToCaptureDefs;
 	
@@ -42,7 +42,7 @@ struct AuraDamageStatics
 		);
 		DEFINE_ATTRIBUTE_CAPTUREDEF(
 			UAuraAttributeSet,
-			ParryChance,
+			Dodge,
 			Target,
 			false
 		);
@@ -60,13 +60,13 @@ struct AuraDamageStatics
 		);
 		DEFINE_ATTRIBUTE_CAPTUREDEF(
 			UAuraAttributeSet,
-			PhysicalResistance,
+			AirResistance,
 			Target,
 			false
 		);
 		DEFINE_ATTRIBUTE_CAPTUREDEF(
 			UAuraAttributeSet,
-			EnergyResistance,
+			ChaosResistance,
 			Target,
 			false
 		);
@@ -78,7 +78,7 @@ struct AuraDamageStatics
 		);
 		DEFINE_ATTRIBUTE_CAPTUREDEF(
 			UAuraAttributeSet,
-			IceResistance,
+			WaterResistance,
 			Target,
 			false
 		);
@@ -90,7 +90,7 @@ struct AuraDamageStatics
 		);
 		DEFINE_ATTRIBUTE_CAPTUREDEF(
 			UAuraAttributeSet,
-			NecroticResistance,
+			EarthResistance,
 			Target,
 			false
 		);
@@ -98,15 +98,15 @@ struct AuraDamageStatics
 		const FAuraGameplayTags& Tags = FAuraGameplayTags::Get();
 		TagsToCaptureDefs.Add(Tags.Attributes_Special_Power, PowerDef);
 		TagsToCaptureDefs.Add(Tags.Attributes_Secondary_Armor, ArmorDef);
-		TagsToCaptureDefs.Add(Tags.Attributes_Secondary_ParryChance, ParryChanceDef);
+		TagsToCaptureDefs.Add(Tags.Attributes_Secondary_Dodge, DodgeDef);
 		TagsToCaptureDefs.Add(Tags.Attributes_Secondary_CriticalRate, CriticalRateDef);
 		TagsToCaptureDefs.Add(Tags.Attributes_Secondary_CriticalDamage, CriticalDamageDef);
-		TagsToCaptureDefs.Add(Tags.Attributes_Resistance_Physical, PhysicalResistanceDef);
-		TagsToCaptureDefs.Add(Tags.Attributes_Resistance_Energy, EnergyResistanceDef);
+		TagsToCaptureDefs.Add(Tags.Attributes_Resistance_Air, AirResistanceDef);
+		TagsToCaptureDefs.Add(Tags.Attributes_Resistance_Chaos, ChaosResistanceDef);
 		TagsToCaptureDefs.Add(Tags.Attributes_Resistance_Fire, FireResistanceDef);
-		TagsToCaptureDefs.Add(Tags.Attributes_Resistance_Ice, IceResistanceDef);
+		TagsToCaptureDefs.Add(Tags.Attributes_Resistance_Water, WaterResistanceDef);
 		TagsToCaptureDefs.Add(Tags.Attributes_Resistance_Lightning, LightningResistanceDef);
-		TagsToCaptureDefs.Add(Tags.Attributes_Resistance_Necrotic, NecroticResistanceDef);
+		TagsToCaptureDefs.Add(Tags.Attributes_Resistance_Earth, EarthResistanceDef);
 		
 	}
 };
@@ -121,15 +121,15 @@ UExecCalc_Damage::UExecCalc_Damage()
 {
 	RelevantAttributesToCapture.Add(DamageStatics().ArmorDef);
 	RelevantAttributesToCapture.Add(DamageStatics().PowerDef);
-	RelevantAttributesToCapture.Add(DamageStatics().ParryChanceDef);
+	RelevantAttributesToCapture.Add(DamageStatics().DodgeDef);
 	RelevantAttributesToCapture.Add(DamageStatics().CriticalRateDef);
 	RelevantAttributesToCapture.Add(DamageStatics().CriticalDamageDef);
-	RelevantAttributesToCapture.Add(DamageStatics().PhysicalResistanceDef);
-	RelevantAttributesToCapture.Add(DamageStatics().EnergyResistanceDef);
+	RelevantAttributesToCapture.Add(DamageStatics().AirResistanceDef);
+	RelevantAttributesToCapture.Add(DamageStatics().ChaosResistanceDef);
 	RelevantAttributesToCapture.Add(DamageStatics().FireResistanceDef);
-	RelevantAttributesToCapture.Add(DamageStatics().IceResistanceDef);
+	RelevantAttributesToCapture.Add(DamageStatics().WaterResistanceDef);
 	RelevantAttributesToCapture.Add(DamageStatics().LightningResistanceDef);
-	RelevantAttributesToCapture.Add(DamageStatics().NecroticResistanceDef);
+	RelevantAttributesToCapture.Add(DamageStatics().EarthResistanceDef);
 }
 
 void UExecCalc_Damage::Execute_Implementation(
@@ -218,18 +218,18 @@ void UExecCalc_Damage::Execute_Implementation(
 		Damage += DamageTypeValue;
 	}
 
-	// Capture ParryChance on Target and determine if there was a successful Parry
+	// Capture Dodge on Target and determine if there was a successful Parry
 	// If Parry, negate damage
 
-	float TargetParryChance = 0.f;
+	float TargetDodge = 0.f;
 	
 	ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(
-		DamageStatics().ParryChanceDef,
+		DamageStatics().DodgeDef,
 		EvaluationParams,
-		TargetParryChance
+		TargetDodge
 	);
-	TargetParryChance = FMath::Max<float>(TargetParryChance, 0.f);
-	const bool bParried = FMath::FRandRange(0.f, 1.f) <= TargetParryChance;
+	TargetDodge = FMath::Max<float>(TargetDodge, 0.f);
+	const bool bParried = FMath::FRandRange(0.f, 1.f) <= TargetDodge;
 
 	UAuraAbilitySystemLibrary::SetIsParried(EffectContextHandle, bParried);
 

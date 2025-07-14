@@ -32,9 +32,13 @@ public:
 	float GetHealth();
 	
   UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-  float GetActionSpeed();
+  float GetAttackSpeed();
+  UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+  float GetCastSpeed();
+  UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+  float GetMovementSpeed();
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	void SetActionSpeed(float InActionSpeed);
+	void SetMovementSpeed(float InAttackSpeed);
 	
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void SetTimeDilation(float InTimeDilation);

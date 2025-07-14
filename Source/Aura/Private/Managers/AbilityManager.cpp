@@ -7,9 +7,7 @@
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "Aura/AuraLogChannels.h"
-#include "Enums/CharacterName.h"
 #include "AbilitySystem/Abilities/BaseAbility.h"
-#include "Character/Data/HeroInfo.h"
 #include "Game/AuraSaveGame.h"
 #include "Managers/MatchManager.h"
 #include "Managers/RewardManager.h"
@@ -71,11 +69,10 @@ void UAbilityManager::BeginPlay()
 }
 
 TMap<FGameplayTag, FAuraAbilityInfo> UAbilityManager::GetElementAbilities(
-  ECharacterName CharacterName,
   const FGameplayTag ElementTag
 )
 {
-  return UAuraSystemsLibrary::GetAbilitiesInfo(this)->FindCharacterAbilitiesOfElement(CharacterName, ElementTag);
+  return UAuraSystemsLibrary::GetAbilitiesInfo(this)->FindElementAbilities(ElementTag);
 }
 
 FAuraAbilityInfo UAbilityManager::GetAbilityInfo(const FAbilityInfoParams& Params)
@@ -89,7 +86,6 @@ FAuraAbilityInfo UAbilityManager::FindAbilityInfoByTag(const FGameplayTag& Abili
 }
 
 TArray<FAuraAbilityInfo> UAbilityManager::RandomizeElementAbilities(
-  ECharacterName CharacterName,
   const FGameplayTag& ElementTag,
   int32 Amount
 )
@@ -100,7 +96,7 @@ TArray<FAuraAbilityInfo> UAbilityManager::RandomizeElementAbilities(
 
   if (AvailableTiers.IsEmpty()) return TArray<FAuraAbilityInfo>();
 
-  TMap<FGameplayTag, FAuraAbilityInfo> ElementAbilities = GetRemainingElementAbilities(CharacterName, ElementTag);
+  TMap<FGameplayTag, FAuraAbilityInfo> ElementAbilities = GetRemainingElementAbilities(ElementTag);
   TArray<FAuraAbilityInfo> SelectedAbilities;
   while (SelectedAbilities.Num() < Amount && !AvailableTiers.IsEmpty())
   {
@@ -141,7 +137,6 @@ TArray<FAuraAbilityInfo> UAbilityManager::GetAbilitiesFromBag(const FGameplayTag
     {
       FAbilityInfoParams Params;
       Params.ElementTag = ElementTag;
-      Params.HeroName = GetHeroName();
       Params.AbilityTag = *AbilityTagIterator;
       AbilitiesInfos.Add(GetAbilityInfo(Params));
     }
@@ -152,6 +147,7 @@ TArray<FAuraAbilityInfo> UAbilityManager::GetAbilitiesFromBag(const FGameplayTag
 
 void UAbilityManager::GetAbilityFormattedTexts(
   const FAuraAbilityInfo& AbilityInfo,
+  bool bNextLevel,
   FText& AbilityName,
   FText& AbilityDescription,
   FText& AbilityDetails
@@ -170,7 +166,8 @@ void UAbilityManager::GetAbilityFormattedTexts(
   UAuraAbilitySystemLibrary::FormatAbilityDescriptionAtLevel(
     AbilityInfo,
     1,
-    AbilityDescription
+    AbilityDescription,
+    bNextLevel
   );
 
   FString ManaCostText;
@@ -214,7 +211,6 @@ void UAbilityManager::SelectAbilityReward(
   {
     AbilitiesContainer[ElementTag].Reset();
     RandomizeElementAbilities(
-      GetHeroName(),
       ElementTag
     );
   }
@@ -234,7 +230,7 @@ void UAbilityManager::AssignInitialAbilities()
   const FAuraGameplayTags& Tags = FAuraGameplayTags::Get();
   for (const FGameplayTag& ElementTag : Tags.ParentsToChildren[Tags.Abilities_Element])
   {
-    RandomizeElementAbilities(GetHeroName(), ElementTag);
+    RandomizeElementAbilities(ElementTag);
   }
 }
 
@@ -260,11 +256,10 @@ FGameplayTag UAbilityManager::RandomizeTier(const TMap<FGameplayTag, int32>& Tie
 }
 
 TMap<FGameplayTag, FAuraAbilityInfo> UAbilityManager::GetRemainingElementAbilities(
-  ECharacterName CharacterName,
   const FGameplayTag ElementTag
 )
 {
-  return GetElementAbilities(CharacterName, ElementTag).FilterByPredicate(
+  return GetElementAbilities(ElementTag).FilterByPredicate(
     [this](
     const TTuple<FGameplayTag, FAuraAbilityInfo>&
     AbilityInfo
@@ -386,14 +381,4 @@ void UAbilityManager::RemoveAbility(UAuraAbilitySystemComponent* AuraASC, const 
   if (!AbilitySpec) return;
 
   AuraASC->ClearAbility(AbilitySpec->Handle);
-}
-
-ECharacterName UAbilityManager::GetHeroName()
-{
-  if (HeroName == ECharacterName::Undefined)
-  {
-    HeroName = UAuraSystemsLibrary::GetCurrentHeroData(this).HeroName;
-  }
-
-  return HeroName;
 }

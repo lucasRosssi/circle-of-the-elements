@@ -401,7 +401,8 @@ public:
 	static FString GetAbilityDescription(
 		const UAbilityInfo* AbilityInfo,
 		const FGameplayTag& AbilityTag,
-		int32 Level
+		int32 Level,
+		bool bNextLevel
 		);
 	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|UI")
 	static FString GetAbilityNextLevelDescription(
@@ -413,7 +414,8 @@ public:
 	static void FormatAbilityDescriptionAtLevel(
 		const FAuraAbilityInfo& AbilityInfo,
 		int32 Level,
-		FText& OutDescription
+		FText& OutDescription,
+		bool bNextLevel
 		);
   UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|UI")
   static void FormatUpgradeDescriptionAtLevel(
@@ -435,7 +437,7 @@ public:
 		FString& OutChargesText
 		);
 	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|UI")
-	static void MakeManaAndCooldownTextNextLevel(
+	static void MakeAbilityDetailsTextNextLevel(
 		const UBaseAbility* Ability,
 		int32 Level,
 		FString& OutManaText,

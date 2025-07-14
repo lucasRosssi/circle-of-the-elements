@@ -5,14 +5,6 @@
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
 
-struct FAbilityGenericArgs
-{
-  FString Percent;
-  FString Percent_;
-  FString Value;
-  FString Value_;
-};
-
 /**
  * AuraNamedArguments
  *
@@ -28,35 +20,14 @@ public:
 	/* VALUES */
 	
 	FString Level;
-	FString Level_;
 	
 	FString Mana;
-	FString Mana_;
 	FString CD;
-	FString CD_;
 	
 	FString Dmg;
-	FString Dmg_;
 
-	/* HELPERS - Common used texts */
-
-	FString FireDmg;
-	FString IceDmg;
-	FString LightningDmg;
-	FString ArcaneDmg;
-	FString NecroticDmg;
-	FString PhysicalDmg;
-	FString NextFireDmg;
-	FString NextIceDmg;
-	FString NextLightningDmg;
-	FString NextArcaneDmg;
-	FString NextNecroticDmg;
-	FString NextPhysicalDmg;
-
-	TMap<FGameplayTag, TTuple<FString, FText>> DamageTypeTexts;
-	TMap<FGameplayTag, TTuple<FString, FText>> NextDamageTypeTexts;
-
-  TArray<FAbilityGenericArgs> AbilityGenericArgs;
+  TArray<FString> AbilityGenericArgs;
+  TArray<FString> AbilityPluralArgs;
 
 private:
 	static FAuraNamedArguments NamedArguments;

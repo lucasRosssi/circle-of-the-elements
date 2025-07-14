@@ -73,12 +73,12 @@ void USkillMenuWidgetController::SkillGlobeSelected(const FGameplayTag& AbilityT
 		)
 	{
 		Description = GetAuraAbilitySystemComponent()
-			->GetDescriptionByAbilityTag(AbilityInfo, AbilityTag);
+			->GetDescriptionByAbilityTag(AbilityInfo, AbilityTag, false);
 	}
 	else
 	{
 		Description = GetAuraAbilitySystemComponent()
-			->GetNextLevelDescriptionByAbilityTag(AbilityInfo, AbilityTag);
+	    ->GetDescriptionByAbilityTag(AbilityInfo, AbilityTag, true);
 	}
 
 	bool bEnableSpendPoint;
@@ -124,12 +124,12 @@ FString USkillMenuWidgetController::GetSkillDescription(FGameplayTag AbilityTag)
 		)
 	{
 		Description = GetAuraAbilitySystemComponent()
-			->GetDescriptionByAbilityTag(AbilityInfo, AbilityTag);
+			->GetDescriptionByAbilityTag(AbilityInfo, AbilityTag, false);
 	}
 	else // Unlocked or equipped and can level up
 	{
 		Description = GetAuraAbilitySystemComponent()
-			->GetNextLevelDescriptionByAbilityTag(AbilityInfo, AbilityTag);
+			->GetDescriptionByAbilityTag(AbilityInfo, AbilityTag, true);
 	}
 
 	return Description;
