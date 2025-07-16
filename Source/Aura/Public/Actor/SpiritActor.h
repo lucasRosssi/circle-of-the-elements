@@ -23,8 +23,17 @@ public:
   ASpiritActor();
 
   void SetAbilityTag(const FGameplayTag& InTag);
+  void SetElementTag(const FGameplayTag& InTag);
+  UFUNCTION(BlueprintPure)
+  FGameplayTag GetElementTag() const { return ElementTag; }
   void SetCooldownTag(const FGameplayTag& InTag);
   void SetChargeTagAndCount(const FGameplayTag& InTag, int32 ChargesCount);
+
+  UFUNCTION(BlueprintCallable)
+  void SetHijacker(AActor* InHijacker) { Hijacker = InHijacker; }
+  AActor* GetHijacker() const { return Hijacker; }
+  UFUNCTION(BlueprintPure)
+  bool IsHijacked() const { return Hijacker != nullptr; }
 
   UFUNCTION(BlueprintNativeEvent)
   UNiagaraComponent* GetSpiritNiagara();
@@ -32,6 +41,7 @@ public:
   UFUNCTION(BlueprintPure)
   bool IsUsingAbility() const { return bUsingAbility; }
   FVector GetAbilityUseLocation();
+  FVector GetHijackLocation();
 
 protected:
   virtual void BeginPlay() override;
@@ -52,6 +62,7 @@ private:
   UAbilitySystemComponent* GetOwnerASC();
 
   FGameplayTag AbilityTag;
+  FGameplayTag ElementTag;
   FGameplayTag CooldownTag;
   FGameplayTag ChargeTag;
   int32 MaxChargesCount = 0;
@@ -63,4 +74,6 @@ private:
   UBaseAbility* Ability = nullptr;
   UPROPERTY()
   UAbilitySystemComponent* OwnerASC = nullptr;
+  UPROPERTY()
+  AActor* Hijacker = nullptr;
 };

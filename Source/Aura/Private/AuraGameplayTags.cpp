@@ -36,42 +36,6 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
     FName("Heroes.Vilkar"),
     FString("Vilkar tag")
   );
-  
-  /*
-   * DIFFICULTY CLASSES
-   */
-
-  GameplayTags.DifficultyClass = UGameplayTagsManager::Get().AddNativeGameplayTag(
-    FName("DifficultyClass"),
-    FString("Difficulty Class tags")
-  );
-
-  GameplayTags.DifficultyClass_Initial = UGameplayTagsManager::Get().AddNativeGameplayTag(
-    FName("DifficultyClass.Initial"),
-    FString("Initial areas difficulty")
-  );
-
-  GameplayTags.DifficultyClass_Easy = UGameplayTagsManager::Get().AddNativeGameplayTag(
-    FName("DifficultyClass.Easy"),
-    FString("Easy difficulty")
-  );
-
-  GameplayTags.DifficultyClass_Normal = UGameplayTagsManager::Get().AddNativeGameplayTag(
-    FName("DifficultyClass.Normal"),
-    FString("Normal difficulty")
-  );
-  GameplayTags.DifficultyClass_Hard = UGameplayTagsManager::Get().AddNativeGameplayTag(
-    FName("DifficultyClass.Hard"),
-    FString("Hard difficulty")
-  );
-  GameplayTags.DifficultyClass_Extreme = UGameplayTagsManager::Get().AddNativeGameplayTag(
-    FName("DifficultyClass.Extreme"),
-    FString("Extreme difficulty")
-  );
-  GameplayTags.DifficultyClass_Special = UGameplayTagsManager::Get().AddNativeGameplayTag(
-    FName("DifficultyClass.Special"),
-    FString("Special combats")
-  );
 
   /*
    * PRIMARY ATTRIBUTES
@@ -540,6 +504,11 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
   GameplayTags.StatusEffects_Debuff_Shock = UGameplayTagsManager::Get().AddNativeGameplayTag(
     FName("StatusEffects.Debuff.Shock"),
     FString("Shock effect. Gets paralyzed every 1.5s.")
+  );
+
+  GameplayTags.StatusEffects_Debuff_Hijacked = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("StatusEffects.Debuff.Hijacked"),
+    FString("Hijacked effect. Can't use the ability provided by the hijacked spirit.")
   );
 
   // Incapacitations

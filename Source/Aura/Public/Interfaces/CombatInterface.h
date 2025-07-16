@@ -6,6 +6,7 @@
 #include "UObject/Interface.h"
 #include "CombatInterface.generated.h"
 
+class USpirit;
 class UBoxComponent;
 class UCapsuleComponent;
 class UNiagaraSystem;
@@ -107,6 +108,9 @@ public:
 
   UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
   void SetStateTag(const FGameplayTag& StateTag);
+
+  UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+  TArray<USpirit*> GetEquippedSpirits();
 	
 	virtual FOnASCRegistered& GetOnASCRegisteredDelegate() = 0;
 	virtual FOnDeath& GetOnDeathDelegate() = 0;

@@ -43,6 +43,7 @@ void USpirit::Load(const FSpiritInfo& SpiritInfo)
   EquipmentName = SpiritInfo.EquipmentName;
   Level = SpiritInfo.Level;
   AbilityTag = SpiritInfo.AbilityTag;
+  ElementTag = SpiritInfo.ElementTag;
   ModifierTag = SpiritInfo.ModifierTag;
   MySlot = SpiritInfo.MySlot;
   RuneSlots = SpiritInfo.RuneSlots;
@@ -167,6 +168,7 @@ bool USpirit::Equip(int32 Slot)
     if (SpiritActor)
     {
       SpiritActor->SetAbilityTag(AbilityTag);
+      SpiritActor->SetElementTag(AbilityInfo.ElementTag);
       SpiritActor->SetCooldownTag(AbilityInfo.CooldownTag);
       if (const UBaseAbility* BaseAbility = Cast<UBaseAbility>(AbilitySpec.Ability))
       {
@@ -231,6 +233,7 @@ FSpiritInfo USpirit::MakeSpiritInfo()
   SpiritInfo.EquipmentName = EquipmentName;
   SpiritInfo.Level = Level;
   SpiritInfo.AbilityTag = AbilityTag;
+  SpiritInfo.ElementTag = ElementTag;
   SpiritInfo.ModifierTag = ModifierTag;
   SpiritInfo.MySlot = MySlot;
   SpiritInfo.RuneSlots = RuneSlots;

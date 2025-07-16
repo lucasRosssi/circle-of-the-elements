@@ -22,14 +22,6 @@ public:
   FGameplayTag Heroes_Aura;
   FGameplayTag Heroes_Vilkar;
 
-  FGameplayTag DifficultyClass;
-  FGameplayTag DifficultyClass_Initial;
-  FGameplayTag DifficultyClass_Easy;
-  FGameplayTag DifficultyClass_Normal;
-  FGameplayTag DifficultyClass_Hard;
-  FGameplayTag DifficultyClass_Extreme;
-  FGameplayTag DifficultyClass_Special;
-
   FGameplayTag Attributes;
   FGameplayTag Attributes_Primary;
   FGameplayTag Attributes_Primary_Ferocity;
@@ -114,6 +106,7 @@ public:
   FGameplayTag StatusEffects_Debuff_Exposed;
   FGameplayTag StatusEffects_Debuff_Root;
   FGameplayTag StatusEffects_Debuff_Shock;
+  FGameplayTag StatusEffects_Debuff_Hijacked;
 
   // Incapacitations
 

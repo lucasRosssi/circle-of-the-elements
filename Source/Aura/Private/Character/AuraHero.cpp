@@ -119,6 +119,13 @@ int32 AAuraHero::GetCharacterLevel_Implementation()
   return 1;
 }
 
+TArray<USpirit*> AAuraHero::GetEquippedSpirits_Implementation()
+{
+  if (!GetAuraPlayerState()) return TArray<USpirit*>();  
+  
+  return AuraPlayerState->GetEquippedSpirits();
+}
+
 void AAuraHero::DeathMontageEndRagdoll()
 {
   RagdollMesh();

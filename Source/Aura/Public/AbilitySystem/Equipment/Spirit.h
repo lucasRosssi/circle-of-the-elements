@@ -25,6 +25,8 @@ struct FSpiritInfo
   UPROPERTY(BlueprintReadWrite)
   FGameplayTag AbilityTag;
   UPROPERTY(BlueprintReadWrite)
+  FGameplayTag ElementTag;
+  UPROPERTY(BlueprintReadWrite)
   FGameplayTag ModifierTag;
   UPROPERTY(BlueprintReadWrite)
   int32 MySlot = -1;
@@ -57,17 +59,25 @@ public:
   FSpiritInfo MakeSpiritInfo();
 
   void SetAbilityTag(const FGameplayTag& InAbilityTag) { AbilityTag = InAbilityTag; }
+  void SetElementTag(const FGameplayTag& InElementTag) { ElementTag = InElementTag; }
   FGameplayTag GetAbilityTag() { return AbilityTag; }
-  
+
+  UFUNCTION(BlueprintPure)
+  ASpiritActor* GetSpiritActor() const { return SpiritActor; }
+
 protected:
+  UPROPERTY(BlueprintReadOnly)
   FGameplayTag AbilityTag;
+  UPROPERTY(BlueprintReadOnly)
+  FGameplayTag ElementTag;
 
   FGameplayTag ModifierTag;
 
   int32 MySlot = -1;
 
   int32 RuneSlots = 1;
-  
+
+  UPROPERTY(  )
   TArray<URune*> Runes;
 
 private:

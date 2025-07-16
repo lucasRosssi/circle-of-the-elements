@@ -307,6 +307,20 @@ void AAuraPlayerState::RemoveEquipmentFromInventory(UEquipment* InEquipment)
   }
 }
 
+TArray<USpirit*> AAuraPlayerState::GetEquippedSpirits()
+{
+  TArray<USpirit*> EquippedSpirits;
+  for (const auto& [Slot, SpiritID] : Loadout)
+  {
+    if (USpirit* Spirit = FindSpirit(SpiritID))
+    {
+      EquippedSpirits.Add(Spirit);
+    }
+  }
+
+  return EquippedSpirits;
+}
+
 void AAuraPlayerState::AddPlayerResource(const FGameplayTag& ResourceTag, int32 Amount)
 {
   if (int32* CurrentAmount = Resources.Find(ResourceTag))

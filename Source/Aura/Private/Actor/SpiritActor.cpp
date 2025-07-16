@@ -5,8 +5,10 @@
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
+#include "AuraGameplayTags.h"
 #include "NiagaraComponent.h"
 #include "AbilitySystem/Abilities/BaseAbility.h"
+#include "Aura/AuraLogChannels.h"
 #include "Interfaces/AbilityInterface.h"
 #include "Interfaces/CombatInterface.h"
 
@@ -17,16 +19,41 @@ ASpiritActor::ASpiritActor()
 
 void ASpiritActor::SetAbilityTag(const FGameplayTag& InTag)
 {
+  if (!InTag.MatchesTag(FAuraGameplayTags::Get().Abilities))
+  {
+    UE_LOG(LogAura, Error, TEXT("[SpiritActor] Invalid Ability tag: %s"), *InTag.ToString())
+  }
+  
   AbilityTag = InTag;
+}
+
+void ASpiritActor::SetElementTag(const FGameplayTag& InTag)
+{
+  if (!InTag.MatchesTag(FAuraGameplayTags::Get().Abilities_Element))
+  {
+    UE_LOG(LogAura, Error, TEXT("[SpiritActor] Invalid Element tag: %s"), *InTag.ToString())
+  }
+  
+  ElementTag = InTag;
 }
 
 void ASpiritActor::SetCooldownTag(const FGameplayTag& InTag)
 {
+  if (!InTag.MatchesTag(FAuraGameplayTags::Get().Cooldown))
+  {
+    UE_LOG(LogAura, Error, TEXT("[SpiritActor] Invalid Cooldown tag: %s"), *InTag.ToString())
+  }
+  
   CooldownTag = InTag;
 }
 
 void ASpiritActor::SetChargeTagAndCount(const FGameplayTag& InTag, int32 ChargesCount)
 {
+  if (!InTag.MatchesTag(FAuraGameplayTags::Get().Charges))
+  {
+    UE_LOG(LogAura, Error, TEXT("[SpiritActor] Invalid Charge tag: %s"), *InTag.ToString())
+  }
+  
   ChargeTag = InTag;
   MaxChargesCount = ChargesCount;
 }
@@ -44,6 +71,13 @@ FVector ASpiritActor::GetAbilityUseLocation()
   const bool bSocketInWeapon = IAbilityInterface::Execute_IsAbilityUsingWeapon(Ability);
 
   return ICombatInterface::Execute_GetAbilitySocketLocation(GetOwner(), SocketName, bSocketInWeapon);
+}
+
+FVector ASpiritActor::GetHijackLocation()
+{
+  if (!Hijacker || !Hijacker->Implements<UCombatInterface>()) return FVector();
+
+  return ICombatInterface::Execute_GetAbilitySocketLocation(Hijacker, FName("SpiritHijackSocket"), true);
 }
 
 void ASpiritActor::BeginPlay()

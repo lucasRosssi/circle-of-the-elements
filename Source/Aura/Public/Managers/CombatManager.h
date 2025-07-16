@@ -49,14 +49,7 @@ protected:
   ERegion Region = ERegion::Undefined;
   UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Location")
   FName LocationName = NAME_None;
-
-  UPROPERTY(
-    EditDefaultsOnly,
-    BlueprintReadWrite,
-    Category="Location|Combat",
-    meta=(Categories="DifficultyClass")
-  )
-  FGameplayTag DifficultyClass = FGameplayTag();
+  
   UPROPERTY(
     EditDefaultsOnly,
     BlueprintReadWrite,

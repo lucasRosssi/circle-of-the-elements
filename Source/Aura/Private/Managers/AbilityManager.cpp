@@ -203,6 +203,7 @@ void UAbilityManager::SelectAbilityReward(
 
   USpirit* Spirit = NewObject<USpirit>();
   Spirit->SetAbilityTag(AbilityInfo.AbilityTag);
+  Spirit->SetElementTag(ElementTag);
   Spirit->Spawn(GetOwner());
 
   UAuraSystemsLibrary::GetMatchManager(GetOwner())->RegisterLoot(Spirit);
