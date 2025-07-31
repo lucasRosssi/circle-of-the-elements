@@ -1802,6 +1802,12 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
     FString("The World modifier. Stats increased by 25%, mana cost reduced by 50%.")
   );
 
+
+  GameplayTags.Event_Spirit_Hijacked = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Event.Spirit.Hijacked"),
+    FString("Triggered when the spirit actor reaches de hijack socket.")
+  );
+
   /*
    * Map of Tags to their children
    */

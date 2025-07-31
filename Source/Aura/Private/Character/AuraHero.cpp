@@ -122,8 +122,27 @@ int32 AAuraHero::GetCharacterLevel_Implementation()
 TArray<USpirit*> AAuraHero::GetEquippedSpirits_Implementation()
 {
   if (!GetAuraPlayerState()) return TArray<USpirit*>();  
-  
+
   return AuraPlayerState->GetEquippedSpirits();
+}
+
+TArray<USpirit*> AAuraHero::GetAvailableEquippedSpirits_Implementation()
+{
+  if (!GetAuraPlayerState()) return TArray<USpirit*>();  
+
+  const UAbilityInfo* AbilityDataAsset = UAuraSystemsLibrary::GetAbilitiesInfo(this);
+
+  if (!AbilityDataAsset) return AuraPlayerState->GetEquippedSpirits();
+  
+  return AuraPlayerState->GetEquippedSpirits().FilterByPredicate([AbilityDataAsset, this](USpirit* Spirit)
+  {
+    const FAuraAbilityInfo& Info = AbilityDataAsset->FindAbilityInfoByTag(Spirit->GetAbilityTag());
+
+    if (Info.ChargesTag.IsValid()) return GetAuraASC()->HasMatchingGameplayTag(Info.ChargesTag);
+    if (Info.CooldownTag.IsValid()) return !GetAuraASC()->HasMatchingGameplayTag(Info.CooldownTag);
+
+    return true;
+  });
 }
 
 void AAuraHero::DeathMontageEndRagdoll()

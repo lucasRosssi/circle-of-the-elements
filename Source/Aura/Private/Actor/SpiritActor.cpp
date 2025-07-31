@@ -9,12 +9,21 @@
 #include "NiagaraComponent.h"
 #include "AbilitySystem/Abilities/BaseAbility.h"
 #include "Aura/AuraLogChannels.h"
+#include "Components/SphereComponent.h"
 #include "Interfaces/AbilityInterface.h"
 #include "Interfaces/CombatInterface.h"
+#include "Kismet/KismetMathLibrary.h"
 
 ASpiritActor::ASpiritActor()
 {
   PrimaryActorTick.bCanEverTick = true;
+
+  SpiritCollision = CreateDefaultSubobject<USphereComponent>("SpiritCollision");
+  SpiritCollision->SetupAttachment(GetRootComponent());
+  SpiritCollision->SetSphereRadius(10.f, false);
+  SpiritCollision->SetCollisionResponseToAllChannels(ECR_Ignore);
+  SpiritCollision->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
+  SpiritCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 void ASpiritActor::SetAbilityTag(const FGameplayTag& InTag)
@@ -58,6 +67,31 @@ void ASpiritActor::SetChargeTagAndCount(const FGameplayTag& InTag, int32 Charges
   MaxChargesCount = ChargesCount;
 }
 
+void ASpiritActor::SetHijacker(AActor* InHijacker)
+{
+  if (IsValid(Hijacker))
+  {
+    SpiritCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    ICombatInterface* CombatHijacker = Cast<ICombatInterface>(Hijacker);
+    CombatHijacker->GetOnDeathDelegate().RemoveDynamic(this, &ASpiritActor::OnHijackerDeath);
+  }
+  
+  Hijacker = InHijacker;
+  OnHijackerSetDelegate.Broadcast(Hijacker);
+
+  if (Hijacker == nullptr && !GetSpiritNiagara()->IsActive())
+  {
+    GetSpiritNiagara()->Activate();
+  }
+  
+  if (!IsValid(Hijacker) || !Hijacker->Implements<UCombatInterface>()) return;
+
+  SpiritCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+  
+  ICombatInterface* CombatHijacker = Cast<ICombatInterface>(Hijacker);
+  CombatHijacker->GetOnDeathDelegate().AddUniqueDynamic(this, &ASpiritActor::OnHijackerDeath);
+}
+
 UNiagaraComponent* ASpiritActor::GetSpiritNiagara_Implementation()
 {
   return nullptr;
@@ -75,8 +109,6 @@ FVector ASpiritActor::GetAbilityUseLocation()
 
 FVector ASpiritActor::GetHijackLocation()
 {
-  if (!Hijacker || !Hijacker->Implements<UCombatInterface>()) return FVector();
-
   return ICombatInterface::Execute_GetAbilitySocketLocation(Hijacker, FName("SpiritHijackSocket"), true);
 }
 
@@ -86,6 +118,7 @@ void ASpiritActor::BeginPlay()
 
   ListenForCooldownChange();
   ListenForAbilityActivation();
+  SpiritCollision->OnComponentBeginOverlap.AddUniqueDynamic(this, &ASpiritActor::OnHijackerOverlap);
 }
 
 void ASpiritActor::ListenForCooldownChange()
@@ -113,6 +146,36 @@ void ASpiritActor::ListenForAbilityActivation()
   if (!GetOwnerASC() || !AbilityTag.IsValid()) return;
 
   OnAnyAbilityActivated = OwnerASC->AbilityActivatedCallbacks.AddUObject(this, &ASpiritActor::AbilityActivated);
+}
+
+void ASpiritActor::OnHijackerDeath(AActor* DeadHijacker)
+{
+  SetHijacker(nullptr);
+}
+
+void ASpiritActor::OnHijackerOverlap(
+  UPrimitiveComponent* OverlappedComponent,
+  AActor* OtherActor,
+  UPrimitiveComponent* OtherComp,
+  int32 OtherBodyIndex,
+  bool bFromSweep,
+  const FHitResult& SweepResult
+)
+{
+  if (Hijacker && Hijacker != OtherActor) return;
+
+  UAbilitySystemComponent* ASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(Hijacker);
+
+  if (!ASC) return;
+
+  FGameplayEventData Payload = FGameplayEventData();
+
+  ASC->HandleGameplayEvent(
+    FAuraGameplayTags::Get().Event_Spirit_Hijacked,
+    &Payload
+  );
+
+  GetSpiritNiagara()->Deactivate();
 }
 
 void ASpiritActor::AbilityActivated(UGameplayAbility* InAbility)
@@ -144,7 +207,7 @@ void ASpiritActor::CooldownTagChanged(const FGameplayTag CallbackTag, int32 NewC
   else
   {
     GetSpiritNiagara()->Activate();
-    SetActorTickEnabled(false);
+    SetActorTickEnabled(true);
   }
 }
 

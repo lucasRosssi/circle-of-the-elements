@@ -486,6 +486,8 @@ public:
   FGameplayTag Modifiers_Judgement;
   FGameplayTag Modifiers_World;
 
+  FGameplayTag Event_Spirit_Hijacked;
+
   TMap<FGameplayTag, FGameplayTag> EssenceToAbility;
 
   TMap<FGameplayTag, TArray<FGameplayTag>> ParentsToChildren;

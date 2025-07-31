@@ -39,6 +39,7 @@ public:
   virtual void SetCustomDepth_Implementation(int32 Value) override;
   virtual int32 GetCharacterLevel_Implementation() override;
   virtual TArray<USpirit*> GetEquippedSpirits_Implementation() override;
+  virtual TArray<USpirit*> GetAvailableEquippedSpirits_Implementation() override;
 	/** end Combat Interface */
 	void DeathMontageEndRagdoll();
 

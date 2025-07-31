@@ -3,11 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayAbilitySpec.h"
 #include "GameplayTagContainer.h"
 #include "AbilitySystem/Equipment/Equipment.h"
 #include "Interfaces/EquipperInterface.h"
 #include "Spirit.generated.h"
 
+class UAuraAbilitySystemComponent;
+struct FGameplayAbilitySpec;
 class ASpiritActor;
 class URune;
 
@@ -66,6 +69,9 @@ public:
   ASpiritActor* GetSpiritActor() const { return SpiritActor; }
 
 protected:
+  UFUNCTION()
+  void OnHijackerSet(AActor* Hijacker);
+  
   UPROPERTY(BlueprintReadOnly)
   FGameplayTag AbilityTag;
   UPROPERTY(BlueprintReadOnly)
@@ -73,14 +79,18 @@ protected:
 
   FGameplayTag ModifierTag;
 
+  FGameplayTag InputTag;
+
   int32 MySlot = -1;
 
   int32 RuneSlots = 1;
 
-  UPROPERTY(  )
+  UPROPERTY()
   TArray<URune*> Runes;
 
 private:
   UPROPERTY()
   TObjectPtr<ASpiritActor> SpiritActor = nullptr;
+
+  TWeakObjectPtr<UAuraAbilitySystemComponent> OwnerASC = nullptr;
 };
