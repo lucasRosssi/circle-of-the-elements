@@ -36,42 +36,6 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
     FName("Heroes.Vilkar"),
     FString("Vilkar tag")
   );
-  
-  /*
-   * DIFFICULTY CLASSES
-   */
-
-  GameplayTags.DifficultyClass = UGameplayTagsManager::Get().AddNativeGameplayTag(
-    FName("DifficultyClass"),
-    FString("Difficulty Class tags")
-  );
-
-  GameplayTags.DifficultyClass_Initial = UGameplayTagsManager::Get().AddNativeGameplayTag(
-    FName("DifficultyClass.Initial"),
-    FString("Initial areas difficulty")
-  );
-
-  GameplayTags.DifficultyClass_Easy = UGameplayTagsManager::Get().AddNativeGameplayTag(
-    FName("DifficultyClass.Easy"),
-    FString("Easy difficulty")
-  );
-
-  GameplayTags.DifficultyClass_Normal = UGameplayTagsManager::Get().AddNativeGameplayTag(
-    FName("DifficultyClass.Normal"),
-    FString("Normal difficulty")
-  );
-  GameplayTags.DifficultyClass_Hard = UGameplayTagsManager::Get().AddNativeGameplayTag(
-    FName("DifficultyClass.Hard"),
-    FString("Hard difficulty")
-  );
-  GameplayTags.DifficultyClass_Extreme = UGameplayTagsManager::Get().AddNativeGameplayTag(
-    FName("DifficultyClass.Extreme"),
-    FString("Extreme difficulty")
-  );
-  GameplayTags.DifficultyClass_Special = UGameplayTagsManager::Get().AddNativeGameplayTag(
-    FName("DifficultyClass.Special"),
-    FString("Special combats")
-  );
 
   /*
    * PRIMARY ATTRIBUTES
@@ -540,6 +504,11 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
   GameplayTags.StatusEffects_Debuff_Shock = UGameplayTagsManager::Get().AddNativeGameplayTag(
     FName("StatusEffects.Debuff.Shock"),
     FString("Shock effect. Gets paralyzed every 1.5s.")
+  );
+
+  GameplayTags.StatusEffects_Debuff_Hijacked = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("StatusEffects.Debuff.Hijacked"),
+    FString("Hijacked effect. Can't use the ability provided by the hijacked spirit.")
   );
 
   // Incapacitations
@@ -1831,6 +1800,12 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
   GameplayTags.Modifiers_World = UGameplayTagsManager::Get().AddNativeGameplayTag(
     FName("Modifiers.World"),
     FString("The World modifier. Stats increased by 25%, mana cost reduced by 50%.")
+  );
+
+
+  GameplayTags.Event_Spirit_Hijacked = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Event.Spirit.Hijacked"),
+    FString("Triggered when the spirit actor reaches de hijack socket.")
   );
 
   /*

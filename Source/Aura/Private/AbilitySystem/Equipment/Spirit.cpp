@@ -43,6 +43,7 @@ void USpirit::Load(const FSpiritInfo& SpiritInfo)
   EquipmentName = SpiritInfo.EquipmentName;
   Level = SpiritInfo.Level;
   AbilityTag = SpiritInfo.AbilityTag;
+  ElementTag = SpiritInfo.ElementTag;
   ModifierTag = SpiritInfo.ModifierTag;
   MySlot = SpiritInfo.MySlot;
   RuneSlots = SpiritInfo.RuneSlots;
@@ -72,13 +73,12 @@ bool USpirit::Equip(int32 Slot)
   AActor* Actor = Cast<AActor>(Owner.Get());
   if (!Actor) return false;
 
-  UAuraAbilitySystemComponent* AuraASC = Cast<UAuraAbilitySystemComponent>(
+  OwnerASC = Cast<UAuraAbilitySystemComponent>(
     UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(Actor)
     );
-  if (!AuraASC) return false;
+  if (!OwnerASC.IsValid()) return false;
 
   const FAuraGameplayTags& AuraTags = FAuraGameplayTags::Get();
-  FGameplayTag InputTag;
   switch (Slot)
   {
     case 0:
@@ -126,7 +126,7 @@ bool USpirit::Equip(int32 Slot)
   if (!AbilityInfo.IsValid()) return false;
 
   const FGameplayAbilitySpec& AbilitySpec = AbilityManager->GiveAbility(
-    AuraASC,
+    OwnerASC.Get(),
     AbilityInfo,
     Level,
     InputTag
@@ -138,7 +138,7 @@ bool USpirit::Equip(int32 Slot)
     return true;
   }
   
-  AActor* AvatarActor = AuraASC->GetAvatarActor();
+  AActor* AvatarActor = OwnerASC.Get()->GetAvatarActor();
   if (!IsValid(AvatarActor)) return true;
 
   TSubclassOf<ASpiritActor> SpiritActorClass;
@@ -167,6 +167,7 @@ bool USpirit::Equip(int32 Slot)
     if (SpiritActor)
     {
       SpiritActor->SetAbilityTag(AbilityTag);
+      SpiritActor->SetElementTag(AbilityInfo.ElementTag);
       SpiritActor->SetCooldownTag(AbilityInfo.CooldownTag);
       if (const UBaseAbility* BaseAbility = Cast<UBaseAbility>(AbilitySpec.Ability))
       {
@@ -177,6 +178,7 @@ bool USpirit::Equip(int32 Slot)
       {
         OrbitManager->RegisterSpirit(SpiritActor);
       }
+      SpiritActor->OnHijackerSetDelegate.AddUniqueDynamic(this, &USpirit::OnHijackerSet);
     }
   }
   else
@@ -195,20 +197,15 @@ void USpirit::Unequip()
 
   MySlot = -1;
   
-  AActor* Actor = Cast<AActor>(Owner.Get());
-  if (!Actor) return;
-
-  UAuraAbilitySystemComponent* AuraASC = Cast<UAuraAbilitySystemComponent>(
-    UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(Actor)
-    );
-  if (!AuraASC) return;
+  if (!OwnerASC.IsValid()) return;
   
-  UAbilityManager* AbilityManager = UAuraSystemsLibrary::GetAbilityManager(Actor);
-  AbilityManager->RemoveAbility(AuraASC, AbilityTag);
+  UAbilityManager* AbilityManager = UAuraSystemsLibrary::GetAbilityManager(OwnerASC.Get()->GetAvatarActor());
+  AbilityManager->RemoveAbility(OwnerASC.Get(), AbilityTag);
 
   if (!IsValid(SpiritActor)) return;
 
-  if (UOrbitManagerComponent* OrbitManager = AuraASC->GetAvatarActor()->FindComponentByClass<UOrbitManagerComponent>())
+  if (UOrbitManagerComponent* OrbitManager = OwnerASC.Get()->GetAvatarActor()
+    ->FindComponentByClass<UOrbitManagerComponent>())
   {
     OrbitManager->UnregisterSpirit(SpiritActor);
   }
@@ -231,6 +228,7 @@ FSpiritInfo USpirit::MakeSpiritInfo()
   SpiritInfo.EquipmentName = EquipmentName;
   SpiritInfo.Level = Level;
   SpiritInfo.AbilityTag = AbilityTag;
+  SpiritInfo.ElementTag = ElementTag;
   SpiritInfo.ModifierTag = ModifierTag;
   SpiritInfo.MySlot = MySlot;
   SpiritInfo.RuneSlots = RuneSlots;
@@ -240,4 +238,18 @@ FSpiritInfo USpirit::MakeSpiritInfo()
   }
 
   return SpiritInfo;
+}
+
+void USpirit::OnHijackerSet(AActor* Hijacker)
+{
+  if (!OwnerASC.IsValid()) return;
+  
+  if (Hijacker == nullptr)
+  {
+    OwnerASC->ServerEquipAbility(AbilityTag, InputTag);
+  }
+  else
+  {
+    OwnerASC->RemoveInputTagFromAbilities(InputTag);
+  }
 }

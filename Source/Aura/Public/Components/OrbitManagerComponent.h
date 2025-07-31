@@ -30,6 +30,8 @@ protected:
   float MaxInterpSpeed = 20.f;
   UPROPERTY(EditAnywhere, Category = "Orbit")
   float AbilityActivationInterpSpeed = 30.f;
+  UPROPERTY(EditAnywhere, Category = "Orbit")
+  float HijackInterpSpeed = 30.f;
 
   UPROPERTY(EditAnywhere, Category = "Orbit")
   float MinOrbitRadius = 50.f;

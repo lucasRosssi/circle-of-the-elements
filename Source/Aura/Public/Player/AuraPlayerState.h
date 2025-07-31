@@ -71,6 +71,7 @@ public:
   void AddSkillPoints(int32 InSkillPoints);
   void AddEquipmentToInventory(UEquipment* InEquipment);
   void RemoveEquipmentFromInventory(UEquipment* InEquipment);
+  TArray<USpirit*> GetEquippedSpirits();
   TArray<USpirit*> GetSpiritsInventory() const { return SpiritsInventory; }
   TArray<URune*> GetRunesInventory() const { return RunesInventory; }
   TMap<int32, FGuid> GetLoadout() const { return Loadout; }

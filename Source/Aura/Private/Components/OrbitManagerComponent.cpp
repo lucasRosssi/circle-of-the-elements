@@ -72,6 +72,17 @@ void UOrbitManagerComponent::TickComponent(
       );
       Spirit->SetActorLocation(SmoothedLocation);
     }
+    else if (Spirit->GetHijacker())
+    {
+      FVector TargetLocation = Spirit->GetHijackLocation();
+      FVector SmoothedLocation = FMath::VInterpConstantTo(
+        Spirit->GetActorLocation(),
+        TargetLocation,
+        DeltaTime,
+        HijackInterpSpeed
+      );
+      Spirit->SetActorLocation(SmoothedLocation);
+    }
     else
     {
       CurrentOrbitAngle[i] += OrbitSpeed[i] * DeltaTime;
