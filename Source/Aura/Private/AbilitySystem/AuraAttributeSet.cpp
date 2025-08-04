@@ -114,8 +114,9 @@ void UAuraAttributeSet::HandleDeath(
   {
     const FVector ForwardVector =
       UAuraAbilitySystemLibrary::GetForwardVector(Props.EffectContextHandle);
+    const FVector UpwardVector = FVector(0.f, 0.f, 1.f);
 
-    AvatarCombatInterface->Die(ForwardVector * DeathImpulseMagnitude);
+    AvatarCombatInterface->Die((DeathImpulseMagnitude < 25000.f ? ForwardVector : UpwardVector) * DeathImpulseMagnitude);
   }
 
   if (UAbilitySystemComponent* ASC = GetOwningAbilitySystemComponent())
@@ -274,8 +275,12 @@ void UAuraAttributeSet::HandleIncomingDamage(
     }
     else
     {
-      const float DeathImpulseMagnitude = bDoT ? 0.f : FMath::Min(250 * LocalIncomingDamage, 20000.f);
-      HandleDeath(Props, DeathImpulseMagnitude);
+      const float OverkillDamage = FMath::Abs(NewHealth);
+      const float OverkillRatio = FMath::Clamp(OverkillDamage / GetMaxHealth(), 0.f, 1.f);
+      constexpr float BaseImpulse = 0.f;
+      constexpr float MaxExtraImpulse = 25000.f;
+      const float ImpulseStrength = bDoT ? 0.f : BaseImpulse + OverkillRatio * MaxExtraImpulse;
+      HandleDeath(Props, ImpulseStrength);
     }
     
   }

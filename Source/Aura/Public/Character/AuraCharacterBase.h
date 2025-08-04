@@ -152,6 +152,9 @@ protected:
   TObjectPtr<USoundBase> HitSound;
   UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Defaults|Combat")
   TObjectPtr<USoundBase> DeathSound;
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Character Defaults|Combat")
+  float DeathImpulseRatio = 1.f;
+
 
   UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat")
   TObjectPtr<USkeletalMeshComponent> Weapon;

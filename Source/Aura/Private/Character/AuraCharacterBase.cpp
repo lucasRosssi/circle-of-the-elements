@@ -162,12 +162,14 @@ void AAuraCharacterBase::ReleaseWeapon()
 
 void AAuraCharacterBase::RagdollMesh(const FVector& DeathImpulse)
 {
+  GetMesh()->bPauseAnims = true;
   GetMesh()->SetSimulatePhysics(true);
   GetMesh()->SetEnableGravity(true);
   GetMesh()->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
   GetMesh()->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
-  GetMesh()->AddImpulse(DeathImpulse, NAME_None, true);
-  GetMesh()->bPauseAnims = true;
+  GetMesh()->SetAllPhysicsLinearVelocity(FVector::ZeroVector);
+  GetMesh()->SetAllPhysicsAngularVelocityInDegrees(FVector::ZeroVector);
+  GetMesh()->AddImpulse(DeathImpulse * DeathImpulseRatio, NAME_None, true);
 }
 
 void AAuraCharacterBase::HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
