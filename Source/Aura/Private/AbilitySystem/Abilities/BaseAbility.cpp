@@ -60,6 +60,11 @@ void UBaseAbility::ActivateAbility(
   Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
   
   OnAbilityStateChanged.Broadcast(true);
+
+  if (ActorInfo && ActorInfo->AbilitySystemComponent.IsValid())
+  {
+    ActorInfo->AbilitySystemComponent->AddLooseGameplayTags(GetAssetTags());
+  }
 }
 
 void UBaseAbility::EndAbility(
@@ -68,8 +73,13 @@ void UBaseAbility::EndAbility(
 )
 {
   Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
-
+  
   OnAbilityStateChanged.Broadcast(false);
+
+  if (ActorInfo && ActorInfo->AbilitySystemComponent.IsValid())
+  {
+    ActorInfo->AbilitySystemComponent->RemoveLooseGameplayTags(GetAssetTags());
+  }
 }
 
 bool UBaseAbility::CommitAbility(
