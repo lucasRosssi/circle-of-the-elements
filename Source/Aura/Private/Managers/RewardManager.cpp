@@ -7,7 +7,6 @@
 #include "Actor/Level/LocationReward.h"
 #include "Algo/RandomShuffle.h"
 #include "Aura/AuraLogChannels.h"
-#include "Components/CapsuleComponent.h"
 #include "Components/InteractComponent.h"
 #include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
@@ -33,16 +32,10 @@ FRewardInfo URewardManager::GetRewardInfo(const FGameplayTag& RewardTag)
   return UAuraSystemsLibrary::GetRewardsInfo(this)->GetRewardInfo(RewardTag);
 }
 
-void URewardManager::SpawnReward(FName AreaName)
+void URewardManager::SpawnReward(FVector Location)
 {
-  const ACharacter* PlayerCharacter = UGameplayStatics::GetPlayerCharacter(GetOwner(), 0);
   FTransform Transform;
-  FVector RandomDirection = UKismetMathLibrary::RandomUnitVector();
-  RandomDirection.Z = 0.f;
-  FVector PlayerLocation = PlayerCharacter->GetActorLocation();
-  PlayerLocation.Z -= PlayerCharacter->GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
-  const FVector SpawnLocation = PlayerLocation + RandomDirection * 200.f;
-  Transform.SetLocation(SpawnLocation);
+  Transform.SetLocation(Location);
 
   const FRewardInfo& Info = GetNextRewardInfo();
 
@@ -57,9 +50,9 @@ void URewardManager::SpawnReward(FName AreaName)
   if (Reward)
   {
     Transform.SetLocation(FVector(
-      SpawnLocation.X,
-      SpawnLocation.Y,
-      PlayerLocation.Z + Reward->GetInteractComponent_Implementation()->GetInteractAreaRadius()));
+      Location.X,
+      Location.Y,
+      Location.Z + Reward->GetInteractComponent_Implementation()->GetInteractAreaRadius()));
     Reward->FinishSpawning(Transform);
   }
   else
