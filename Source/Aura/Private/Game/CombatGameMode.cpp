@@ -25,8 +25,7 @@ ACombatGameMode::ACombatGameMode()
 void ACombatGameMode::BeginPlay()
 {
   Super::BeginPlay();
-
-  GetOnCombatFinishedDelegate().AddDynamic(RewardManager, &URewardManager::SpawnReward);
+  
 }
 
 void ACombatGameMode::LoadLevelInfo()
