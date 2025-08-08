@@ -7,6 +7,7 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "AuraSystemsLibrary.generated.h"
 
+class UEnemiesInfo;
 struct FGameplayTag;
 class FOnCombatFinished;
 class UMatchManager;
@@ -50,6 +51,8 @@ public:
   static UHeroInfo* GetHeroInfo(UPARAM(DisplayName="Target")const UObject* WorldContextObject);
   UFUNCTION(BlueprintPure, Category="Aura Systems|Info", meta=(DefaultToSelf="WorldContextObject"))
   static URegionInfo* GetRegionInfo(UPARAM(DisplayName="Target")const UObject* WorldContextObject);
+  UFUNCTION(BlueprintPure, Category="Aura Systems|Info", meta=(DefaultToSelf="WorldContextObject"))
+  static UEnemiesInfo* GetEnemiesInfo(UPARAM(DisplayName="Target")const UObject* WorldContextObject);
   UFUNCTION(BlueprintPure, Category="Aura Systems|Info", meta=(DefaultToSelf="WorldContextObject"))
   static URewardsInfo* GetRewardsInfo(UPARAM(DisplayName="Target")const UObject* WorldContextObject);
   UFUNCTION(BlueprintPure, Category="Aura Systems|Info", meta=(DefaultToSelf="WorldContextObject"))

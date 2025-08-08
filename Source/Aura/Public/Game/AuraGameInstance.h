@@ -8,6 +8,7 @@
 #include "Enums/Region.h"
 #include "AuraGameInstance.generated.h"
 
+class UEnemiesInfo;
 class ULevelInfo;
 struct FSaveInfo;
 class UAuraSaveGame;
@@ -48,6 +49,7 @@ public:
   UCharacterInfo* GetCharacterInfo() const { return CharacterClassInfo; }
   UHeroInfo* GetHeroInfo() const { return HeroInfo; }
   URegionInfo* GetRegionInfo() const { return RegionInfo; }
+  UEnemiesInfo* GetEnemiesInfo() const { return EnemiesInfo; }
   URewardsInfo* GetRewardsInfo() const { return RewardsInfo; }
   UStatusEffectInfo* GetStatusEffectInfo() const { return StatusEffectInfo; }
   UUpgradeInfo* GetUpgradeInfo() const { return UpgradeInfo; }
@@ -75,6 +77,9 @@ protected:
 
   UPROPERTY(EditDefaultsOnly, Category="Info")
   TObjectPtr<URegionInfo> RegionInfo;
+
+  UPROPERTY(EditDefaultsOnly, Category="Info")
+  TObjectPtr<UEnemiesInfo> EnemiesInfo;
 
   UPROPERTY(EditDefaultsOnly, Category="Info")
   TObjectPtr<URewardsInfo> RewardsInfo;

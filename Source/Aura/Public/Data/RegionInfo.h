@@ -3,7 +3,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
 #include "Engine/DataAsset.h"
+#include "Enums/CombatMode.h"
 #include "Enums/Region.h"
 #include "RegionInfo.generated.h"
 
@@ -40,12 +42,44 @@ struct FEnemyWave
 };
 
 USTRUCT(BlueprintType)
+struct FDifficultyPointsData
+{
+  GENERATED_BODY()
+
+  // Total points allowed for the system to spend on creating random encounters
+  UPROPERTY(EditAnywhere, BlueprintReadOnly)
+  float DifficultyPoints = 1.f;
+
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(ClampMin=1,UIMin=1,ClampMax=20,UIMax=20))
+  int32 MinLevel = 1;
+  
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(ClampMin=1,UIMin=1,ClampMax=20,UIMax=20))
+  int32 MaxLevel = 1;
+  
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(ClampMin=1,UIMin=1))
+  float MinWavePoints = 1.f;
+  
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(ClampMin=1,UIMin=1))
+  float MaxWavePoints = 1.f;
+
+  // Map of available enemies to pick and their probability weight
+  UPROPERTY(EditAnywhere, BlueprintReadOnly)
+  TMap<FGameplayTag, float> EnemiesProbabilityWeight;
+};
+
+USTRUCT(BlueprintType)
 struct FCombat
 {
-	GENERATED_BODY()
+  GENERATED_BODY()
+  
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+  ECombatMode Mode = ECombatMode::DifficultyPoints;
+  
+  UPROPERTY(EditAnywhere, BlueprintReadOnly, meta=(EditCondition="Mode == ECombatMode::Defined", EditConditionHides))
+  TArray<FEnemyWave> EnemyWaves;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	TArray<FEnemyWave> EnemyWaves;
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(EditCondition="Mode == ECombatMode::DifficultyPoints", EditConditionHides))
+  FDifficultyPointsData Data;
 };
 
 USTRUCT(BlueprintType)
@@ -56,8 +90,9 @@ struct FLocation
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
   TSoftObjectPtr<UWorld> World;
   
-  UPROPERTY(EditAnywhere, BlueprintReadOnly, meta=(ClampMin=1,UIMin=1,ClampMax=50,UIMax=50))
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(ClampMin=1,UIMin=1,ClampMax=20,UIMax=20))
   int32 RecommendedLevel = 1;
+  
   
   // Areas and their Enemy Waves
   UPROPERTY(
@@ -66,6 +101,16 @@ struct FLocation
     meta=(ForceInlineRow)
     )
   TMap<FName, FCombat> Combats;
+
+  TArray<FName> GetAreas() const
+  {
+    TArray<FName> Areas;
+    Combats.GenerateKeyArray(Areas);
+  
+    return Areas;
+  }
+
+  bool IsValid() const { return World.IsValid(); }
 };
 
 USTRUCT(BlueprintType)
@@ -99,6 +144,8 @@ public:
   FLocation GetLocationData(FName LocationName, ERegion Region = ERegion::Undefined);
   UFUNCTION(BlueprintPure)
   TSoftObjectPtr<UWorld> GetLocationLevel(FName LocationName, ERegion Region = ERegion::Undefined);
+  UFUNCTION(BlueprintPure)
+  TArray<FName> GetLocationAreas(FName LocationName, ERegion Region = ERegion::Undefined);
 
 	UFUNCTION(BlueprintCallable)
 	TArray<FEnemyWave> GetEnemyWaves(

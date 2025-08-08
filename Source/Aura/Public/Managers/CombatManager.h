@@ -45,6 +45,10 @@ public:
   FOnLastEnemyKilled OnLastEnemyKilledDelegate;
 
 protected:
+  virtual void BeginPlay() override;
+
+  void SetupAreasEncounters();
+  
   UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Location")
   ERegion Region = ERegion::Undefined;
   UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Location")
@@ -103,6 +107,8 @@ private:
   int32 CurrentWave = 0;
   UPROPERTY()
   TArray<AEnemySpawner*> EnemySpawners;
+
+  TMap<FName, TArray<FEnemyWave>> AreasEncounters;
 
   TWeakObjectPtr<AActor> CurrentBoss;
 };

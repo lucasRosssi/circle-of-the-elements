@@ -8,7 +8,7 @@
 #include "Character/Data/HeroInfo.h"
 #include "Game/AuraSaveGame.h"
 #include "Kismet/GameplayStatics.h"
-#include "Level/RegionInfo.h"
+#include "Data/RegionInfo.h"
 
 void UAuraGameInstance::SaveGameData(const FSaveInfo& SaveData)
 {

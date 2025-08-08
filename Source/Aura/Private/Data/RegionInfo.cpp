@@ -1,7 +1,7 @@
 // Copyright Lucas Rossi
 
 
-#include "Level/RegionInfo.h"
+#include "Data/RegionInfo.h"
 
 #include "Aura/AuraLogChannels.h"
 
@@ -36,6 +36,11 @@ FLocation URegionInfo::GetLocationData(FName LocationName, ERegion Region)
 TSoftObjectPtr<UWorld> URegionInfo::GetLocationLevel(FName LocationName, ERegion Region)
 {
   return GetLocationData(LocationName, Region).World;
+}
+
+TArray<FName> URegionInfo::GetLocationAreas(FName LocationName, ERegion Region)
+{
+  return GetLocationData(LocationName, Region).GetAreas();
 }
 
 TArray<FEnemyWave> URegionInfo::GetEnemyWaves(
