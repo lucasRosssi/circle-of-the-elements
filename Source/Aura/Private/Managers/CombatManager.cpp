@@ -23,7 +23,6 @@ void UCombatManager::SetCurrentCombatData()
 void UCombatManager::StartCombat(FName AreaName)
 {
   OnCombatStartedDelegate.Broadcast(AreaName);
-  LocationName = UAuraSystemsLibrary::GetCurrentLocation(GetOwner());
   CurrentAreaName = AreaName;
   SetCurrentCombatData();
   NextWave();
@@ -139,7 +138,8 @@ void UCombatManager::GetEnemyWaves()
 {
   if (!bOverrideEnemyWaves)
   {
-    EnemyWaves = AreasEncounters[CurrentAreaName];
+    const TArray<FEnemyWave>* CurrentWaves = AreasEncounters.Find(CurrentAreaName);
+    EnemyWaves = CurrentWaves ? *CurrentWaves : TArray<FEnemyWave>();
   }
 
   TotalWaves = EnemyWaves.Num();
@@ -185,12 +185,13 @@ void UCombatManager::BeginPlay()
 {
   Super::BeginPlay();
 
+  LocationName = UAuraSystemsLibrary::GetCurrentLocation(GetOwner());
   SetupAreasEncounters();
 }
 
 void UCombatManager::SetupAreasEncounters()
 {
-  URegionInfo* RegionInfo = UAuraSystemsLibrary::GetRegionInfo(this);
+  URegionInfo* RegionInfo = UAuraSystemsLibrary::GetRegionInfo(GetOwner());
   GUARD(RegionInfo != nullptr,, TEXT("RegionInfo is invalid!"))
 
   const FLocation& Location = RegionInfo->GetLocationData(LocationName, Region);
@@ -205,10 +206,10 @@ void UCombatManager::SetupAreasEncounters()
     if (Combat.Mode == ECombatMode::Defined)
     {
       AreasEncounters.Add(Area, Combat.EnemyWaves);
-      return;
+      continue;
     }
     
-    const UEnemiesInfo* EnemiesInfo = UAuraSystemsLibrary::GetEnemiesInfo(this);
+    const UEnemiesInfo* EnemiesInfo = UAuraSystemsLibrary::GetEnemiesInfo(GetOwner());
     GUARD(EnemiesInfo != nullptr, , TEXT("EnemiesInfo is invalid!"))
     
     float RemainingPoints = Combat.Data.DifficultyPoints;
@@ -220,8 +221,13 @@ void UCombatManager::SetupAreasEncounters()
       float WaveBudget = FMath::RandRange(Combat.Data.MinWavePoints, Combat.Data.MaxWavePoints);
 
       TMap<FGameplayTag, float> EnemiesWeight = Combat.Data.EnemiesProbabilityWeight;
+      if (EnemiesWeight.IsEmpty())
+      {
+        UE_LOG(LogAura, Error, TEXT("Enemies probability weight is empty for area %s!"), *Area.ToString())
+        continue;
+      }
 
-      while (WaveBudget > 0.f && EnemiesWeight.Num() > 0)
+      while (WaveBudget > 0.f)
       {
         const FGameplayTag& EnemyTag = UUtilityLibrary::PickRandomWeightedTagNormalized(EnemiesWeight);
         const FEnemyInfo& EnemyInfo = EnemiesInfo->GetEnemyInfo(EnemyTag);
@@ -236,7 +242,7 @@ void UCombatManager::SetupAreasEncounters()
 
         const int32 Level = FMath::RandRange(Combat.Data.MinLevel, Combat.Data.MaxLevel);
 
-        Cost += Level - Combat.Data.MinLevel;
+        Cost += (Level - Combat.Data.MinLevel) * Cost * 0.1f;
 
         FEnemySpawnData SpawnData;
         SpawnData.EnemyClass = EnemyInfo.EnemyClass;

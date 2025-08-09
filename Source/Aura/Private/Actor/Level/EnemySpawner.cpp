@@ -4,6 +4,7 @@
 #include "Actor/Level/EnemySpawner.h"
 
 #include "NiagaraFunctionLibrary.h"
+#include "Aura/AuraLogChannels.h"
 #include "Character/AuraEnemy.h"
 #include "Components/CapsuleComponent.h"
 #include "Managers/CombatManager.h"
@@ -69,6 +70,15 @@ void AEnemySpawner::PrepareSpawn()
 
 void AEnemySpawner::SpawnNextEnemy()
 {
+  if (EnemyQueue.IsEmpty()) return;
+  
+  if (EnemyQueue[0] == nullptr)
+  {
+    UE_LOG(LogAura, Error, TEXT("Invalid enemy class added to EnemySpawner queue! Check if all enemies are set in EnemiesInfo data asset"))
+    EnemyQueue.RemoveAt(0);
+    return;
+  }
+  
 	FTransform SpawnTransform;
 	SpawnTransform.SetRotation(GetActorRotation().Quaternion());
 	

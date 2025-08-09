@@ -63,7 +63,7 @@ struct FDifficultyPointsData
   float MaxWavePoints = 1.f;
 
   // Map of available enemies to pick and their probability weight
-  UPROPERTY(EditAnywhere, BlueprintReadOnly)
+  UPROPERTY(EditAnywhere, BlueprintReadOnly, meta=(ForceInlineRow, Categories="Enemies"))
   TMap<FGameplayTag, float> EnemiesProbabilityWeight;
 };
 
