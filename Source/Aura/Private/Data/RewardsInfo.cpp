@@ -1,7 +1,7 @@
 // Copyright Lucas Rossi
 
 
-#include "Level/RewardsInfo.h"
+#include "Data/RewardsInfo.h"
 
 URewardsInfo::URewardsInfo()
 {

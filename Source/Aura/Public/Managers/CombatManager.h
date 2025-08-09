@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "AuraSystemComponent.h"
 #include "GameplayTagContainer.h"
+#include "Data/EnemiesInfo.h"
+#include "Data/RegionInfo.h"
 #include "Enums/Region.h"
 #include "CombatManager.generated.h"
 
@@ -45,6 +47,10 @@ public:
   FOnLastEnemyKilled OnLastEnemyKilledDelegate;
 
 protected:
+  virtual void BeginPlay() override;
+
+  void SetupAreasEncounters();
+  
   UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Location")
   ERegion Region = ERegion::Undefined;
   UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Location")
@@ -98,11 +104,16 @@ private:
   void FinishCombat();
   void PostFinishCombat();
 
+  void GenerateEncounter(const UEnemiesInfo* EnemiesInfo, const FName& Area, const FCombat& Combat);
+  
+
   FName CurrentAreaName;
   int32 EnemyCount = 0;
   int32 CurrentWave = 0;
   UPROPERTY()
   TArray<AEnemySpawner*> EnemySpawners;
+
+  TMap<FName, TArray<FEnemyWave>> AreasEncounters;
 
   TWeakObjectPtr<AActor> CurrentBoss;
 };

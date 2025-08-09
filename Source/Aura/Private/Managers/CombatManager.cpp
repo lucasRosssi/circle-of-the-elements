@@ -5,14 +5,17 @@
 
 #include "Actor/Level/EnemySpawner.h"
 #include "Aura/AuraLogChannels.h"
+#include "Aura/AuraMacros.h"
+#include "Data/EnemiesInfo.h"
 #include "Kismet/GameplayStatics.h"
-#include "Level/RegionInfo.h"
+#include "Data/RegionInfo.h"
 #include "Utils/AuraSystemsLibrary.h"
+#include "Utils/UtilityLibrary.h"
 
 void UCombatManager::SetCurrentCombatData()
 {
   CurrentWave = 0;
-  
+
   GetEnemyWaves();
   GetAvailableSpawners();
 }
@@ -20,7 +23,6 @@ void UCombatManager::SetCurrentCombatData()
 void UCombatManager::StartCombat(FName AreaName)
 {
   OnCombatStartedDelegate.Broadcast(AreaName);
-  LocationName = UAuraSystemsLibrary::GetCurrentLocation(GetOwner());
   CurrentAreaName = AreaName;
   SetCurrentCombatData();
   NextWave();
@@ -136,11 +138,8 @@ void UCombatManager::GetEnemyWaves()
 {
   if (!bOverrideEnemyWaves)
   {
-    EnemyWaves = UAuraSystemsLibrary::GetRegionInfo(this)->GetEnemyWaves(
-      CurrentAreaName,
-      LocationName,
-      Region
-    );
+    const TArray<FEnemyWave>* CurrentWaves = AreasEncounters.Find(CurrentAreaName);
+    EnemyWaves = CurrentWaves ? *CurrentWaves : TArray<FEnemyWave>();
   }
 
   TotalWaves = EnemyWaves.Num();
@@ -179,5 +178,108 @@ void UCombatManager::OnEnemyKilled(AActor* Enemy)
         NextWave();
       }
     }
+  }
+}
+
+void UCombatManager::BeginPlay()
+{
+  Super::BeginPlay();
+
+  LocationName = UAuraSystemsLibrary::GetCurrentLocation(GetOwner());
+  SetupAreasEncounters();
+}
+
+void UCombatManager::GenerateEncounter(const UEnemiesInfo* EnemiesInfo, const FName& Area, const FCombat& Combat)
+{
+  float RemainingPoints = Combat.Data.DifficultyPoints;
+  TArray<FEnemyWave> GeneratedEnemyWaves;
+
+  while (RemainingPoints >= Combat.Data.MinWavePoints)
+  {
+    TArray<FEnemySpawnData> WaveData;
+    float WaveBudget = FMath::RandRange(Combat.Data.MinWavePoints, Combat.Data.MaxWavePoints);
+
+    TMap<FGameplayTag, float> EnemiesWeight = Combat.Data.EnemiesProbabilityWeight;
+    if (EnemiesWeight.IsEmpty())
+    {
+      UE_LOG(LogAura, Error, TEXT("Enemies probability weight is empty for area %s!"), *Area.ToString())
+      continue;
+    }
+
+    TMap<FGameplayTag, int32> CurrentWaveCounts;
+    while (WaveBudget > 0.f && !EnemiesWeight.IsEmpty())
+    {
+      const FGameplayTag& EnemyTag = UUtilityLibrary::PickRandomWeightedTagNormalized(EnemiesWeight);
+      const FEnemyInfo& EnemyInfo = EnemiesInfo->GetEnemyInfo(EnemyTag);
+      const int32* MaxAllowed = Combat.Data.EnemiesRestrictionsPerWave.Find(EnemyTag);
+      const int32 CurrentCount = CurrentWaveCounts.FindRef(EnemyTag);
+
+      // Check enemy restrictions
+      if (MaxAllowed && CurrentCount >= *MaxAllowed) // Area restriction
+      {
+        EnemiesWeight.Remove(EnemyTag);
+        continue;
+      }
+      if (EnemyInfo.MaxAllowedPerWave > 0 && CurrentCount >= EnemyInfo.MaxAllowedPerWave) // Global restriction
+      {
+        EnemiesWeight.Remove(EnemyTag);
+        continue;
+      }
+        
+      float Cost = EnemyInfo.DifficultyCost;
+
+      if (Cost <= 0)
+      {
+        UE_LOG(LogAura, Error, TEXT("Enemy difficulty cost is not positive: %s"), *EnemyTag.ToString())
+        EnemiesWeight.Remove(EnemyTag);
+        continue;
+      }
+
+      const int32 Level = FMath::RandRange(Combat.Data.MinLevel, Combat.Data.MaxLevel);
+
+      Cost += (Level - Combat.Data.MinLevel) * Cost * 0.1f;
+
+      FEnemySpawnData SpawnData;
+      SpawnData.EnemyClass = EnemyInfo.EnemyClass;
+      SpawnData.Level = Level;
+      // TODO: Add modifiers?
+
+      WaveData.Add(SpawnData);
+      CurrentWaveCounts.FindOrAdd(EnemyTag)++;
+        
+      WaveBudget -= Cost;
+      RemainingPoints -= Cost;
+    }
+    GeneratedEnemyWaves.Add({WaveData});
+  }
+  AreasEncounters.Add(Area, GeneratedEnemyWaves);
+}
+
+void UCombatManager::SetupAreasEncounters()
+{
+  URegionInfo* RegionInfo = UAuraSystemsLibrary::GetRegionInfo(GetOwner());
+  GUARD(RegionInfo != nullptr,, TEXT("RegionInfo is invalid!"))
+
+  const UEnemiesInfo* EnemiesInfo = UAuraSystemsLibrary::GetEnemiesInfo(GetOwner());
+  GUARD(EnemiesInfo != nullptr, , TEXT("EnemiesInfo is invalid!"))
+  
+  const FLocation& Location = RegionInfo->GetLocationData(LocationName, Region);
+  GUARD(Location.IsValid(),, TEXT("Location %s is invalid!"), *LocationName.ToString())
+  
+  for (const FName& Area : Location.GetAreas())
+  {
+    GUARD(Location.Combats.Contains(Area),, TEXT("Area %s is invalid!"), *Area.ToString())
+
+    const FCombat& Combat = Location.Combats[Area];
+
+    if (Combat.Mode == ECombatMode::Defined)
+    {
+      // If the combat mode is defined, we just add what is defined in the data asset
+      AreasEncounters.Add(Area, Combat.EnemyWaves);
+      continue;
+    }
+
+    // If the combat mode is not defined (Difficulty Points), we use a PCG for spawning enemy waves
+    GenerateEncounter(EnemiesInfo, Area, Combat);
   }
 }

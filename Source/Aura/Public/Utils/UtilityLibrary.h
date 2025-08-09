@@ -6,6 +6,7 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "UtilityLibrary.generated.h"
 
+struct FGameplayTag;
 struct FScalableFloat;
 /**
  * 
@@ -25,4 +26,7 @@ public:
   static float GetScalableFloatAtLevel(const FScalableFloat& ScalableFloat, int32 Level);
   UFUNCTION(BlueprintPure, Category="Numbers|Scalable")
   static int32 GetScalableIntegerAtLevel(const FScalableFloat& ScalableFloat, int32 Level);
+
+  UFUNCTION(BlueprintPure, Category="Probability")
+  static FGameplayTag PickRandomWeightedTagNormalized(const TMap<FGameplayTag, float>& WeightedTags);
 };

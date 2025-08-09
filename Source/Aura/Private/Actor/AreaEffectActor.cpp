@@ -112,6 +112,7 @@ void AAreaEffectActor::Tick(float DeltaSeconds)
 
   if (bHasRadialForce)
   {
+    // TODO: check for loop progress before removing items from ActorsInForceArea
     for (const auto Actor : ActorsInForceArea)
     {
       ICombatInterface::Execute_ApplyAttraction(
@@ -308,5 +309,6 @@ void AAreaEffectActor::OnRadialForceEndOverlap(
   int32 OtherBodyIndex
     )
 {
+  // TODO: check for loop progress before removing items from ActorsInForceArea
   ActorsInForceArea.Remove(OtherActor);
 }

@@ -5,7 +5,7 @@
 
 #include "GameFramework/PlayerStart.h"
 #include "Kismet/GameplayStatics.h"
-#include "Level/RegionInfo.h"
+#include "Data/RegionInfo.h"
 #include "Utils/AuraSystemsLibrary.h"
 
 // TSoftObjectPtr<UWorld> ULocationManager::GetNextLocation(

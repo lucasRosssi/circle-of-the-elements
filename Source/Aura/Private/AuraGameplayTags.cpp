@@ -38,6 +38,15 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
   );
 
   /*
+  * ENEMIES
+  */
+
+  GameplayTags.Enemies = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("Enemies"),
+    FString("Enemies tags")
+  );
+
+  /*
    * PRIMARY ATTRIBUTES
    */
 

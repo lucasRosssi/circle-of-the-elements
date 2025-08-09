@@ -9,7 +9,7 @@
 #include "Game/AuraGameModeBase.h"
 #include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
-#include "Level/RegionInfo.h"
+#include "Data/RegionInfo.h"
 #include "Managers/CameraManager.h"
 #include "Managers/CombatManager.h"
 #include "Managers/MatchManager.h"
@@ -79,6 +79,15 @@ URegionInfo* UAuraSystemsLibrary::GetRegionInfo(const UObject* WorldContextObjec
   );
 
   return AuraGameInstance->GetRegionInfo();
+}
+
+UEnemiesInfo* UAuraSystemsLibrary::GetEnemiesInfo(const UObject* WorldContextObject)
+{
+  const UAuraGameInstance* AuraGameInstance = CastChecked<UAuraGameInstance>(
+    UGameplayStatics::GetGameInstance(WorldContextObject)
+  );
+
+  return AuraGameInstance->GetEnemiesInfo();
 }
 
 URewardsInfo* UAuraSystemsLibrary::GetRewardsInfo(const UObject* WorldContextObject)

@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "AuraSystemComponent.h"
 #include "GameplayTagContainer.h"
-#include "Level/RewardsInfo.h"
+#include "Data/RewardsInfo.h"
 #include "RewardManager.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnRewardTaken);

@@ -10,7 +10,7 @@
 #include "Aura/AuraLogChannels.h"
 #include "Components/InteractComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "Level/RewardsInfo.h"
+#include "Data/RewardsInfo.h"
 #include "Managers/RewardManager.h"
 #include "Player/AuraPlayerState.h"
 #include "Utils/AuraSystemsLibrary.h"

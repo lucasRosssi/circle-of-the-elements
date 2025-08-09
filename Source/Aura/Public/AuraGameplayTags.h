@@ -22,6 +22,8 @@ public:
   FGameplayTag Heroes_Aura;
   FGameplayTag Heroes_Vilkar;
 
+  FGameplayTag Enemies;
+
   FGameplayTag Attributes;
   FGameplayTag Attributes_Primary;
   FGameplayTag Attributes_Primary_Ferocity;
