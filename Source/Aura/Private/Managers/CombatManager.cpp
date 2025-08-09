@@ -189,9 +189,72 @@ void UCombatManager::BeginPlay()
   SetupAreasEncounters();
 }
 
-// TODO: limit specific enemies amount per wave (multiple Crystal Shamans would be annoying as they would steal all abilities)
-// - Add a global limit in EnemiesInfo?
-// - Add a per area limit in RegionInfo?
+void UCombatManager::GenerateEncounter(const UEnemiesInfo* EnemiesInfo, const FName& Area, const FCombat& Combat)
+{
+  float RemainingPoints = Combat.Data.DifficultyPoints;
+  TArray<FEnemyWave> GeneratedEnemyWaves;
+
+  while (RemainingPoints >= Combat.Data.MinWavePoints)
+  {
+    TArray<FEnemySpawnData> WaveData;
+    float WaveBudget = FMath::RandRange(Combat.Data.MinWavePoints, Combat.Data.MaxWavePoints);
+
+    TMap<FGameplayTag, float> EnemiesWeight = Combat.Data.EnemiesProbabilityWeight;
+    if (EnemiesWeight.IsEmpty())
+    {
+      UE_LOG(LogAura, Error, TEXT("Enemies probability weight is empty for area %s!"), *Area.ToString())
+      continue;
+    }
+
+    TMap<FGameplayTag, int32> CurrentWaveCounts;
+    while (WaveBudget > 0.f && !EnemiesWeight.IsEmpty())
+    {
+      const FGameplayTag& EnemyTag = UUtilityLibrary::PickRandomWeightedTagNormalized(EnemiesWeight);
+      const FEnemyInfo& EnemyInfo = EnemiesInfo->GetEnemyInfo(EnemyTag);
+      const int32* MaxAllowed = Combat.Data.EnemiesRestrictionsPerWave.Find(EnemyTag);
+      const int32 CurrentCount = CurrentWaveCounts.FindRef(EnemyTag);
+
+      // Check enemy restrictions
+      if (MaxAllowed && CurrentCount >= *MaxAllowed) // Area restriction
+      {
+        EnemiesWeight.Remove(EnemyTag);
+        continue;
+      }
+      if (EnemyInfo.MaxAllowedPerWave > 0 && CurrentCount >= EnemyInfo.MaxAllowedPerWave) // Global restriction
+      {
+        EnemiesWeight.Remove(EnemyTag);
+        continue;
+      }
+        
+      float Cost = EnemyInfo.DifficultyCost;
+
+      if (Cost <= 0)
+      {
+        UE_LOG(LogAura, Error, TEXT("Enemy difficulty cost is not positive: %s"), *EnemyTag.ToString())
+        EnemiesWeight.Remove(EnemyTag);
+        continue;
+      }
+
+      const int32 Level = FMath::RandRange(Combat.Data.MinLevel, Combat.Data.MaxLevel);
+
+      Cost += (Level - Combat.Data.MinLevel) * Cost * 0.1f;
+
+      FEnemySpawnData SpawnData;
+      SpawnData.EnemyClass = EnemyInfo.EnemyClass;
+      SpawnData.Level = Level;
+      // TODO: Add modifiers?
+
+      WaveData.Add(SpawnData);
+      CurrentWaveCounts.FindOrAdd(EnemyTag)++;
+        
+      WaveBudget -= Cost;
+      RemainingPoints -= Cost;
+    }
+    GeneratedEnemyWaves.Add({WaveData});
+  }
+  AreasEncounters.Add(Area, GeneratedEnemyWaves);
+}
+
 void UCombatManager::SetupAreasEncounters()
 {
   URegionInfo* RegionInfo = UAuraSystemsLibrary::GetRegionInfo(GetOwner());
@@ -217,67 +280,6 @@ void UCombatManager::SetupAreasEncounters()
     }
 
     // If the combat mode is not defined (Difficulty Points), we use a PCG for spawning enemy waves
-    float RemainingPoints = Combat.Data.DifficultyPoints;
-    TArray<FEnemyWave> GeneratedEnemyWaves;
-
-    while (RemainingPoints >= Combat.Data.MinWavePoints)
-    {
-      TArray<FEnemySpawnData> WaveData;
-      float WaveBudget = FMath::RandRange(Combat.Data.MinWavePoints, Combat.Data.MaxWavePoints);
-
-      TMap<FGameplayTag, float> EnemiesWeight = Combat.Data.EnemiesProbabilityWeight;
-      if (EnemiesWeight.IsEmpty())
-      {
-        UE_LOG(LogAura, Error, TEXT("Enemies probability weight is empty for area %s!"), *Area.ToString())
-        continue;
-      }
-
-      TMap<FGameplayTag, int32> CurrentWaveCounts;
-      while (WaveBudget > 0.f && !EnemiesWeight.IsEmpty())
-      {
-        const FGameplayTag& EnemyTag = UUtilityLibrary::PickRandomWeightedTagNormalized(EnemiesWeight);
-        const int32* MaxAllowed = Combat.Data.EnemiesRestrictionsPerWave.Find(EnemyTag);
-        const int32 CurrentCount = CurrentWaveCounts.FindRef(EnemyTag);
-        if (MaxAllowed && CurrentCount >= *MaxAllowed)
-        {
-          // Remove from weights so we don't pick it again
-          EnemiesWeight.Remove(EnemyTag);
-          continue;
-        }
-        const FEnemyInfo& EnemyInfo = EnemiesInfo->GetEnemyInfo(EnemyTag);
-
-        if (EnemyInfo.MaxAllowedPerWave > 0 && CurrentCount >= EnemyInfo.MaxAllowedPerWave)
-        {
-          EnemiesWeight.Remove(EnemyTag);
-          continue;
-        }
-        
-        float Cost = EnemyInfo.DifficultyCost;
-
-        if (Cost <= 0)
-        {
-          UE_LOG(LogAura, Error, TEXT("Enemy difficulty cost is not positive: %s"), *EnemyTag.ToString())
-          EnemiesWeight.Remove(EnemyTag);
-          continue;
-        }
-
-        const int32 Level = FMath::RandRange(Combat.Data.MinLevel, Combat.Data.MaxLevel);
-
-        Cost += (Level - Combat.Data.MinLevel) * Cost * 0.1f;
-
-        FEnemySpawnData SpawnData;
-        SpawnData.EnemyClass = EnemyInfo.EnemyClass;
-        SpawnData.Level = Level;
-        // TODO: Add modifiers?
-
-        WaveData.Add(SpawnData);
-        CurrentWaveCounts.FindOrAdd(EnemyTag)++;
-        
-        WaveBudget -= Cost;
-        RemainingPoints -= Cost;
-      }
-      GeneratedEnemyWaves.Add({WaveData});
-    }
-    AreasEncounters.Add(Area, GeneratedEnemyWaves);
+    GenerateEncounter(EnemiesInfo, Area, Combat);
   }
 }

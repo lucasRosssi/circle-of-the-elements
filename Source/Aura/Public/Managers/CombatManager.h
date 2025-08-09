@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "AuraSystemComponent.h"
 #include "GameplayTagContainer.h"
+#include "Data/EnemiesInfo.h"
+#include "Data/RegionInfo.h"
 #include "Enums/Region.h"
 #include "CombatManager.generated.h"
 
@@ -101,6 +103,9 @@ private:
   void NextWave();
   void FinishCombat();
   void PostFinishCombat();
+
+  void GenerateEncounter(const UEnemiesInfo* EnemiesInfo, const FName& Area, const FCombat& Combat);
+  
 
   FName CurrentAreaName;
   int32 EnemyCount = 0;
