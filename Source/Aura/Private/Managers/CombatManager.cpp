@@ -189,14 +189,20 @@ void UCombatManager::BeginPlay()
   SetupAreasEncounters();
 }
 
+// TODO: limit specific enemies amount per wave (multiple Crystal Shamans would be annoying as they would steal all abilities)
+// - Add a global limit in EnemiesInfo?
+// - Add a per area limit in RegionInfo?
 void UCombatManager::SetupAreasEncounters()
 {
   URegionInfo* RegionInfo = UAuraSystemsLibrary::GetRegionInfo(GetOwner());
   GUARD(RegionInfo != nullptr,, TEXT("RegionInfo is invalid!"))
 
+  const UEnemiesInfo* EnemiesInfo = UAuraSystemsLibrary::GetEnemiesInfo(GetOwner());
+  GUARD(EnemiesInfo != nullptr, , TEXT("EnemiesInfo is invalid!"))
+  
   const FLocation& Location = RegionInfo->GetLocationData(LocationName, Region);
   GUARD(Location.IsValid(),, TEXT("Location %s is invalid!"), *LocationName.ToString())
-
+  
   for (const FName& Area : Location.GetAreas())
   {
     GUARD(Location.Combats.Contains(Area),, TEXT("Area %s is invalid!"), *Area.ToString())
@@ -205,13 +211,12 @@ void UCombatManager::SetupAreasEncounters()
 
     if (Combat.Mode == ECombatMode::Defined)
     {
+      // If the combat mode is defined, we just add what is defined in the data asset
       AreasEncounters.Add(Area, Combat.EnemyWaves);
       continue;
     }
-    
-    const UEnemiesInfo* EnemiesInfo = UAuraSystemsLibrary::GetEnemiesInfo(GetOwner());
-    GUARD(EnemiesInfo != nullptr, , TEXT("EnemiesInfo is invalid!"))
-    
+
+    // If the combat mode is not defined (Difficulty Points), we use a PCG for spawning enemy waves
     float RemainingPoints = Combat.Data.DifficultyPoints;
     TArray<FEnemyWave> GeneratedEnemyWaves;
 
@@ -227,10 +232,26 @@ void UCombatManager::SetupAreasEncounters()
         continue;
       }
 
-      while (WaveBudget > 0.f)
+      TMap<FGameplayTag, int32> CurrentWaveCounts;
+      while (WaveBudget > 0.f && !EnemiesWeight.IsEmpty())
       {
         const FGameplayTag& EnemyTag = UUtilityLibrary::PickRandomWeightedTagNormalized(EnemiesWeight);
+        const int32* MaxAllowed = Combat.Data.EnemiesRestrictionsPerWave.Find(EnemyTag);
+        const int32 CurrentCount = CurrentWaveCounts.FindRef(EnemyTag);
+        if (MaxAllowed && CurrentCount >= *MaxAllowed)
+        {
+          // Remove from weights so we don't pick it again
+          EnemiesWeight.Remove(EnemyTag);
+          continue;
+        }
         const FEnemyInfo& EnemyInfo = EnemiesInfo->GetEnemyInfo(EnemyTag);
+
+        if (EnemyInfo.MaxAllowedPerWave > 0 && CurrentCount >= EnemyInfo.MaxAllowedPerWave)
+        {
+          EnemiesWeight.Remove(EnemyTag);
+          continue;
+        }
+        
         float Cost = EnemyInfo.DifficultyCost;
 
         if (Cost <= 0)
@@ -250,13 +271,13 @@ void UCombatManager::SetupAreasEncounters()
         // TODO: Add modifiers?
 
         WaveData.Add(SpawnData);
+        CurrentWaveCounts.FindOrAdd(EnemyTag)++;
+        
         WaveBudget -= Cost;
         RemainingPoints -= Cost;
       }
-
       GeneratedEnemyWaves.Add({WaveData});
     }
-
     AreasEncounters.Add(Area, GeneratedEnemyWaves);
   }
 }

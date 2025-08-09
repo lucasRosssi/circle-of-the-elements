@@ -18,7 +18,10 @@ struct FEnemyInfo
   TSubclassOf<AAuraEnemy> EnemyClass;
 
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(ClampMin=1, UIMin=1))
-  float DifficultyCost = 1.f;
+  float DifficultyCost = 0.f;
+
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(ClampMin=0, UIMin=0))
+  int32 MaxAllowedPerWave = 0;
 };
 
 /**

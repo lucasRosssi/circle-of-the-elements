@@ -65,6 +65,9 @@ struct FDifficultyPointsData
   // Map of available enemies to pick and their probability weight
   UPROPERTY(EditAnywhere, BlueprintReadOnly, meta=(ForceInlineRow, Categories="Enemies"))
   TMap<FGameplayTag, float> EnemiesProbabilityWeight;
+
+  UPROPERTY(EditAnywhere, BlueprintReadOnly, meta=(ForceInlineRow, Categories="Enemies", ClampMin=1,UIMin=1))
+  TMap<FGameplayTag, int32> EnemiesRestrictionsPerWave;
 };
 
 USTRUCT(BlueprintType)
