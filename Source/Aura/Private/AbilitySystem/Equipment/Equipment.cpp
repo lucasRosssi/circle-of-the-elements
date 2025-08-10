@@ -12,7 +12,7 @@
 void UEquipment::Spawn(UObject* WorldContextObject)
 {
   const int32 RecommendedLevel = UAuraSystemsLibrary::GetLocationManager(WorldContextObject)
-    ->GetCurrentLocationRecommendedLevel();
+    ->GetCurrentRegionRecommendedLevel();
   
   const int32 Max = FMath::Min(RecommendedLevel + 3, MAX_LEVEL);
   Level = FMath::RandRange(RecommendedLevel, Max);

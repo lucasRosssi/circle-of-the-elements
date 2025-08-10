@@ -5,6 +5,7 @@
 
 #include "GameplayTagContainer.h"
 #include "ScalableFloat.h"
+#include "Enums/CardinalDirection.h"
 
 float UUtilityLibrary::GetDistance(const FVector& V1, const FVector& V2)
 {
@@ -67,3 +68,39 @@ FGameplayTag UUtilityLibrary::PickRandomWeightedTagNormalized(const TMap<FGamepl
 
   return Tags.Last(); // fallback in case of float rounding errors
 }
+
+ECardinalDirection UUtilityLibrary::GetOppositeDirection(ECardinalDirection Direction)
+{
+  switch (Direction)
+  {
+  case ECardinalDirection::North: return ECardinalDirection::South;
+  case ECardinalDirection::South: return ECardinalDirection::North;
+  case ECardinalDirection::East:  return ECardinalDirection::West;
+  case ECardinalDirection::West:  return ECardinalDirection::East;
+  default: return Direction;
+  }
+}
+
+FIntPoint UUtilityLibrary::GetCoordinateOffsetFromDirection(ECardinalDirection Direction)
+{
+  const TMap<ECardinalDirection, FIntPoint> DirectionOffsets = {
+    {ECardinalDirection::North, FIntPoint(0, 1)},
+    {ECardinalDirection::East, FIntPoint(1, 0)},
+    {ECardinalDirection::South, FIntPoint(0, -1)},
+    {ECardinalDirection::West, FIntPoint(-1, 0)},
+  };
+
+  return DirectionOffsets[Direction];
+}
+ECardinalDirection UUtilityLibrary::GetDirectionFromCoordinateOffset(const FIntPoint Coordinate)
+{
+  const TMap<FIntPoint, ECardinalDirection> OffsetDirections = {
+    { FIntPoint(0, 1), ECardinalDirection::North },
+    { FIntPoint(1, 0), ECardinalDirection::East },
+    { FIntPoint(0, -1), ECardinalDirection::South },
+    { FIntPoint(-1, 0), ECardinalDirection::West },
+  };
+
+  return OffsetDirections[Coordinate];
+}
+

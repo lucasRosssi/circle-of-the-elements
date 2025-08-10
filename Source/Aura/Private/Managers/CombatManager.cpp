@@ -263,7 +263,7 @@ void UCombatManager::SetupAreasEncounters()
   const UEnemiesInfo* EnemiesInfo = UAuraSystemsLibrary::GetEnemiesInfo(GetOwner());
   GUARD(EnemiesInfo != nullptr, , TEXT("EnemiesInfo is invalid!"))
   
-  const FLocation& Location = RegionInfo->GetLocationData(LocationName, Region);
+  const FAreaData& Location = RegionInfo->GetLocationData(LocationName, Region);
   GUARD(Location.IsValid(),, TEXT("Location %s is invalid!"), *LocationName.ToString())
   
   for (const FName& Area : Location.GetAreas())

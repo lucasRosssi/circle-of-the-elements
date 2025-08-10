@@ -7,10 +7,14 @@
 #include "Enums/Region.h"
 #include "LocationManager.generated.h"
 
+enum class ECardinalDirection : uint8;
+struct FAreaData;
+class AEnemySpawner;
+class URegionInfo;
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnInitLocation);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnExitLocation);
 
-class AEnemySpawner;
 
 USTRUCT(BlueprintType)
 struct FAreaInfo
@@ -27,11 +31,7 @@ class AURA_API ULocationManager : public UAuraSystemComponent
   GENERATED_BODY()
 
 public:
-  // UFUNCTION(BlueprintPure)
-  // TSoftObjectPtr<UWorld> GetNextLocation(ERegion InRegion);
-  // UFUNCTION(BlueprintPure)
-  // TSoftObjectPtr<UWorld> GetInitialLocation(ERegion InRegion);
-
+  void GenerateLocation();
   void PlacePlayerInStartingPoint();
 
   UFUNCTION(BlueprintCallable)
@@ -39,14 +39,11 @@ public:
   UFUNCTION(BlueprintCallable)
   void ExitLocation();
 
-  UFUNCTION(BlueprintPure)
-  TSoftObjectPtr<UWorld> GetCurrentLocation() const { return CurrentLocation; }
-
   TArray<AActor*> GetCameraBoundaryActors() const { return CameraBoundaryActors; }
   UFUNCTION(BlueprintCallable)
   void SetCameraBoundaryActors(const TArray<AActor*>& InActors) { CameraBoundaryActors = InActors; }
 
-  int32 GetCurrentLocationRecommendedLevel();
+  int32 GetCurrentRegionRecommendedLevel();
 
   UPROPERTY(BlueprintAssignable)
   FOnInitLocation OnInitLocationDelegate;
@@ -54,17 +51,43 @@ public:
   FOnExitLocation OnExitLocationDelegate;
 
 protected:
+  FAreaData GetAreaFromPool(TArray<FAreaData>& Pool, const TArray<FAreaData>& Source);
+  
+  FAreaData GetEntranceFromPool();
+  FAreaData GetDefaultArenasFromPool();
+  FAreaData GetSpiritArenasFromPool();
+  FAreaData GetBossArenasFromPool();
+  FAreaData GetRewardAreasFromPool();
+  FAreaData GetSpecialAreasFromPool();
+  FAreaData GetExitsFromPool();
+
+  bool IsCoordinateFree(const FIntPoint& Coordinate) const;
+  void ConnectAreas(FAreaData& FromArea, FAreaData& ToArea, ECardinalDirection Direction);
+  void PlaceAreaAtCoordinate(const FIntPoint& Coordinate, const FAreaData& AreaData);
+  
   UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Location")
   ERegion Region = ERegion::Undefined;
   FName Location = NAME_None;
 
 private:
-  TArray<TSoftObjectPtr<UWorld>> SelectedLocations;
-  TSoftObjectPtr<UWorld> PrevLocation;
-  TSoftObjectPtr<UWorld> CurrentLocation;
+  URegionInfo* GetRegionInfo();
+  TWeakObjectPtr<URegionInfo> RegionInfo;
+  
+  TArray<FAreaData> EntrancesPool;
+  TArray<FAreaData> DefaultArenasPool;
+  TArray<FAreaData> SpiritArenasPool;
+  TArray<FAreaData> BossArenasPool;
+  TArray<FAreaData> RewardAreasPool;
+  TArray<FAreaData> SpecialAreasPool;
+  TArray<FAreaData> ExitsPool;
+  
+  FIntPoint PrevCoordinate = FIntPoint(0, 0);
+  FIntPoint CurrentCoordinate = FIntPoint(0, 0);
+
+  TMap<FIntPoint, FAreaData> LocationLayout;
 
   UPROPERTY()
   TArray<AActor*> CameraBoundaryActors;
 
-  bool bWillExitRegion = false;
+  bool bWillExitLocation = false;
 };

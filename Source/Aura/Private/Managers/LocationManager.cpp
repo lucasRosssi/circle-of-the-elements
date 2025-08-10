@@ -3,82 +3,18 @@
 
 #include "Managers/LocationManager.h"
 
+#include "Algo/RandomShuffle.h"
+#include "Aura/AuraMacros.h"
 #include "GameFramework/PlayerStart.h"
 #include "Kismet/GameplayStatics.h"
 #include "Data/RegionInfo.h"
 #include "Utils/AuraSystemsLibrary.h"
+#include "Utils/UtilityLibrary.h"
 
-// TSoftObjectPtr<UWorld> ULocationManager::GetNextLocation(
-//   ERegion InRegion
-// )
-// {
-//   if (bWillExitRegion)
-//   {
-//     return nullptr;
-//   }
-//
-//   URegionInfo* RegionInfo = UAuraSystemsLibrary::GetRegionInfo(this);
-//   const int32 CombatsCount = UAuraSystemsLibrary::GetCombatManager(this)->GetCombatsCount();
-//   
-//   TSoftObjectPtr<UWorld> Location;
-//   if (CombatsCount < RegionInfo->GetRegionData(InRegion)->MaxCombats)
-//   {
-//     Location = RegionInfo->GetRandomizedRegionLocation(
-//       InRegion,
-//       SelectedLocations
-//     );
-//     
-//     const int32 LocationIndex = RegionInfo->FindLocationIndex(InRegion, Location);
-//     GetSaveGame()->LocationManager.Index = LocationIndex;
-//     GetSaveGame()->LocationManager.SelectedLocationsIndex.Add(LocationIndex);
-//   }
-//   else
-//   {
-//     Location = RegionInfo->GetBossArena(InRegion);
-//     bWillExitRegion = true;
-//     GetSaveGame()->LocationManager.Index = BOSS_LOCATION;
-//   }
-//
-//   SelectedLocations.Add(Location);
-//   PrevLocation = CurrentLocation;
-//   CurrentLocation = Location;
-//   
-//   return Location;
-// }
-
-// TSoftObjectPtr<UWorld> ULocationManager::GetInitialLocation(ERegion InRegion)
-// {
-//   URegionInfo* RegionInfo = UAuraSystemsLibrary::GetRegionInfo(this);
-//   
-//   TSoftObjectPtr<UWorld> Location;
-//   if (GetSaveGame())
-//   {
-//     if (SaveGame->LocationManager.Index < 0)
-//     {
-//       Location = RegionInfo->GetRandomizedInitialLocation(InRegion);
-//     }
-//     else if (SaveGame->LocationManager.Index == BOSS_LOCATION)
-//     {
-//       Location = RegionInfo->GetBossArena(InRegion);
-//     }
-//     else
-//     {
-//       Location = RegionInfo->GetRegionLocationByIndex(InRegion, SaveGame->LocationManager.Index);
-//     }
-//
-//     for (const int32 Index : SaveGame->LocationManager.SelectedLocationsIndex)
-//     {
-//       SelectedLocations.Add(RegionInfo->GetRegionLocations(InRegion)[Index]);
-//     }
-//   }
-//   else
-//   {
-//     Location = RegionInfo->GetRandomizedInitialLocation(InRegion);
-//   }
-//
-//   CurrentLocation = Location;
-//   return Location;
-// }
+void ULocationManager::GenerateLocation()
+{
+  // TODO: add generation logic
+}
 
 void ULocationManager::PlacePlayerInStartingPoint()
 {
@@ -106,7 +42,7 @@ void ULocationManager::InitLocation()
 {
   Region = UAuraSystemsLibrary::GetCurrentRegion(this);
   Location = UAuraSystemsLibrary::GetCurrentLocation(this);
-  
+
   PlacePlayerInStartingPoint();
   OnInitLocationDelegate.Broadcast();
 }
@@ -117,13 +53,111 @@ void ULocationManager::ExitLocation()
   OnExitLocationDelegate.Broadcast();
 }
 
-int32 ULocationManager::GetCurrentLocationRecommendedLevel()
+int32 ULocationManager::GetCurrentRegionRecommendedLevel()
 {
-  if (!Location.IsValid() || Region == ERegion::Undefined) return 1;
-  
-  URegionInfo* RegionInfo = UAuraSystemsLibrary::GetRegionInfo(GetOwner());
+  if (Region == ERegion::Undefined) return 1;
 
+  const URegionInfo* RegionInfo = UAuraSystemsLibrary::GetRegionInfo(GetOwner());
   if (!RegionInfo) return 1;
-  
-  return RegionInfo->GetLocationData(Location, Region).RecommendedLevel;
+
+  const FRegionData* RegionData = RegionInfo->GetRegionData(Region);
+  if (!RegionData) return 1;
+
+  return RegionInfo->GetRegionData(Region)->RecommendedLevel;
+}
+
+FAreaData ULocationManager::GetAreaFromPool(TArray<FAreaData>& Pool, const TArray<FAreaData>& Source)
+{
+  if (Pool.IsEmpty())
+  {
+    Pool = Source;
+    Algo::RandomShuffle(Pool);
+  }
+
+  GUARD(!Pool.IsEmpty(), FAreaData(), TEXT("Pool is empty!"))
+
+  return Pool.Pop();
+}
+
+FAreaData ULocationManager::GetEntranceFromPool()
+{
+  return GetAreaFromPool(EntrancesPool, GetRegionInfo()->GetEntrances(Region));
+}
+
+FAreaData ULocationManager::GetDefaultArenasFromPool()
+{
+  return GetAreaFromPool(DefaultArenasPool, GetRegionInfo()->GetDefaultArenas(Region));
+}
+
+FAreaData ULocationManager::GetSpiritArenasFromPool()
+{
+  return GetAreaFromPool(SpiritArenasPool, GetRegionInfo()->GetSpiritArenas(Region));
+}
+
+FAreaData ULocationManager::GetBossArenasFromPool()
+{
+  return GetAreaFromPool(BossArenasPool, GetRegionInfo()->GetBossArenas(Region));
+}
+
+FAreaData ULocationManager::GetRewardAreasFromPool()
+{
+  return GetAreaFromPool(RewardAreasPool, GetRegionInfo()->GetRewardAreas(Region));
+}
+
+FAreaData ULocationManager::GetSpecialAreasFromPool()
+{
+  return GetAreaFromPool(SpecialAreasPool, GetRegionInfo()->GetSpecialAreas(Region));
+}
+
+FAreaData ULocationManager::GetExitsFromPool()
+{
+  return GetAreaFromPool(ExitsPool, GetRegionInfo()->GetExits(Region));
+}
+
+bool ULocationManager::IsCoordinateFree(const FIntPoint& Coordinate) const
+{
+  return !LocationLayout.Contains(Coordinate);
+}
+
+void ULocationManager::ConnectAreas(FAreaData& FromArea, FAreaData& ToArea, ECardinalDirection Direction)
+{
+  FromArea.OpenDirections.Add(Direction);
+
+  const ECardinalDirection OppositeDir = UUtilityLibrary::GetOppositeDirection(Direction);
+
+  ToArea.OpenDirections.Add(OppositeDir);
+}
+
+void ULocationManager::PlaceAreaAtCoordinate(const FIntPoint& Coordinate, const FAreaData& AreaData)
+{
+  PrevCoordinate = CurrentCoordinate;
+  LocationLayout.Add(Coordinate, AreaData);
+  CurrentCoordinate = Coordinate;
+
+  if (CurrentCoordinate == FIntPoint(0, 0)) return;
+
+  FAreaData* PrevArea = LocationLayout.Find(PrevCoordinate);
+  FAreaData* CurrentArea = LocationLayout.Find(CurrentCoordinate);
+  GUARD(
+    PrevArea && CurrentArea,,
+    TEXT("Something went wrong with location generation, PrevArea or CurrentArea are invalid!")
+  )
+
+  const ECardinalDirection ConnectDirection = UUtilityLibrary::GetDirectionFromCoordinateOffset(
+    CurrentCoordinate - PrevCoordinate
+  );
+
+  ConnectAreas(*PrevArea, *CurrentArea, ConnectDirection);
+}
+
+
+URegionInfo* ULocationManager::GetRegionInfo()
+{
+  if (!RegionInfo.IsValid())
+  {
+    RegionInfo = UAuraSystemsLibrary::GetRegionInfo(GetOwner());
+  }
+
+  GUARD(RegionInfo.IsValid(), nullptr, TEXT("RegionInfo is invalid!"))
+  return RegionInfo.Get();
 }
