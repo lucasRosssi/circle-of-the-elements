@@ -14,7 +14,6 @@ enum class ECardinalDirection : uint8;
 class AEnemySpawner;
 class URegionInfo;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnInitLocation);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnInitArea);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnExitArea);
 
@@ -38,7 +37,8 @@ public:
   void GenerateLocation();
   
   void PlacePlayerInStartingPoint();
-  
+
+  void InitLocation();
   UFUNCTION(BlueprintCallable)
   void InitArea();
   UFUNCTION(BlueprintCallable)
@@ -53,9 +53,7 @@ public:
   UFUNCTION(BlueprintPure)
   TMap<FIntPoint, FAreaData> GetLocationLayout() const { return LocationLayout; }
   FIntPoint GetPlayerCoordinate() const { return PlayerCoordinate; }
-
-  UPROPERTY(BlueprintAssignable)
-  FOnInitArea OnInitLocation;
+  
   UPROPERTY(BlueprintAssignable)
   FOnInitArea OnInitAreaDelegate;
   UPROPERTY(BlueprintAssignable)
@@ -78,8 +76,11 @@ protected:
   void HandleArenaGeneration(FAreaData& AreaData);
 
   void LoadArea(const FAreaData& AreaData);
+  UFUNCTION()
   void OnAreaLoaded();
+  
   void UnloadArea(const FAreaData& AreaData);
+  UFUNCTION()
   void OnAreaUnloaded();
 
   bool IsCoordinateFree(const FIntPoint& Coordinate) const;

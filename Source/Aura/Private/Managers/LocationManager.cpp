@@ -136,6 +136,14 @@ void ULocationManager::PlacePlayerInStartingPoint()
   );
 }
 
+void ULocationManager::InitLocation()
+{
+  const FAreaData* AreaData = LocationLayout.Find(FIntPoint(0, 0));
+  GUARD(AreaData,, TEXT("Entrance is invalid!"))
+  
+  LoadArea(*AreaData);
+}
+
 void ULocationManager::InitArea()
 {
   PlacePlayerInStartingPoint();
@@ -178,7 +186,7 @@ void ULocationManager::BeginPlay()
     GenerateLocation();
   }
 
-  OnInitLocation.Broadcast();
+  InitLocation();
 }
 
 FAreaData ULocationManager::GetAreaFromPool(TArray<FAreaData>& Pool, const TArray<FAreaData>& Source)
@@ -286,7 +294,7 @@ void ULocationManager::HandleArenaGeneration(FAreaData& AreaData)
 
 void ULocationManager::LoadArea(const FAreaData& AreaData)
 {
-  GUARD(AreaData.World.IsNull(),, TEXT("World level asset is invalid!"))
+  GUARD(!AreaData.World.IsNull(),, TEXT("World level asset path is invalid!"))
 
   PrevPlayerCoordinate = PlayerCoordinate;
   PlayerCoordinate = AreaData.Coordinate;
@@ -310,13 +318,15 @@ void ULocationManager::OnAreaLoaded()
 {
   InitArea();
 
+  if (PrevPlayerCoordinate == PlayerCoordinate) return;
+  
   const FAreaData* AreaData = LocationLayout.Find(PrevPlayerCoordinate);
   if (AreaData) UnloadArea(*AreaData);
 }
 
 void ULocationManager::UnloadArea(const FAreaData& AreaData)
 {
-  GUARD(AreaData.World.IsNull(),, TEXT("World level asset is invalid!"))
+  GUARD(!AreaData.World.IsNull(),, TEXT("World level asset path is invalid!"))
   
   FLatentActionInfo LatentInfo;
   LatentInfo.CallbackTarget = this;
