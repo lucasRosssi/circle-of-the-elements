@@ -30,7 +30,7 @@ void ACombatGameMode::BeginPlay()
 
 void ACombatGameMode::LoadLevelInfo()
 {
-  LocationManager->InitLocation();
+  LocationManager->InitArea();
 
   if (UAuraSaveGame* SaveGame = UAuraSystemsLibrary::GetCurrentSaveGameObject(this))
   {
@@ -50,9 +50,9 @@ int32 ACombatGameMode::GetEnemiesLevel() const
   return CombatManager->GetEnemiesLevel();
 }
 
-FOnExitLocation& ACombatGameMode::GetOnExitLocationDelegate()
+FOnExitArea& ACombatGameMode::GetOnExitAreaDelegate()
 {
-  return LocationManager->OnExitLocationDelegate;
+  return LocationManager->OnExitAreaDelegate;
 }
 
 FOnCombatFinished& ACombatGameMode::GetOnCombatFinishedDelegate()

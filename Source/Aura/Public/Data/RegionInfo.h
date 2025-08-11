@@ -5,10 +5,11 @@
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
 #include "Engine/DataAsset.h"
-#include "Enums/CombatMode.h"
+#include "Enums/AreaType.h"
 #include "Enums/Region.h"
 #include "RegionInfo.generated.h"
 
+enum class ECardinalDirection : uint8;
 class UGameplayEffect;
 struct FAvailableLevels;
 class AAuraEnemy;
@@ -17,11 +18,11 @@ USTRUCT(BlueprintType)
 struct FEnemySpawnData
 {
   GENERATED_BODY()
-	
+
   UPROPERTY(EditAnywhere, BlueprintReadOnly)
   TSubclassOf<AAuraEnemy> EnemyClass;
-  
-  UPROPERTY(EditAnywhere, BlueprintReadOnly, meta=(ClampMin=1,UIMin=1,ClampMax=50,UIMax=50))
+
+  UPROPERTY(EditAnywhere, BlueprintReadOnly, meta=(ClampMin=1, UIMin=1, ClampMax=20, UIMax=20))
   int32 Level = 1;
 
   UPROPERTY(EditAnywhere, BlueprintReadOnly)
@@ -31,18 +32,18 @@ struct FEnemySpawnData
 USTRUCT(BlueprintType)
 struct FEnemyWave
 {
-	GENERATED_BODY()
-	
-	UPROPERTY(
-	  EditAnywhere,
-	  BlueprintReadOnly,
-	  meta=(TitleProperty="Lv.{Level} {EnemyClass}")
-	  )
-	TArray<FEnemySpawnData> Enemies;
+  GENERATED_BODY()
+
+  UPROPERTY(
+    EditAnywhere,
+    BlueprintReadOnly,
+    meta=(TitleProperty="Lv.{Level} {EnemyClass}")
+  )
+  TArray<FEnemySpawnData> Enemies;
 };
 
 USTRUCT(BlueprintType)
-struct FDifficultyPointsData
+struct FArenaDifficultyData
 {
   GENERATED_BODY()
 
@@ -50,79 +51,92 @@ struct FDifficultyPointsData
   UPROPERTY(EditAnywhere, BlueprintReadOnly)
   float DifficultyPoints = 1.f;
 
-  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(ClampMin=1,UIMin=1,ClampMax=20,UIMax=20))
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(ClampMin=1, UIMin=1, ClampMax=20, UIMax=20))
   int32 MinLevel = 1;
-  
-  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(ClampMin=1,UIMin=1,ClampMax=20,UIMax=20))
+
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(ClampMin=1, UIMin=1, ClampMax=20, UIMax=20))
   int32 MaxLevel = 1;
-  
-  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(ClampMin=1,UIMin=1))
+
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(ClampMin=1, UIMin=1))
   float MinWavePoints = 1.f;
-  
-  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(ClampMin=1,UIMin=1))
+
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(ClampMin=1, UIMin=1))
   float MaxWavePoints = 1.f;
 
   // Map of available enemies to pick and their probability weight
   UPROPERTY(EditAnywhere, BlueprintReadOnly, meta=(ForceInlineRow, Categories="Enemies"))
   TMap<FGameplayTag, float> EnemiesProbabilityWeight;
 
-  UPROPERTY(EditAnywhere, BlueprintReadOnly, meta=(ForceInlineRow, Categories="Enemies", ClampMin=1,UIMin=1))
+  UPROPERTY(EditAnywhere, BlueprintReadOnly, meta=(ForceInlineRow, Categories="Enemies", ClampMin=1, UIMin=1))
   TMap<FGameplayTag, int32> EnemiesRestrictionsPerWave;
 };
 
 USTRUCT(BlueprintType)
-struct FCombat
+struct FAreaData
 {
   GENERATED_BODY()
-  
-  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-  ECombatMode Mode = ECombatMode::DifficultyPoints;
-  
-  UPROPERTY(EditAnywhere, BlueprintReadOnly, meta=(EditCondition="Mode == ECombatMode::Defined", EditConditionHides))
-  TArray<FEnemyWave> EnemyWaves;
 
-  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(EditCondition="Mode == ECombatMode::DifficultyPoints", EditConditionHides))
-  FDifficultyPointsData Data;
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+  TSoftObjectPtr<UWorld> World;
+
+  FIntPoint Coordinate;
+
+  EAreaType AreaType;
+
+  TSet<ECardinalDirection> OpenDirections;
+
+  int32 ArenaLevel = -1;
+
+  bool IsValid() const { return World.IsValid(); }
+
+  bool IsEntrance() const { return AreaType == EAreaType::Entrance; }
+  bool IsArena() const { return AreaType == EAreaType::DefaultArena || AreaType == EAreaType::SpiritArena || AreaType == EAreaType::BossArena; }
+  bool IsRewardArea() const { return AreaType == EAreaType::RewardArea; }
+  bool IsSpecialArea() const { return AreaType == EAreaType::SpecialArea; }
+  bool IsExit() const { return AreaType == EAreaType::Exit; }
 };
 
 USTRUCT(BlueprintType)
-struct FLocation
+struct FAreaTypeData
 {
   GENERATED_BODY()
-  
+
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-  TSoftObjectPtr<UWorld> World;
-  
-  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(ClampMin=1,UIMin=1,ClampMax=20,UIMax=20))
-  int32 RecommendedLevel = 1;
-  
-  
-  // Areas and their Enemy Waves
-  UPROPERTY(
-    EditDefaultsOnly,
-    BlueprintReadOnly,
-    meta=(ForceInlineRow)
-    )
-  TMap<FName, FCombat> Combats;
-
-  TArray<FName> GetAreas() const
-  {
-    TArray<FName> Areas;
-    Combats.GenerateKeyArray(Areas);
-  
-    return Areas;
-  }
-
-  bool IsValid() const { return World.IsValid(); }
+  float Rarity = 0.f;
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(ClampMin=0, UIMin=0))
+  int32 MinPerLocation = 0;
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(ClampMin=0, UIMin=0))
+  int32 MaxPerLocation = 0;
 };
 
 USTRUCT(BlueprintType)
 struct FRegionData
 {
-	GENERATED_BODY()
+  GENERATED_BODY()
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	TMap<FName, FLocation> Locations;
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(ClampMin=1, UIMin=1, ClampMax=20, UIMax=20))
+  int32 RecommendedLevel = 1;
+
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+  TArray<FArenaDifficultyData> ArenaDifficultyData;
+
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+  FGameplayTagContainer Bosses;
+
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+  TArray<FAreaData> Entrances;
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+  TArray<FAreaData> DefaultArenas;
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+  TArray<FAreaData> SpiritArenas;
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+  TArray<FAreaData> BossArenas;
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+  TArray<FAreaData> RewardAreas;
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+  TArray<FAreaData> SpecialAreas;
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+  TArray<FAreaData> Exits;
 };
 
 /**
@@ -131,58 +145,30 @@ struct FRegionData
 UCLASS()
 class AURA_API URegionInfo : public UDataAsset
 {
-	GENERATED_BODY()
+  GENERATED_BODY()
+
 public:
   UFUNCTION(BlueprintPure)
   TSoftObjectPtr<UWorld> GetNewGameLevel() const { return NewGameLevel; }
+
   UFUNCTION(BlueprintPure)
   TSoftObjectPtr<UWorld> GetHomeLevel() const { return HomeLevel; }
-  
-  // UFUNCTION(BlueprintPure)
-  // TMap<ERegion, TSoftObjectPtr<UWorld>> GetLevels() { return Levels; }
-  
-	FRegionData* GetRegionData(ERegion Region);
 
-  UFUNCTION(BlueprintPure)
-  FLocation GetLocationData(FName LocationName, ERegion Region = ERegion::Undefined);
-  UFUNCTION(BlueprintPure)
-  TSoftObjectPtr<UWorld> GetLocationLevel(FName LocationName, ERegion Region = ERegion::Undefined);
-  UFUNCTION(BlueprintPure)
-  TArray<FName> GetLocationAreas(FName LocationName, ERegion Region = ERegion::Undefined);
+  const FRegionData* GetRegionData(ERegion Region) const;
+  TMap<EAreaType, FAreaTypeData> GetAreaTypesData() const { return AreaTypesData; }
 
-	UFUNCTION(BlueprintCallable)
-	TArray<FEnemyWave> GetEnemyWaves(
-    FName AreaName,
-    FName LocationName,
-	  ERegion Region
-		);
+  TArray<FAreaData> GetEntrances(ERegion Region) const;
+  TArray<FAreaData> GetDefaultArenas(ERegion Region) const;
+  TArray<FAreaData> GetSpiritArenas(ERegion Region) const;
+  TArray<FAreaData> GetBossArenas(ERegion Region) const;
+  TArray<FAreaData> GetRewardAreas(ERegion Region) const;
+  TArray<FAreaData> GetSpecialAreas(ERegion Region) const;
+  TArray<FAreaData> GetExits(ERegion Region) const;
 
-	// UFUNCTION(BlueprintCallable)
-	// TArray<FEnemyWave> GetRandomizedEnemyWaves(
-	//   ERegion Region,
- //    FName LocationName,
- //    FName AreaName
-	// 	);
+  FArenaDifficultyData GetArenaDifficultyData(ERegion Region, int32 ArenaLevel) const;
 
-	UFUNCTION(BlueprintCallable)
-	TMap<FName, FLocation> GetRegionLocations(
-		ERegion Region
-		);
-	// UFUNCTION(BlueprintCallable)
-	// TSoftObjectPtr<UWorld> GetRandomizedRegionLocation(
-	// 	ERegion Region,
-	// 	TArray<TSoftObjectPtr<UWorld>> LevelsToExclude
-	// 	);
-	// UFUNCTION(BlueprintCallable)
-	// TSoftObjectPtr<UWorld> GetRandomizedInitialLocation(ERegion Region);
+  FGameplayTagContainer GetRegionBosses(ERegion Region) const;
 
-	// UFUNCTION(BlueprintCallable)
-	// TSoftObjectPtr<UWorld> GetBossArena(ERegion Region);
-
-  // int32 FindLocationIndex(ERegion Region, TSoftObjectPtr<UWorld> Location);
-
-  // TSoftObjectPtr<UWorld> GetRegionLocationByIndex(ERegion Region, int32 Index);
-	
 protected:
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
   TSoftObjectPtr<UWorld> HomeLevel;
@@ -190,16 +176,19 @@ protected:
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
   TSoftObjectPtr<UWorld> NewGameLevel;
 
-  // UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-  // TMap<ERegion, TSoftObjectPtr<UWorld>> Levels;
-  
-	UPROPERTY(
-		EditDefaultsOnly,
-		BlueprintReadOnly,
-		meta=(Categories="Combat",	ForceInlineRow)
-		)
-	TMap<ERegion, FRegionData> RegionData;
+  UPROPERTY(
+    EditDefaultsOnly,
+    BlueprintReadOnly,
+    meta=(ForceInlineRow)
+  )
+  TMap<ERegion, FRegionData> RegionData;
 
+  UPROPERTY(
+    EditDefaultsOnly,
+    BlueprintReadOnly,
+    meta=(ForceInlineRow)
+  )
+  TMap<EAreaType, FAreaTypeData> AreaTypesData;
 
 private:
 };

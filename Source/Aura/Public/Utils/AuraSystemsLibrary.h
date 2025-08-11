@@ -214,18 +214,6 @@ public:
     meta=(HidePin="WorldContextObject", DefaultToSelf="WorldContextObject")
     )
   static void SetCurrentRegion(const UObject* WorldContextObject, ERegion Region);
-  UFUNCTION(
-    BlueprintPure,
-    Category="Aura Systems|Location",
-    meta=(HidePin="WorldContextObject", DefaultToSelf="WorldContextObject")
-    )
-  static FName GetCurrentLocation(const UObject* WorldContextObject);
-  UFUNCTION(
-    BlueprintCallable,
-    Category="Aura Systems|Location",
-    meta=(HidePin="WorldContextObject", DefaultToSelf="WorldContextObject")
-    )
-  static void SetCurrentLocation(const UObject* WorldContextObject, FName Location);
 
 private:
   static AGameModeBase* GetManagerInterfaceGameMode(const UObject* WorldContextObject);

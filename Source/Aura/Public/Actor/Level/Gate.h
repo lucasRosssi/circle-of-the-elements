@@ -30,7 +30,7 @@ public:
   bool IsActive() const { return bActive; }
 
   UFUNCTION()
-  void OnCombatFinished(FName InAreaName);
+  void OnCombatFinished();
   void Enable();
 
   void DeactivateGate();

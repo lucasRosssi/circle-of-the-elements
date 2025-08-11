@@ -4,154 +4,101 @@
 #include "Data/RegionInfo.h"
 
 #include "Aura/AuraLogChannels.h"
+#include "Aura/AuraMacros.h"
 
-FRegionData* URegionInfo::GetRegionData(ERegion Region)
+const FRegionData* URegionInfo::GetRegionData(ERegion Region) const
 {
-	return RegionData.Find(Region);
+  const FRegionData* Data = RegionData.Find(Region);
+
+  GUARD(Data != nullptr, nullptr, TEXT("Region data not found: %d"), Region)
+
+  return Data;
 }
 
-FLocation URegionInfo::GetLocationData(FName LocationName, ERegion Region)
+TArray<FAreaData> URegionInfo::GetEntrances(ERegion Region) const
 {
-  if (Region != ERegion::Undefined)
-  {
-    FRegionData* Data = RegionData.Find(Region);
-    if (!Data) return FLocation();
+  const FRegionData* Data = GetRegionData(Region);
 
-    return *Data->Locations.Find(LocationName);
-  }
+  GUARD(Data != nullptr, TArray<FAreaData>(), TEXT("Region data not found: %d"), Region)
 
-  for (auto [ItRegion, ItRegionData] : RegionData)
-  {
-    if (const auto Location = ItRegionData.Locations.Find(LocationName))
-    {
-      return *Location;
-    }
-  }
-
-  UE_LOG(LogAura, Error, TEXT("[RegionInfo] Location not found!"));
-
-  return FLocation();
+  return Data->Entrances;
 }
 
-TSoftObjectPtr<UWorld> URegionInfo::GetLocationLevel(FName LocationName, ERegion Region)
+TArray<FAreaData> URegionInfo::GetDefaultArenas(ERegion Region) const
 {
-  return GetLocationData(LocationName, Region).World;
+  const FRegionData* Data = GetRegionData(Region);
+
+  GUARD(Data != nullptr, TArray<FAreaData>(), TEXT("Region data not found: %d"), Region)
+
+  return Data->DefaultArenas;
 }
 
-TArray<FName> URegionInfo::GetLocationAreas(FName LocationName, ERegion Region)
+TArray<FAreaData> URegionInfo::GetSpiritArenas(ERegion Region) const
 {
-  return GetLocationData(LocationName, Region).GetAreas();
+  const FRegionData* Data = GetRegionData(Region);
+
+  GUARD(Data != nullptr, TArray<FAreaData>(), TEXT("Region data not found: %d"), Region)
+
+  return Data->SpiritArenas;
 }
 
-TArray<FEnemyWave> URegionInfo::GetEnemyWaves(
-  FName AreaName,
-  FName LocationName,
-  ERegion Region
-	)
+TArray<FAreaData> URegionInfo::GetBossArenas(ERegion Region) const
 {
-	const FRegionData* Data = GetRegionData(Region);
+  const FRegionData* Data = GetRegionData(Region);
 
-	if (!Data) return TArray<FEnemyWave>();
+  GUARD(Data != nullptr, TArray<FAreaData>(), TEXT("Region data not found: %d"), Region)
 
-  if (const auto LocationData = Data->Locations.Find(LocationName))
-  {
-    if (const auto Combat = LocationData->Combats.Find(AreaName))
-    {
-		  return Combat->EnemyWaves;
-    }
-  }
-
-	return TArray<FEnemyWave>();
+  return Data->BossArenas;
 }
 
-// TArray<FEnemyWave> URegionInfo::GetRandomizedEnemyWaves(
-//   ERegion Region,
-//   FName LocationName,
-//   FName AreaName
-// 	)
-// {
-// 	TArray<FEnemyWave> EnemyWaves = GetEnemyWaves(Region, LocationName, AreaName);
-// 	if (EnemyWaves.IsEmpty()) return EnemyWaves;
-//
-// 	TArray<FEnemyWave> RandomWaves;
-// 	for (int32 i = 1; i <= Amount; i++)
-// 	{
-// 		const int32 Index = FMath::RandRange(0, EnemyWaves.Num() - 1);
-//
-// 		if (EnemyWaves.IsValidIndex(Index))
-// 		{
-// 			RandomWaves.Add(EnemyWaves[Index]);
-// 			EnemyWaves.RemoveAt(Index);
-// 		}
-// 	}
-//
-// 	return RandomWaves;
-// }
-
-TMap<FName, FLocation> URegionInfo::GetRegionLocations(ERegion Region)
+TArray<FAreaData> URegionInfo::GetRewardAreas(ERegion Region) const
 {
-	const FRegionData* Data = GetRegionData(Region);
+  const FRegionData* Data = GetRegionData(Region);
 
-	if (!Data) return TMap<FName, FLocation>();
+  GUARD(Data != nullptr, TArray<FAreaData>(), TEXT("Region data not found: %d"), Region)
 
-	return Data->Locations;
+  return Data->RewardAreas;
 }
 
-// TSoftObjectPtr<UWorld> URegionInfo::GetRandomizedRegionLocation(
-// 	ERegion Region,
-// 	TArray<TSoftObjectPtr<UWorld>> LevelsToExclude
-// 	)
-// {
-// 	TArray<TSoftObjectPtr<UWorld>> Locations = GetRegionLocations(Region);
-// 	if (Locations.IsEmpty()) return nullptr;
-//
-// 	if (!LevelsToExclude.IsEmpty() && LevelsToExclude.Num() < Locations.Num())
-// 	{
-// 		for (auto Level : LevelsToExclude)
-// 		{
-// 			Locations.RemoveSingle(Level);
-// 		}
-// 	}
-//
-// 	const int32 Index = FMath::RandRange(0, Locations.Num() - 1);
-//
-// 	return Locations[Index];
-// }
-//
-// TSoftObjectPtr<UWorld> URegionInfo::GetRandomizedInitialLocation(ERegion Region)
-// {
-// 	const FRegionData* Data = GetRegionData(Region);
-//
-// 	if (!Data) return nullptr;
-//
-// 	TArray<TSoftObjectPtr<UWorld>> InitialLevels = Data->InitialLocations;
-// 	if (InitialLevels.IsEmpty()) return nullptr;
-//
-// 	const int32 Index = FMath::RandRange(0, InitialLevels.Num() - 1);
-//
-// 	return InitialLevels[Index];
-// }
+TArray<FAreaData> URegionInfo::GetSpecialAreas(ERegion Region) const
+{
+  const FRegionData* Data = GetRegionData(Region);
 
-// TSoftObjectPtr<UWorld> URegionInfo::GetBossArena(ERegion Region)
-// {
-// 	const FRegionData* Data = GetRegionData(Region);
-//
-// 	if (!Data) return nullptr;
-//
-// 	return Data->BossArena;
-// }
+  GUARD(Data != nullptr, TArray<FAreaData>(), TEXT("Region data not found: %d"), Region)
 
-// int32 URegionInfo::FindLocationIndex(ERegion Region, TSoftObjectPtr<UWorld> Location)
-// {
-//   return GetRegionLocations(Region).IndexOfByPredicate(
-//     [Location](const TSoftObjectPtr<UWorld>& Item)
-//     {
-//       return Item == Location;
-//     }
-//     );
-// }
+  return Data->SpecialAreas;
+}
 
-// TSoftObjectPtr<UWorld> URegionInfo::GetRegionLocationByIndex(ERegion Region, int32 Index)
-// {
-//   return GetRegionLocations(Region)[Index];
-// }
+TArray<FAreaData> URegionInfo::GetExits(ERegion Region) const
+{
+  const FRegionData* Data = GetRegionData(Region);
+
+  GUARD(Data != nullptr, TArray<FAreaData>(), TEXT("Region data not found: %d"), Region)
+
+  return Data->Exits;
+}
+
+FArenaDifficultyData URegionInfo::GetArenaDifficultyData(ERegion Region, int32 ArenaLevel) const
+{
+  const FRegionData* Data = GetRegionData(Region);
+
+  GUARD(Data != nullptr, FArenaDifficultyData(), TEXT("Region data not found: %d"), Region)
+  GUARD(
+    Data->ArenaDifficultyData.IsValidIndex(ArenaLevel),
+    Data->ArenaDifficultyData.Last(),
+    TEXT("Difficulty data not found for arena level %d! Falling back to last level available (%d)"),
+    ArenaLevel,
+    Data->ArenaDifficultyData.Num() - 1
+  )
+
+  return Data->ArenaDifficultyData[ArenaLevel];
+}
+
+FGameplayTagContainer URegionInfo::GetRegionBosses(ERegion Region) const
+{
+  const FRegionData* Data = GetRegionData(Region);
+
+  GUARD(Data != nullptr, FGameplayTagContainer(), TEXT("Region data not found: %d"), Region)
+
+  return Data->Bosses;
+}

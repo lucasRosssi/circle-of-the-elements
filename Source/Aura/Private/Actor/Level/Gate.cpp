@@ -38,10 +38,8 @@ void AGate::BeginPlay()
   UAuraSystemsLibrary::GetOnCombatFinishedDelegate(this).AddDynamic(this, &AGate::OnCombatFinished);
 }
 
-void AGate::OnCombatFinished(FName InAreaName)
+void AGate::OnCombatFinished()
 {
-  if (InAreaName != AreaName) return;
-
   Enable();
 }
 
