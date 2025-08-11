@@ -14,6 +14,7 @@ enum class ECardinalDirection : uint8;
 class AEnemySpawner;
 class URegionInfo;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnInitLocation);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnInitArea);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnExitArea);
 
@@ -37,9 +38,7 @@ public:
   void GenerateLocation();
   
   void PlacePlayerInStartingPoint();
-
-  UFUNCTION(BlueprintImplementableEvent)
-  void InitLocation();
+  
   UFUNCTION(BlueprintCallable)
   void InitArea();
   UFUNCTION(BlueprintCallable)
@@ -51,8 +50,12 @@ public:
 
   int32 GetCurrentRegionRecommendedLevel();
 
+  UFUNCTION(BlueprintPure)
+  TMap<FIntPoint, FAreaData> GetLocationLayout() const { return LocationLayout; }
   FIntPoint GetPlayerCoordinate() const { return PlayerCoordinate; }
 
+  UPROPERTY(BlueprintAssignable)
+  FOnInitArea OnInitLocation;
   UPROPERTY(BlueprintAssignable)
   FOnInitArea OnInitAreaDelegate;
   UPROPERTY(BlueprintAssignable)
@@ -74,6 +77,11 @@ protected:
 
   void HandleArenaGeneration(FAreaData& AreaData);
 
+  void LoadArea(const FAreaData& AreaData);
+  void OnAreaLoaded();
+  void UnloadArea(const FAreaData& AreaData);
+  void OnAreaUnloaded();
+
   bool IsCoordinateFree(const FIntPoint& Coordinate) const;
   FIntPoint GetAdjacentFreeCoordinate(const FIntPoint& Coordinate) const;
   void ConnectAreas(FAreaData& FromArea, FAreaData& ToArea, ECardinalDirection Direction);
@@ -82,7 +90,6 @@ protected:
   
   UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Location")
   ERegion Region = ERegion::Undefined;
-  FName Location = NAME_None;
 
   UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Location|PCG", meta=(DisplayName="Active"))
   bool bPCGActive = true;
@@ -107,13 +114,13 @@ private:
   FIntPoint CurrentCoordinate = FIntPoint(0, 0);
   int32 AreasCount = 0;
   int32 ArenaLevel = 0;
-
+  
   TMap<FIntPoint, FAreaData> LocationLayout;
 
+  FIntPoint PrevPlayerCoordinate = FIntPoint(0, 0);
   FIntPoint PlayerCoordinate = FIntPoint(0, 0);
+  ECardinalDirection LastExit;
 
   UPROPERTY()
   TArray<AActor*> CameraBoundaryActors;
-
-  bool bWillExitLocation = false;
 };

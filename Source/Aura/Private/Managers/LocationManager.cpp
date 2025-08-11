@@ -144,7 +144,16 @@ void ULocationManager::InitArea()
 
 void ULocationManager::ExitArea(ECardinalDirection ExitDirection)
 {
+  LastExit = ExitDirection;
   CameraBoundaryActors.Empty();
+
+  const FIntPoint& NextAreaCoordinate = UUtilityLibrary::GetCoordinateOffsetFromDirection(ExitDirection) + PlayerCoordinate;
+  const FAreaData* NextAreaData = LocationLayout.Find(NextAreaCoordinate);
+
+  GUARD(NextAreaData,, TEXT("Could not find next area at [%d,%d]!"), NextAreaCoordinate.X, NextAreaCoordinate.Y)
+
+  LoadArea(*NextAreaData);
+  
   OnExitAreaDelegate.Broadcast();
 }
 
@@ -169,7 +178,7 @@ void ULocationManager::BeginPlay()
     GenerateLocation();
   }
 
-  InitLocation();
+  OnInitLocation.Broadcast();
 }
 
 FAreaData ULocationManager::GetAreaFromPool(TArray<FAreaData>& Pool, const TArray<FAreaData>& Source)
@@ -273,6 +282,59 @@ void ULocationManager::HandleArenaGeneration(FAreaData& AreaData)
   GUARD(CombatManager, , TEXT("CombatManager is invalid!"))
 
   CombatManager->GenerateArenaCombat(AreaData);
+}
+
+void ULocationManager::LoadArea(const FAreaData& AreaData)
+{
+  GUARD(AreaData.World.IsNull(),, TEXT("World level asset is invalid!"))
+
+  PrevPlayerCoordinate = PlayerCoordinate;
+  PlayerCoordinate = AreaData.Coordinate;
+  
+  FLatentActionInfo LatentInfo;
+  LatentInfo.CallbackTarget = this;
+  LatentInfo.ExecutionFunction = FName("OnAreaLoaded");
+  LatentInfo.Linkage = 0;
+  LatentInfo.UUID = __LINE__;
+
+  UGameplayStatics::LoadStreamLevelBySoftObjectPtr(
+    this,
+    AreaData.World,
+    true,
+    false,
+    LatentInfo
+  );
+}
+
+void ULocationManager::OnAreaLoaded()
+{
+  InitArea();
+
+  const FAreaData* AreaData = LocationLayout.Find(PrevPlayerCoordinate);
+  if (AreaData) UnloadArea(*AreaData);
+}
+
+void ULocationManager::UnloadArea(const FAreaData& AreaData)
+{
+  GUARD(AreaData.World.IsNull(),, TEXT("World level asset is invalid!"))
+  
+  FLatentActionInfo LatentInfo;
+  LatentInfo.CallbackTarget = this;
+  LatentInfo.ExecutionFunction = FName("OnAreaUnloaded");
+  LatentInfo.Linkage = 0;
+  LatentInfo.UUID = __LINE__;
+
+  UGameplayStatics::UnloadStreamLevelBySoftObjectPtr(
+      this,
+      AreaData.World,
+      LatentInfo,
+      false
+  );
+}
+
+void ULocationManager::OnAreaUnloaded()
+{
+  
 }
 
 bool ULocationManager::IsCoordinateFree(const FIntPoint& Coordinate) const
