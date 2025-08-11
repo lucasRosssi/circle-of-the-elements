@@ -34,6 +34,8 @@ FAuraAbilityInfo UAbilityInfo::FindAbilityInfoByTag(
 	const FGameplayTag& AbilityTag
 ) const
 {
+  if (!AbilityTag.IsValid()) return FAuraAbilityInfo();
+  
 	for (auto Element : Abilities)
 	{
 		FAuraAbilityInfo* Info = Element.Value.AbilityList.Find(AbilityTag);
@@ -44,12 +46,12 @@ FAuraAbilityInfo UAbilityInfo::FindAbilityInfoByTag(
 		}
 	}
 
-	UE_LOG(
-		LogAura,
-		Error,
-		TEXT("Can't find Info for AbilityTag [%s] on AbilityInfo [%s]"), 
-		*AbilityTag.ToString(), *GetNameSafe(this)
-	);
+	// UE_LOG(
+	// 	LogAura,
+	// 	Error,
+	// 	TEXT("Can't find Info for AbilityTag [%s] on AbilityInfo [%s]"), 
+	// 	*AbilityTag.ToString(), *GetNameSafe(this)
+	// );
 	
 
 	return FAuraAbilityInfo();

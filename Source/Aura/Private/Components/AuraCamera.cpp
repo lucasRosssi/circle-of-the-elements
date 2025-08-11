@@ -114,8 +114,8 @@ void AAuraCamera::BeginPlay()
   ULocationManager* LocationManager = UAuraSystemsLibrary::GetLocationManager(this);
   if (LocationManager)
   {
-    LocationManager->OnInitLocationDelegate.AddDynamic(this, &AAuraCamera::OnLocationUpdate);
-    LocationManager->OnExitLocationDelegate.AddDynamic(this, &AAuraCamera::OnExitLocation);
+    LocationManager->OnInitAreaDelegate.AddDynamic(this, &AAuraCamera::OnLocationUpdate);
+    LocationManager->OnExitAreaDelegate.AddDynamic(this, &AAuraCamera::OnExitLocation);
   }
 }
 

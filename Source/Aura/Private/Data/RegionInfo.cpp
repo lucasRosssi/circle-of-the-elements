@@ -11,15 +11,15 @@ const FRegionData* URegionInfo::GetRegionData(ERegion Region) const
   const FRegionData* Data = RegionData.Find(Region);
 
   GUARD(Data != nullptr, nullptr, TEXT("Region data not found: %d"), Region)
-  
-	return Data;
+
+  return Data;
 }
 
 TArray<FAreaData> URegionInfo::GetEntrances(ERegion Region) const
 {
-	const FRegionData* Data = GetRegionData(Region);
+  const FRegionData* Data = GetRegionData(Region);
 
-	GUARD(Data != nullptr, TArray<FAreaData>(), TEXT("Region data not found: %d"), Region)
+  GUARD(Data != nullptr, TArray<FAreaData>(), TEXT("Region data not found: %d"), Region)
 
   return Data->Entrances;
 }
@@ -78,12 +78,18 @@ TArray<FAreaData> URegionInfo::GetExits(ERegion Region) const
   return Data->Exits;
 }
 
-FDifficultyPointsData URegionInfo::GetArenaDifficultyData(ERegion Region, int32 ArenaLevel) const
+FArenaDifficultyData URegionInfo::GetArenaDifficultyData(ERegion Region, int32 ArenaLevel) const
 {
   const FRegionData* Data = GetRegionData(Region);
 
-  GUARD(Data != nullptr, FDifficultyPointsData(), TEXT("Region data not found: %d"), Region)
-  GUARD(Data->ArenaDifficultyData.IsValidIndex(ArenaLevel), FDifficultyPointsData(), TEXT("Difficulty data not found for arena level: %d"), ArenaLevel)
+  GUARD(Data != nullptr, FArenaDifficultyData(), TEXT("Region data not found: %d"), Region)
+  GUARD(
+    Data->ArenaDifficultyData.IsValidIndex(ArenaLevel),
+    Data->ArenaDifficultyData.Last(),
+    TEXT("Difficulty data not found for arena level %d! Falling back to last level available (%d)"),
+    ArenaLevel,
+    Data->ArenaDifficultyData.Num() - 1
+  )
 
   return Data->ArenaDifficultyData[ArenaLevel];
 }

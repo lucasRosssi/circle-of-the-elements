@@ -5,13 +5,12 @@
 #include "CoreMinimal.h"
 #include "AuraSystemComponent.h"
 #include "GameplayTagContainer.h"
-#include "Data/EnemiesInfo.h"
 #include "Data/RegionInfo.h"
 #include "Enums/Region.h"
 #include "CombatManager.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCombatStarted, FName, AreaName);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCombatFinished, FName, AreaName);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnCombatStarted);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnCombatFinished);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnLastEnemyKilled);
 
@@ -24,6 +23,8 @@ class AURA_API UCombatManager : public UAuraSystemComponent
   GENERATED_BODY()
 
 public:
+  void GenerateArenaCombat(const FAreaData& Arena);
+  
   int32 GetEnemiesLevel() const { return EnemiesLevel; }
   AActor* GetCurrentBoss() const { return CurrentBoss.Get(); }
 
@@ -32,7 +33,7 @@ public:
   void SetCurrentCombatData();
 
   UFUNCTION(BlueprintCallable)
-  void StartCombat(FName AreaName);
+  void StartCombat();
 
   UFUNCTION()
   void OnEnemySpawned(AActor* Enemy);
@@ -48,8 +49,6 @@ public:
 
 protected:
   virtual void BeginPlay() override;
-
-  void SetupAreasEncounters();
   
   UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Location")
   ERegion Region = ERegion::Undefined;
@@ -104,16 +103,13 @@ private:
   void FinishCombat();
   void PostFinishCombat();
 
-  void GenerateEncounter(const UEnemiesInfo* EnemiesInfo, const FName& Area, const FCombat& Combat);
-  
-
-  FName CurrentAreaName;
+  FIntPoint CurrentArenaCoordinate;
   int32 EnemyCount = 0;
   int32 CurrentWave = 0;
   UPROPERTY()
   TArray<AEnemySpawner*> EnemySpawners;
 
-  TMap<FName, TArray<FEnemyWave>> AreasEncounters;
+  TMap<FIntPoint, TArray<FEnemyWave>> ArenasEncounters;
 
   TWeakObjectPtr<AActor> CurrentBoss;
 };

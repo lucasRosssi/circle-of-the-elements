@@ -5,6 +5,7 @@
 
 #include "GameplayTagContainer.h"
 #include "ScalableFloat.h"
+#include "Aura/AuraMacros.h"
 #include "Enums/CardinalDirection.h"
 
 float UUtilityLibrary::GetDistance(const FVector& V1, const FVector& V2)
@@ -92,8 +93,10 @@ FIntPoint UUtilityLibrary::GetCoordinateOffsetFromDirection(ECardinalDirection D
 
   return DirectionOffsets[Direction];
 }
-ECardinalDirection UUtilityLibrary::GetDirectionFromCoordinateOffset(const FIntPoint Coordinate)
+ECardinalDirection UUtilityLibrary::GetDirectionFromCoordinateOffset(const FIntPoint& Coordinate)
 {
+  GUARD(FMath::Abs(Coordinate.X) <= 1 && FMath::Abs(Coordinate.Y) <= 1, ECardinalDirection::North, TEXT("Invalid coordinate offset: %s"), *Coordinate.ToString())
+  
   const TMap<FIntPoint, ECardinalDirection> OffsetDirections = {
     { FIntPoint(0, 1), ECardinalDirection::North },
     { FIntPoint(1, 0), ECardinalDirection::East },
@@ -102,5 +105,15 @@ ECardinalDirection UUtilityLibrary::GetDirectionFromCoordinateOffset(const FIntP
   };
 
   return OffsetDirections[Coordinate];
+}
+
+TArray<FIntPoint> UUtilityLibrary::GetAdjacentCoordinates(const FIntPoint& Coordinate)
+{
+  return TArray({
+    FIntPoint(Coordinate.X, Coordinate.Y + 1),
+    FIntPoint(Coordinate.X + 1, Coordinate.Y),
+    FIntPoint(Coordinate.X, Coordinate.Y - 1),
+    FIntPoint(Coordinate.X - 1, Coordinate.Y)
+  });
 }
 

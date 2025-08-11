@@ -14,7 +14,7 @@ class UStatusEffectInfo;
 class UAbilityInfo;
 class UCharacterInfo;
 class FOnRewardTaken;
-class FOnExitLocation;
+class FOnExitArea;
 class FOnCombatFinished;
 class UUpgradeManager;
 class URewardManager;
@@ -47,7 +47,7 @@ public:
 	int32 GetEnemiesLevel() const;
 
 	FOnCombatFinished& GetOnCombatFinishedDelegate();
-	FOnExitLocation& GetOnExitLocationDelegate();
+	FOnExitArea& GetOnExitAreaDelegate();
 	FOnRewardTaken& GetOnRewardTakenDelegate();
 
 	int32 CombatsCount = 0;

@@ -407,24 +407,6 @@ void UAuraSystemsLibrary::SetCurrentRegion(const UObject* WorldContextObject, ER
   AuraGameInstance->SetCurrentRegion(Region);
 }
 
-FName UAuraSystemsLibrary::GetCurrentLocation(const UObject* WorldContextObject)
-{
-  const UAuraGameInstance* AuraGameInstance = CastChecked<UAuraGameInstance>(
-    UGameplayStatics::GetGameInstance(WorldContextObject)
-  );
-
-  return AuraGameInstance->GetCurrentLocation();
-}
-
-void UAuraSystemsLibrary::SetCurrentLocation(const UObject* WorldContextObject, FName Location)
-{
-  UAuraGameInstance* AuraGameInstance = CastChecked<UAuraGameInstance>(
-    UGameplayStatics::GetGameInstance(WorldContextObject)
-  );
-
-  AuraGameInstance->SetCurrentLocation(Location);
-}
-
 AGameModeBase* UAuraSystemsLibrary::GetManagerInterfaceGameMode(const UObject* WorldContextObject)
 {
   AGameModeBase* GameMode = UGameplayStatics::GetGameMode(WorldContextObject);

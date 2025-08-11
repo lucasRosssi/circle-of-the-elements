@@ -4,16 +4,18 @@
 
 #include "CoreMinimal.h"
 #include "AuraSystemComponent.h"
+#include "Data/RegionInfo.h"
+#include "Enums/AreaType.h"
 #include "Enums/Region.h"
 #include "LocationManager.generated.h"
 
+struct FAreaTypeData;
 enum class ECardinalDirection : uint8;
-struct FAreaData;
 class AEnemySpawner;
 class URegionInfo;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnInitLocation);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnExitLocation);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnInitArea);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnExitArea);
 
 
 USTRUCT(BlueprintType)
@@ -31,13 +33,17 @@ class AURA_API ULocationManager : public UAuraSystemComponent
   GENERATED_BODY()
 
 public:
+  UFUNCTION(BlueprintCallable)
   void GenerateLocation();
+  
   void PlacePlayerInStartingPoint();
 
-  UFUNCTION(BlueprintCallable)
+  UFUNCTION(BlueprintImplementableEvent)
   void InitLocation();
   UFUNCTION(BlueprintCallable)
-  void ExitLocation();
+  void InitArea();
+  UFUNCTION(BlueprintCallable)
+  void ExitArea(ECardinalDirection ExitDirection);
 
   TArray<AActor*> GetCameraBoundaryActors() const { return CameraBoundaryActors; }
   UFUNCTION(BlueprintCallable)
@@ -45,29 +51,45 @@ public:
 
   int32 GetCurrentRegionRecommendedLevel();
 
+  FIntPoint GetPlayerCoordinate() const { return PlayerCoordinate; }
+
   UPROPERTY(BlueprintAssignable)
-  FOnInitLocation OnInitLocationDelegate;
+  FOnInitArea OnInitAreaDelegate;
   UPROPERTY(BlueprintAssignable)
-  FOnExitLocation OnExitLocationDelegate;
+  FOnExitArea OnExitAreaDelegate;
 
 protected:
+  virtual void BeginPlay() override;
+  
   FAreaData GetAreaFromPool(TArray<FAreaData>& Pool, const TArray<FAreaData>& Source);
+  FAreaData GetAreaFromPoolByType(EAreaType AreaType);
   
   FAreaData GetEntranceFromPool();
-  FAreaData GetDefaultArenasFromPool();
-  FAreaData GetSpiritArenasFromPool();
-  FAreaData GetBossArenasFromPool();
-  FAreaData GetRewardAreasFromPool();
-  FAreaData GetSpecialAreasFromPool();
-  FAreaData GetExitsFromPool();
+  FAreaData GetDefaultArenaFromPool();
+  FAreaData GetSpiritArenaFromPool();
+  FAreaData GetBossArenaFromPool();
+  FAreaData GetRewardAreaFromPool();
+  FAreaData GetSpecialAreaFromPool();
+  FAreaData GetExitFromPool();
+
+  void HandleArenaGeneration(FAreaData& AreaData);
 
   bool IsCoordinateFree(const FIntPoint& Coordinate) const;
+  FIntPoint GetAdjacentFreeCoordinate(const FIntPoint& Coordinate) const;
   void ConnectAreas(FAreaData& FromArea, FAreaData& ToArea, ECardinalDirection Direction);
   void PlaceAreaAtCoordinate(const FIntPoint& Coordinate, const FAreaData& AreaData);
+  EAreaType PickRandomAreaType(const TMap<EAreaType, FAreaTypeData>& AreaTypesData, const TMap<EAreaType, int32>& PlacedCount) const;
   
   UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Location")
   ERegion Region = ERegion::Undefined;
   FName Location = NAME_None;
+
+  UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Location|PCG", meta=(DisplayName="Active"))
+  bool bPCGActive = true;
+  UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Location|PCG", meta=(ClampMin=3, UIMin=3))
+  int32 MinAreas = 10;
+  UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Location|PCG", meta=(ClampMin=3, UIMin=3))
+  int32 MaxAreas = 20;
 
 private:
   URegionInfo* GetRegionInfo();
@@ -83,8 +105,12 @@ private:
   
   FIntPoint PrevCoordinate = FIntPoint(0, 0);
   FIntPoint CurrentCoordinate = FIntPoint(0, 0);
+  int32 AreasCount = 0;
+  int32 ArenaLevel = 0;
 
   TMap<FIntPoint, FAreaData> LocationLayout;
+
+  FIntPoint PlayerCoordinate = FIntPoint(0, 0);
 
   UPROPERTY()
   TArray<AActor*> CameraBoundaryActors;
