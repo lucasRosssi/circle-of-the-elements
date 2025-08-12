@@ -6,6 +6,7 @@
 #include "Interfaces/InteractInterface.h"
 #include "Gate.generated.h"
 
+enum class ECardinalDirection : uint8;
 class UInteractComponent;
 class AAuraPlayerController;
 class URewardManager;
@@ -33,7 +34,8 @@ public:
   void OnCombatFinished();
   void Enable();
 
-  void DeactivateGate();
+  void SetIsActive(bool bIsActive);
+  ECardinalDirection GetDirection() const { return Direction; }
 
 protected:
   virtual void BeginPlay() override;
@@ -47,7 +49,9 @@ protected:
   TObjectPtr<UInteractComponent> InteractComponent;
 
 	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category="Location|Gate")
-	FName AreaName;
+	ECardinalDirection Direction;
+
+  UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Location|Gate")
+  bool bActive = false;
 private:
-  bool bActive = true;
 };

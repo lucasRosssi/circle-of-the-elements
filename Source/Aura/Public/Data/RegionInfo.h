@@ -94,6 +94,8 @@ struct FAreaData
   bool IsRewardArea() const { return AreaType == EAreaType::RewardArea; }
   bool IsSpecialArea() const { return AreaType == EAreaType::SpecialArea; }
   bool IsExit() const { return AreaType == EAreaType::Exit; }
+
+  FString GetAreaName() const { return World.GetAssetName();}
 };
 
 USTRUCT(BlueprintType)
