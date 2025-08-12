@@ -95,6 +95,7 @@ FIntPoint UUtilityLibrary::GetCoordinateOffsetFromDirection(ECardinalDirection D
 }
 ECardinalDirection UUtilityLibrary::GetDirectionFromCoordinateOffset(const FIntPoint& Coordinate)
 {
+  // TODO: something still wrong with selecting next adjacent coordinate, came an offset of [1,-1]
   GUARD(FMath::Abs(Coordinate.X) <= 1 && FMath::Abs(Coordinate.Y) <= 1, ECardinalDirection::North, TEXT("Invalid coordinate offset: %s"), *Coordinate.ToString())
   
   const TMap<FIntPoint, ECardinalDirection> OffsetDirections = {
