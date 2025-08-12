@@ -3,6 +3,7 @@
 
 #include "Managers/LocationManager.h"
 
+#include "Actor/Level/Gate.h"
 #include "Algo/RandomShuffle.h"
 #include "Aura/AuraMacros.h"
 #include "GameFramework/PlayerStart.h"
@@ -114,7 +115,7 @@ EAreaType ULocationManager::PickRandomAreaType(
   return WeightedList.Last().Type;
 }
 
-void ULocationManager::PlacePlayerInStartingPoint()
+void ULocationManager::PlacePlayerInArea(const FAreaData& AreaData)
 {
   TArray<AActor*> PlayerStarts;
   UGameplayStatics::GetAllActorsOfClass(
@@ -125,11 +126,26 @@ void ULocationManager::PlacePlayerInStartingPoint()
 
   if (PlayerStarts.IsEmpty()) return;
 
-  const APlayerStart* PlayerStart = Cast<APlayerStart>(PlayerStarts[0]);
+  const APlayerStart* Start = nullptr;
+  const ECardinalDirection EnteringDirection = UUtilityLibrary::GetOppositeDirection(LastExit);
+  const FString& DirectionString = UUtilityLibrary::GetDirectionString(EnteringDirection);
+  for (AActor* StartActor : PlayerStarts)
+  {
+    Start = Cast<APlayerStart>(StartActor);
+
+    if (
+      Start->GetLevel() &&
+      Start->GetLevel()->GetOuter()->GetName().Contains(AreaData.GetAreaName()) &&
+      Start->PlayerStartTag.ToString().Contains(DirectionString)
+      )
+    {
+      break;
+    }
+  }
 
   APawn* Player = UGameplayStatics::GetPlayerPawn(this, 0);
   Player->SetActorTransform(
-    PlayerStart->GetActorTransform(),
+    Start->GetActorTransform(),
     false,
     nullptr,
     ETeleportType::ResetPhysics
@@ -146,7 +162,30 @@ void ULocationManager::InitLocation()
 
 void ULocationManager::InitArea()
 {
-  PlacePlayerInStartingPoint();
+  TArray<AActor*> GateActors;
+  UGameplayStatics::GetAllActorsOfClass(GetOwner(), AGate::StaticClass(), GateActors);
+
+  const FAreaData& CurrentArea = LocationLayout.FindRef(PlayerCoordinate);
+
+  for (AActor* GateActor : GateActors)
+  {
+    AGate* Gate = Cast<AGate>(GateActor);
+
+    if (CurrentArea.OpenDirections.Contains(Gate->GetDirection()))
+    {
+      Gate->SetIsActive(true);
+      if (!CurrentArea.IsArena())
+      {
+        Gate->Enable();
+      }
+    }
+    else
+    {
+      Gate->SetIsActive(false);
+    }
+  }
+  
+  PlacePlayerInArea(CurrentArea);
   OnInitAreaDelegate.Broadcast();
 }
 
