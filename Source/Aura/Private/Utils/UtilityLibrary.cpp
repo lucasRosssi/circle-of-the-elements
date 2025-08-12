@@ -70,6 +70,18 @@ FGameplayTag UUtilityLibrary::PickRandomWeightedTagNormalized(const TMap<FGamepl
   return Tags.Last(); // fallback in case of float rounding errors
 }
 
+FString UUtilityLibrary::GetDirectionString(ECardinalDirection Direction)
+{
+  switch (Direction)
+  {
+    case ECardinalDirection::North: return "North";
+    case ECardinalDirection::South: return "South";
+    case ECardinalDirection::East:  return "East";
+    case ECardinalDirection::West:  return "West";
+    default: return "Unknown";
+  }
+}
+
 ECardinalDirection UUtilityLibrary::GetOppositeDirection(ECardinalDirection Direction)
 {
   switch (Direction)

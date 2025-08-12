@@ -3,8 +3,10 @@
 
 #include "Actor/Level/Gate.h"
 
+#include "Aura/AuraMacros.h"
 #include "Components/InteractComponent.h"
 #include "Managers/CombatManager.h"
+#include "Managers/LocationManager.h"
 #include "Utils/AuraSystemsLibrary.h"
 
 AGate::AGate()
@@ -18,17 +20,17 @@ AGate::AGate()
 
 void AGate::Interact_Implementation(const AController* Controller)
 {
+  ULocationManager* LocationManager = UAuraSystemsLibrary::GetLocationManager(this);
+  GUARD(LocationManager,, TEXT("LocationManager not found!"))
+
+  LocationManager->ExitArea(Direction);
+  
   OnInteracted(Controller);
 }
 
 UInteractComponent* AGate::GetInteractComponent_Implementation() const
 {
   return InteractComponent;
-}
-
-void AGate::DeactivateGate()
-{
-  bActive = false;
 }
 
 void AGate::BeginPlay()
@@ -48,4 +50,10 @@ void AGate::Enable()
   if (!bActive) return;
 
   InteractComponent->EnableInteraction();
+}
+
+void AGate::SetIsActive(bool bIsActive)
+{
+  bActive = bIsActive;
+  GateMesh->SetVisibility(bActive);
 }

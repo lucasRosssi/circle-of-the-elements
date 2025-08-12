@@ -32,6 +32,8 @@ public:
   static FGameplayTag PickRandomWeightedTagNormalized(const TMap<FGameplayTag, float>& WeightedTags);
 
   UFUNCTION(BlueprintPure, Category="Direction")
+  static FString GetDirectionString(ECardinalDirection Direction);
+  UFUNCTION(BlueprintPure, Category="Direction")
   static ECardinalDirection GetOppositeDirection(ECardinalDirection Direction);
   UFUNCTION(BlueprintPure, Category="Direction")
   static FIntPoint GetCoordinateOffsetFromDirection(ECardinalDirection Direction);

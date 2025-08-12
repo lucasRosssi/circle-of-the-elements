@@ -36,7 +36,7 @@ public:
   UFUNCTION(BlueprintCallable)
   void GenerateLocation();
   
-  void PlacePlayerInStartingPoint();
+  void PlacePlayerInArea(const FAreaData& AreaData);
 
   void InitLocation();
   UFUNCTION(BlueprintCallable)
