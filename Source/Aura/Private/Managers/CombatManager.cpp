@@ -23,7 +23,7 @@ void UCombatManager::SetCurrentCombatData()
 
 void UCombatManager::StartCombat()
 {
-  CurrentArenaCoordinate = UAuraSystemsLibrary::GetLocationManager(GetOwner())->GetPlayerCoordinate();
+  CurrentArenaCoordinate = GetLocationManager()->GetPlayerCoordinate();
   OnCombatStartedDelegate.Broadcast();
   SetCurrentCombatData();
   NextWave();
@@ -84,6 +84,8 @@ void UCombatManager::PostFinishCombat()
 {
   UGameplayStatics::SetGlobalTimeDilation(GetOwner(), 1.0f);
 
+  GetLocationManager()->GetCurrentAreaRef().bCombatFinished = true;
+  
   OnCombatFinishedDelegate.Broadcast();
 
   // TArray<AActor*> Projectiles;
@@ -193,6 +195,19 @@ void UCombatManager::GenerateArenaCombat(const FAreaData& Arena)
   const UEnemiesInfo* EnemiesInfo = UAuraSystemsLibrary::GetEnemiesInfo(GetOwner());
   GUARD(EnemiesInfo != nullptr,, TEXT("EnemiesInfo is invalid!"))
 
+  if (Arena.AreaType == EAreaType::BossArena)
+  {
+    FGameplayTagContainer BossesTagContainer = RegionInfo->GetRegionBosses(Region);
+    const FGameplayTag& BossTag = BossesTagContainer.GetByIndex(FMath::RandRange(0, BossesTagContainer.Num() - 1));
+    const FEnemyInfo& EnemyInfo = EnemiesInfo->GetEnemyInfo(BossTag);
+    FEnemySpawnData SpawnData;
+    SpawnData.EnemyClass = EnemyInfo.EnemyClass;
+    SpawnData.Level = 1;
+
+    ArenasEncounters.Add(Arena.Coordinate, {{{SpawnData}}});
+    return;
+  }
+  
   const FArenaDifficultyData& ArenaDifficultyData = RegionInfo->GetArenaDifficultyData(Region, Arena.ArenaLevel);
   
   float RemainingPoints = ArenaDifficultyData.DifficultyPoints;
@@ -258,4 +273,14 @@ void UCombatManager::GenerateArenaCombat(const FAreaData& Arena)
     GeneratedEnemyWaves.Add({WaveData});
   }
   ArenasEncounters.Add(Arena.Coordinate, GeneratedEnemyWaves);
+}
+
+ULocationManager* UCombatManager::GetLocationManager()
+{
+  if (!LocationManager.IsValid())
+  {
+    LocationManager = UAuraSystemsLibrary::GetLocationManager(GetOwner());
+  }
+  
+  return LocationManager.Get();
 }

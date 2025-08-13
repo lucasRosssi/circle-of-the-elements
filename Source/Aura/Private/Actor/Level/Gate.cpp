@@ -20,8 +20,7 @@ AGate::AGate()
 
 void AGate::Interact_Implementation(const AController* Controller)
 {
-  ULocationManager* LocationManager = UAuraSystemsLibrary::GetLocationManager(this);
-  GUARD(LocationManager,, TEXT("LocationManager not found!"))
+  GUARD(GetLocationManager(),, TEXT("LocationManager not found!"))
 
   LocationManager->ExitArea(Direction);
   
@@ -37,7 +36,10 @@ void AGate::BeginPlay()
 {
   Super::BeginPlay();
 
-  UAuraSystemsLibrary::GetOnCombatFinishedDelegate(this).AddDynamic(this, &AGate::OnCombatFinished);
+  if (!GetLocationManager()->GetCurrentAreaRef().bCombatFinished)
+  {
+    UAuraSystemsLibrary::GetOnCombatFinishedDelegate(this).AddDynamic(this, &AGate::OnCombatFinished);
+  }
 }
 
 void AGate::OnCombatFinished()
@@ -56,4 +58,14 @@ void AGate::SetIsActive(bool bIsActive)
 {
   bActive = bIsActive;
   GateMesh->SetVisibility(bActive);
+}
+
+ULocationManager* AGate::GetLocationManager()
+{
+  if (!LocationManager.IsValid())
+  {
+    LocationManager = UAuraSystemsLibrary::GetLocationManager(this);
+  }
+  
+  return LocationManager.Get();
 }

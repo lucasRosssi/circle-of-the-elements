@@ -87,6 +87,11 @@ struct FAreaData
 
   int32 ArenaLevel = -1;
 
+  UPROPERTY(BlueprintReadOnly)
+  bool bCombatFinished = false;
+  UPROPERTY(BlueprintReadOnly)
+  bool bRewardSpawned = false;
+
   bool IsValid() const { return World.IsValid(); }
 
   bool IsEntrance() const { return AreaType == EAreaType::Entrance; }
@@ -122,7 +127,7 @@ struct FRegionData
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
   TArray<FArenaDifficultyData> ArenaDifficultyData;
 
-  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(Categories="Enemies"))
   FGameplayTagContainer Bosses;
 
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)

@@ -17,8 +17,8 @@ void ULocationManager::GenerateLocation()
 {
   UE_LOG(LogAura, Display, TEXT("[LocationManager] Starting location generation..."))
   
-  const int32 NumAreas = FMath::RandRange(MinAreas, MaxAreas);
-  UE_LOG(LogAura, Display, TEXT("[LocationManager] Location will have %d areas."), NumAreas)
+  TotalAreas = FMath::RandRange(MinAreas, MaxAreas);
+  UE_LOG(LogAura, Display, TEXT("[LocationManager] Location will have %d areas."), TotalAreas)
   
   const TMap<EAreaType, FAreaTypeData>& AreaTypesData = GetRegionInfo()->GetAreaTypesData();
 
@@ -30,7 +30,7 @@ void ULocationManager::GenerateLocation()
   UE_LOG(LogAura, Display, TEXT("[LocationManager] Generated Entrance at [%d,%d]"), NextCoordinate.X, NextCoordinate.Y)
   
   UE_LOG(LogAura, Display, TEXT("[LocationManager] Randomizing area types..."))
-  for (int32 i = 2; i < NumAreas - 1; i++)
+  for (int32 i = 2; i < TotalAreas - 1; i++)
   {
     EAreaType ChosenType = PickRandomAreaType(AreaTypesData, GeneratedAreasCount);
     CachedAreas.Add(GetAreaFromPoolByType(ChosenType));
@@ -43,7 +43,7 @@ void ULocationManager::GenerateLocation()
   UE_LOG(LogAura, Display, TEXT("[LocationManager] Generating areas..."))
   for (int32 i = 0; i < CachedAreas.Num(); i++)
   {
-    NextCoordinate = GetAdjacentFreeCoordinate(CurrentCoordinate);
+    NextCoordinate = GetNextCoordinate();
     PlaceAreaAtCoordinate(NextCoordinate, CachedAreas[i]);
     UE_LOG(
       LogAura,
@@ -55,11 +55,11 @@ void ULocationManager::GenerateLocation()
     )
   }
 
-  NextCoordinate = GetAdjacentFreeCoordinate(CurrentCoordinate);
+  NextCoordinate = GetNextCoordinate();
   PlaceAreaAtCoordinate(NextCoordinate, GetBossArenaFromPool());
   UE_LOG(LogAura, Display, TEXT("[LocationManager] Generated BossArena at [%d,%d]"), NextCoordinate.X, NextCoordinate.Y)
   
-  NextCoordinate = GetAdjacentFreeCoordinate(CurrentCoordinate);
+  NextCoordinate = GetNextCoordinate();
   PlaceAreaAtCoordinate(NextCoordinate, GetExitFromPool());
   UE_LOG(LogAura, Display, TEXT("[LocationManager] Generated Exit at [%d,%d]"), NextCoordinate.X, NextCoordinate.Y)
 
@@ -165,7 +165,7 @@ void ULocationManager::InitArea()
   TArray<AActor*> GateActors;
   UGameplayStatics::GetAllActorsOfClass(GetOwner(), AGate::StaticClass(), GateActors);
 
-  const FAreaData& CurrentArea = LocationLayout.FindRef(PlayerCoordinate);
+  const FAreaData& CurrentArea = GetCurrentAreaRef();
 
   for (AActor* GateActor : GateActors)
   {
@@ -174,7 +174,11 @@ void ULocationManager::InitArea()
     if (CurrentArea.OpenDirections.Contains(Gate->GetDirection()))
     {
       Gate->SetIsActive(true);
-      if (!CurrentArea.IsArena())
+      if (CurrentArea.IsArena())
+      {
+        if (CurrentArea.bCombatFinished) Gate->Enable();
+      }
+      else
       {
         Gate->Enable();
       }
@@ -360,7 +364,7 @@ void ULocationManager::OnAreaLoaded()
   if (PrevPlayerCoordinate == PlayerCoordinate) return;
   
   const FAreaData* AreaData = LocationLayout.Find(PrevPlayerCoordinate);
-  if (AreaData) UnloadArea(*AreaData);
+  if (AreaData && AreaData->World != GetCurrentAreaRef().World) UnloadArea(*AreaData);
 }
 
 void ULocationManager::UnloadArea(const FAreaData& AreaData)
@@ -391,34 +395,61 @@ bool ULocationManager::IsCoordinateFree(const FIntPoint& Coordinate) const
   return !LocationLayout.Contains(Coordinate);
 }
 
-FIntPoint ULocationManager::GetAdjacentFreeCoordinate(const FIntPoint& Coordinate) const
+FIntPoint ULocationManager::Backtrack()
 {
-  auto GetFreeAdj = [this](const FIntPoint& Base) -> TArray<FIntPoint>
+  UE_LOG(LogAura, Display, TEXT("[LocationManager] Backtracking..."))
+  
+  TArray<FIntPoint> PrevCoordinates;
+  LocationLayout.GenerateKeyArray(PrevCoordinates);
+  PrevCoordinates.Remove(CurrentCoordinate);
+
+  Algo::RandomShuffle(PrevCoordinates);
+
+  FIntPoint FreeCoordinate;
+  for (const FIntPoint& BacktrackCoordinate : PrevCoordinates)
   {
-    return UUtilityLibrary::GetAdjacentCoordinates(Base)
+    FreeCoordinate = GetFreeAdjacentCoordinate(BacktrackCoordinate);
+    if (FreeCoordinate != BacktrackCoordinate)
+    {
+      CurrentCoordinate = BacktrackCoordinate;
+      break;
+    }
+  }
+
+  return FreeCoordinate;
+}
+
+FIntPoint ULocationManager::GetNextCoordinate()
+{
+  FIntPoint NextCoordinate = GetFreeAdjacentCoordinate(CurrentCoordinate);
+
+  const int32 AreaCount = LocationLayout.Num();
+  const float BacktrackRoll = FMath::FRandRange(0.f, 1.f);
+  const bool bCanBacktrack =
+    bBacktrackEnabled &&
+    AreaCount > MinAreas &&
+    AreaCount < MaxAreas &&
+    AreaCount < TotalAreas - 1; // The last 2 areas should be connected (boss and exit)
+  
+  if (NextCoordinate == CurrentCoordinate || (bCanBacktrack && BacktrackRoll <= BacktrackChance))
+  {
+    NextCoordinate = Backtrack();
+  }
+
+  return NextCoordinate;
+}
+
+FIntPoint ULocationManager::GetFreeAdjacentCoordinate(const FIntPoint& Coordinate) const
+{
+  TArray<FIntPoint> FreeCoordinates = UUtilityLibrary::GetAdjacentCoordinates(Coordinate)
       .FilterByPredicate([this](const FIntPoint& AdjCoordinate)
       {
         return IsCoordinateFree(AdjCoordinate);
       });
-  };
 
-  TArray<FIntPoint> FreeCoordinates = GetFreeAdj(Coordinate);
-
-  if (FreeCoordinates.Num() == 0)
+  if (FreeCoordinates.IsEmpty())
   {
-    // Backtrack
-    TArray<FIntPoint> PrevCoordinates;
-    LocationLayout.GenerateKeyArray(PrevCoordinates);
-    PrevCoordinates.Remove(Coordinate);
-
-    Algo::RandomShuffle(PrevCoordinates);
-
-    for (const FIntPoint& BacktrackCoordinate : PrevCoordinates)
-    {
-      FreeCoordinates = GetFreeAdj(BacktrackCoordinate);
-      if (FreeCoordinates.Num() > 0)
-        break;
-    }
+    return Coordinate;
   }
 
   return FreeCoordinates[FMath::RandRange(0, FreeCoordinates.Num() - 1)];

@@ -17,7 +17,16 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+  UFUNCTION()
+  void Enable();
+
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Spawner")
+  float ZOffsetWhenEnabled = 0.f;
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Spawner")
+  float TimeToMove = 3.f;
+
 private:
   void SpawnElementCrystal();
 
+  FVector OriginalLocation = FVector();
 };

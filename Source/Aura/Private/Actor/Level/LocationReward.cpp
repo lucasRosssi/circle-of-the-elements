@@ -118,6 +118,10 @@ void ALocationReward::SpawnNiagaraEffects()
       IdleNiagaraSystem,
       GetActorLocation() + IdleNiagaraOffset
     );
+    IdleNiagaraComponent->AttachToComponent(
+      RewardMesh,
+      FAttachmentTransformRules::KeepRelativeTransform
+      );
   }
 }
 

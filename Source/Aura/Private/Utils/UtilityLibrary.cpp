@@ -105,19 +105,19 @@ FIntPoint UUtilityLibrary::GetCoordinateOffsetFromDirection(ECardinalDirection D
 
   return DirectionOffsets[Direction];
 }
-ECardinalDirection UUtilityLibrary::GetDirectionFromCoordinateOffset(const FIntPoint& Coordinate)
+ECardinalDirection UUtilityLibrary::GetDirectionFromCoordinateOffset(const FIntPoint& Offset)
 {
-  // TODO: something still wrong with selecting next adjacent coordinate, came an offset of [1,-1]
-  GUARD(FMath::Abs(Coordinate.X) <= 1 && FMath::Abs(Coordinate.Y) <= 1, ECardinalDirection::North, TEXT("Invalid coordinate offset: %s"), *Coordinate.ToString())
-  
-  const TMap<FIntPoint, ECardinalDirection> OffsetDirections = {
-    { FIntPoint(0, 1), ECardinalDirection::North },
-    { FIntPoint(1, 0), ECardinalDirection::East },
-    { FIntPoint(0, -1), ECardinalDirection::South },
-    { FIntPoint(-1, 0), ECardinalDirection::West },
-  };
+  if (Offset.X == 0 && Offset.Y == 0)
+  {
+    return ECardinalDirection::North;
+  }
 
-  return OffsetDirections[Coordinate];
+  if (FMath::Abs(Offset.X) > FMath::Abs(Offset.Y))
+  {
+    return Offset.X > 0 ? ECardinalDirection::East : ECardinalDirection::West;
+  }
+  
+  return Offset.Y > 0 ? ECardinalDirection::North : ECardinalDirection::South;
 }
 
 TArray<FIntPoint> UUtilityLibrary::GetAdjacentCoordinates(const FIntPoint& Coordinate)

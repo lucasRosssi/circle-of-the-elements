@@ -9,6 +9,7 @@
 #include "Enums/Region.h"
 #include "CombatManager.generated.h"
 
+class ULocationManager;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnCombatStarted);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnCombatFinished);
 
@@ -103,6 +104,8 @@ private:
   void FinishCombat();
   void PostFinishCombat();
 
+  ULocationManager* GetLocationManager();
+
   FIntPoint CurrentArenaCoordinate;
   int32 EnemyCount = 0;
   int32 CurrentWave = 0;
@@ -112,4 +115,6 @@ private:
   TMap<FIntPoint, TArray<FEnemyWave>> ArenasEncounters;
 
   TWeakObjectPtr<AActor> CurrentBoss;
+
+  TWeakObjectPtr<ULocationManager> LocationManager;
 };
