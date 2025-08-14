@@ -5,6 +5,7 @@ Saved
 Build
 Content/*
 !Content/Blueprints
+!Content/Maps
 !**/Animations/
 Plugins
 
