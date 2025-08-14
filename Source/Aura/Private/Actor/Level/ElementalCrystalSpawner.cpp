@@ -3,6 +3,8 @@
 
 #include "Actor/Level/ElementalCrystalSpawner.h"
 
+#include "Actor/Level/LocationReward.h"
+#include "Components/InteractComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Managers/CombatManager.h"
 #include "Managers/LocationManager.h"
@@ -12,6 +14,11 @@
 AElementalCrystalSpawner::AElementalCrystalSpawner()
 {
   PrimaryActorTick.bCanEverTick = false;
+
+  SceneRoot = CreateDefaultSubobject<USceneComponent>("Root");
+  SetRootComponent(SceneRoot);
+  SpawnerMesh = CreateDefaultSubobject<UStaticMeshComponent>("SpawnerMesh");
+  SpawnerMesh->SetupAttachment(GetRootComponent());
 }
 
 void AElementalCrystalSpawner::BeginPlay()
@@ -31,22 +38,14 @@ void AElementalCrystalSpawner::BeginPlay()
 
 void AElementalCrystalSpawner::Enable()
 {
-    // TODO: use Chaos Fracture to break the mesh
-  FVector TargetLocation = OriginalLocation;
-  TargetLocation.Z += ZOffsetWhenEnabled;
-
-  const FLatentActionInfo LatentActionInfo;
-  UKismetSystemLibrary::MoveComponentTo(
-    GetRootComponent(),
-    TargetLocation,
-    GetActorRotation(),
-    false,
-    false,
-    TimeToMove,
-    false,
-    EMoveComponentAction::Move,
-    LatentActionInfo
-  );
+  if (Crystal)
+  {
+    Crystal->GetInteractComponent_Implementation()->EnableInteraction();
+  }
+  
+  if (ActivationMode == ERewardSpawnerActivationMode::Movement) return;
+  
+  // TODO: use Chaos Fracture to break the mesh
 }
 
 void AElementalCrystalSpawner::SpawnElementCrystal()
@@ -57,6 +56,7 @@ void AElementalCrystalSpawner::SpawnElementCrystal()
   if (!RewardManager || !LocationManager) return;
   if (LocationManager->GetCurrentAreaRef().bRewardSpawned) return;
 
-  RewardManager->SpawnReward(GetActorLocation());
+  Crystal = RewardManager->SpawnReward(GetActorLocation());
+  Crystal->AttachToActor(this, FAttachmentTransformRules::KeepWorldTransform);
   LocationManager->GetCurrentAreaRef().bRewardSpawned = true;
 }

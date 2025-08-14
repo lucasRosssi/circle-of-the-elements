@@ -32,7 +32,7 @@ FRewardInfo URewardManager::GetRewardInfo(const FGameplayTag& RewardTag)
   return UAuraSystemsLibrary::GetRewardsInfo(this)->GetRewardInfo(RewardTag);
 }
 
-void URewardManager::SpawnReward(FVector Location)
+ALocationReward* URewardManager::SpawnReward(FVector Location)
 {
   FTransform Transform;
   Transform.SetLocation(Location);
@@ -54,16 +54,17 @@ void URewardManager::SpawnReward(FVector Location)
       Location.Y,
       Location.Z + Reward->GetInteractComponent_Implementation()->GetInteractAreaRadius()));
     Reward->FinishSpawning(Transform);
+    return Reward;
   }
-  else
-  {
-    UE_LOG(
-      LogAura,
-      Error,
-      TEXT("Failed to spawn Reward: %s"),
-      *Info.RewardClass->GetName()
-    );
-  }
+  
+  UE_LOG(
+    LogAura,
+    Error,
+    TEXT("Failed to spawn Reward: %s"),
+    *Info.RewardClass->GetName()
+  );
+
+  return nullptr;
 }
 
 void URewardManager::RemoveRewardFromPool(const FGameplayTag& RewardTag)

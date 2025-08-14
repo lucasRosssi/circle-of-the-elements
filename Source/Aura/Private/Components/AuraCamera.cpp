@@ -21,7 +21,7 @@ AAuraCamera::AAuraCamera()
   OffsetSpeed = 0.f;
   RotateSpeed = 0.f;
   ZoomSpeed = 0.f;
-  MovementLagSpeed = 12.f;
+  MovementLagSpeed = 5.f;
   IgnoreTimeDilation = true;
   ConstrainLocationToShape = true;
   bFollowTargetIgnoreRestrictions = false;
@@ -114,8 +114,8 @@ void AAuraCamera::BeginPlay()
   ULocationManager* LocationManager = UAuraSystemsLibrary::GetLocationManager(this);
   if (LocationManager)
   {
-    LocationManager->OnInitAreaDelegate.AddDynamic(this, &AAuraCamera::OnLocationUpdate);
-    LocationManager->OnExitAreaDelegate.AddDynamic(this, &AAuraCamera::OnExitLocation);
+    LocationManager->OnInitAreaDelegate.AddDynamic(this, &AAuraCamera::OnInitArea);
+    LocationManager->OnExitAreaDelegate.AddDynamic(this, &AAuraCamera::OnExitArea);
   }
 }
 
@@ -125,11 +125,6 @@ void AAuraCamera::Tick(float DeltaSeconds)
 
   switch (CameraState)
   {
-  case ECameraState::Default:
-    {
-      InterpToDefaultFOV(DeltaSeconds);
-      break;
-    }
   case ECameraState::PlayerDeath:
   case ECameraState::BossDeath:
     {
@@ -141,22 +136,23 @@ void AAuraCamera::Tick(float DeltaSeconds)
       InterpToSecondWindFOV(DeltaSeconds);
       break;
     }
+  case ECameraState::Default:
   default:
     {
+      InterpToDefaultFOV(DeltaSeconds);
+      break;
     }
   }
 }
 
-void AAuraCamera::OnLocationUpdate()
+void AAuraCamera::OnInitArea()
 {
   SetCameraBoundaries();
-  MovementLagSpeed = 12.f;
 }
 
-void AAuraCamera::OnExitLocation()
+void AAuraCamera::OnExitArea()
 {
   RemoveCameraBoundaries();
-  MovementLagSpeed = 0.f;
 }
 
 void AAuraCamera::HandleDefaultState()
@@ -164,7 +160,7 @@ void AAuraCamera::HandleDefaultState()
   bFollowTargetIgnoreRestrictions = false;
 
   FollowTarget(
-    AUniversalCamera::UseActor(PlayerActor.Get()),
+    UseActor(PlayerActor.Get()),
     FConstrainVector2(),
     FBoolRotation());
 

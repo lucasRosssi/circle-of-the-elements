@@ -10,6 +10,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "Data/RegionInfo.h"
 #include "Managers/CombatManager.h"
+#include "Managers/UIManager.h"
+#include "UI/WidgetController/OverlayWidgetController.h"
 #include "Utils/AuraSystemsLibrary.h"
 #include "Utils/UtilityLibrary.h"
 
@@ -197,6 +199,9 @@ void ULocationManager::ExitArea(ECardinalDirection ExitDirection)
 {
   LastExit = ExitDirection;
   CameraBoundaryActors.Empty();
+  UAuraSystemsLibrary::GetUIManager(GetOwner(), 0)
+    ->GetOverlayWidgetController()
+    ->StartTransition();
 
   const FIntPoint& NextAreaCoordinate = UUtilityLibrary::GetCoordinateOffsetFromDirection(ExitDirection) + PlayerCoordinate;
   const FAreaData* NextAreaData = LocationLayout.Find(NextAreaCoordinate);
@@ -365,6 +370,10 @@ void ULocationManager::OnAreaLoaded()
   
   const FAreaData* AreaData = LocationLayout.Find(PrevPlayerCoordinate);
   if (AreaData && AreaData->World != GetCurrentAreaRef().World) UnloadArea(*AreaData);
+
+  UAuraSystemsLibrary::GetUIManager(GetOwner(), 0)
+    ->GetOverlayWidgetController()
+    ->EndTransition();
 }
 
 void ULocationManager::UnloadArea(const FAreaData& AreaData)

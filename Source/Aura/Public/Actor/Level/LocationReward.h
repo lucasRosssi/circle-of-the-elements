@@ -30,6 +30,8 @@ public:
   virtual UInteractComponent* GetInteractComponent_Implementation() const override;
   virtual FGameplayEventData GetAbilityEventData_Implementation() const override;
   /* END Interact Interface */
+
+  UStaticMeshComponent* GetMesh() const { return RewardMesh; }
 protected:
   virtual void BeginPlay() override;
   virtual void Destroyed() override;
@@ -40,7 +42,9 @@ protected:
   TObjectPtr<UStaticMeshComponent> RewardMesh;
   UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
   TObjectPtr<UInteractComponent> InteractComponent;
-
+  UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+  TObjectPtr<UNiagaraComponent> NiagaraComponent;
+  
   UPROPERTY(
     EditDefaultsOnly,
     BlueprintReadOnly,

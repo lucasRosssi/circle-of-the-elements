@@ -22,7 +22,7 @@ public:
 	void SetNextReward(const FGameplayTag& InRewardTag) { NextRewardTag = InRewardTag; }
 
 	UFUNCTION(BlueprintCallable)
-	void SpawnReward(FVector Location);
+	ALocationReward* SpawnReward(FVector Location);
 
   void RemoveRewardFromPool(const FGameplayTag& RewardTag);
   
