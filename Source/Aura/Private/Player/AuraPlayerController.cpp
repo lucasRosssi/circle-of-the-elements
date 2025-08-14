@@ -439,7 +439,8 @@ void AAuraPlayerController::CursorTrace()
 		if (ThisActor != nullptr)
 		{
 			// Case B
-			ITargetInterface::SafeExec_HighlightActor(ThisActor, GetPawn());
+		  if (IsValid(ThisActor))
+			  ITargetInterface::SafeExec_HighlightActor(ThisActor, GetPawn());
 		}
 		else // ThisActor == nullptr
 		{
@@ -452,15 +453,18 @@ void AAuraPlayerController::CursorTrace()
 		if (ThisActor == nullptr)
 		{
 			// Case C
-			ITargetInterface::SafeExec_UnHighlightActor(LastActor);
+		  if (IsValid(LastActor))
+			  ITargetInterface::SafeExec_UnHighlightActor(LastActor);
 		}
 		else
 		{
 			if (LastActor != ThisActor)
 			{
 				// Case D
-				ITargetInterface::SafeExec_UnHighlightActor(LastActor);
-				ITargetInterface::SafeExec_HighlightActor(ThisActor, GetPawn());
+			  if (IsValid(LastActor))
+				  ITargetInterface::SafeExec_UnHighlightActor(LastActor);
+			  if (IsValid(ThisActor))
+				  ITargetInterface::SafeExec_HighlightActor(ThisActor, GetPawn());
 			}
 			else
 			{

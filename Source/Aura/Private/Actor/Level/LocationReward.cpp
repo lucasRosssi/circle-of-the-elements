@@ -19,10 +19,12 @@ ALocationReward::ALocationReward()
 {
   RewardMesh = CreateDefaultSubobject<UStaticMeshComponent>("RewardMesh");
   SetRootComponent(RewardMesh);
-  
   InteractComponent = CreateDefaultSubobject<UInteractComponent>("InteractComponent");
   InteractComponent->SetupInteractAreaAttachment(GetRootComponent());
   InteractComponent->EnableInteraction();
+  NiagaraComponent = CreateDefaultSubobject<UNiagaraComponent>("NiagaraComponent");
+  NiagaraComponent->SetupAttachment(GetRootComponent());
+  NiagaraComponent->SetAbsolute(false, true, true);
 }
 
 void ALocationReward::Interact_Implementation(const AController* Controller)
@@ -118,6 +120,10 @@ void ALocationReward::SpawnNiagaraEffects()
       IdleNiagaraSystem,
       GetActorLocation() + IdleNiagaraOffset
     );
+    IdleNiagaraComponent->AttachToComponent(
+      RewardMesh,
+      FAttachmentTransformRules::KeepRelativeTransform
+      );
   }
 }
 

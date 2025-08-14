@@ -43,7 +43,7 @@ protected:
 	TObjectPtr<UCameraComponent> Camera;
   UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Camera")
   TObjectPtr<USpotLightComponent> SpotLight;
-
+  
   UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Camera")
   float DefaultFOV = 30.f;
   UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Camera")
@@ -62,9 +62,9 @@ protected:
 
 private:
 	UFUNCTION()
-	void OnLocationUpdate();
+	void OnInitArea();
 	UFUNCTION()
-	void OnExitLocation();
+	void OnExitArea();
 
   void HandleDefaultState();
   void HandlePlayerDeathState();

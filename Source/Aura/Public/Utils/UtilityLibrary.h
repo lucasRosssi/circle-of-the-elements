@@ -38,7 +38,7 @@ public:
   UFUNCTION(BlueprintPure, Category="Direction")
   static FIntPoint GetCoordinateOffsetFromDirection(ECardinalDirection Direction);
   UFUNCTION(BlueprintPure, Category="Direction")
-  static ECardinalDirection GetDirectionFromCoordinateOffset(const FIntPoint& Coordinate);
+  static ECardinalDirection GetDirectionFromCoordinateOffset(const FIntPoint& Offset);
   UFUNCTION(BlueprintPure, Category="Direction")
   static TArray<FIntPoint> GetAdjacentCoordinates(const FIntPoint& Coordinate);
 

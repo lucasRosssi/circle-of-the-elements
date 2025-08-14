@@ -54,4 +54,6 @@ protected:
   UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Location|Gate")
   bool bActive = false;
 private:
+  ULocationManager* GetLocationManager();
+  TWeakObjectPtr<ULocationManager> LocationManager;
 };
