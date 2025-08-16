@@ -196,7 +196,7 @@ void AAuraHero::SetInteractMessageVisible_Implementation(const FText& InteractTe
   InteractWidgetComponent->SetVisibility(bVisible);
 }
 
-void AAuraHero::AddInteractableToList_Implementation(const UInteractComponent* InteractableComponent)
+void AAuraHero::AddInteractableToList_Implementation(UInteractComponent* InteractableComponent)
 {
   if (GetAuraPlayerController())
   {
@@ -204,7 +204,7 @@ void AAuraHero::AddInteractableToList_Implementation(const UInteractComponent* I
   }
 }
 
-void AAuraHero::RemoveInteractableFromList_Implementation(const UInteractComponent* InteractableComponent)
+void AAuraHero::RemoveInteractableFromList_Implementation(UInteractComponent* InteractableComponent)
 {
   if (GetAuraPlayerController())
   {

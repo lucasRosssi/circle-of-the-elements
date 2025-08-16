@@ -6,6 +6,8 @@
 #include "Interfaces/InteractInterface.h"
 #include "Gate.generated.h"
 
+class UNiagaraComponent;
+class UBoxComponent;
 enum class ECardinalDirection : uint8;
 class UInteractComponent;
 class AAuraPlayerController;
@@ -35,6 +37,8 @@ public:
   void Enable();
 
   void SetIsActive(bool bIsActive);
+  UFUNCTION(BlueprintNativeEvent)
+  void OnActiveToggle(bool bIsActive);
   ECardinalDirection GetDirection() const { return Direction; }
 
 protected:
@@ -46,9 +50,17 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<UStaticMeshComponent> GateMesh;
   UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+  TObjectPtr<UBoxComponent> BlockerComponent;
+  UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+  TObjectPtr<UStaticMeshComponent> BarrierMesh;
+  UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+  TObjectPtr<UNiagaraComponent> BarrierNiagara;
+  UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+  TObjectPtr<UBoxComponent> InteractBox;
+  UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
   TObjectPtr<UInteractComponent> InteractComponent;
 
-	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category="Location|Gate")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Location|Gate")
 	ECardinalDirection Direction;
 
   UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Location|Gate")

@@ -4,6 +4,7 @@
 #include "Actor/Level/Interactable.h"
 
 #include "Components/InteractComponent.h"
+#include "Components/SphereComponent.h"
 
 AInteractable::AInteractable()
 {
@@ -11,9 +12,12 @@ AInteractable::AInteractable()
 
   StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>("StaticMesh");
   SetRootComponent(StaticMesh);
+  InteractSphere = CreateDefaultSubobject<USphereComponent>("InteractSphere");
+  InteractSphere->SetupAttachment(GetRootComponent());
+  InteractSphere->SetSphereRadius(100.f);
 
   InteractComponent = CreateDefaultSubobject<UInteractComponent>("InteractComponent");
-  InteractComponent->SetupInteractAreaAttachment(GetRootComponent());
+  InteractComponent->SetInteractAreaComponent(InteractSphere);
   InteractComponent->EnableInteraction();
   InteractComponent->bDisableAfterInteraction = false;
 }

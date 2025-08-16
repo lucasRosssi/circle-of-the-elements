@@ -4,6 +4,7 @@
 #include "Actor/Level/Gate.h"
 
 #include "Aura/AuraMacros.h"
+#include "Components/BoxComponent.h"
 #include "Components/InteractComponent.h"
 #include "Managers/CombatManager.h"
 #include "Managers/LocationManager.h"
@@ -13,9 +14,17 @@ AGate::AGate()
 {
   GateMesh = CreateDefaultSubobject<UStaticMeshComponent>("GateMesh");
   SetRootComponent(GateMesh);
-
+  InteractBox = CreateDefaultSubobject<UBoxComponent>("InteractBox");
+  InteractBox->SetupAttachment(GetRootComponent());
+  BlockerComponent = CreateDefaultSubobject<UBoxComponent>("BlockerComponent");
+  BlockerComponent->SetupAttachment(GetRootComponent());
+  BlockerComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+  BlockerComponent->SetCollisionResponseToAllChannels(ECR_Ignore);
+  BlockerComponent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Block);
+  
   InteractComponent = CreateDefaultSubobject<UInteractComponent>("InteractComponent");
-  InteractComponent->SetupInteractAreaAttachment(GetRootComponent());
+  InteractComponent->SetInteractAreaComponent(InteractBox);
+
 }
 
 void AGate::Interact_Implementation(const AController* Controller)
@@ -57,7 +66,13 @@ void AGate::Enable()
 void AGate::SetIsActive(bool bIsActive)
 {
   bActive = bIsActive;
-  GateMesh->SetVisibility(bActive);
+  BlockerComponent->SetCollisionEnabled(bActive ? ECollisionEnabled::NoCollision : ECollisionEnabled::QueryOnly);
+  OnActiveToggle(bIsActive);
+}
+
+void AGate::OnActiveToggle_Implementation(bool bIsActive)
+{
+  
 }
 
 ULocationManager* AGate::GetLocationManager()

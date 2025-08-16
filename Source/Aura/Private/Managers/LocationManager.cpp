@@ -135,6 +135,13 @@ void ULocationManager::PlacePlayerInArea(const FAreaData& AreaData)
   {
     Start = Cast<APlayerStart>(StartActor);
 
+    if (!bStarted && AreaData.AreaType == EAreaType::Entrance)
+    {
+      if (Start->PlayerStartTag.ToString().Contains(FString("Start"))) break;
+      bStarted = true;
+      continue;
+    }
+
     if (
       Start->GetLevel() &&
       Start->GetLevel()->GetOuter()->GetName().Contains(AreaData.GetAreaName()) &&

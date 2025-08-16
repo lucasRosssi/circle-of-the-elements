@@ -504,7 +504,7 @@ void AAuraPlayerController::InteractPressed()
 {
 	if (InteractablesInRange.IsEmpty()) return;
   
-  const UInteractComponent* Interactable = InteractablesInRange[InteractablesInRange.Num() - 1];
+  UInteractComponent* Interactable = InteractablesInRange[InteractablesInRange.Num() - 1];
   if (!IsValid(Interactable))
   {
     RemoveInteractableInRange(Interactable);
@@ -516,7 +516,7 @@ void AAuraPlayerController::InteractPressed()
   Interactable->BeginInteract(this);
 }
 
-void AAuraPlayerController::AddInteractableInRange(const UInteractComponent* InteractComponent)
+void AAuraPlayerController::AddInteractableInRange(UInteractComponent* InteractComponent)
 {
   if (!IsValid(InteractComponent)) return;
 
@@ -528,7 +528,7 @@ void AAuraPlayerController::AddInteractableInRange(const UInteractComponent* Int
   }
 }
 
-void AAuraPlayerController::RemoveInteractableInRange(const UInteractComponent* InteractComponent)
+void AAuraPlayerController::RemoveInteractableInRange(UInteractComponent* InteractComponent)
 {
   InteractablesInRange.Remove(InteractComponent);
   

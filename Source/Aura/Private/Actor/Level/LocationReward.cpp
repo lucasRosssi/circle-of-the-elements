@@ -8,7 +8,9 @@
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
 #include "Aura/AuraLogChannels.h"
+#include "Components/CapsuleComponent.h"
 #include "Components/InteractComponent.h"
+#include "Components/SphereComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Data/RewardsInfo.h"
 #include "Managers/RewardManager.h"
@@ -17,14 +19,19 @@
 
 ALocationReward::ALocationReward()
 {
+  CapsuleComponent = CreateDefaultSubobject<UCapsuleComponent>("Capsule");
+  SetRootComponent(CapsuleComponent);
   RewardMesh = CreateDefaultSubobject<UStaticMeshComponent>("RewardMesh");
-  SetRootComponent(RewardMesh);
-  InteractComponent = CreateDefaultSubobject<UInteractComponent>("InteractComponent");
-  InteractComponent->SetupInteractAreaAttachment(GetRootComponent());
-  InteractComponent->EnableInteraction();
+  RewardMesh->SetupAttachment(GetRootComponent());
+  InteractSphere = CreateDefaultSubobject<USphereComponent>("InteractArea");
+  InteractSphere->SetupAttachment(GetRootComponent());
+  InteractSphere->SetSphereRadius(100.f);
   NiagaraComponent = CreateDefaultSubobject<UNiagaraComponent>("NiagaraComponent");
   NiagaraComponent->SetupAttachment(GetRootComponent());
   NiagaraComponent->SetAbsolute(false, true, true);
+  InteractComponent = CreateDefaultSubobject<UInteractComponent>("InteractComponent");
+  InteractComponent->SetInteractAreaComponent(InteractSphere);
+  InteractComponent->EnableInteraction();
 }
 
 void ALocationReward::Interact_Implementation(const AController* Controller)

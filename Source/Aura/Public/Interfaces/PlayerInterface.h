@@ -66,11 +66,11 @@ public:
   static void Safe_SetInteractMessageVisible(UObject*, const FText& InteractText);
 
   UFUNCTION(BlueprintNativeEvent)
-  void AddInteractableToList(const UInteractComponent* InteractableComponent);
-  static void Safe_AddInteractableToList(UObject*, const UInteractComponent* InteractableComponent);
+  void AddInteractableToList(UInteractComponent* InteractableComponent);
+  static void Safe_AddInteractableToList(UObject*, UInteractComponent* InteractableComponent);
   UFUNCTION(BlueprintNativeEvent)
-  void RemoveInteractableFromList(const UInteractComponent* InteractableComponent);
-  static void Safe_RemoveInteractableFromList(UObject*, const UInteractComponent* InteractableComponent);
+  void RemoveInteractableFromList(UInteractComponent* InteractableComponent);
+  static void Safe_RemoveInteractableFromList(UObject*, UInteractComponent* InteractableComponent);
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	ECharacterName GetHeroName();

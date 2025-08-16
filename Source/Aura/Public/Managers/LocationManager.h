@@ -46,7 +46,7 @@ public:
 
   TArray<AActor*> GetCameraBoundaryActors() const { return CameraBoundaryActors; }
   UFUNCTION(BlueprintCallable)
-  void SetCameraBoundaryActors(const TArray<AActor*>& InActors) { CameraBoundaryActors = InActors; }
+  void SetCameraBoundaryActors(const TArray<AActor*>& BoundaryActors) { CameraBoundaryActors = BoundaryActors; }
 
   int32 GetCurrentRegionRecommendedLevel();
 
@@ -160,6 +160,8 @@ private:
   FIntPoint PrevPlayerCoordinate = FIntPoint(0, 0);
   FIntPoint PlayerCoordinate = FIntPoint(0, 0);
   ECardinalDirection LastExit;
+
+  bool bStarted = false;
 
   UPROPERTY()
   TArray<AActor*> CameraBoundaryActors;

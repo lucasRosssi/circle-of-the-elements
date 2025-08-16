@@ -7,6 +7,7 @@
 #include "Interfaces/InteractInterface.h"
 #include "Interactable.generated.h"
 
+class USphereComponent;
 class UInteractComponent;
 
 UCLASS()
@@ -26,6 +27,9 @@ protected:
   
   UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
   TObjectPtr<UStaticMeshComponent> StaticMesh;
+
+  UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+  TObjectPtr<USphereComponent> InteractSphere;
 
   UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
   TObjectPtr<UInteractComponent> InteractComponent;

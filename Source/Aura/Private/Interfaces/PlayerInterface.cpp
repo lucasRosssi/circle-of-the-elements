@@ -22,14 +22,14 @@ void IPlayerInterface::Safe_SetInteractMessageVisible(UObject* Object, const FTe
   Execute_SetInteractMessageVisible(Object, InteractText);
 }
 
-void IPlayerInterface::Safe_AddInteractableToList(UObject* Object, const UInteractComponent* InteractableComponent)
+void IPlayerInterface::Safe_AddInteractableToList(UObject* Object, UInteractComponent* InteractableComponent)
 {
   if (!Implements(Object)) return;
 
   Execute_AddInteractableToList(Object, InteractableComponent);
 }
 
-void IPlayerInterface::Safe_RemoveInteractableFromList(UObject* Object, const UInteractComponent* InteractableComponent)
+void IPlayerInterface::Safe_RemoveInteractableFromList(UObject* Object, UInteractComponent* InteractableComponent)
 {
   if (!Implements(Object)) return;
 
