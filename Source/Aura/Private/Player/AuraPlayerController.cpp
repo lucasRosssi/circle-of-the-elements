@@ -17,10 +17,12 @@
 #include "Interfaces/TargetInterface.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "Managers/LocationManager.h"
 #include "Managers/UIManager.h"
 #include "Materials/MaterialParameterCollectionInstance.h"
 #include "UI/Widget/DamageTextComponent.h"
 #include "UI/Widget/HealTextComponent.h"
+#include "Utils/AuraSystemsLibrary.h"
 
 AAuraPlayerController::AAuraPlayerController()
 {
@@ -208,6 +210,12 @@ void AAuraPlayerController::BeginPlay()
 	InputModeData.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
 	InputModeData.SetHideCursorDuringCapture(false);
 	SetInputMode(InputModeData);
+
+  ULocationManager* LocationManager = UAuraSystemsLibrary::GetLocationManager(this);
+  if (!LocationManager) return;
+  
+  LocationManager->OnExitAreaDelegate.AddDynamic(this, &AAuraPlayerController::DisableController);
+  LocationManager->OnInitAreaDelegate.AddDynamic(this, &AAuraPlayerController::EnableController);
 }
 
 void AAuraPlayerController::HandleEnvironmentOcclusion()
