@@ -1,5 +1,7 @@
 #include "Components/OrbitManagerComponent.h"
 #include "Actor/SpiritActor.h"
+#include "Managers/LocationManager.h"
+#include "Utils/AuraSystemsLibrary.h"
 
 UOrbitManagerComponent::UOrbitManagerComponent()
 {
@@ -9,6 +11,27 @@ UOrbitManagerComponent::UOrbitManagerComponent()
 void UOrbitManagerComponent::BeginPlay()
 {
   Super::BeginPlay();
+
+  ULocationManager* LocationManager = UAuraSystemsLibrary::GetLocationManager(GetOwner());
+  if (!LocationManager) return;
+
+  LocationManager->OnInitAreaDelegate.AddDynamic(this, &UOrbitManagerComponent::TeleportSpiritsToOwner);
+}
+
+void UOrbitManagerComponent::TeleportSpiritsToOwner()
+{
+  const AActor* Owner = GetOwner();
+  if (!Owner || ActiveSpirits.Num() == 0) return;
+
+  for (ASpiritActor* Spirit : ActiveSpirits)
+  {
+    Spirit->SetActorTransform(
+      Owner->GetActorTransform(),
+      false,
+      nullptr,
+      ETeleportType::ResetPhysics
+    );
+  }
 }
 
 void UOrbitManagerComponent::RegisterSpirit(ASpiritActor* Spirit)

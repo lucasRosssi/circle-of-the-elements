@@ -138,8 +138,12 @@ void ULocationManager::PlacePlayerInArea(const FAreaData& AreaData)
 
     if (!bStarted && AreaData.AreaType == EAreaType::Entrance)
     {
-      if (Start->PlayerStartTag.ToString().Contains(FString("Start"))) break;
-      bStarted = true;
+      if (Start->PlayerStartTag.ToString().Contains(FString("Start")))
+      {
+        bStarted = true;
+        break;
+      }
+      
       continue;
     }
 
@@ -176,13 +180,13 @@ void ULocationManager::HandleDirectionalObstacles(const FAreaData& CurrentArea)
   UGameplayStatics::GetAllActorsWithTag(GetOwner(), DIRECTIONAL_OBSTACLE_TAG, DirectionalObstacleActors);
   for (AActor* Actor : DirectionalObstacleActors)
   {
-    bool bShouldDestroy = true;
+    bool bShouldDestroy = false;
     for (const ECardinalDirection Direction : CurrentArea.OpenDirections)
     {
       FString DirectionString = UUtilityLibrary::GetDirectionString(Direction);
       if (Actor->Tags.Contains(DirectionString))
       {
-        bShouldDestroy = false;
+        bShouldDestroy = true;
       }
     }
 

@@ -22,7 +22,11 @@ public:
   void RegisterSpirit(ASpiritActor* Spirit);
   void UnregisterSpirit(ASpiritActor* Spirit);
 protected:
+  UFUNCTION()
 	virtual void BeginPlay() override;
+
+  UFUNCTION()
+  void TeleportSpiritsToOwner();
 
   UPROPERTY(EditAnywhere, Category = "Orbit")
   float MinInterpSpeed = 1.f;
