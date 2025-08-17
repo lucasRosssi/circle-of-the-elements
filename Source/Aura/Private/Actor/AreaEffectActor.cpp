@@ -212,7 +212,7 @@ void AAreaEffectActor::OnOverlap(AActor* TargetActor)
     UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(TargetActor);
   if (!IsValid(TargetASC)) return;
 
-  ASCsInArea.Add(TargetASC);
+  ASCsInArea.AddUnique(TargetASC);
 
   // When the ability has a delayed impact, it'll apply effects when impact happens
   if (AbilityParams.IsValid() && FMath::IsNearlyZero(DelayImpact))
@@ -242,17 +242,17 @@ void AAreaEffectActor::ApplyAbilityEffect(UAbilitySystemComponent* TargetASC, bo
 
 void AAreaEffectActor::ApplyAbilityEffectToActorsInArea()
 {
-  for (auto ASC = ASCsInArea.CreateIterator(); ASC; ++ASC)
+  TArray<UAbilitySystemComponent*> ASCsCache = ASCsInArea;
+  for (auto ASC : ASCsCache)
   {
-    UAbilitySystemComponent* CurrentASC = *ASC;
-    if (!IsValid(CurrentASC))
+    if (!IsValid(ASC))
     {
-      ASC.RemoveCurrent();
+      ASCsInArea.Remove(ASC);
       continue;
     }
 
     bool bSuccess = false;
-    ApplyAbilityEffect(CurrentASC, bSuccess);
+    ApplyAbilityEffect(ASC, bSuccess);
 
     if (bActorUsesCharges)
     {
