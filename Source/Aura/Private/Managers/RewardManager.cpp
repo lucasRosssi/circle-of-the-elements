@@ -7,6 +7,7 @@
 #include "Actor/Level/LocationReward.h"
 #include "Algo/RandomShuffle.h"
 #include "Aura/AuraLogChannels.h"
+#include "Components/CapsuleComponent.h"
 #include "Components/InteractComponent.h"
 #include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
@@ -52,7 +53,8 @@ ALocationReward* URewardManager::SpawnReward(FVector Location)
     Transform.SetLocation(FVector(
       Location.X,
       Location.Y,
-      Location.Z + Reward->GetInteractComponent_Implementation()->GetInteractAreaRadius()));
+      Location.Z + Reward->GetCapsule()->GetScaledCapsuleHalfHeight())
+    );
     Reward->FinishSpawning(Transform);
     return Reward;
   }

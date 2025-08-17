@@ -17,10 +17,12 @@
 #include "Interfaces/TargetInterface.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "Managers/LocationManager.h"
 #include "Managers/UIManager.h"
 #include "Materials/MaterialParameterCollectionInstance.h"
 #include "UI/Widget/DamageTextComponent.h"
 #include "UI/Widget/HealTextComponent.h"
+#include "Utils/AuraSystemsLibrary.h"
 
 AAuraPlayerController::AAuraPlayerController()
 {
@@ -208,6 +210,12 @@ void AAuraPlayerController::BeginPlay()
 	InputModeData.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
 	InputModeData.SetHideCursorDuringCapture(false);
 	SetInputMode(InputModeData);
+
+  ULocationManager* LocationManager = UAuraSystemsLibrary::GetLocationManager(this);
+  if (!LocationManager) return;
+  
+  LocationManager->OnExitAreaDelegate.AddDynamic(this, &AAuraPlayerController::DisableController);
+  LocationManager->OnInitAreaDelegate.AddDynamic(this, &AAuraPlayerController::EnableController);
 }
 
 void AAuraPlayerController::HandleEnvironmentOcclusion()
@@ -504,7 +512,7 @@ void AAuraPlayerController::InteractPressed()
 {
 	if (InteractablesInRange.IsEmpty()) return;
   
-  const UInteractComponent* Interactable = InteractablesInRange[InteractablesInRange.Num() - 1];
+  UInteractComponent* Interactable = InteractablesInRange[InteractablesInRange.Num() - 1];
   if (!IsValid(Interactable))
   {
     RemoveInteractableInRange(Interactable);
@@ -516,7 +524,7 @@ void AAuraPlayerController::InteractPressed()
   Interactable->BeginInteract(this);
 }
 
-void AAuraPlayerController::AddInteractableInRange(const UInteractComponent* InteractComponent)
+void AAuraPlayerController::AddInteractableInRange(UInteractComponent* InteractComponent)
 {
   if (!IsValid(InteractComponent)) return;
 
@@ -528,7 +536,7 @@ void AAuraPlayerController::AddInteractableInRange(const UInteractComponent* Int
   }
 }
 
-void AAuraPlayerController::RemoveInteractableInRange(const UInteractComponent* InteractComponent)
+void AAuraPlayerController::RemoveInteractableInRange(UInteractComponent* InteractComponent)
 {
   InteractablesInRange.Remove(InteractComponent);
   

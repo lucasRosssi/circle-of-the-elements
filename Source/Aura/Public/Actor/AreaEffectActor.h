@@ -147,6 +147,10 @@ private:
   TArray<UAbilitySystemComponent*> ASCsInArea;
   UPROPERTY()
   TArray<AActor*> ActorsInForceArea;
+  UPROPERTY()
+  TArray<AActor*> ActorsPendingAddToForceArea;
+  UPROPERTY()
+  TArray<AActor*> ActorsPendingRemoveFromForceArea;
 
   TMap<FActiveGameplayEffectHandle, UAbilitySystemComponent*> ActiveEffectHandles;
 

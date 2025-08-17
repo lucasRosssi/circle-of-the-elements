@@ -11,6 +11,7 @@
 #include "Game/AuraSaveGame.h"
 #include "Managers/MatchManager.h"
 #include "Managers/RewardManager.h"
+#include "Player/AuraPlayerState.h"
 #include "UI/WidgetController/OverlayWidgetController.h"
 #include "Utils/AuraSystemsLibrary.h"
 
@@ -38,18 +39,25 @@ void UAbilityManager::GiveAcquiredAbilities(AActor* Actor)
     UE_LOG(
       LogAura,
       Warning,
-      TEXT("Ability Manager is overriding Acquired Abilities! If it is not the intention, check it in the game mode.")
+      TEXT("Ability Manager is overriding Abilities! If it is not the intention, check it in the game mode.")
     );
   }
 
-  const UAbilityInfo* AbilitiesDataAsset = UAuraSystemsLibrary::GetAbilitiesInfo(this);
-  UAuraAbilitySystemComponent* AuraASC = UAuraAbilitySystemLibrary::GetAuraAbilitySystemComponent(Actor);
+  // const UAbilityInfo* AbilitiesDataAsset = UAuraSystemsLibrary::GetAbilitiesInfo(this);
+  AAuraPlayerState* AuraPS = UAuraSystemsLibrary::GetAuraPlayerState(GetOwner());
 
-  for (const auto& [Ability, Level] : AcquiredAbilities)
+  if (!AuraPS) return;
+
+  int32 i = 0;
+  for (const auto& [AbilityTag, Level] : AcquiredAbilities)
   {
-    const FAuraAbilityInfo& AbilityInfo = AbilitiesDataAsset->FindAbilityInfoByTag(Ability);
-    GiveAbility(AuraASC, AbilityInfo, Level);
-    OnAbilitySelectedDelegate.Broadcast(AbilityInfo);
+    USpirit* Spirit = NewObject<USpirit>();
+    Spirit->SetAbilityTag(AbilityTag);
+    Spirit->SetID(FGuid::NewGuid());
+    Spirit->SetLevel(Level);
+    AuraPS->AddEquipmentToInventory(Spirit);
+    Spirit->Equip(i++);
+    // OnAbilitySelectedDelegate.Broadcast(AbilityInfo);
   }
 }
 

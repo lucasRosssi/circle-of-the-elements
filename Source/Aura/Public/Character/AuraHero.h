@@ -56,8 +56,8 @@ public:
 		) override;
 	virtual void HideTargetingActor_Implementation() override;
 	virtual void SetInteractMessageVisible_Implementation(const FText& InteractText) override;
-  virtual void AddInteractableToList_Implementation(const UInteractComponent* InteractableComponent) override;
-  virtual void RemoveInteractableFromList_Implementation(const UInteractComponent* InteractableComponent) override;
+  virtual void AddInteractableToList_Implementation(UInteractComponent* InteractableComponent) override;
+  virtual void RemoveInteractableFromList_Implementation(UInteractComponent* InteractableComponent) override;
 	virtual ECharacterName GetHeroName_Implementation() override;
   virtual void AddResource_Implementation(const FGameplayTag& ResourceTag, int32 Amount) override;
   virtual void SpendAttributePointsRandomly_Implementation() override;

@@ -7,6 +7,8 @@
 #include "Interfaces/InteractInterface.h"
 #include "LocationReward.generated.h"
 
+class USphereComponent;
+class UCapsuleComponent;
 class AAuraPlayerState;
 class AAuraPlayerController;
 class UNiagaraComponent;
@@ -32,6 +34,7 @@ public:
   /* END Interact Interface */
 
   UStaticMeshComponent* GetMesh() const { return RewardMesh; }
+  UCapsuleComponent* GetCapsule() const { return CapsuleComponent; }
 protected:
   virtual void BeginPlay() override;
   virtual void Destroyed() override;
@@ -41,9 +44,13 @@ protected:
   UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
   TObjectPtr<UStaticMeshComponent> RewardMesh;
   UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-  TObjectPtr<UInteractComponent> InteractComponent;
-  UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
   TObjectPtr<UNiagaraComponent> NiagaraComponent;
+  UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+  TObjectPtr<UCapsuleComponent> CapsuleComponent;
+  UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+  TObjectPtr<USphereComponent> InteractSphere;
+  UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+  TObjectPtr<UInteractComponent> InteractComponent;
   
   UPROPERTY(
     EditDefaultsOnly,

@@ -5,6 +5,7 @@
 
 #include "Actor/Level/Gate.h"
 #include "Algo/RandomShuffle.h"
+#include "Aura/Aura.h"
 #include "Aura/AuraMacros.h"
 #include "GameFramework/PlayerStart.h"
 #include "Kismet/GameplayStatics.h"
@@ -135,9 +136,20 @@ void ULocationManager::PlacePlayerInArea(const FAreaData& AreaData)
   {
     Start = Cast<APlayerStart>(StartActor);
 
+    if (!bStarted && AreaData.AreaType == EAreaType::Entrance)
+    {
+      if (Start->PlayerStartTag.ToString().Contains(FString("Start")))
+      {
+        bStarted = true;
+        break;
+      }
+      
+      continue;
+    }
+
     if (
-      Start->GetLevel() &&
-      Start->GetLevel()->GetOuter()->GetName().Contains(AreaData.GetAreaName()) &&
+      // Start->GetLevel() &&
+      // Start->GetLevel()->GetOuter()->GetName().Contains(AreaData.GetAreaName()) &&
       Start->PlayerStartTag.ToString().Contains(DirectionString)
       )
     {
@@ -162,13 +174,33 @@ void ULocationManager::InitLocation()
   LoadArea(*AreaData);
 }
 
-void ULocationManager::InitArea()
+void ULocationManager::HandleDirectionalObstacles(const FAreaData& CurrentArea)
+{
+  TArray<AActor*> DirectionalObstacleActors;
+  UGameplayStatics::GetAllActorsWithTag(GetOwner(), DIRECTIONAL_OBSTACLE_TAG, DirectionalObstacleActors);
+  for (AActor* Actor : DirectionalObstacleActors)
+  {
+    bool bShouldDestroy = false;
+    for (const ECardinalDirection Direction : CurrentArea.OpenDirections)
+    {
+      FString DirectionString = UUtilityLibrary::GetDirectionString(Direction);
+      if (Actor->Tags.Contains(DirectionString))
+      {
+        bShouldDestroy = true;
+      }
+    }
+
+    if (bShouldDestroy)
+    {
+      Actor->Destroy();
+    }
+  }
+}
+
+void ULocationManager::HandleGates(const FAreaData& CurrentArea)
 {
   TArray<AActor*> GateActors;
   UGameplayStatics::GetAllActorsOfClass(GetOwner(), AGate::StaticClass(), GateActors);
-
-  const FAreaData& CurrentArea = GetCurrentAreaRef();
-
   for (AActor* GateActor : GateActors)
   {
     AGate* Gate = Cast<AGate>(GateActor);
@@ -190,13 +222,23 @@ void ULocationManager::InitArea()
       Gate->SetIsActive(false);
     }
   }
+}
+
+void ULocationManager::InitArea()
+{
+  const FAreaData& CurrentArea = GetCurrentAreaRef();
   
+  HandleGates(CurrentArea);
+  HandleDirectionalObstacles(CurrentArea);
   PlacePlayerInArea(CurrentArea);
+  
   OnInitAreaDelegate.Broadcast();
 }
 
 void ULocationManager::ExitArea(ECardinalDirection ExitDirection)
 {
+  OnExitAreaDelegate.Broadcast();
+  
   LastExit = ExitDirection;
   CameraBoundaryActors.Empty();
   UAuraSystemsLibrary::GetUIManager(GetOwner(), 0)
@@ -204,13 +246,14 @@ void ULocationManager::ExitArea(ECardinalDirection ExitDirection)
     ->StartTransition();
 
   const FIntPoint& NextAreaCoordinate = UUtilityLibrary::GetCoordinateOffsetFromDirection(ExitDirection) + PlayerCoordinate;
-  const FAreaData* NextAreaData = LocationLayout.Find(NextAreaCoordinate);
+  const FAreaData* NextAreaDataPtr = LocationLayout.Find(NextAreaCoordinate);
 
-  GUARD(NextAreaData,, TEXT("Could not find next area at [%d,%d]!"), NextAreaCoordinate.X, NextAreaCoordinate.Y)
+  GUARD(NextAreaDataPtr,, TEXT("Could not find next area at [%d,%d]!"), NextAreaCoordinate.X, NextAreaCoordinate.Y)
 
-  LoadArea(*NextAreaData);
-  
-  OnExitAreaDelegate.Broadcast();
+  NextAreaData = *NextAreaDataPtr;
+
+  UnloadArea(GetCurrentAreaRef());
+  // LoadArea(NextAreaData);
 }
 
 int32 ULocationManager::GetCurrentRegionRecommendedLevel()
@@ -366,14 +409,15 @@ void ULocationManager::OnAreaLoaded()
 {
   InitArea();
 
-  if (PrevPlayerCoordinate == PlayerCoordinate) return;
-  
-  const FAreaData* AreaData = LocationLayout.Find(PrevPlayerCoordinate);
-  if (AreaData && AreaData->World != GetCurrentAreaRef().World) UnloadArea(*AreaData);
-
   UAuraSystemsLibrary::GetUIManager(GetOwner(), 0)
     ->GetOverlayWidgetController()
     ->EndTransition();
+  
+  // if (PrevPlayerCoordinate == PlayerCoordinate) return;
+  //
+  // const FAreaData* AreaData = LocationLayout.Find(PrevPlayerCoordinate);
+  // if (AreaData && AreaData->World != GetCurrentAreaRef().World) UnloadArea(*AreaData);
+
 }
 
 void ULocationManager::UnloadArea(const FAreaData& AreaData)
@@ -396,7 +440,7 @@ void ULocationManager::UnloadArea(const FAreaData& AreaData)
 
 void ULocationManager::OnAreaUnloaded()
 {
-  
+  LoadArea(NextAreaData);
 }
 
 bool ULocationManager::IsCoordinateFree(const FIntPoint& Coordinate) const
@@ -436,8 +480,8 @@ FIntPoint ULocationManager::GetNextCoordinate()
   const float BacktrackRoll = FMath::FRandRange(0.f, 1.f);
   const bool bCanBacktrack =
     bBacktrackEnabled &&
-    AreaCount > MinAreas &&
-    AreaCount < MaxAreas &&
+    AreaCount > MinAreaCountToBacktrack &&
+    AreaCount < MaxAreaCountToBacktrack &&
     AreaCount < TotalAreas - 1; // The last 2 areas should be connected (boss and exit)
   
   if (NextCoordinate == CurrentCoordinate || (bCanBacktrack && BacktrackRoll <= BacktrackChance))

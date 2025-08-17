@@ -35,9 +35,6 @@ class AURA_API ULocationManager : public UAuraSystemComponent
 public:
   UFUNCTION(BlueprintCallable)
   void GenerateLocation();
-  
-  void PlacePlayerInArea(const FAreaData& AreaData);
-
   void InitLocation();
   UFUNCTION(BlueprintCallable)
   void InitArea();
@@ -46,7 +43,7 @@ public:
 
   TArray<AActor*> GetCameraBoundaryActors() const { return CameraBoundaryActors; }
   UFUNCTION(BlueprintCallable)
-  void SetCameraBoundaryActors(const TArray<AActor*>& InActors) { CameraBoundaryActors = InActors; }
+  void SetCameraBoundaryActors(const TArray<AActor*>& BoundaryActors) { CameraBoundaryActors = BoundaryActors; }
 
   int32 GetCurrentRegionRecommendedLevel();
 
@@ -138,6 +135,11 @@ protected:
   int32 MaxAreaCountToBacktrack = 17;
 
 private:
+  void HandleDirectionalObstacles(const FAreaData& CurrentArea);
+  void HandleGates(const FAreaData& CurrentArea);
+  void PlacePlayerInArea(const FAreaData& AreaData);
+  
+  
   URegionInfo* GetRegionInfo();
   TWeakObjectPtr<URegionInfo> RegionInfo;
   
@@ -160,6 +162,10 @@ private:
   FIntPoint PrevPlayerCoordinate = FIntPoint(0, 0);
   FIntPoint PlayerCoordinate = FIntPoint(0, 0);
   ECardinalDirection LastExit;
+
+  FAreaData NextAreaData;
+
+  bool bStarted = false;
 
   UPROPERTY()
   TArray<AActor*> CameraBoundaryActors;

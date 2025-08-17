@@ -8,7 +8,6 @@
 #include "AbilitySystem/Abilities/InteractionAbility.h"
 #include "NiagaraFunctionLibrary.h"
 #include "Aura/AuraLogChannels.h"
-#include "Components/SphereComponent.h"
 #include "GameFramework/Character.h"
 #include "Interfaces/CombatInterface.h"
 #include "Interfaces/InteractInterface.h"
@@ -19,17 +18,6 @@ UInteractComponent::UInteractComponent()
 {
   PrimaryComponentTick.bCanEverTick = false;
   
-  InteractArea = CreateDefaultSubobject<USphereComponent>("InteractArea");
-  InteractArea->SetCollisionResponseToAllChannels(ECR_Ignore);
-  InteractArea->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
-  InteractArea->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-  InteractArea->SetSphereRadius(200.f, false);
-  InteractArea->SetUsingAbsoluteScale(true);
-}
-
-void UInteractComponent::SetupInteractAreaAttachment(USceneComponent* Component)
-{
-  InteractArea->SetupAttachment(Component);
 }
 
 void UInteractComponent::OnInteractAreaOverlap(
@@ -41,9 +29,22 @@ void UInteractComponent::OnInteractAreaOverlap(
   const FHitResult& SweepResult
 )
 {
-  if (!bInteractionEnabled || !IsValid(OtherActor)) return;
+  if (!bInteractionEnabled || !IsValid(OtherActor) || !OtherActor->Implements<UPlayerInterface>()) return;
+
+  switch (InteractMode)
+  {
+  case EInteractMode::Overlap:
+    {
+      BeginInteract(OtherActor->GetInstigatorController());
+      break;
+    }
+  case EInteractMode::Input:
+  default:
+    {
+      IPlayerInterface::Safe_AddInteractableToList(OtherActor, this);
+    }
+  }
   
-  IPlayerInterface::Safe_AddInteractableToList(OtherActor, this);
 }
 
 void UInteractComponent::OnInteractAreaEndOverlap(
@@ -54,32 +55,49 @@ void UInteractComponent::OnInteractAreaEndOverlap(
 )
 {
   if (!bInteractionEnabled || !IsValid(OtherActor)) return;
+
+  switch (InteractMode)
+  {
+  case EInteractMode::Overlap:
+    {
+      break;
+    }
+  case EInteractMode::Input:
+  default:
+    {
+      IPlayerInterface::Safe_RemoveInteractableFromList(OtherActor, this);
+    }
+  }
   
-  IPlayerInterface::Safe_RemoveInteractableFromList(OtherActor, this);
 }
 
-float UInteractComponent::GetInteractAreaRadius() const
+void UInteractComponent::SetInteractAreaComponent(UPrimitiveComponent* InComponent)
 {
-  return InteractArea->GetScaledSphereRadius();
+  InteractAreaComponent = InComponent;
+  InteractAreaComponent->SetCollisionResponseToAllChannels(ECR_Ignore);
+  InteractAreaComponent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
+  InteractAreaComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+  InteractAreaComponent->SetUsingAbsoluteScale(true);
 }
 
 void UInteractComponent::EnableInteraction()
 {
   bInteractionEnabled = true;
-  InteractArea->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+  InteractAreaComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 }
 
 void UInteractComponent::DisableInteraction()
 {
   bInteractionEnabled = false;
-  InteractArea->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+  InteractAreaComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
-void UInteractComponent::BeginInteract(const AController* InstigatorController) const
+void UInteractComponent::BeginInteract(const AController* InstigatorController)
 {
   ACharacter* Character = InstigatorController->GetCharacter();
   if (bDisableAfterInteraction)
   {
+    DisableInteraction();
     IPlayerInterface::Safe_RemoveInteractableFromList(Character, this);
   }
 
@@ -149,8 +167,8 @@ void UInteractComponent::BeginPlay()
 {
   Super::BeginPlay();
 
-  InteractArea->OnComponentBeginOverlap.AddDynamic(this, &UInteractComponent::OnInteractAreaOverlap);
-  InteractArea->OnComponentEndOverlap.AddDynamic(this, &UInteractComponent::OnInteractAreaEndOverlap);
+  InteractAreaComponent->OnComponentBeginOverlap.AddDynamic(this, &UInteractComponent::OnInteractAreaOverlap);
+  InteractAreaComponent->OnComponentEndOverlap.AddDynamic(this, &UInteractComponent::OnInteractAreaEndOverlap);
 
   if (!bInteractionEnabled)
   {

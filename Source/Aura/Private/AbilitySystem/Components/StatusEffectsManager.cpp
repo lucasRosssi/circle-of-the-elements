@@ -135,6 +135,7 @@ void UStatusEffectsManager::MulticastActivateStatusEffect_Implementation(
 				true
 			);
 	NiagaraComponent->AutoAttachRotationRule = EAttachmentRule::KeepWorld;
+  NiagaraComponent->SetAbsolute(false, true, false);
 
 	ActiveNiagaraComponents.Add(StatusEffectTag, NiagaraComponent);
 }

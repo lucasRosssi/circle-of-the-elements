@@ -162,7 +162,8 @@ void AAuraCamera::HandleDefaultState()
   FollowTarget(
     UseActor(PlayerActor.Get()),
     FConstrainVector2(),
-    FBoolRotation());
+    FBoolRotation(),
+    false);
 
   if (GetPostProcessVolume()->Settings.WeightedBlendables.Array.Num() >= 3)
   {
@@ -222,7 +223,8 @@ void AAuraCamera::HandleBossDeathState()
   FollowTarget(
     AUniversalCamera::UseActor(Boss),
     FConstrainVector2(),
-    FBoolRotation());
+    FBoolRotation(),
+    true);
 
   GetPostProcessVolume()->Settings.WeightedBlendables.Array[0].Weight = 0.f;
   GetPostProcessVolume()->Settings.WeightedBlendables.Array[1].Weight = 1.f;

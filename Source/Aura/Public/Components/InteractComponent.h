@@ -11,7 +11,15 @@ class UGameplayEffect;
 class UNiagaraSystem;
 class UNiagaraComponent;
 enum class ECharacterName : uint8;
-class USphereComponent;
+
+UENUM(BlueprintType)
+enum class EInteractMode : uint8
+{
+  Input UMETA(DisplayName = "Input"),
+  Overlap UMETA(DisplayName = "Overlap"),
+
+  MAX UMETA(Hidden)
+};
 
 UCLASS(ClassGroup="Interaction", meta=(BlueprintSpawnableComponent))
 class AURA_API UInteractComponent : public UActorComponent
@@ -26,25 +34,26 @@ public:
   TSubclassOf<UInteractionAbility> GetInteractAbility() const { return InteractAbility; }
   TSubclassOf<UGameplayEffect> GetInteractEffect() const { return InteractEffect; }
   
-  void SetupInteractAreaAttachment(USceneComponent* Component);
-
-  float GetInteractAreaRadius() const;
-
+  void SetInteractAreaComponent(UPrimitiveComponent* InComponent);
+  
   UFUNCTION(BlueprintCallable)
   void EnableInteraction();
   UFUNCTION(BlueprintCallable)
   void DisableInteraction();
   
-  void BeginInteract(const AController* InstigatorController) const;
+  void BeginInteract(const AController* InstigatorController);
   
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Interaction")
   bool bDisableAfterInteraction = true;
 
 protected:
   virtual void BeginPlay() override;
-  
-  UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Interaction")
-  TObjectPtr<USphereComponent> InteractArea;
+
+  UPROPERTY()
+  TObjectPtr<UPrimitiveComponent> InteractAreaComponent;
+
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Interaction")
+  EInteractMode InteractMode = EInteractMode::Input;
 
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Interaction")
   TSubclassOf<UInteractionAbility> InteractAbility;

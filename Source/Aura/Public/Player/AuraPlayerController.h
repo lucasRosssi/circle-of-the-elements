@@ -96,8 +96,8 @@ public:
   void AimAbilityGamepad(AActor* AvatarActor, FHitResult& OutHitResult);
   void AimAbilityMouse(AActor* AvatarActor, FHitResult& OutHitResult);
 
-  void AddInteractableInRange(const UInteractComponent* InteractComponent);
-  void RemoveInteractableInRange(const UInteractComponent* InteractComponent);
+  void AddInteractableInRange(UInteractComponent* InteractComponent);
+  void RemoveInteractableInRange(UInteractComponent* InteractComponent);
 
   UFUNCTION(BlueprintCallable)
   void AddInputContext(UInputMappingContext* InputContext, int32 Priority = 0);
@@ -228,7 +228,7 @@ private:
   bool bControllerEnabled = true;
 
   UPROPERTY()
-  TArray<const UInteractComponent*> InteractablesInRange;
+  TArray<UInteractComponent*> InteractablesInRange;
 
   UPROPERTY()
   TObjectPtr<UEnhancedInputLocalPlayerSubsystem> EnhancedInputSubsystem;
