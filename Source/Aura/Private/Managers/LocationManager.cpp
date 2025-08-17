@@ -480,8 +480,8 @@ FIntPoint ULocationManager::GetNextCoordinate()
   const float BacktrackRoll = FMath::FRandRange(0.f, 1.f);
   const bool bCanBacktrack =
     bBacktrackEnabled &&
-    AreaCount > MinAreas &&
-    AreaCount < MaxAreas &&
+    AreaCount > MinAreaCountToBacktrack &&
+    AreaCount < MaxAreaCountToBacktrack &&
     AreaCount < TotalAreas - 1; // The last 2 areas should be connected (boss and exit)
   
   if (NextCoordinate == CurrentCoordinate || (bCanBacktrack && BacktrackRoll <= BacktrackChance))

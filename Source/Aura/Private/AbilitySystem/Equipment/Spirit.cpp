@@ -73,9 +73,8 @@ bool USpirit::Equip(int32 Slot)
   AActor* Actor = Cast<AActor>(Owner.Get());
   if (!Actor) return false;
 
-  OwnerASC = Cast<UAuraAbilitySystemComponent>(
-    UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(Actor)
-    );
+  OwnerASC = UAuraAbilitySystemLibrary::GetAuraAbilitySystemComponent(Actor);
+    
   if (!OwnerASC.IsValid()) return false;
 
   const FAuraGameplayTags& AuraTags = FAuraGameplayTags::Get();

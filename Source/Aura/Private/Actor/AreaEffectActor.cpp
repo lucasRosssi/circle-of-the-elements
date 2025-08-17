@@ -112,16 +112,27 @@ void AAreaEffectActor::Tick(float DeltaSeconds)
 
   if (bHasRadialForce)
   {
-    // TODO: check for loop progress before removing items from ActorsInForceArea
-    for (const auto Actor : ActorsInForceArea)
+    for (AActor* Actor : ActorsPendingAddToForceArea)
+    {
+      ActorsInForceArea.Add(Actor);
+    }
+    ActorsPendingAddToForceArea.Empty();
+    
+    for (AActor* Actor : ActorsInForceArea)
     {
       ICombatInterface::Execute_ApplyAttraction(
         Actor,
         RadialForceSphere->GetComponentLocation(),
         DeltaSeconds,
         Force
-        );
+      );
     }
+
+    for (AActor* Actor : ActorsPendingRemoveFromForceArea)
+    {
+      ActorsInForceArea.Remove(Actor);
+    }
+    ActorsPendingRemoveFromForceArea.Empty();
   }
 }
 
@@ -203,14 +214,14 @@ void AAreaEffectActor::OnOverlap(AActor* TargetActor)
 
   ASCsInArea.Add(TargetASC);
 
-  // When the ability has a delayed impact it'll apply effects when impact happens
-  if (AbilityParams.IsValid() && DelayImpact == 0.f)
+  // When the ability has a delayed impact, it'll apply effects when impact happens
+  if (AbilityParams.IsValid() && FMath::IsNearlyZero(DelayImpact))
   {
-    bool bSuccess;
+    bool bSuccess = false;
     ApplyAbilityEffect(TargetASC, bSuccess);
   }
 
-  if (GameplayEffectClass != nullptr && DelayImpact == 0.f)
+  if (GameplayEffectClass != nullptr && FMath::IsNearlyZero(DelayImpact))
   {
     ApplyEffectToTarget(TargetASC);
   }
@@ -231,26 +242,27 @@ void AAreaEffectActor::ApplyAbilityEffect(UAbilitySystemComponent* TargetASC, bo
 
 void AAreaEffectActor::ApplyAbilityEffectToActorsInArea()
 {
-  bool bSuccess;
   for (auto ASC = ASCsInArea.CreateIterator(); ASC; ++ASC)
   {
     UAbilitySystemComponent* CurrentASC = *ASC;
     if (!IsValid(CurrentASC))
     {
       ASC.RemoveCurrent();
+      continue;
     }
 
+    bool bSuccess = false;
     ApplyAbilityEffect(CurrentASC, bSuccess);
 
     if (bActorUsesCharges)
     {
       ActorCharges -= 1;
-      if (ActorCharges <= 0)
-      {
-        DeactivateAndDestroy();
-        break;
-      }
     }
+  }
+
+  if (bActorUsesCharges && ActorCharges <= 0)
+  {
+    DeactivateAndDestroy();
   }
 }
 
@@ -300,7 +312,7 @@ void AAreaEffectActor::OnRadialForceOverlap(
     UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(OtherActor);
   if (!IsValid(TargetASC)) return;
 
-  ActorsInForceArea.Add(OtherActor);
+  ActorsPendingAddToForceArea.Add(OtherActor);
 }
 void AAreaEffectActor::OnRadialForceEndOverlap(
   UPrimitiveComponent* OverlappedComponent,
@@ -309,6 +321,5 @@ void AAreaEffectActor::OnRadialForceEndOverlap(
   int32 OtherBodyIndex
     )
 {
-  // TODO: check for loop progress before removing items from ActorsInForceArea
-  ActorsInForceArea.Remove(OtherActor);
+  ActorsPendingRemoveFromForceArea.Add(OtherActor);
 }

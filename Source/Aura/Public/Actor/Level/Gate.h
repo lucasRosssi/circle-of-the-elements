@@ -33,7 +33,9 @@ public:
   bool IsActive() const { return bActive; }
 
   UFUNCTION()
-  void OnCombatFinished();
+  void Open();
+  UFUNCTION()
+  void Close();
   void Enable();
 
   void SetIsActive(bool bIsActive);
