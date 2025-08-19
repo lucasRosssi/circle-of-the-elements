@@ -3,6 +3,8 @@
 
 #include "Managers/LocationManager.h"
 
+#include "AuraGameplayTags.h"
+#include "Actor/ElementalProp.h"
 #include "Actor/Level/Gate.h"
 #include "Algo/RandomShuffle.h"
 #include "Aura/Aura.h"
@@ -11,6 +13,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Data/RegionInfo.h"
 #include "Managers/CombatManager.h"
+#include "Managers/RewardManager.h"
 #include "Managers/UIManager.h"
 #include "UI/WidgetController/OverlayWidgetController.h"
 #include "Utils/AuraSystemsLibrary.h"
@@ -52,7 +55,7 @@ void ULocationManager::GenerateLocation()
       LogAura,
       Display,
       TEXT("[LocationManager] Generated %s at [%d,%d]"),
-      *UUtilityLibrary::EnumToString(CachedAreas[i].AreaType),
+      *UUtilityLibrary::EnumToString(CachedAreas[i].Type),
       CurrentCoordinate.X,
       CurrentCoordinate.Y
     )
@@ -136,7 +139,7 @@ void ULocationManager::PlacePlayerInArea(const FAreaData& AreaData)
   {
     Start = Cast<APlayerStart>(StartActor);
 
-    if (!bStarted && AreaData.AreaType == EAreaType::Entrance)
+    if (!bStarted && AreaData.Type == EAreaType::Entrance)
     {
       if (Start->PlayerStartTag.ToString().Contains(FString("Start")))
       {
@@ -230,6 +233,7 @@ void ULocationManager::InitArea()
   
   HandleGates(CurrentArea);
   HandleDirectionalObstacles(CurrentArea);
+  if (CurrentArea.ElementTag.IsValid()) HandleElementalProps(CurrentArea);
   PlacePlayerInArea(CurrentArea);
   
   OnInitAreaDelegate.Broadcast();
@@ -326,49 +330,49 @@ FAreaData ULocationManager::GetAreaFromPoolByType(EAreaType AreaType)
 FAreaData ULocationManager::GetEntranceFromPool()
 {
   FAreaData Data = GetAreaFromPool(EntrancesPool, GetRegionInfo()->GetEntrances(Region));
-  Data.AreaType = EAreaType::Entrance;
+  Data.Type = EAreaType::Entrance;
   return Data;
 }
 
 FAreaData ULocationManager::GetDefaultArenaFromPool()
 {
   FAreaData Data = GetAreaFromPool(DefaultArenasPool, GetRegionInfo()->GetDefaultArenas(Region));
-  Data.AreaType = EAreaType::DefaultArena;
+  Data.Type = EAreaType::DefaultArena;
   return Data;
 }
 
 FAreaData ULocationManager::GetSpiritArenaFromPool()
 {
   FAreaData Data = GetAreaFromPool(SpiritArenasPool, GetRegionInfo()->GetSpiritArenas(Region));
-  Data.AreaType = EAreaType::SpiritArena;
+  Data.Type = EAreaType::SpiritArena;
   return Data;
 }
 
 FAreaData ULocationManager::GetBossArenaFromPool()
 {
   FAreaData Data = GetAreaFromPool(BossArenasPool, GetRegionInfo()->GetBossArenas(Region));
-  Data.AreaType = EAreaType::BossArena;
+  Data.Type = EAreaType::BossArena;
   return Data;
 }
 
 FAreaData ULocationManager::GetRewardAreaFromPool()
 {
   FAreaData Data = GetAreaFromPool(RewardAreasPool, GetRegionInfo()->GetRewardAreas(Region));
-  Data.AreaType = EAreaType::RewardArea;
+  Data.Type = EAreaType::RewardArea;
   return Data;
 }
 
 FAreaData ULocationManager::GetSpecialAreaFromPool()
 {
   FAreaData Data = GetAreaFromPool(SpecialAreasPool, GetRegionInfo()->GetSpecialAreas(Region));
-  Data.AreaType = EAreaType::SpecialArea;
+  Data.Type = EAreaType::SpecialArea;
   return Data;
 }
 
 FAreaData ULocationManager::GetExitFromPool()
 {
   FAreaData Data = GetAreaFromPool(ExitsPool, GetRegionInfo()->GetExits(Region));
-  Data.AreaType = EAreaType::Exit;
+  Data.Type = EAreaType::Exit;
   return Data;
 }
 
@@ -381,6 +385,18 @@ void ULocationManager::HandleArenaGeneration(FAreaData& AreaData)
   GUARD(CombatManager, , TEXT("CombatManager is invalid!"))
 
   CombatManager->GenerateArenaCombat(AreaData);
+}
+
+void ULocationManager::HandleElementalProps(const FAreaData& AreaData)
+{
+  TArray<AActor*> ElementalPropActors;
+  UGameplayStatics::GetAllActorsOfClass(GetOwner(), AElementalProp::StaticClass(), ElementalPropActors);
+
+  for (AActor* Actor : ElementalPropActors)
+  {
+    AElementalProp* Prop = Cast<AElementalProp>(Actor);
+    Prop->SetElementTag(AreaData.ElementTag);
+  }
 }
 
 void ULocationManager::LoadArea(const FAreaData& AreaData)
@@ -517,11 +533,22 @@ void ULocationManager::ConnectAreas(FAreaData& FromArea, FAreaData& ToArea, ECar
   ToArea.OpenDirections.Add(OppositeDir);
 }
 
+void ULocationManager::AssignSpiritArenaElement(FAreaData& NewAreaData)
+{
+  URewardManager* RewardManager = UAuraSystemsLibrary::GetRewardManager(GetOwner());
+  if (RewardManager)
+  {
+    const FGameplayTag& EssenceTag = RewardManager->GetNextRewardInBag();
+    NewAreaData.ElementTag = FAuraGameplayTags::Get().EssenceToAbility[EssenceTag];
+  }
+}
+
 void ULocationManager::PlaceAreaAtCoordinate(const FIntPoint& Coordinate, const FAreaData& AreaData)
 {
   FAreaData NewAreaData = AreaData;
   NewAreaData.Coordinate = Coordinate;
   if (AreaData.IsArena()) HandleArenaGeneration(NewAreaData);
+  if (AreaData.IsSpiritArena()) AssignSpiritArenaElement(NewAreaData);
   
   PrevCoordinate = CurrentCoordinate;
   LocationLayout.Add(Coordinate, NewAreaData);

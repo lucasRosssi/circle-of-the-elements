@@ -1880,6 +1880,19 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
   GameplayTags.ParentsToChildren.Add(GameplayTags.StatusEffects_Incapacitation, IncapacitationTags);
   GameplayTags.ParentsToChildren.Add(GameplayTags.StatusEffects_Condition, ConditionTags);
 
+  const TArray EssenceTags = TArray(
+    {
+      GameplayTags.Resources_Essence_Air,
+      GameplayTags.Resources_Essence_Chaos,
+      GameplayTags.Resources_Essence_Fire,
+      GameplayTags.Resources_Essence_Water,
+      GameplayTags.Resources_Essence_Lightning,
+      GameplayTags.Resources_Essence_Earth
+    }
+  );
+
+  GameplayTags.ParentsToChildren.Add(GameplayTags.Resources_Essence, EssenceTags);
+
   const TArray ElementTags(
     {
       GameplayTags.Abilities_Element_Air,
@@ -1893,6 +1906,11 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 
   GameplayTags.ParentsToChildren.Add(GameplayTags.Abilities_Element, ElementTags);
 
+  for (int32 i = 0; i < EssenceTags.Num() && ElementTags.Num(); i++)
+  {
+    GameplayTags.EssenceToAbility.Add(EssenceTags[i], ElementTags[i]);
+  }
+
   const TArray TierTags(
     {
       GameplayTags.Abilities_Tier_I,
@@ -1904,14 +1922,6 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
   );
 
   GameplayTags.ParentsToChildren.Add(GameplayTags.Abilities_Tier, TierTags);
-
-  const TArray EssenceTags = TArray(
-    {
-      GameplayTags.Resources_Essence_Soul
-    }
-  );
-
-  GameplayTags.ParentsToChildren.Add(GameplayTags.Resources_Essence, EssenceTags);
 
   const TArray PrimaryAttributeTags = TArray(
     {
