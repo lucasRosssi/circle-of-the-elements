@@ -18,8 +18,9 @@ class AURA_API URewardManager : public UAuraSystemComponent
 public:
 	UFUNCTION(BlueprintPure)
 	FRewardInfo GetRewardInfo(const FGameplayTag& RewardTag);
-	
+
 	void SetNextReward(const FGameplayTag& InRewardTag) { NextRewardTag = InRewardTag; }
+	FGameplayTag GetNextRewardInBag();
 
 	UFUNCTION(BlueprintCallable)
 	ALocationReward* SpawnReward(FVector Location);
@@ -57,10 +58,9 @@ protected:
   TArray<FGameplayTag> RewardBag;
 
 private:
-	FGameplayTag GetNextRewardInBag();
 	void FillAndShuffleRewardBag();
 	
-	FRewardInfo GetNextRewardInfo();
+	FRewardInfo GetCurrentRewardInfo();
 
   TArray<FGameplayTag> OverridenRewardBag;
 	

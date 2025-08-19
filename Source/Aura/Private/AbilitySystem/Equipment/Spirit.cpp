@@ -170,7 +170,10 @@ bool USpirit::Equip(int32 Slot)
       SpiritActor->SetCooldownTag(AbilityInfo.CooldownTag);
       if (const UBaseAbility* BaseAbility = Cast<UBaseAbility>(AbilitySpec.Ability))
       {
-        SpiritActor->SetChargeTagAndCount(AbilityInfo.ChargesTag, BaseAbility->GetMaxChargesAtLevel(Level));
+        if (AbilityInfo.ChargesTag.IsValid() && BaseAbility->IsUsingCharges())
+        {
+          SpiritActor->SetChargeTagAndCount(AbilityInfo.ChargesTag, BaseAbility->GetMaxChargesAtLevel(Level));
+        }
       }
       SpiritActor->FinishSpawning(SpawnTransform);
       if (UOrbitManagerComponent* OrbitManager = AvatarActor->FindComponentByClass<UOrbitManagerComponent>())

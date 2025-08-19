@@ -3,6 +3,8 @@
 
 #include "Data/RewardsInfo.h"
 
+#include "AuraGameplayTags.h"
+
 URewardsInfo::URewardsInfo()
 {
 		for (const auto Reward : Rewards)
@@ -35,6 +37,11 @@ void URewardsInfo::PostEditChangeProperty(FPropertyChangedEvent& PropertyChanged
 FRewardInfo URewardsInfo::GetRewardInfo(const FGameplayTag& RewardTag)
 {
 	return *Rewards.Find(RewardTag);
+}
+
+FRewardInfo URewardsInfo::GetRewardInfoByElement(const FGameplayTag& ElementTag)
+{
+  return *Rewards.Find(*FAuraGameplayTags::Get().EssenceToAbility.FindKey(ElementTag));
 }
 
 FRewardInfo URewardsInfo::GetRandomizedReward()

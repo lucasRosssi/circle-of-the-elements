@@ -81,11 +81,13 @@ struct FAreaData
 
   FIntPoint Coordinate;
 
-  EAreaType AreaType;
+  EAreaType Type;
 
   TSet<ECardinalDirection> OpenDirections;
 
   int32 ArenaLevel = -1;
+
+  FGameplayTag ElementTag;
 
   UPROPERTY(BlueprintReadOnly)
   bool bCombatFinished = false;
@@ -94,11 +96,12 @@ struct FAreaData
 
   bool IsValid() const { return World.IsValid(); }
 
-  bool IsEntrance() const { return AreaType == EAreaType::Entrance; }
-  bool IsArena() const { return AreaType == EAreaType::DefaultArena || AreaType == EAreaType::SpiritArena || AreaType == EAreaType::BossArena; }
-  bool IsRewardArea() const { return AreaType == EAreaType::RewardArea; }
-  bool IsSpecialArea() const { return AreaType == EAreaType::SpecialArea; }
-  bool IsExit() const { return AreaType == EAreaType::Exit; }
+  bool IsEntrance() const { return Type == EAreaType::Entrance; }
+  bool IsArena() const { return Type == EAreaType::DefaultArena || Type == EAreaType::SpiritArena || Type == EAreaType::BossArena; }
+  bool IsSpiritArena() const { return Type == EAreaType::SpiritArena; }
+  bool IsRewardArea() const { return Type == EAreaType::RewardArea; }
+  bool IsSpecialArea() const { return Type == EAreaType::SpecialArea; }
+  bool IsExit() const { return Type == EAreaType::Exit; }
 
   FString GetAreaName() const { return World.GetAssetName();}
 };

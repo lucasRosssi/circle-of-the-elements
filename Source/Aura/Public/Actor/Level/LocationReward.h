@@ -35,12 +35,11 @@ public:
 
   UStaticMeshComponent* GetMesh() const { return RewardMesh; }
   UCapsuleComponent* GetCapsule() const { return CapsuleComponent; }
+  FGameplayTag GetAbilityElement() const;
 protected:
   virtual void BeginPlay() override;
   virtual void Destroyed() override;
-
-  FGameplayTag GetAbilityElement() const;
-
+  
   UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
   TObjectPtr<UStaticMeshComponent> RewardMesh;
   UPROPERTY(VisibleAnywhere, BlueprintReadOnly)

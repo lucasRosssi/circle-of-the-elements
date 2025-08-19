@@ -195,7 +195,7 @@ void UCombatManager::GenerateArenaCombat(const FAreaData& Arena)
   const UEnemiesInfo* EnemiesInfo = UAuraSystemsLibrary::GetEnemiesInfo(GetOwner());
   GUARD(EnemiesInfo != nullptr,, TEXT("EnemiesInfo is invalid!"))
 
-  if (Arena.AreaType == EAreaType::BossArena)
+  if (Arena.Type == EAreaType::BossArena)
   {
     FGameplayTagContainer BossesTagContainer = RegionInfo->GetRegionBosses(Region);
     const FGameplayTag& BossTag = BossesTagContainer.GetByIndex(FMath::RandRange(0, BossesTagContainer.Num() - 1));

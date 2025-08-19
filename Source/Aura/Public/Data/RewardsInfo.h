@@ -52,6 +52,7 @@ public:
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
 #endif
 	FRewardInfo GetRewardInfo(const FGameplayTag& RewardTag);
+  FRewardInfo GetRewardInfoByElement(const FGameplayTag& ElementTag);
 
 	FRewardInfo GetRandomizedReward();
 

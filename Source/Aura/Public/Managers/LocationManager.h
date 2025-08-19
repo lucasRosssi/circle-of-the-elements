@@ -73,6 +73,7 @@ protected:
   FAreaData GetExitFromPool();
 
   void HandleArenaGeneration(FAreaData& AreaData);
+  void HandleElementalProps(const FAreaData& AreaData);
 
   FIntPoint Backtrack();
   FIntPoint GetNextCoordinate();
@@ -91,6 +92,7 @@ protected:
   FIntPoint GetFreeAdjacentCoordinate(const FIntPoint& Coordinate) const;
   // Updates the open directions between two adjacent areas
   void ConnectAreas(FAreaData& FromArea, FAreaData& ToArea, ECardinalDirection Direction);
+  void AssignSpiritArenaElement(FAreaData& NewAreaData);
   // Updates a coordinate with area data
   void PlaceAreaAtCoordinate(const FIntPoint& Coordinate, const FAreaData& AreaData);
   // Returns a random area type based on their probability weights and min and max counts in a location

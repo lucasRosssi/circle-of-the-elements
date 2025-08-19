@@ -12,6 +12,7 @@
 #include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Managers/LocationManager.h"
 #include "Utils/AuraSystemsLibrary.h"
 
 void URewardManager::BeginPlay()
@@ -38,7 +39,7 @@ ALocationReward* URewardManager::SpawnReward(FVector Location)
   FTransform Transform;
   Transform.SetLocation(Location);
 
-  const FRewardInfo& Info = GetNextRewardInfo();
+  const FRewardInfo& Info = GetCurrentRewardInfo();
 
   ALocationReward* Reward = GetWorld()->SpawnActorDeferred<ALocationReward>(
     Info.RewardClass,
@@ -115,7 +116,12 @@ void URewardManager::FillAndShuffleRewardBag()
   }
 }
 
-FRewardInfo URewardManager::GetNextRewardInfo()
+FRewardInfo URewardManager::GetCurrentRewardInfo()
 {
-  return UAuraSystemsLibrary::GetRewardsInfo(this)->GetRewardInfo(GetNextRewardInBag());
+  ULocationManager* LocationManager = UAuraSystemsLibrary::GetLocationManager(GetOwner());
+  if (!LocationManager) return FRewardInfo();
+
+  const FGameplayTag& EssenceTag = *FAuraGameplayTags::Get().EssenceToAbility.FindKey(LocationManager->GetCurrentAreaRef().ElementTag);
+  
+  return UAuraSystemsLibrary::GetRewardsInfo(this)->GetRewardInfo(EssenceTag);
 }
