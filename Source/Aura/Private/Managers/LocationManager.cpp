@@ -376,15 +376,16 @@ FAreaData ULocationManager::GetExitFromPool()
   return Data;
 }
 
-void ULocationManager::HandleArenaGeneration(FAreaData& AreaData)
+void ULocationManager::HandleArenaGeneration(const FAreaData& AreaData)
 {
-  AreaData.ArenaLevel = ArenaLevel++;
-
   UCombatManager* CombatManager = UAuraSystemsLibrary::GetCombatManager(GetOwner());
 
   GUARD(CombatManager, , TEXT("CombatManager is invalid!"))
 
-  CombatManager->GenerateArenaCombat(AreaData);
+  int32& ArenaLevel = AreaData.IsSpiritArena() ? GeneratedSpiritArenaLevel : GeneratedArenaLevel;
+  
+  CombatManager->GenerateArenaCombat(AreaData, ArenaLevel);
+  ArenaLevel++;
 }
 
 void ULocationManager::HandleElementalProps(const FAreaData& AreaData)

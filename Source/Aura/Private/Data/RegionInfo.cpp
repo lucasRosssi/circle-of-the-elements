@@ -78,7 +78,7 @@ TArray<FAreaData> URegionInfo::GetExits(ERegion Region) const
   return Data->Exits;
 }
 
-FArenaDifficultyData URegionInfo::GetArenaDifficultyData(ERegion Region, int32 ArenaLevel) const
+FArenaDifficultyData URegionInfo::GetArenaDifficultyData(ERegion Region, EAreaType ArenaType, int32 ArenaLevel) const
 {
   const FRegionData* Data = GetRegionData(Region);
 
@@ -91,7 +91,15 @@ FArenaDifficultyData URegionInfo::GetArenaDifficultyData(ERegion Region, int32 A
     Data->ArenaDifficultyData.Num() - 1
   )
 
-  return Data->ArenaDifficultyData[ArenaLevel];
+  switch (ArenaType)
+  {
+  case EAreaType::SpiritArena:
+    return Data->SpiritArenaDifficultyData[ArenaLevel];
+  case EAreaType::DefaultArena:
+  default:
+    return Data->ArenaDifficultyData[ArenaLevel];
+  }
+
 }
 
 FGameplayTagContainer URegionInfo::GetRegionBosses(ERegion Region) const

@@ -77,6 +77,9 @@ public:
   )
   int32 ActorCharges = 0;
 
+  UPROPERTY(BlueprintReadOnly, Category="Spawn")
+  FVector SpawnPointCache = FVector();
+
 protected:
   virtual void BeginPlay() override;
   virtual void BeginDestroy() override;
@@ -111,11 +114,11 @@ protected:
     int32 OtherBodyIndex
     );
 
-  UPROPERTY(VisibleAnywhere)
+  UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
   TObjectPtr<USphereComponent> Root;
-  UPROPERTY(VisibleAnywhere)
+  UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
   TObjectPtr<USphereComponent> RadialForceSphere;
-  UPROPERTY(VisibleAnywhere)
+  UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
   TObjectPtr<UTeamComponent> TeamComponent;
 
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Applied Effects")

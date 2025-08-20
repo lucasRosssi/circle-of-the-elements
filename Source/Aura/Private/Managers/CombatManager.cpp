@@ -23,7 +23,7 @@ void UCombatManager::SetCurrentCombatData()
 
 void UCombatManager::StartCombat()
 {
-  CurrentArenaCoordinate = GetLocationManager()->GetPlayerCoordinate();
+  CurrentArena = GetLocationManager()->GetCurrentAreaRef();
   OnCombatStartedDelegate.Broadcast();
   SetCurrentCombatData();
   NextWave();
@@ -139,8 +139,27 @@ void UCombatManager::GetEnemyWaves()
 {
   if (!bOverrideEnemyWaves)
   {
-    const TArray<FEnemyWave>* CurrentWaves = ArenasEncounters.Find(CurrentArenaCoordinate);
-    EnemyWaves = CurrentWaves ? *CurrentWaves : TArray<FEnemyWave>();
+    switch (CurrentArena.Type)
+    {
+    case EAreaType::BossArena:
+      {
+        GUARD(!BossEncounters.IsEmpty(),, TEXT("Boss Encounter is empty!"))
+        EnemyWaves = BossEncounters[0];
+        break;
+      }
+    case EAreaType::SpiritArena:
+      {
+        GUARD(SpiritArenasEncounters.IsValidIndex(SpiritArenaLevel),, TEXT("Spirit Arena encounter not valid at level %d"), SpiritArenaLevel)
+        EnemyWaves = SpiritArenasEncounters[SpiritArenaLevel++];
+        break;
+      }
+    case EAreaType::DefaultArena:
+    default:
+      {
+        GUARD(ArenasEncounters.IsValidIndex(ArenaLevel),, TEXT("Default Arena encounter not valid at level %d"), ArenaLevel)
+        EnemyWaves = ArenasEncounters[ArenaLevel++];
+      }
+    }
   }
 
   TotalWaves = EnemyWaves.Num();
@@ -187,7 +206,7 @@ void UCombatManager::BeginPlay()
   Super::BeginPlay();
 }
 
-void UCombatManager::GenerateArenaCombat(const FAreaData& Arena)
+void UCombatManager::GenerateArenaCombat(const FAreaData& Arena, int32 InLevel)
 {
   const URegionInfo* RegionInfo = UAuraSystemsLibrary::GetRegionInfo(GetOwner());
   GUARD(RegionInfo != nullptr,, TEXT("RegionInfo is invalid!"))
@@ -204,16 +223,16 @@ void UCombatManager::GenerateArenaCombat(const FAreaData& Arena)
     SpawnData.EnemyClass = EnemyInfo.EnemyClass;
     SpawnData.Level = 1;
 
-    ArenasEncounters.Add(Arena.Coordinate, {{{SpawnData}}});
+    BossEncounters.Add({{{SpawnData}}});
     return;
   }
   
-  const FArenaDifficultyData& ArenaDifficultyData = RegionInfo->GetArenaDifficultyData(Region, Arena.ArenaLevel);
+  const FArenaDifficultyData& ArenaDifficultyData = RegionInfo->GetArenaDifficultyData(Region, Arena.Type, InLevel);
   
   float RemainingPoints = ArenaDifficultyData.DifficultyPoints;
   TArray<FEnemyWave> GeneratedEnemyWaves;
 
-  while (RemainingPoints >= ArenaDifficultyData.MinWavePoints)
+  while (RemainingPoints >= ArenaDifficultyData.MinWavePoints / 2)
   {
     TArray<FEnemySpawnData> WaveData;
     float WaveBudget = FMath::RandRange(ArenaDifficultyData.MinWavePoints, ArenaDifficultyData.MaxWavePoints);
@@ -222,7 +241,7 @@ void UCombatManager::GenerateArenaCombat(const FAreaData& Arena)
     
     if (EnemiesWeight.IsEmpty())
     {
-      UE_LOG(LogAura, Error, TEXT("Enemies probability is empty for area level %d!"), Arena.ArenaLevel)
+      UE_LOG(LogAura, Error, TEXT("Enemies probability is empty for area level %d!"), InLevel)
       continue;
     }
 
@@ -255,13 +274,13 @@ void UCombatManager::GenerateArenaCombat(const FAreaData& Arena)
         continue;
       }
 
-      const int32 Level = FMath::RandRange(ArenaDifficultyData.MinLevel, ArenaDifficultyData.MaxLevel);
+      const int32 EnemyLevel = FMath::RandRange(ArenaDifficultyData.MinLevel, ArenaDifficultyData.MaxLevel);
 
-      Cost += (Level - ArenaDifficultyData.MinLevel) * Cost * 0.1f;
+      Cost += (EnemyLevel - ArenaDifficultyData.MinLevel) * Cost * 0.1f;
 
       FEnemySpawnData SpawnData;
       SpawnData.EnemyClass = EnemyInfo.EnemyClass;
-      SpawnData.Level = Level;
+      SpawnData.Level = EnemyLevel;
       // TODO: Add modifiers?
 
       WaveData.Add(SpawnData);
@@ -272,7 +291,15 @@ void UCombatManager::GenerateArenaCombat(const FAreaData& Arena)
     }
     GeneratedEnemyWaves.Add({WaveData});
   }
-  ArenasEncounters.Add(Arena.Coordinate, GeneratedEnemyWaves);
+
+  if (Arena.IsSpiritArena())
+  {
+    SpiritArenasEncounters.Add(GeneratedEnemyWaves);
+  }
+  else
+  {
+    ArenasEncounters.Add(GeneratedEnemyWaves);
+  }
 }
 
 ULocationManager* UCombatManager::GetLocationManager()
