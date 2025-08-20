@@ -22,8 +22,14 @@ struct FStatusEffectData
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TObjectPtr<UNiagaraSystem> NiagaraSystem;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(EditCondition="NiagaraSystem != nullptr", EditConditionHides))
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(EditCondition="NiagaraSystem != nullptr", EditConditionHides))
+  bool bInWeapon = false;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(EditCondition="!bInWeapon", EditConditionHides))
 	EStatusEffectPosition Position = EStatusEffectPosition::Center;
+
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(EditCondition="bInWeapon", EditConditionHides))
+  FName WeaponSocketName = FName();
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	FLinearColor MeshTint = FLinearColor::Black;

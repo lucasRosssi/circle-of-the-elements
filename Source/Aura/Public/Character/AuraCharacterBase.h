@@ -70,6 +70,7 @@ public:
   virtual void ApplyForce_Implementation(const FVector& Force) override;
   virtual void ApplyAttraction_Implementation(const FVector& AttractionPoint, float DeltaTime, float InterpSpeed) override;
   virtual USceneComponent* GetTopStatusEffectSceneComponent_Implementation() override;
+  virtual USceneComponent* GetCenterStatusEffectSceneComponent_Implementation() override;
   virtual USceneComponent* GetBottomStatusEffectSceneComponent_Implementation() override;
   virtual UBoxComponent* EnableWeaponCollision_Implementation(bool bEnable) override;
   virtual bool IsFriend_Implementation(AActor* Actor) override;
@@ -198,6 +199,8 @@ protected:
   TObjectPtr<UStatusEffectsManager> StatusEffectsManager;
   UPROPERTY(VisibleAnywhere)
   TObjectPtr<USceneComponent> TopStatusEffectSceneComponent;
+  UPROPERTY(VisibleAnywhere)
+  TObjectPtr<USceneComponent> CenterStatusEffectSceneComponent;
   UPROPERTY(VisibleAnywhere)
   TObjectPtr<USceneComponent> BottomStatusEffectSceneComponent;
 

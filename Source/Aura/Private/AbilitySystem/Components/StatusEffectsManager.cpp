@@ -104,25 +104,37 @@ void UStatusEffectsManager::MulticastActivateStatusEffect_Implementation(
 	)
 {
 	USceneComponent* AttachmentComponent;
-	switch (StatusData.Position)
-	{
-	case EStatusEffectPosition::Top:
-		{
-			AttachmentComponent = ICombatInterface
-				::Execute_GetTopStatusEffectSceneComponent(GetOwner());
-			break;
-		}
-	case EStatusEffectPosition::Bottom:
-		{
-			AttachmentComponent = ICombatInterface
-				::Execute_GetBottomStatusEffectSceneComponent(GetOwner());
-			break;
-		}
-	case EStatusEffectPosition::Center:
-	default:
-		{
-			AttachmentComponent = GetOwner()->GetRootComponent();
-		}
+  if (StatusData.bInWeapon)
+  {
+    
+  }
+  else
+  {
+	  switch (StatusData.Position)
+	  {
+	  case EStatusEffectPosition::Top:
+		  {
+			  AttachmentComponent = ICombatInterface
+				  ::Execute_GetTopStatusEffectSceneComponent(GetOwner());
+			  break;
+		  }
+	  case EStatusEffectPosition::Center:
+	    {
+	      AttachmentComponent = ICombatInterface
+          ::Execute_GetCenterStatusEffectSceneComponent(GetOwner());
+	      break;
+	    }
+	  case EStatusEffectPosition::Bottom:
+		  {
+			  AttachmentComponent = ICombatInterface
+				  ::Execute_GetBottomStatusEffectSceneComponent(GetOwner());
+			  break;
+		  }
+	  default:
+		  {
+			  AttachmentComponent = GetOwner()->GetRootComponent();
+		  }
+    }
 	}
 	
 	UNiagaraComponent* NiagaraComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(

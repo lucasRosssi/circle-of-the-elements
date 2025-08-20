@@ -1877,12 +1877,12 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
   );
   const TArray ElementalFlowTags(
     {
+      GameplayTags.StatusEffects_Buff_ElementalFlow_Air,
+      GameplayTags.StatusEffects_Buff_ElementalFlow_Chaos,
       GameplayTags.StatusEffects_Buff_ElementalFlow_Fire,
       GameplayTags.StatusEffects_Buff_ElementalFlow_Water,
-      GameplayTags.StatusEffects_Buff_ElementalFlow_Earth,
-      GameplayTags.StatusEffects_Buff_ElementalFlow_Air,
       GameplayTags.StatusEffects_Buff_ElementalFlow_Lightning,
-      GameplayTags.StatusEffects_Buff_ElementalFlow_Chaos,
+      GameplayTags.StatusEffects_Buff_ElementalFlow_Earth,
     }
   );
   BuffTags.Append(ElementalFlowTags);
@@ -1958,6 +1958,10 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
   for (int32 i = 0; i < EssenceTags.Num() && ElementTags.Num(); i++)
   {
     GameplayTags.EssenceToAbility.Add(EssenceTags[i], ElementTags[i]);
+  }
+  for (int32 i = 0; i < ElementTags.Num() && ElementalFlowTags.Num(); i++)
+  {
+    GameplayTags.AbilityToFlow.Add(ElementTags[i], ElementalFlowTags[i]);
   }
 
   const TArray TierTags(

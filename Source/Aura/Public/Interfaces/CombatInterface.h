@@ -90,8 +90,11 @@ public:
   UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
   void ApplyAttraction(const FVector& AttractionPoint, float DeltaTime, float InterpSpeed);
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+
+  UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	USceneComponent* GetTopStatusEffectSceneComponent();
+  UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+  USceneComponent* GetCenterStatusEffectSceneComponent();
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	USceneComponent* GetBottomStatusEffectSceneComponent();
 

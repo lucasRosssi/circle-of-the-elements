@@ -9,6 +9,7 @@
 #include "Enums/CharacterName.h"
 #include "AbilityInfo.generated.h"
 
+class UAuraStatusEffect;
 class ASpiritActor;
 class UBaseAbility;
 
@@ -109,6 +110,9 @@ struct FAbilityElementInfo
 
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
   TSubclassOf<ASpiritActor> ElementSpiritActorDefault;
+
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+  TSubclassOf<UAuraStatusEffect> ElementalFlowEffect;
 
   UPROPERTY(
     EditDefaultsOnly,

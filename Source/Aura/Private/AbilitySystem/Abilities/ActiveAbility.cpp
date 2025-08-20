@@ -3,10 +3,52 @@
 
 #include "AbilitySystem/Abilities/ActiveAbility.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
 #include "AuraGameplayTags.h"
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
+#include "AbilitySystem/Data/AbilityInfo.h"
+#include "AbilitySystem/GameplayEffects/AuraStatusEffect.h"
 #include "Aura/AuraLogChannels.h"
 #include "Interfaces/AttributeSetInterface.h"
+#include "Utils/AuraSystemsLibrary.h"
+
+void UActiveAbility::ApplyElementalFlowToAvatar()
+{
+  const FGameplayTag& ElementTag = FAuraGameplayTags::Get().Abilities_Element;
+  if (GetAssetTags().HasTag(ElementTag))
+  {
+    UAbilitySystemComponent* ASC = GetAbilitySystemComponentFromActorInfo();
+    ASC->RemoveActiveEffectsWithGrantedTags(
+      FGameplayTagContainer({ FAuraGameplayTags::Get().StatusEffects_Buff_ElementalFlow })  
+    );
+    
+    const FGameplayTagContainer AssetTags = GetAssetTags();
+    const FGameplayTagContainer& ElementTags = AssetTags.Filter(FGameplayTagContainer({ ElementTag }));
+    
+    if (ElementTags.Num() > 0)
+    {
+      const UAbilityInfo* AbilityInfo = UAuraSystemsLibrary::GetAbilitiesInfo(GetAvatarActorFromActorInfo());
+      const FGameplayTag& AbilityElementTag = ElementTags.First();
+      const TSubclassOf<UAuraStatusEffect> ElementalFlowEffectClass = AbilityInfo->FindElementInfo(AbilityElementTag).ElementalFlowEffect;
+      
+      FGameplayEffectContextHandle ContextHandle = ASC->MakeEffectContext();
+      ContextHandle.AddSourceObject(GetAvatarActorFromActorInfo());
+      
+      const FGameplayEffectSpecHandle SpecHandle = ASC->MakeOutgoingSpec(
+        ElementalFlowEffectClass,
+        GetAbilityLevel(),
+        ContextHandle
+      );
+      UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(
+        SpecHandle,
+        FAuraGameplayTags::Get().StatusEffects_Duration,
+        0.f
+      );
+      
+      ASC->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data);
+    }
+  }
+}
 
 bool UActiveAbility::CommitAbility(
   const FGameplayAbilitySpecHandle Handle,
@@ -15,6 +57,8 @@ bool UActiveAbility::CommitAbility(
   FGameplayTagContainer* OptionalRelevantTags
 )
 {
+  ApplyElementalFlowToAvatar();
+  
   if (CheckForClarityEffect(ActorInfo))
   {
     return Super::CommitAbilityCooldown(Handle, ActorInfo, ActivationInfo, false, OptionalRelevantTags);

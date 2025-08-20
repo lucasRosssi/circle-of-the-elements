@@ -31,6 +31,10 @@ AAuraCharacterBase::AAuraCharacterBase()
       GetCapsuleComponent()->GetScaledCapsuleHalfHeight()
     )
   );
+  
+  CenterStatusEffectSceneComponent = CreateDefaultSubobject<USceneComponent>("CenterStatusEffectSceneComponent");
+  CenterStatusEffectSceneComponent->SetupAttachment(GetRootComponent());
+  
   BottomStatusEffectSceneComponent = CreateDefaultSubobject<USceneComponent>("BottomStatusEffectSceneComponent");
   BottomStatusEffectSceneComponent->SetupAttachment(GetRootComponent());
   BottomStatusEffectSceneComponent->SetRelativeLocation(
@@ -300,6 +304,11 @@ void AAuraCharacterBase::ApplyAttraction_Implementation(
 USceneComponent* AAuraCharacterBase::GetTopStatusEffectSceneComponent_Implementation()
 {
   return TopStatusEffectSceneComponent;
+}
+
+USceneComponent* AAuraCharacterBase::GetCenterStatusEffectSceneComponent_Implementation()
+{
+  return CenterStatusEffectSceneComponent;
 }
 
 USceneComponent* AAuraCharacterBase::GetBottomStatusEffectSceneComponent_Implementation()

@@ -51,6 +51,8 @@ public:
 	bool bUsesMovementInputDirection = false;
 
 protected:
+  void ApplyElementalFlowToAvatar();
+  
 	UFUNCTION(BlueprintPure, Category="Ability Defaults")
 	void GetMontageParams(UAnimMontage*& Montage, float& PlayRate, float& RootMotionScale) const;
   virtual UAnimMontage* GetAnimMontage() const;
