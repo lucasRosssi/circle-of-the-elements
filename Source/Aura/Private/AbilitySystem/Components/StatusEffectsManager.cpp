@@ -45,7 +45,7 @@ void UStatusEffectsManager::RegisterStatusEffectTagEvent(UAbilitySystemComponent
 {
 	const FAuraGameplayTags& Tags = FAuraGameplayTags::Get();
 
-	const TArray<FGameplayTag> StatusEffectTags = *Tags.ParentsToChildren.Find(Tags.StatusEffects);
+	const TArray<FGameplayTag>& StatusEffectTags = *Tags.ParentsToChildren.Find(Tags.StatusEffects);
 	for (const auto Tag : StatusEffectTags)
 	{
 		InASC->RegisterGameplayTagEvent(
@@ -106,7 +106,7 @@ void UStatusEffectsManager::MulticastActivateStatusEffect_Implementation(
 	USceneComponent* AttachmentComponent;
   if (StatusData.bInWeapon)
   {
-    
+    AttachmentComponent = ICombatInterface::Execute_GetWeapon(GetOwner());
   }
   else
   {
@@ -140,7 +140,7 @@ void UStatusEffectsManager::MulticastActivateStatusEffect_Implementation(
 	UNiagaraComponent* NiagaraComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(
 				StatusData.NiagaraSystem,
 				AttachmentComponent,
-				FName(),
+				StatusData.WeaponSocketName,
 				FVector(0),
 				FRotator(0),
 				EAttachLocation::KeepRelativeOffset,

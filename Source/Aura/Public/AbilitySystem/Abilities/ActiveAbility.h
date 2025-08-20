@@ -20,6 +20,7 @@ class AURA_API UActiveAbility : public UBaseAbility
 	GENERATED_BODY()
 
 public:
+  virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
   virtual bool CommitAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, FGameplayTagContainer* OptionalRelevantTags) override;
   virtual bool CommitAbilityCost(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, FGameplayTagContainer* OptionalRelevantTags) override;
   
@@ -33,6 +34,12 @@ public:
   virtual void ApplyUpgrade_Implementation(const FGameplayTag& UpgradeTag) override;
   virtual void RemoveUpgrade_Implementation(const FGameplayTag& UpgradeTag) override;
 	// END Ability Interface overrides
+
+  UFUNCTION(BlueprintImplementableEvent)
+  void OnConsumeElementalFlow(const FGameplayTag& ElementalFlowTag);
+  UFUNCTION(BlueprintImplementableEvent)
+  void OnElementalFlowConsumed(const FGameplayTag& ElementalFlowTag);
+  
   
 	UFUNCTION(BlueprintCallable)
 	AActor* GetNextRicochetTarget(AActor* HitTarget);
@@ -51,9 +58,10 @@ public:
 	bool bUsesMovementInputDirection = false;
 
 protected:
+  void ConsumeElementalFlow();
   void ApplyElementalFlowToAvatar();
-  
-	UFUNCTION(BlueprintPure, Category="Ability Defaults")
+
+  UFUNCTION(BlueprintPure, Category="Ability Defaults")
 	void GetMontageParams(UAnimMontage*& Montage, float& PlayRate, float& RootMotionScale) const;
   virtual UAnimMontage* GetAnimMontage() const;
 	UFUNCTION(BlueprintPure, Category="Ability Defaults")
@@ -70,6 +78,11 @@ protected:
 	
 	UFUNCTION(BlueprintCallable)
 	void ClearRicochetHitTargets();
+
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Ability Defaults|Elemental Flow")
+  bool bChangesElementalFlow = true;
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Ability Defaults|Elemental Flow")
+  bool bConsumesElementalFlow = true;
 
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Ability Defaults|Activation")
   EAbilityActivationMode ActivationMode = EAbilityActivationMode::Default;
@@ -206,5 +219,7 @@ private:
   
 	UPROPERTY()
 	TArray<AActor*> RicochetHitActors;
+
+  FGameplayTag CurrentElementalFlowTag;
 
 };

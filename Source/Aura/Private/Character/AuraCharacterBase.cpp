@@ -151,6 +151,20 @@ void AAuraCharacterBase::BeginPlay()
   Super::BeginPlay();
 }
 
+void AAuraCharacterBase::RegisterElementalFlowEvents()
+{
+  const FAuraGameplayTags& AuraTags = FAuraGameplayTags::Get();
+
+  const TArray<FGameplayTag>& ElementalFlowTags = *AuraTags.ParentsToChildren.Find(AuraTags.StatusEffects_Buff_ElementalFlow);
+  for (const auto Tag : ElementalFlowTags)
+  {
+    AbilitySystemComponent->RegisterGameplayTagEvent(
+      Tag,
+      EGameplayTagEventType::NewOrRemoved
+    ).AddUObject(this, &AAuraCharacterBase::OnElementalFlowChange);
+  }
+}
+
 void AAuraCharacterBase::ReleaseWeapon()
 {
   Weapon->DetachFromComponent(
@@ -429,6 +443,14 @@ void AAuraCharacterBase::DissolveCharacter()
     Weapon->SetMaterial(0, DynamicMatInst);
 
     StartWeaponDissolveTimeline(DynamicMatInst);
+  }
+}
+
+void AAuraCharacterBase::OnElementalFlowChange(const FGameplayTag ElementalFlowTag, int32 NewCount)
+{
+  if (NewCount > 0)
+  {
+    ElementalFlowChangedDelegate.Broadcast(ElementalFlowTag);
   }
 }
 

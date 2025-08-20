@@ -26,6 +26,8 @@ class UGameplayEffect;
 class UAbilitySystemComponent;
 class UAuraAttributeSet;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnElementalFlowChangedDelegate, const FGameplayTag&, ElementalFlowTag);
+
 UCLASS(Abstract)
 class AURA_API AAuraCharacterBase : public ACharacter, public IAbilitySystemInterface, public
                                     ICombatInterface, public ITargetInterface
@@ -115,6 +117,8 @@ protected:
   virtual void InitAbilityActorInfo();
   virtual void InitializeAbilities();
   virtual void InitializeAttributes();
+  
+  void RegisterElementalFlowEvents();
 
   void ApplyEffectToSelf(TSubclassOf<UGameplayEffect> GameplayEffectClass, float Level) const;
 
@@ -126,6 +130,11 @@ protected:
   void StartDissolveTimeline(UMaterialInstanceDynamic* DynamicMaterialInstance);
   UFUNCTION(BlueprintImplementableEvent)
   void StartWeaponDissolveTimeline(UMaterialInstanceDynamic* DynamicMaterialInstance);
+  UFUNCTION()
+  void OnElementalFlowChange(const FGameplayTag ElementalFlowTag, int32 NewCount);
+
+  UPROPERTY(BlueprintAssignable)
+  FOnElementalFlowChangedDelegate ElementalFlowChangedDelegate;
 
   UPROPERTY()
   TObjectPtr<UAuraAttributeSet> AttributeSet;

@@ -125,6 +125,7 @@ void AAuraEnemy::BeginPlay()
 	if (HasAuthority())
 	{
 		InitializeAbilities();
+    RegisterElementalFlowEvents();
 	}
 
 	if (UAuraUserWidget* AuraUserWidget = Cast<UAuraUserWidget>(HealthBar->GetUserWidgetObject()))

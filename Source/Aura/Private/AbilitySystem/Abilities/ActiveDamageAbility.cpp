@@ -83,7 +83,7 @@ FAbilityParams UActiveDamageAbility::ApplyEffectChangePerHitToAbilityParams(
 
 float UActiveDamageAbility::GetDamageAtLevel(int32 Level) const
 {
-  return Damage.GetValueAtLevel(Level);
+  return Damage.GetValueAtLevel(Level) + AdditionalDamage;
 }
 
 int32 UActiveDamageAbility::GetRoundedDamageAtLevel_Implementation(int32 Level) const
@@ -121,12 +121,12 @@ bool UActiveDamageAbility::IsUsingWeapon() const
 
 float UActiveDamageAbility::GetComboMagnitude() const
 {
-  return ComboMagnitude.GetValueAtLevel(GetAbilityLevel());
+  return ComboMagnitude.GetValueAtLevel(GetAbilityLevel()) + AdditionalComboMagnitude;
 }
 
 float UActiveDamageAbility::GetComboFinishMagnitude() const
 {
-  return ComboFinishMagnitude.GetValueAtLevel(GetAbilityLevel());
+  return ComboFinishMagnitude.GetValueAtLevel(GetAbilityLevel()) + AdditionalComboFinishMagnitude;
 }
 
 FComboData UActiveDamageAbility::GetComboData() const

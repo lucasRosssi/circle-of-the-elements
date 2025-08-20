@@ -23,6 +23,9 @@ public:
 	virtual float GetPeriodAtLevel_Implementation(int32 Level) const override;
 	virtual bool IsAreaEffectActorAbility_Implementation() const override;
 	// END Ability Interface overrides
+
+  float GetAreaEffectDuration() const;
+  float GetPeriod() const;
 protected:
 	UFUNCTION(BlueprintCallable, Category="Spawning")
 	AAreaEffectActor* SpawnEffectActor(const FVector& TargetLocation);
@@ -32,12 +35,16 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Ability Defaults|Area Effect")
 	FScalableFloat AreaEffectDuration = 0.f;
+  UPROPERTY(BlueprintReadWrite)
+  float AdditionalAreaEffectDuration = 0.f;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Ability Defaults|Area Effect")
 	bool bInstant = false;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Ability Defaults|Area Effect")
 	FScalableFloat Period = 1.f;
+  UPROPERTY(BlueprintReadWrite)
+  float AdditionalPeriod = 0.f;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Ability Defaults|Area Effect")
 	FScalableFloat DelayImpact = 0.f;

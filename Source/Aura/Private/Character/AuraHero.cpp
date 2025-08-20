@@ -56,6 +56,7 @@ void AAuraHero::PossessedBy(AController* NewController)
   InitializeAttributes();
   InitializeUpgrades();
   InitializeAbilities();
+  RegisterElementalFlowEvents();
 
   if (ActiveCamera)
   {

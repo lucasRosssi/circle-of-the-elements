@@ -25,6 +25,10 @@ public:
 	void TraceFirstTarget(const FVector& BeamTargetLocation);
 
 	virtual float GetBeamTickPeriod_Implementation() const override { return BeamTickPeriod; }
+  float GetBeamTraceRadius() const;
+  UFUNCTION(BlueprintPure)
+  float GetBeamTickPeriod() const;
+  float GetBeamRange() const;
 
 protected:
 	UPROPERTY(BlueprintReadWrite, Category="Ability Defaults|Beam")
@@ -38,11 +42,17 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Ability Defaults|Beam")
 	float BeamTraceRadius = 10.f;
+  UPROPERTY(BlueprintReadWrite)
+  float AdditionalBeamTraceRadius = 0.f;
 
 	// Time between each damage tick
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Ability Defaults|Beam")
 	float BeamTickPeriod = 0.2f;
+  UPROPERTY(BlueprintReadWrite)
+  float AdditionalBeamTickPeriod = 0.f;
 
   UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Ability Defaults|Beam")
   FScalableFloat BeamRange = 800.f;
+  UPROPERTY(BlueprintReadWrite)
+  float AdditionalBeamRange = 0.f;
 };

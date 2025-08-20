@@ -14,6 +14,8 @@
 
 void UActiveAbility::ApplyElementalFlowToAvatar()
 {
+  if (!bChangesElementalFlow) return;
+  
   const FGameplayTag& ElementTag = FAuraGameplayTags::Get().Abilities_Element;
   if (GetAssetTags().HasTag(ElementTag))
   {
@@ -50,6 +52,42 @@ void UActiveAbility::ApplyElementalFlowToAvatar()
   }
 }
 
+void UActiveAbility::ConsumeElementalFlow()
+{
+  if (!bConsumesElementalFlow) return;
+  
+  const FGameplayTag& ElementalFlowParentTag = FAuraGameplayTags::Get().StatusEffects_Buff_ElementalFlow;
+  
+  FGameplayTagContainer ActiveTags;
+  GetAbilitySystemComponentFromActorInfo()->GetOwnedGameplayTags(ActiveTags);
+
+  FGameplayTag ElementalFlowTag;
+  for (const FGameplayTag& Tag : ActiveTags)
+  {
+    if (Tag.MatchesTag(ElementalFlowParentTag) && Tag != ElementalFlowParentTag)
+    {
+      ElementalFlowTag = Tag;
+      break;
+    }
+  }
+
+  if (ElementalFlowTag.IsValid())
+  {
+    CurrentElementalFlowTag = ElementalFlowTag;
+    OnConsumeElementalFlow(CurrentElementalFlowTag);
+  }
+}
+
+void UActiveAbility::ActivateAbility(
+  const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
+  const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData
+)
+{
+  ConsumeElementalFlow();
+  
+  Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
+}
+
 bool UActiveAbility::CommitAbility(
   const FGameplayAbilitySpecHandle Handle,
   const FGameplayAbilityActorInfo* ActorInfo,
@@ -57,14 +95,25 @@ bool UActiveAbility::CommitAbility(
   FGameplayTagContainer* OptionalRelevantTags
 )
 {
-  ApplyElementalFlowToAvatar();
+  bool bCommitted;
   
   if (CheckForClarityEffect(ActorInfo))
   {
-    return Super::CommitAbilityCooldown(Handle, ActorInfo, ActivationInfo, false, OptionalRelevantTags);
+    bCommitted = Super::CommitAbilityCooldown(Handle, ActorInfo, ActivationInfo, false, OptionalRelevantTags);
+  }
+  else
+  {
+    bCommitted = Super::CommitAbility(Handle, ActorInfo, ActivationInfo, OptionalRelevantTags);
   }
 
-  return Super::CommitAbility(Handle, ActorInfo, ActivationInfo, OptionalRelevantTags);
+  if (bConsumesElementalFlow && CurrentElementalFlowTag.IsValid())
+  {
+    OnElementalFlowConsumed(CurrentElementalFlowTag);
+    CurrentElementalFlowTag = FGameplayTag();
+  }
+  ApplyElementalFlowToAvatar();
+
+  return bCommitted;
 }
 
 bool UActiveAbility::CommitAbilityCost(

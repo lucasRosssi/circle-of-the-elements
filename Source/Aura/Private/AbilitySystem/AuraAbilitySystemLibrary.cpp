@@ -1547,6 +1547,39 @@ bool UAuraAbilitySystemLibrary::HasAnyParryTag(const UAbilitySystemComponent* Ta
   return TargetASC->HasAnyMatchingGameplayTags(ParryTagsContainer);
 }
 
+TArray<FVector> UAuraAbilitySystemLibrary::EvenlySpacedPoints(
+    const FVector& Center,
+    const FVector& Forward,
+    const FVector& Up,
+    float Spacing,
+    int32 Count
+)
+{
+  TArray<FVector> Points;
+
+  if (Count <= 1)
+  {
+    Points.Add(Center);
+    return Points;
+  }
+
+  // Calculate perpendicular "right" direction
+  const FVector Right = FVector::CrossProduct(Forward, Up).GetSafeNormal();
+
+  // Total width we need to cover
+  const float TotalWidth = (Count - 1) * Spacing;
+
+  // Left-most starting point
+  const FVector Start = Center - Right * (TotalWidth / 2.f);
+
+  for (int32 i = 0; i < Count; i++)
+  {
+    Points.Add(Start + Right * (i * Spacing));
+  }
+
+  return Points;
+}
+
 TArray<FRotator> UAuraAbilitySystemLibrary::EvenlySpacedRotators(
   const FVector& Forward,
   const FVector& Axis,
