@@ -468,6 +468,43 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
     FString("The next ability commited doesn't cost mana")
   );
 
+  // Buffs -> Elemental Flows
+
+  GameplayTags.StatusEffects_Buff_ElementalFlow = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("StatusEffects.Buff.ElementalFlow"),
+    FString("Elemental flows tags")
+  );
+
+  GameplayTags.StatusEffects_Buff_ElementalFlow_Fire = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("StatusEffects.Buff.ElementalFlow.Fire"),
+    FString("Fire element flow tag")
+  );
+
+  GameplayTags.StatusEffects_Buff_ElementalFlow_Water = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("StatusEffects.Buff.ElementalFlow.Water"),
+    FString("Water element flow tag")
+  );
+
+  GameplayTags.StatusEffects_Buff_ElementalFlow_Earth = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("StatusEffects.Buff.ElementalFlow.Earth"),
+    FString("Earth element flow tag")
+  );
+
+  GameplayTags.StatusEffects_Buff_ElementalFlow_Air = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("StatusEffects.Buff.ElementalFlow.Air"),
+    FString("Air element flow tag")
+  );
+
+  GameplayTags.StatusEffects_Buff_ElementalFlow_Lightning = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("StatusEffects.Buff.ElementalFlow.Lightning"),
+    FString("Lightning element flow tag")
+  );
+
+  GameplayTags.StatusEffects_Buff_ElementalFlow_Chaos = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("StatusEffects.Buff.ElementalFlow.Chaos"),
+    FString("Chaos element flow tag")
+  );
+
   // Debuffs
 
   GameplayTags.StatusEffects_Debuff = UGameplayTagsManager::Get().AddNativeGameplayTag(
@@ -1832,12 +1869,23 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 
   GameplayTags.ParentsToChildren.Add(GameplayTags.InputTag, SkillsInputTags);
 
-  const TArray BuffTags(
+  TArray BuffTags(
     {
       GameplayTags.StatusEffects_Buff_Shield,
       GameplayTags.StatusEffects_Buff_Haste
     }
   );
+  const TArray ElementalFlowTags(
+    {
+      GameplayTags.StatusEffects_Buff_ElementalFlow_Fire,
+      GameplayTags.StatusEffects_Buff_ElementalFlow_Water,
+      GameplayTags.StatusEffects_Buff_ElementalFlow_Earth,
+      GameplayTags.StatusEffects_Buff_ElementalFlow_Air,
+      GameplayTags.StatusEffects_Buff_ElementalFlow_Lightning,
+      GameplayTags.StatusEffects_Buff_ElementalFlow_Chaos,
+    }
+  );
+  BuffTags.Append(ElementalFlowTags);
   const TArray DebuffTags(
     {
       GameplayTags.StatusEffects_Debuff_Bleeding,
@@ -1876,6 +1924,7 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 
   GameplayTags.ParentsToChildren.Add(GameplayTags.StatusEffects, StatusEffectTags);
   GameplayTags.ParentsToChildren.Add(GameplayTags.StatusEffects_Buff, BuffTags);
+  GameplayTags.ParentsToChildren.Add(GameplayTags.StatusEffects_Buff_ElementalFlow, ElementalFlowTags);
   GameplayTags.ParentsToChildren.Add(GameplayTags.StatusEffects_Debuff, DebuffTags);
   GameplayTags.ParentsToChildren.Add(GameplayTags.StatusEffects_Incapacitation, IncapacitationTags);
   GameplayTags.ParentsToChildren.Add(GameplayTags.StatusEffects_Condition, ConditionTags);

@@ -24,7 +24,7 @@ class AURA_API UCombatManager : public UAuraSystemComponent
   GENERATED_BODY()
 
 public:
-  void GenerateArenaCombat(const FAreaData& Arena);
+  void GenerateArenaCombat(const FAreaData& Arena, int32 InLevel);
   
   int32 GetEnemiesLevel() const { return EnemiesLevel; }
   AActor* GetCurrentBoss() const { return CurrentBoss.Get(); }
@@ -106,13 +106,17 @@ private:
 
   ULocationManager* GetLocationManager();
 
-  FIntPoint CurrentArenaCoordinate;
+  FAreaData CurrentArena;
+  int32 ArenaLevel = 0;
+  int32 SpiritArenaLevel = 0;
   int32 EnemyCount = 0;
   int32 CurrentWave = 0;
   UPROPERTY()
   TArray<AEnemySpawner*> EnemySpawners;
 
-  TMap<FIntPoint, TArray<FEnemyWave>> ArenasEncounters;
+  TArray<TArray<FEnemyWave>> ArenasEncounters;
+  TArray<TArray<FEnemyWave>> SpiritArenasEncounters;
+  TArray<TArray<FEnemyWave>> BossEncounters;
 
   TWeakObjectPtr<AActor> CurrentBoss;
 

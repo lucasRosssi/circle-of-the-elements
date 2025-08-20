@@ -84,9 +84,7 @@ struct FAreaData
   EAreaType Type;
 
   TSet<ECardinalDirection> OpenDirections;
-
-  int32 ArenaLevel = -1;
-
+  
   FGameplayTag ElementTag;
 
   UPROPERTY(BlueprintReadOnly)
@@ -129,6 +127,8 @@ struct FRegionData
 
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
   TArray<FArenaDifficultyData> ArenaDifficultyData;
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+  TArray<FArenaDifficultyData> SpiritArenaDifficultyData;
 
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(Categories="Enemies"))
   FGameplayTagContainer Bosses;
@@ -175,7 +175,7 @@ public:
   TArray<FAreaData> GetSpecialAreas(ERegion Region) const;
   TArray<FAreaData> GetExits(ERegion Region) const;
 
-  FArenaDifficultyData GetArenaDifficultyData(ERegion Region, int32 ArenaLevel) const;
+  FArenaDifficultyData GetArenaDifficultyData(ERegion Region, EAreaType ArenaType, int32 ArenaLevel) const;
 
   FGameplayTagContainer GetRegionBosses(ERegion Region) const;
 

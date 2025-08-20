@@ -41,15 +41,17 @@ AAreaEffectActor* UAreaEffectActorAbility::SpawnEffectActor(const FVector& Targe
 		ECC_ExcludeCharacters
 	);
 
+  FVector SpawnPoint;
 	if (HitResult.bBlockingHit)
 	{
-		SpawnTransform.SetLocation(HitResult.ImpactPoint);
+	  SpawnPoint = HitResult.ImpactPoint;
 	}
 	else
 	{
-		SpawnTransform.SetLocation(TargetLocation);
+	  SpawnPoint = TargetLocation;
 	}
 	
+	SpawnTransform.SetLocation(SpawnPoint + SpawnLocationOffset);
 	SpawnTransform.SetRotation(AvatarActor->GetActorRotation().Quaternion());
 	
  	AAreaEffectActor* AreaEffectActor = GetWorld()->SpawnActorDeferred<AAreaEffectActor>(
@@ -57,7 +59,7 @@ AAreaEffectActor* UAreaEffectActorAbility::SpawnEffectActor(const FVector& Targe
 			 SpawnTransform,
 			 GetOwningActorFromActorInfo(),
 			 Cast<APawn>(AvatarActor),
-			 ESpawnActorCollisionHandlingMethod::AlwaysSpawn
+			 ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn
 		 );
 
 	UAuraAbilitySystemLibrary::JoinToActorTeam(
@@ -75,6 +77,7 @@ AAreaEffectActor* UAreaEffectActorAbility::SpawnEffectActor(const FVector& Targe
   AreaEffectActor->Force = Force.GetValueAtLevel(GetAbilityLevel());
   AreaEffectActor->bActorUsesCharges = bActorUsesCharges;
   AreaEffectActor->ActorCharges = GetActorCharges();
+  AreaEffectActor->SpawnPointCache = SpawnTransform.GetLocation();
  	AreaEffectActor->FinishSpawning(SpawnTransform);
 
 	return AreaEffectActor;

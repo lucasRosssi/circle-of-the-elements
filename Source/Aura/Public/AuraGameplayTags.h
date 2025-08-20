@@ -97,6 +97,14 @@ public:
   FGameplayTag StatusEffects_Buff_Haste;
   FGameplayTag StatusEffects_Buff_Clarity;
 
+  FGameplayTag StatusEffects_Buff_ElementalFlow;
+  FGameplayTag StatusEffects_Buff_ElementalFlow_Fire;
+  FGameplayTag StatusEffects_Buff_ElementalFlow_Water;
+  FGameplayTag StatusEffects_Buff_ElementalFlow_Earth;
+  FGameplayTag StatusEffects_Buff_ElementalFlow_Air;
+  FGameplayTag StatusEffects_Buff_ElementalFlow_Lightning;
+  FGameplayTag StatusEffects_Buff_ElementalFlow_Chaos;
+
   // Debuffs
 
   FGameplayTag StatusEffects_Debuff;

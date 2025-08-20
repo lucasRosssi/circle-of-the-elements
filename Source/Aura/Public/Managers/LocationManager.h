@@ -72,7 +72,7 @@ protected:
   FAreaData GetSpecialAreaFromPool();
   FAreaData GetExitFromPool();
 
-  void HandleArenaGeneration(FAreaData& AreaData);
+  void HandleArenaGeneration(const FAreaData& AreaData);
   void HandleElementalProps(const FAreaData& AreaData);
 
   FIntPoint Backtrack();
@@ -153,12 +153,14 @@ private:
   TArray<FAreaData> SpecialAreasPool;
   TArray<FAreaData> ExitsPool;
 
+  // Generation variables
   int32 TotalAreas = 0;
   FIntPoint PrevCoordinate = FIntPoint(0, 0);
   FIntPoint CurrentCoordinate = FIntPoint(0, 0);
-  int32 AreasCount = 0;
-  int32 ArenaLevel = 0;
-  
+  int32 GeneratedArenaLevel = 0;
+  int32 GeneratedSpiritArenaLevel = 0;
+
+  // Final layout
   TMap<FIntPoint, FAreaData> LocationLayout;
 
   FIntPoint PrevPlayerCoordinate = FIntPoint(0, 0);

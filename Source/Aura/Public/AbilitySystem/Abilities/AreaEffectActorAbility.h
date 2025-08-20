@@ -44,6 +44,10 @@ protected:
 
   UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Ability Defaults|Area Effect")
   bool bHasRadialForce = false;
+
+  // Offset to adjust the actor in the spawn point. To change Moveable actors spawn point, check planar constraints in their Projectile Movement Component
+  UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Ability Defaults|Area Effect")
+  FVector SpawnLocationOffset = FVector();
   
   UPROPERTY(
     EditDefaultsOnly,
