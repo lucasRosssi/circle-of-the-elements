@@ -3,10 +3,90 @@
 
 #include "AbilitySystem/Abilities/ActiveAbility.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
 #include "AuraGameplayTags.h"
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
+#include "AbilitySystem/Data/AbilityInfo.h"
+#include "AbilitySystem/GameplayEffects/AuraStatusEffect.h"
 #include "Aura/AuraLogChannels.h"
 #include "Interfaces/AttributeSetInterface.h"
+#include "Utils/AuraSystemsLibrary.h"
+
+void UActiveAbility::ApplyElementalFlowToAvatar()
+{
+  if (!bChangesElementalFlow) return;
+  
+  const FGameplayTag& ElementTag = FAuraGameplayTags::Get().Abilities_Element;
+  if (GetAssetTags().HasTag(ElementTag))
+  {
+    UAbilitySystemComponent* ASC = GetAbilitySystemComponentFromActorInfo();
+    ASC->RemoveActiveEffectsWithGrantedTags(
+      FGameplayTagContainer({ FAuraGameplayTags::Get().StatusEffects_Buff_ElementalFlow })  
+    );
+    
+    const FGameplayTagContainer AssetTags = GetAssetTags();
+    const FGameplayTagContainer& ElementTags = AssetTags.Filter(FGameplayTagContainer({ ElementTag }));
+    
+    if (ElementTags.Num() > 0)
+    {
+      const UAbilityInfo* AbilityInfo = UAuraSystemsLibrary::GetAbilitiesInfo(GetAvatarActorFromActorInfo());
+      const FGameplayTag& AbilityElementTag = ElementTags.First();
+      const TSubclassOf<UAuraStatusEffect> ElementalFlowEffectClass = AbilityInfo->FindElementInfo(AbilityElementTag).ElementalFlowEffect;
+      
+      FGameplayEffectContextHandle ContextHandle = ASC->MakeEffectContext();
+      ContextHandle.AddSourceObject(GetAvatarActorFromActorInfo());
+      
+      const FGameplayEffectSpecHandle SpecHandle = ASC->MakeOutgoingSpec(
+        ElementalFlowEffectClass,
+        GetAbilityLevel(),
+        ContextHandle
+      );
+      UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(
+        SpecHandle,
+        FAuraGameplayTags::Get().StatusEffects_Duration,
+        0.f
+      );
+      
+      ASC->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data);
+    }
+  }
+}
+
+void UActiveAbility::UseElementalFlow()
+{
+  if (!bUsesElementalFlow) return;
+  
+  const FGameplayTag& ElementalFlowParentTag = FAuraGameplayTags::Get().StatusEffects_Buff_ElementalFlow;
+  
+  FGameplayTagContainer ActiveTags;
+  GetAbilitySystemComponentFromActorInfo()->GetOwnedGameplayTags(ActiveTags);
+
+  FGameplayTag ElementalFlowTag;
+  for (const FGameplayTag& Tag : ActiveTags)
+  {
+    if (Tag.MatchesTag(ElementalFlowParentTag) && Tag != ElementalFlowParentTag)
+    {
+      ElementalFlowTag = Tag;
+      break;
+    }
+  }
+
+  if (ElementalFlowTag.IsValid())
+  {
+    CurrentElementalFlowTag = ElementalFlowTag;
+    OnUseElementalFlow(CurrentElementalFlowTag);
+  }
+}
+
+void UActiveAbility::ActivateAbility(
+  const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
+  const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData
+)
+{
+  UseElementalFlow();
+  
+  Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
+}
 
 bool UActiveAbility::CommitAbility(
   const FGameplayAbilitySpecHandle Handle,
@@ -15,12 +95,25 @@ bool UActiveAbility::CommitAbility(
   FGameplayTagContainer* OptionalRelevantTags
 )
 {
+  bool bCommitted;
+  
   if (CheckForClarityEffect(ActorInfo))
   {
-    return Super::CommitAbilityCooldown(Handle, ActorInfo, ActivationInfo, false, OptionalRelevantTags);
+    bCommitted = Super::CommitAbilityCooldown(Handle, ActorInfo, ActivationInfo, false, OptionalRelevantTags);
+  }
+  else
+  {
+    bCommitted = Super::CommitAbility(Handle, ActorInfo, ActivationInfo, OptionalRelevantTags);
   }
 
-  return Super::CommitAbility(Handle, ActorInfo, ActivationInfo, OptionalRelevantTags);
+  if (bUsesElementalFlow && CurrentElementalFlowTag.IsValid())
+  {
+    OnElementalFlowUsed(CurrentElementalFlowTag);
+    CurrentElementalFlowTag = FGameplayTag();
+  }
+  ApplyElementalFlowToAvatar();
+
+  return bCommitted;
 }
 
 bool UActiveAbility::CommitAbilityCost(

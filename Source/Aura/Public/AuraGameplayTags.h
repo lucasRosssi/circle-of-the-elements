@@ -499,6 +499,7 @@ public:
   FGameplayTag Event_Spirit_Hijacked;
 
   TMap<FGameplayTag, FGameplayTag> EssenceToAbility;
+  TMap<FGameplayTag, FGameplayTag> AbilityToFlow;
 
   TMap<FGameplayTag, TArray<FGameplayTag>> ParentsToChildren;
 

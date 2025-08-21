@@ -26,6 +26,8 @@ class UGameplayEffect;
 class UAbilitySystemComponent;
 class UAuraAttributeSet;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnElementalFlowChangedDelegate, const FGameplayTag&, ElementalFlowTag);
+
 UCLASS(Abstract)
 class AURA_API AAuraCharacterBase : public ACharacter, public IAbilitySystemInterface, public
                                     ICombatInterface, public ITargetInterface
@@ -70,6 +72,7 @@ public:
   virtual void ApplyForce_Implementation(const FVector& Force) override;
   virtual void ApplyAttraction_Implementation(const FVector& AttractionPoint, float DeltaTime, float InterpSpeed) override;
   virtual USceneComponent* GetTopStatusEffectSceneComponent_Implementation() override;
+  virtual USceneComponent* GetCenterStatusEffectSceneComponent_Implementation() override;
   virtual USceneComponent* GetBottomStatusEffectSceneComponent_Implementation() override;
   virtual UBoxComponent* EnableWeaponCollision_Implementation(bool bEnable) override;
   virtual bool IsFriend_Implementation(AActor* Actor) override;
@@ -114,6 +117,8 @@ protected:
   virtual void InitAbilityActorInfo();
   virtual void InitializeAbilities();
   virtual void InitializeAttributes();
+  
+  void RegisterElementalFlowEvents();
 
   void ApplyEffectToSelf(TSubclassOf<UGameplayEffect> GameplayEffectClass, float Level) const;
 
@@ -125,6 +130,11 @@ protected:
   void StartDissolveTimeline(UMaterialInstanceDynamic* DynamicMaterialInstance);
   UFUNCTION(BlueprintImplementableEvent)
   void StartWeaponDissolveTimeline(UMaterialInstanceDynamic* DynamicMaterialInstance);
+  UFUNCTION()
+  void OnElementalFlowChange(const FGameplayTag ElementalFlowTag, int32 NewCount);
+
+  UPROPERTY(BlueprintAssignable)
+  FOnElementalFlowChangedDelegate ElementalFlowChangedDelegate;
 
   UPROPERTY()
   TObjectPtr<UAuraAttributeSet> AttributeSet;
@@ -198,6 +208,8 @@ protected:
   TObjectPtr<UStatusEffectsManager> StatusEffectsManager;
   UPROPERTY(VisibleAnywhere)
   TObjectPtr<USceneComponent> TopStatusEffectSceneComponent;
+  UPROPERTY(VisibleAnywhere)
+  TObjectPtr<USceneComponent> CenterStatusEffectSceneComponent;
   UPROPERTY(VisibleAnywhere)
   TObjectPtr<USceneComponent> BottomStatusEffectSceneComponent;
 

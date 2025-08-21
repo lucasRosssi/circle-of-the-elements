@@ -20,7 +20,7 @@ void UBeamAbility::StoreMouseDataInfo(const FHitResult& HitResult)
     );
 
   const float AttemptedDistance = FVector::Distance(SocketLocation, HitResult.ImpactPoint);
-  const float CurrentBeamRange = BeamRange.GetValueAtLevel(GetAbilityLevel());
+  const float CurrentBeamRange = GetBeamRange();
   
   if (AttemptedDistance > CurrentBeamRange)
   {
@@ -108,7 +108,7 @@ void UBeamAbility::TraceFirstTarget(const FVector& BeamTargetLocation)
 		AvatarActor,
 		SocketLocation,
 		BeamTargetLocation,
-		BeamTraceRadius,
+		GetBeamTraceRadius(),
 		TraceTypeQuery1,
 		false,
 		ActorsToIgnore,
@@ -123,4 +123,19 @@ void UBeamAbility::TraceFirstTarget(const FVector& BeamTargetLocation)
 		MouseHitLocation = HitResult.ImpactPoint;
 		MouseHitActor = HitResult.GetActor();
 	}
+}
+
+float UBeamAbility::GetBeamTraceRadius() const
+{
+  return BeamTraceRadius + AdditionalBeamTraceRadius;
+}
+
+float UBeamAbility::GetBeamTickPeriod() const
+{
+  return BeamTickPeriod + AdditionalBeamTickPeriod;
+}
+
+float UBeamAbility::GetBeamRange() const
+{
+  return BeamRange.GetValueAtLevel(GetAbilityLevel()) + AdditionalBeamRange;
 }

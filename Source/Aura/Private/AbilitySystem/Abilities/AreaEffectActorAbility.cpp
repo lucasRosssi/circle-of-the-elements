@@ -27,6 +27,16 @@ bool UAreaEffectActorAbility::IsAreaEffectActorAbility_Implementation() const
 	return true;
 }
 
+float UAreaEffectActorAbility::GetAreaEffectDuration() const
+{
+  return AreaEffectDuration.GetValueAtLevel(GetAbilityLevel()) + AdditionalAreaEffectDuration;
+}
+
+float UAreaEffectActorAbility::GetPeriod() const
+{
+  return Period.GetValueAtLevel(GetAbilityLevel()) + AdditionalPeriod;
+}
+
 AAreaEffectActor* UAreaEffectActorAbility::SpawnEffectActor(const FVector& TargetLocation)
 {
 	AActor* AvatarActor = GetAvatarActorFromActorInfo();
@@ -69,9 +79,9 @@ AAreaEffectActor* UAreaEffectActorAbility::SpawnEffectActor(const FVector& Targe
 		);
  	AreaEffectActor->TargetTeam = AbilityTargetTeam;
  	AreaEffectActor->AbilityParams = MakeAbilityParamsFromDefaults();
-	AreaEffectActor->SetActorDuration(AreaEffectDuration.GetValueAtLevel(GetAbilityLevel()));
+	AreaEffectActor->SetActorDuration(GetAreaEffectDuration());
 	AreaEffectActor->bInstant = bInstant;
-	AreaEffectActor->Period = Period.GetValueAtLevel(GetAbilityLevel());
+	AreaEffectActor->Period = GetPeriod();
 	AreaEffectActor->DelayImpact = DelayImpact.GetValueAtLevel(GetAbilityLevel());
   AreaEffectActor->bHasRadialForce = bHasRadialForce;
   AreaEffectActor->Force = Force.GetValueAtLevel(GetAbilityLevel());

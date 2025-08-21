@@ -327,6 +327,8 @@ FAbilityParams UBaseAbility::MakeAbilityParamsFromDefaults(AActor* TargetActor) 
 	{
 	  for (const auto& Effect : StatusEffectData)
 	  {
+	    if (!Effect.IsValid()) continue;
+	    
 		  UStatusEffectInfo* StatusEffectInfo = UAuraSystemsLibrary
 			  ::GetStatusEffectInfo(AbilityParams.WorldContextObject);
 	    FEffectParams EffectParams;
@@ -340,6 +342,25 @@ FAbilityParams UBaseAbility::MakeAbilityParamsFromDefaults(AActor* TargetActor) 
 	    AbilityParams.EffectParams.Add(EffectParams);
 	  }
 	}
+  if (AdditionalStatusEffectData.Num() > 0)
+  {
+    for (const auto& Effect : AdditionalStatusEffectData)
+    {
+      if (!Effect.IsValid()) continue;
+      
+      UStatusEffectInfo* StatusEffectInfo = UAuraSystemsLibrary
+        ::GetStatusEffectInfo(AbilityParams.WorldContextObject);
+      FEffectParams EffectParams;
+      EffectParams.GameplayEffectClass = StatusEffectInfo
+        ->StatusEffects.Find(Effect.StatusEffectTag)->StatusEffectClass;
+      EffectParams.GameplayTag = Effect.StatusEffectTag;
+      EffectParams.Value = Effect.Value.GetValueAtLevel(GetAbilityLevel());
+      EffectParams.Duration = Effect.Duration.GetValueAtLevel(GetAbilityLevel());
+      EffectParams.Stacks = Effect.Stacks.GetValueAtLevel(GetAbilityLevel());
+
+      AbilityParams.EffectParams.Add(EffectParams);
+    }
+  }
 
   if (HealEffectClass != nullptr && GetHealAtLevel(GetAbilityLevel()) > 0.f)
   {

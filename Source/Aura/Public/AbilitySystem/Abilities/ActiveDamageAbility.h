@@ -119,13 +119,15 @@ protected:
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Damage")
   TSubclassOf<UGameplayEffect> DamageEffectClass;
 
-  UPROPERTY(EditDefaultsOnly, Category="Damage", meta=( Categories="Damage" ))
+  UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Damage", meta=( Categories="Damage" ))
   FGameplayTag DamageType;
 
   UPROPERTY(EditDefaultsOnly, Category="Damage")
   FScalableFloat Damage;
+  UPROPERTY(BlueprintReadWrite)
+  float AdditionalDamage = 0.f;
 
-  UPROPERTY(EditDefaultsOnly, Category="Status Effects")
+  UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Status Effects")
   bool bApplyHitReact = true;
 
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Ability Defaults|Combo")
@@ -147,6 +149,8 @@ protected:
     meta=(EditCondition="bIsComboSequence")
   )
   FScalableFloat ComboMagnitude = 0.f;
+  UPROPERTY(BlueprintReadWrite)
+  float AdditionalComboMagnitude = 0.f;
 
   // How much the last combo step increases/decrease the ability effect
   UPROPERTY(
@@ -156,6 +160,8 @@ protected:
     meta=(EditCondition="bIsComboSequence")
   )
   FScalableFloat ComboFinishMagnitude = 0.f;
+  UPROPERTY(BlueprintReadWrite)
+  float AdditionalComboFinishMagnitude = 0.f;
 
   UPROPERTY(BlueprintReadWrite, Category="Ability Defaults|Combo")
   bool bComboInputPressed = false;

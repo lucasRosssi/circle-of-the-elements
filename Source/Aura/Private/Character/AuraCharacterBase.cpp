@@ -31,6 +31,10 @@ AAuraCharacterBase::AAuraCharacterBase()
       GetCapsuleComponent()->GetScaledCapsuleHalfHeight()
     )
   );
+  
+  CenterStatusEffectSceneComponent = CreateDefaultSubobject<USceneComponent>("CenterStatusEffectSceneComponent");
+  CenterStatusEffectSceneComponent->SetupAttachment(GetRootComponent());
+  
   BottomStatusEffectSceneComponent = CreateDefaultSubobject<USceneComponent>("BottomStatusEffectSceneComponent");
   BottomStatusEffectSceneComponent->SetupAttachment(GetRootComponent());
   BottomStatusEffectSceneComponent->SetRelativeLocation(
@@ -145,6 +149,20 @@ void AAuraCharacterBase::InitSummon(int32 TeamID)
 void AAuraCharacterBase::BeginPlay()
 {
   Super::BeginPlay();
+}
+
+void AAuraCharacterBase::RegisterElementalFlowEvents()
+{
+  const FAuraGameplayTags& AuraTags = FAuraGameplayTags::Get();
+
+  const TArray<FGameplayTag>& ElementalFlowTags = *AuraTags.ParentsToChildren.Find(AuraTags.StatusEffects_Buff_ElementalFlow);
+  for (const auto Tag : ElementalFlowTags)
+  {
+    AbilitySystemComponent->RegisterGameplayTagEvent(
+      Tag,
+      EGameplayTagEventType::NewOrRemoved
+    ).AddUObject(this, &AAuraCharacterBase::OnElementalFlowChange);
+  }
 }
 
 void AAuraCharacterBase::ReleaseWeapon()
@@ -302,6 +320,11 @@ USceneComponent* AAuraCharacterBase::GetTopStatusEffectSceneComponent_Implementa
   return TopStatusEffectSceneComponent;
 }
 
+USceneComponent* AAuraCharacterBase::GetCenterStatusEffectSceneComponent_Implementation()
+{
+  return CenterStatusEffectSceneComponent;
+}
+
 USceneComponent* AAuraCharacterBase::GetBottomStatusEffectSceneComponent_Implementation()
 {
   return BottomStatusEffectSceneComponent;
@@ -420,6 +443,14 @@ void AAuraCharacterBase::DissolveCharacter()
     Weapon->SetMaterial(0, DynamicMatInst);
 
     StartWeaponDissolveTimeline(DynamicMatInst);
+  }
+}
+
+void AAuraCharacterBase::OnElementalFlowChange(const FGameplayTag ElementalFlowTag, int32 NewCount)
+{
+  if (NewCount > 0)
+  {
+    ElementalFlowChangedDelegate.Broadcast(ElementalFlowTag);
   }
 }
 

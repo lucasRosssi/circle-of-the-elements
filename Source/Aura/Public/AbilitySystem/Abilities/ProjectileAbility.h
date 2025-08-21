@@ -20,6 +20,10 @@ class AURA_API UProjectileAbility : public UActiveDamageAbility
 public:
 	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
 
+  int32 GetProjectileCount() const;
+  float GetProjectileSpread() const;
+  float GetProjectileSpacing() const;
+
 protected:
 	UFUNCTION(BlueprintCallable, Category = "Projectile")
 	void SpawnProjectile(
@@ -29,10 +33,26 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TSubclassOf<AAuraProjectile> ProjectileClass;
+  UPROPERTY(BlueprintReadWrite)
+  TSubclassOf<AAuraProjectile> OverrideProjectileClass;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Projectile")
 	FScalableFloat ProjectileCount = 1;
-	
+  UPROPERTY(BlueprintReadWrite)
+  int32 AdditionalProjectileCount = 0;
+
+  // Used for spawning multiple projectiles in parallel to each other
+  UPROPERTY(
+    EditDefaultsOnly,
+    BlueprintReadWrite,
+    Category="Projectile",
+    meta=(ClampMin=0.f, UIMin=0.f, EditCondition="ProjectileSpread < 15")
+    )
+  float ProjectileSpacing = 0.f;
+  UPROPERTY(BlueprintReadWrite)
+  float AdditionalProjectileSpacing = 0.f;
+
+  // Used for spawning multiple projectiles in an arc
 	UPROPERTY(
 	  EditDefaultsOnly,
 	  BlueprintReadWrite,
@@ -40,6 +60,8 @@ protected:
 	  meta=(ClampMin=0.f, UIMin=0.f, ClampMax=360.f, UIMax=360.f)
 	  )
 	float ProjectileSpread = 0.f;
+  UPROPERTY(BlueprintReadWrite)
+  float AdditionalProjectileSpread = 0.f;
 
   UPROPERTY(
     EditDefaultsOnly,
@@ -63,7 +85,16 @@ protected:
 	EProjectileHomingMode HomingMode = EProjectileHomingMode::OneTarget;
 
 private:
-	void SetHomingInitialTarget(AAuraProjectile* Projectile);
+  TArray<FTransform> HandleParallelProjectiles(
+    const FVector& SocketLocation,
+    const FRotator& Rotation,
+    const FVector& Forward
+  );
+  TArray<FTransform> HandleArcProjectiles(
+    const FVector& SocketLocation,
+    const FVector& Forward
+  );
+  void SetHomingInitialTarget(AAuraProjectile* Projectile);
 
 	UPROPERTY()
 	TArray<AActor*> Targets;

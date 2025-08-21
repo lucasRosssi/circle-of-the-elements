@@ -45,7 +45,7 @@ void UStatusEffectsManager::RegisterStatusEffectTagEvent(UAbilitySystemComponent
 {
 	const FAuraGameplayTags& Tags = FAuraGameplayTags::Get();
 
-	const TArray<FGameplayTag> StatusEffectTags = *Tags.ParentsToChildren.Find(Tags.StatusEffects);
+	const TArray<FGameplayTag>& StatusEffectTags = *Tags.ParentsToChildren.Find(Tags.StatusEffects);
 	for (const auto Tag : StatusEffectTags)
 	{
 		InASC->RegisterGameplayTagEvent(
@@ -104,31 +104,43 @@ void UStatusEffectsManager::MulticastActivateStatusEffect_Implementation(
 	)
 {
 	USceneComponent* AttachmentComponent;
-	switch (StatusData.Position)
-	{
-	case EStatusEffectPosition::Top:
-		{
-			AttachmentComponent = ICombatInterface
-				::Execute_GetTopStatusEffectSceneComponent(GetOwner());
-			break;
-		}
-	case EStatusEffectPosition::Bottom:
-		{
-			AttachmentComponent = ICombatInterface
-				::Execute_GetBottomStatusEffectSceneComponent(GetOwner());
-			break;
-		}
-	case EStatusEffectPosition::Center:
-	default:
-		{
-			AttachmentComponent = GetOwner()->GetRootComponent();
-		}
+  if (StatusData.bInWeapon)
+  {
+    AttachmentComponent = ICombatInterface::Execute_GetWeapon(GetOwner());
+  }
+  else
+  {
+	  switch (StatusData.Position)
+	  {
+	  case EStatusEffectPosition::Top:
+		  {
+			  AttachmentComponent = ICombatInterface
+				  ::Execute_GetTopStatusEffectSceneComponent(GetOwner());
+			  break;
+		  }
+	  case EStatusEffectPosition::Center:
+	    {
+	      AttachmentComponent = ICombatInterface
+          ::Execute_GetCenterStatusEffectSceneComponent(GetOwner());
+	      break;
+	    }
+	  case EStatusEffectPosition::Bottom:
+		  {
+			  AttachmentComponent = ICombatInterface
+				  ::Execute_GetBottomStatusEffectSceneComponent(GetOwner());
+			  break;
+		  }
+	  default:
+		  {
+			  AttachmentComponent = GetOwner()->GetRootComponent();
+		  }
+    }
 	}
 	
 	UNiagaraComponent* NiagaraComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(
 				StatusData.NiagaraSystem,
 				AttachmentComponent,
-				FName(),
+				StatusData.WeaponSocketName,
 				FVector(0),
 				FRotator(0),
 				EAttachLocation::KeepRelativeOffset,
