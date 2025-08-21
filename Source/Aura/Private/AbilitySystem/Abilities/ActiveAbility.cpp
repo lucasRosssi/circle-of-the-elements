@@ -52,9 +52,9 @@ void UActiveAbility::ApplyElementalFlowToAvatar()
   }
 }
 
-void UActiveAbility::ConsumeElementalFlow()
+void UActiveAbility::UseElementalFlow()
 {
-  if (!bConsumesElementalFlow) return;
+  if (!bUsesElementalFlow) return;
   
   const FGameplayTag& ElementalFlowParentTag = FAuraGameplayTags::Get().StatusEffects_Buff_ElementalFlow;
   
@@ -74,7 +74,7 @@ void UActiveAbility::ConsumeElementalFlow()
   if (ElementalFlowTag.IsValid())
   {
     CurrentElementalFlowTag = ElementalFlowTag;
-    OnConsumeElementalFlow(CurrentElementalFlowTag);
+    OnUseElementalFlow(CurrentElementalFlowTag);
   }
 }
 
@@ -83,7 +83,7 @@ void UActiveAbility::ActivateAbility(
   const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData
 )
 {
-  ConsumeElementalFlow();
+  UseElementalFlow();
   
   Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 }
@@ -106,9 +106,9 @@ bool UActiveAbility::CommitAbility(
     bCommitted = Super::CommitAbility(Handle, ActorInfo, ActivationInfo, OptionalRelevantTags);
   }
 
-  if (bConsumesElementalFlow && CurrentElementalFlowTag.IsValid())
+  if (bUsesElementalFlow && CurrentElementalFlowTag.IsValid())
   {
-    OnElementalFlowConsumed(CurrentElementalFlowTag);
+    OnElementalFlowUsed(CurrentElementalFlowTag);
     CurrentElementalFlowTag = FGameplayTag();
   }
   ApplyElementalFlowToAvatar();

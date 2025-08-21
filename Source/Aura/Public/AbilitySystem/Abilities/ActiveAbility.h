@@ -36,9 +36,9 @@ public:
 	// END Ability Interface overrides
 
   UFUNCTION(BlueprintImplementableEvent)
-  void OnConsumeElementalFlow(const FGameplayTag& ElementalFlowTag);
-  UFUNCTION(BlueprintImplementableEvent)
-  void OnElementalFlowConsumed(const FGameplayTag& ElementalFlowTag);
+  void OnUseElementalFlow(const FGameplayTag& ElementalFlowTag);
+  UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
+  void OnElementalFlowUsed(const FGameplayTag& ElementalFlowTag);
   
   
 	UFUNCTION(BlueprintCallable)
@@ -58,7 +58,7 @@ public:
 	bool bUsesMovementInputDirection = false;
 
 protected:
-  void ConsumeElementalFlow();
+  void UseElementalFlow();
   void ApplyElementalFlowToAvatar();
 
   UFUNCTION(BlueprintPure, Category="Ability Defaults")
@@ -82,7 +82,7 @@ protected:
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Ability Defaults|Elemental Flow")
   bool bChangesElementalFlow = true;
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Ability Defaults|Elemental Flow")
-  bool bConsumesElementalFlow = true;
+  bool bUsesElementalFlow = true;
 
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Ability Defaults|Activation")
   EAbilityActivationMode ActivationMode = EAbilityActivationMode::Default;
