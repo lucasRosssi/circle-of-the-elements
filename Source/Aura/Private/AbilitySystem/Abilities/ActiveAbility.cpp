@@ -241,7 +241,12 @@ float UActiveAbility::GetMontagePlayRate() const
 
 float UActiveAbility::GetAnimRootMotionTranslateScale() const
 {
-	return AnimRootMotionTranslateScale.GetValueAtLevel(GetAbilityLevel()) + AdditionalAnimRootMotionTranslateScale;
+  float RootMotionScale = AnimRootMotionTranslateScale.GetValueAtLevel(GetAbilityLevel()) + AdditionalAnimRootMotionTranslateScale;
+  if (bMovementSpeedAffectsRootMotionScale)
+  {
+    RootMotionScale *= IAttributeSetInterface::Execute_GetMovementSpeed(GetOwningActorFromActorInfo());
+  }
+	return RootMotionScale;
 }
 
 int32 UActiveAbility::GetMaxHitCount() const
