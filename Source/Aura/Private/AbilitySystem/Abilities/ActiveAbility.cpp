@@ -10,11 +10,19 @@
 #include "AbilitySystem/GameplayEffects/AuraStatusEffect.h"
 #include "Aura/AuraLogChannels.h"
 #include "Interfaces/AttributeSetInterface.h"
+#include "Managers/LocationManager.h"
 #include "Utils/AuraSystemsLibrary.h"
 
 void UActiveAbility::ApplyElementalFlowToAvatar()
 {
-  if (!bChangesElementalFlow) return;
+  ULocationManager* LocationManager = UAuraSystemsLibrary::GetLocationManager(GetAvatarActorFromActorInfo());
+  bool bAreaHasElement = false;
+  if (LocationManager)
+  {
+    bAreaHasElement = LocationManager->GetCurrentAreaRef().ElementTag.IsValid();
+  }
+  
+  if (!bChangesElementalFlow || bAreaHasElement) return;
   
   const FGameplayTag& ElementTag = FAuraGameplayTags::Get().Abilities_Element;
   if (GetAssetTags().HasTag(ElementTag))
@@ -74,6 +82,16 @@ void UActiveAbility::UseElementalFlow()
   if (ElementalFlowTag.IsValid())
   {
     CurrentElementalFlowTag = ElementalFlowTag;
+    
+    if (bHasDefaultFlowProperties)
+    {
+      const FStatusEffectApplicationData* Data = DefaultElementsStatusEffects.Find(CurrentElementalFlowTag);
+      if (Data)
+      {
+        AdditionalStatusEffectData.Add(*Data);
+      }
+    }
+    
     OnUseElementalFlow(CurrentElementalFlowTag);
   }
 }
@@ -106,12 +124,7 @@ bool UActiveAbility::CommitAbility(
     bCommitted = Super::CommitAbility(Handle, ActorInfo, ActivationInfo, OptionalRelevantTags);
   }
 
-  if (bUsesElementalFlow && CurrentElementalFlowTag.IsValid())
-  {
-    OnElementalFlowUsed(CurrentElementalFlowTag);
-    CurrentElementalFlowTag = FGameplayTag();
-  }
-  ApplyElementalFlowToAvatar();
+  CommitElementalFlow();
 
   return bCommitted;
 }
@@ -152,6 +165,17 @@ void UActiveAbility::GetMontageParams(
 	Montage = GetAnimMontage();
 	PlayRate = GetMontagePlayRate();
 	RootMotionScale = GetAnimRootMotionTranslateScale();
+}
+
+void UActiveAbility::CommitElementalFlow()
+{
+  if (bUsesElementalFlow && CurrentElementalFlowTag.IsValid())
+  {
+    OnElementalFlowUsed(CurrentElementalFlowTag);
+    CurrentElementalFlowTag = FGameplayTag();
+    AdditionalStatusEffectData.Empty();
+  }
+  ApplyElementalFlowToAvatar();
 }
 
 AActor* UActiveAbility::GetNextRicochetTarget(AActor* HitTarget)

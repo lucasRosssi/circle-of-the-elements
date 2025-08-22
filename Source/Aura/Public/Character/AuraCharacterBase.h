@@ -87,6 +87,8 @@ public:
 
   void ChangeMovementSpeed(float InMovementSpeed);
 
+  void ApplyEffectToSelf(const TSubclassOf<UGameplayEffect>& GameplayEffectClass, float Level) const;
+
   UTeamComponent* GetTeamComponent() const { return TeamComponent; }
 
   UAuraAbilitySystemComponent* GetAuraASC();
@@ -119,9 +121,7 @@ protected:
   virtual void InitializeAttributes();
   
   void RegisterElementalFlowEvents();
-
-  void ApplyEffectToSelf(TSubclassOf<UGameplayEffect> GameplayEffectClass, float Level) const;
-
+  
   void ReleaseWeapon();
   void RagdollMesh(const FVector& DeathImpulse = FVector::ZeroVector);
 
@@ -218,9 +218,9 @@ private:
 
   TWeakObjectPtr<UCharacterAnimInstance> AnimInstance = nullptr;
   
-  void CheckVelocityNearStop();
+  void EndKnockback();
 
-  FTimerHandle VelocityCheckTimer;
+  FTimerHandle KnockbackEndTimer;
 
   UPROPERTY()
   UAuraAbilitySystemComponent* AuraASC = nullptr;

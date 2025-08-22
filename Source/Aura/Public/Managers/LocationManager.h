@@ -9,6 +9,9 @@
 #include "Enums/Region.h"
 #include "LocationManager.generated.h"
 
+class UCombatManager;
+class AAuraCharacterBase;
+class AAuraHero;
 struct FAreaTypeData;
 enum class ECardinalDirection : uint8;
 class AEnemySpawner;
@@ -140,10 +143,18 @@ private:
   void HandleDirectionalObstacles(const FAreaData& CurrentArea);
   void HandleGates(const FAreaData& CurrentArea);
   void PlacePlayerInArea(const FAreaData& AreaData);
-  
+  void ApplyAreaElementalFlowToCharacter(const AAuraCharacterBase* Character);
+  UFUNCTION()
+  void OnEnemySpawned(AAuraEnemy* Enemy);
+
+  AAuraHero* GetPlayerHero();
+  TWeakObjectPtr<AAuraHero> PlayerHero;
   
   URegionInfo* GetRegionInfo();
   TWeakObjectPtr<URegionInfo> RegionInfo;
+
+  UCombatManager* GetCombatManager();
+  TWeakObjectPtr<UCombatManager> CombatManager;
   
   TArray<FAreaData> EntrancesPool;
   TArray<FAreaData> DefaultArenasPool;

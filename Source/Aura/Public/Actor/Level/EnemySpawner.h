@@ -9,8 +9,8 @@
 class UNiagaraSystem;
 class AAuraEnemy;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEnemySpawned, AActor*, Enemy);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSpawnedEnemyDeath, AActor*, Enemy);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEnemySpawned, AAuraEnemy*, Enemy);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSpawnedEnemyDeath, AAuraEnemy*, Enemy);
 
 UCLASS()
 class AURA_API AEnemySpawner : public AActor
@@ -20,7 +20,6 @@ class AURA_API AEnemySpawner : public AActor
 public:	
 	AEnemySpawner();
 
-  FName GetAreaName() const { return AreaName; }
   void SetEnemyLevel(int32 InLevel) { EnemyLevel = InLevel;  }
 
 	UFUNCTION(BlueprintCallable)
@@ -57,9 +56,6 @@ protected:
 		meta=(EditCondition="bOverrideEnemyLevel", EditConditionHides)
 		)
 	int32 LevelOverride = 1;
-
-  UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category="Location")
-  FName AreaName;
 
 private:
 	UPROPERTY()

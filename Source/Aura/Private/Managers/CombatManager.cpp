@@ -4,8 +4,11 @@
 #include "Managers/CombatManager.h"
 
 #include "Actor/Level/EnemySpawner.h"
+#include "Aura/Aura.h"
 #include "Aura/AuraLogChannels.h"
 #include "Aura/AuraMacros.h"
+#include "Character/AuraEnemy.h"
+#include "Components/TeamComponent.h"
 #include "Data/EnemiesInfo.h"
 #include "Kismet/GameplayStatics.h"
 #include "Data/RegionInfo.h"
@@ -70,6 +73,23 @@ void UCombatManager::FinishCombat()
 {
   UGameplayStatics::SetGlobalTimeDilation(this, TimeDilationOnFinishCombat);
 
+  TArray<AActor*> Enemies;
+  UGameplayStatics::GetAllActorsOfClass(
+    GetOwner(),
+    AAuraEnemy::StaticClass(),
+    Enemies
+  );
+
+  for (AActor* Actor : Enemies)
+  {
+    if (AAuraEnemy* Enemy = Cast<AAuraEnemy>(Actor))
+    {
+      if (Enemy->GetTeamComponent()->TeamID == PLAYER_TEAM || Enemy->IsDead_Implementation()) continue;
+
+      Enemy->Die();
+    }
+  }
+
   FTimerHandle SlowMotionTimerHandle;
   GetWorld()->GetTimerManager().SetTimer(
     SlowMotionTimerHandle,
@@ -129,7 +149,7 @@ void UCombatManager::GetAvailableSpawners()
     if (AEnemySpawner* EnemySpawner = Cast<AEnemySpawner>(Spawner))
     {
       EnemySpawners.Add(EnemySpawner);
-      // EnemySpawner->EnemySpawnedDelegate.AddDynamic(this, &UCombatManager::OnEnemySpawned);
+      EnemySpawner->EnemySpawnedDelegate.AddDynamic(this, &UCombatManager::OnEnemySpawned);
       EnemySpawner->SpawnedEnemyDeathDelegate.AddDynamic(this, &UCombatManager::OnEnemyKilled);
     }
   }
@@ -165,12 +185,12 @@ void UCombatManager::GetEnemyWaves()
   TotalWaves = EnemyWaves.Num();
 }
 
-void UCombatManager::OnEnemySpawned(AActor* Enemy)
+void UCombatManager::OnEnemySpawned(AAuraEnemy* Enemy)
 {
-  EnemyCount += 1;
+  OnEnemySpawnedDelegate.Broadcast(Enemy);
 }
 
-void UCombatManager::OnEnemyKilled(AActor* Enemy)
+void UCombatManager::OnEnemyKilled(AAuraEnemy* Enemy)
 {
   EnemyCount -= 1;
   if (EnemyCount <= 0)

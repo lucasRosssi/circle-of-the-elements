@@ -9,7 +9,6 @@
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
 #include "AbilitySystem/Data/StatusEffectInfo.h"
-#include "Enums/StatusEffectPosition.h"
 #include "Interfaces/CombatInterface.h"
 #include "Utils/AuraSystemsLibrary.h"
 
@@ -104,43 +103,20 @@ void UStatusEffectsManager::MulticastActivateStatusEffect_Implementation(
 	)
 {
 	USceneComponent* AttachmentComponent;
-  if (StatusData.bInWeapon)
+  USkeletalMeshComponent* WeaponMesh = ICombatInterface::Execute_GetWeapon(GetOwner());
+  if (StatusData.bInWeapon && WeaponMesh && WeaponMesh->GetSkeletalMeshAsset())
   {
-    AttachmentComponent = ICombatInterface::Execute_GetWeapon(GetOwner());
+    AttachmentComponent = WeaponMesh;
   }
   else
   {
-	  switch (StatusData.Position)
-	  {
-	  case EStatusEffectPosition::Top:
-		  {
-			  AttachmentComponent = ICombatInterface
-				  ::Execute_GetTopStatusEffectSceneComponent(GetOwner());
-			  break;
-		  }
-	  case EStatusEffectPosition::Center:
-	    {
-	      AttachmentComponent = ICombatInterface
-          ::Execute_GetCenterStatusEffectSceneComponent(GetOwner());
-	      break;
-	    }
-	  case EStatusEffectPosition::Bottom:
-		  {
-			  AttachmentComponent = ICombatInterface
-				  ::Execute_GetBottomStatusEffectSceneComponent(GetOwner());
-			  break;
-		  }
-	  default:
-		  {
-			  AttachmentComponent = GetOwner()->GetRootComponent();
-		  }
-    }
+	  AttachmentComponent = ICombatInterface::Execute_GetAvatarMesh(GetOwner());
 	}
 	
 	UNiagaraComponent* NiagaraComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(
 				StatusData.NiagaraSystem,
 				AttachmentComponent,
-				StatusData.WeaponSocketName,
+				StatusData.SocketName,
 				FVector(0),
 				FRotator(0),
 				EAttachLocation::KeepRelativeOffset,

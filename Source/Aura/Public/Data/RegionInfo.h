@@ -9,8 +9,9 @@
 #include "Enums/Region.h"
 #include "RegionInfo.generated.h"
 
-enum class ECardinalDirection : uint8;
 class UGameplayEffect;
+class UAuraStatusEffect;
+enum class ECardinalDirection : uint8;
 struct FAvailableLevels;
 class AAuraEnemy;
 
@@ -86,6 +87,8 @@ struct FAreaData
   TSet<ECardinalDirection> OpenDirections;
   
   FGameplayTag ElementTag;
+
+  TSubclassOf<UAuraStatusEffect> ElementalFlowEffect;
 
   UPROPERTY(BlueprintReadOnly)
   bool bCombatFinished = false;

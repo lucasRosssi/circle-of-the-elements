@@ -145,5 +145,5 @@ void AEnemySpawner::BeginPlay()
 
 void AEnemySpawner::OnSpawnedEnemyDeath(AActor* Enemy)
 {
-	SpawnedEnemyDeathDelegate.Broadcast(Enemy);
+	SpawnedEnemyDeathDelegate.Broadcast(Cast<AAuraEnemy>(Enemy));
 }
