@@ -3,12 +3,17 @@
 
 #include "Managers/LocationManager.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
 #include "AuraGameplayTags.h"
+#include "AbilitySystem/Data/AbilityInfo.h"
+#include "AbilitySystem/GameplayEffects/AuraStatusEffect.h"
 #include "Actor/ElementalProp.h"
 #include "Actor/Level/Gate.h"
 #include "Algo/RandomShuffle.h"
 #include "Aura/Aura.h"
 #include "Aura/AuraMacros.h"
+#include "Character/AuraEnemy.h"
+#include "Character/AuraHero.h"
 #include "GameFramework/PlayerStart.h"
 #include "Kismet/GameplayStatics.h"
 #include "Data/RegionInfo.h"
@@ -159,14 +164,56 @@ void ULocationManager::PlacePlayerInArea(const FAreaData& AreaData)
       break;
     }
   }
-
-  APawn* Player = UGameplayStatics::GetPlayerPawn(this, 0);
-  Player->SetActorTransform(
+  
+  GetPlayerHero()->SetActorTransform(
     Start->GetActorTransform(),
     false,
     nullptr,
     ETeleportType::ResetPhysics
   );
+}
+
+void ULocationManager::ApplyAreaElementalFlowToCharacter(const AAuraCharacterBase* Character)
+{
+  UAbilitySystemComponent* ASC = Character->GetAbilitySystemComponent();
+  
+  ASC->RemoveActiveEffectsWithGrantedTags(
+        FGameplayTagContainer({ FAuraGameplayTags::Get().StatusEffects_Buff_ElementalFlow })  
+      );
+  FGameplayEffectContextHandle ContextHandle = ASC->MakeEffectContext();
+  ContextHandle.AddSourceObject(Character);
+      
+  const FGameplayEffectSpecHandle SpecHandle = ASC->MakeOutgoingSpec(
+    GetCurrentAreaRef().ElementalFlowEffect,
+    1,
+    ContextHandle
+  );
+  UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(
+    SpecHandle,
+    FAuraGameplayTags::Get().StatusEffects_Duration,
+    0.f
+  );
+      
+  ASC->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data);
+}
+
+// ReSharper disable once CppParameterMayBeConstPtrOrRef
+void ULocationManager::OnEnemySpawned(AAuraEnemy* Enemy)
+{
+  if (!GetCurrentAreaRef().ElementalFlowEffect) return;
+  
+  ApplyAreaElementalFlowToCharacter(Enemy);
+}
+
+AAuraHero* ULocationManager::GetPlayerHero()
+{
+  if (!PlayerHero.IsValid())
+  {
+    APawn* Player = UGameplayStatics::GetPlayerPawn(this, 0);
+    PlayerHero = Cast<AAuraHero>(Player);
+  }
+
+  return PlayerHero.Get();
 }
 
 void ULocationManager::InitLocation()
@@ -233,7 +280,19 @@ void ULocationManager::InitArea()
   
   HandleGates(CurrentArea);
   HandleDirectionalObstacles(CurrentArea);
-  if (CurrentArea.ElementTag.IsValid()) HandleElementalProps(CurrentArea);
+  if (CurrentArea.ElementTag.IsValid())
+  {
+    HandleElementalProps(CurrentArea);
+  }
+  if (CurrentArea.ElementalFlowEffect)
+  {
+    ApplyAreaElementalFlowToCharacter(GetPlayerHero());
+    if (GetCombatManager())
+    {
+      CombatManager->OnEnemySpawnedDelegate.AddUniqueDynamic(this, &ULocationManager::OnEnemySpawned);
+    }
+    
+  }
   PlacePlayerInArea(CurrentArea);
   
   OnInitAreaDelegate.Broadcast();
@@ -378,9 +437,7 @@ FAreaData ULocationManager::GetExitFromPool()
 
 void ULocationManager::HandleArenaGeneration(const FAreaData& AreaData)
 {
-  UCombatManager* CombatManager = UAuraSystemsLibrary::GetCombatManager(GetOwner());
-
-  GUARD(CombatManager, , TEXT("CombatManager is invalid!"))
+  GUARD(GetCombatManager(), , TEXT("CombatManager is invalid!"))
 
   int32& ArenaLevel = AreaData.IsSpiritArena() ? GeneratedSpiritArenaLevel : GeneratedArenaLevel;
   
@@ -541,6 +598,10 @@ void ULocationManager::AssignSpiritArenaElement(FAreaData& NewAreaData)
   {
     const FGameplayTag& EssenceTag = RewardManager->GetNextRewardInBag();
     NewAreaData.ElementTag = FAuraGameplayTags::Get().EssenceToAbility[EssenceTag];
+    
+    const UAbilityInfo* AbilitiesInfo = UAuraSystemsLibrary::GetAbilitiesInfo(GetOwner());
+    const FAbilityElementInfo& ElementInfo = AbilitiesInfo->FindElementInfo(NewAreaData.ElementTag);
+    NewAreaData.ElementalFlowEffect = ElementInfo.ElementalFlowEffect;
   }
 }
 
@@ -582,4 +643,14 @@ URegionInfo* ULocationManager::GetRegionInfo()
 
   GUARD(RegionInfo.IsValid(), nullptr, TEXT("RegionInfo is invalid!"))
   return RegionInfo.Get();
+}
+
+UCombatManager* ULocationManager::GetCombatManager()
+{
+  if (!CombatManager.IsValid())
+  {
+    CombatManager = UAuraSystemsLibrary::GetCombatManager(GetOwner());
+  }
+
+  return CombatManager.Get();
 }

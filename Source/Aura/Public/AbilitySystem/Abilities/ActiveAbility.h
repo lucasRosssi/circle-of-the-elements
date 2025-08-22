@@ -39,6 +39,8 @@ public:
   void OnUseElementalFlow(const FGameplayTag& ElementalFlowTag);
   UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
   void OnElementalFlowUsed(const FGameplayTag& ElementalFlowTag);
+  UFUNCTION(BlueprintCallable)
+  void CommitElementalFlow();
   
   
 	UFUNCTION(BlueprintCallable)
@@ -83,6 +85,15 @@ protected:
   bool bChangesElementalFlow = true;
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Ability Defaults|Elemental Flow")
   bool bUsesElementalFlow = true;
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Ability Defaults|Elemental Flow", meta=(EditCondition="bUsesElementalFlow"))
+  bool bHasDefaultFlowProperties = false;
+  UPROPERTY(
+    EditDefaultsOnly,
+    BlueprintReadOnly,
+    Category="Ability Defaults|Elemental Flow",
+    meta=(EditCondition="bHasDefaultFlowProperties && bUsesElementalFlow", ForceInline, Categories="StatusEffects.Buff.ElementalFlow")
+  )
+  TMap<FGameplayTag, FStatusEffectApplicationData> DefaultElementsStatusEffects;
 
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Ability Defaults|Activation")
   EAbilityActivationMode ActivationMode = EAbilityActivationMode::Default;

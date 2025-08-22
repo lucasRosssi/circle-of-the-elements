@@ -3,8 +3,7 @@
 
 #include "AbilitySystem/Abilities/SummonAbility.h"
 
-#include "Aura/Aura.h"
-#include "Character/AuraCharacterBase.h"
+#include "Character/AuraEnemy.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/TeamComponent.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -107,12 +106,19 @@ AAuraCharacterBase* USummonAbility::SpawnMinion(FVector Location)
 		Minion->InitSummon(TeamComponent->TeamID);
 		ActiveMinions++;
 
-		if (TeamComponent->TeamID != PLAYER_TEAM)
-		{
-			UCombatManager* CombatManager =	UAuraSystemsLibrary::GetCombatManager(GetAvatarActorFromActorInfo());
-			CombatManager->OnEnemySpawned(Minion);
-			Minion->OnDeath.AddDynamic(CombatManager, &UCombatManager::OnEnemyKilled);
-		}
+	  AAuraEnemy* EnemyMinion = Cast<AAuraEnemy>(Minion);
+		UCombatManager* CombatManager =	UAuraSystemsLibrary::GetCombatManager(GetAvatarActorFromActorInfo());
+	  if (CombatManager && EnemyMinion)
+	  {
+		  CombatManager->OnEnemySpawned(EnemyMinion);
+	    
+		  // if (TeamComponent->TeamID != PLAYER_TEAM)
+		  // {
+		  //   // CombatManager->IncrementEnemyCount();
+			 //  // Minion->OnDeath.AddDynamic(CombatManager, &UCombatManager::OnEnemyKilled);
+		  // }
+	  }
+	  
 	}
 	
 	return Minion;

@@ -31,10 +31,10 @@ AAuraCharacterBase::AAuraCharacterBase()
       GetCapsuleComponent()->GetScaledCapsuleHalfHeight()
     )
   );
-  
+
   CenterStatusEffectSceneComponent = CreateDefaultSubobject<USceneComponent>("CenterStatusEffectSceneComponent");
   CenterStatusEffectSceneComponent->SetupAttachment(GetRootComponent());
-  
+
   BottomStatusEffectSceneComponent = CreateDefaultSubobject<USceneComponent>("BottomStatusEffectSceneComponent");
   BottomStatusEffectSceneComponent->SetupAttachment(GetRootComponent());
   BottomStatusEffectSceneComponent->SetRelativeLocation(
@@ -119,6 +119,8 @@ USkeletalMeshComponent* AAuraCharacterBase::GetAvatarMesh_Implementation()
 
 void AAuraCharacterBase::MulticastHandleDeath_Implementation(const FVector& DeathImpulse)
 {
+  bDead = true;
+
   UGameplayStatics::PlaySoundAtLocation(
     this,
     DeathSound,
@@ -126,7 +128,6 @@ void AAuraCharacterBase::MulticastHandleDeath_Implementation(const FVector& Deat
     GetActorRotation()
   );
 
-  bDead = true;
   OnDeath.Broadcast(this);
 
   ReleaseWeapon();
@@ -155,7 +156,9 @@ void AAuraCharacterBase::RegisterElementalFlowEvents()
 {
   const FAuraGameplayTags& AuraTags = FAuraGameplayTags::Get();
 
-  const TArray<FGameplayTag>& ElementalFlowTags = *AuraTags.ParentsToChildren.Find(AuraTags.StatusEffects_Buff_ElementalFlow);
+  const TArray<FGameplayTag>& ElementalFlowTags = *AuraTags.ParentsToChildren.Find(
+    AuraTags.StatusEffects_Buff_ElementalFlow
+  );
   for (const auto Tag : ElementalFlowTags)
   {
     AbilitySystemComponent->RegisterGameplayTagEvent(
@@ -278,15 +281,21 @@ void AAuraCharacterBase::ApplyKnockback_Implementation(const FVector& KnockbackF
 
   GetCharacterMovement()->StopMovementImmediately();
   GetCharacterMovement()->bUseSeparateBrakingFriction = true;
+
   LaunchCharacter(KnockbackForce, true, true);
+  
+  const float InitialSpeed = KnockbackForce.Size();
+  const float BrakingDeceleration = GetCharacterMovement()->BrakingDecelerationWalking;
+  const float KnockbackDuration = BrakingDeceleration > 0
+    ? InitialSpeed / GetCharacterMovement()->BrakingDecelerationWalking
+    : 0.5f;
 
   GetWorld()->GetTimerManager().SetTimer(
-    VelocityCheckTimer,
+    KnockbackEndTimer,
     this,
-    &AAuraCharacterBase::CheckVelocityNearStop,
-    0.2f,
-    true,
-    0.2f
+    &AAuraCharacterBase::EndKnockback,
+    KnockbackDuration,
+    false
   );
 }
 
@@ -373,7 +382,7 @@ void AAuraCharacterBase::InitAbilityActorInfo()
 }
 
 void AAuraCharacterBase::ApplyEffectToSelf(
-  TSubclassOf<UGameplayEffect> GameplayEffectClass,
+  const TSubclassOf<UGameplayEffect>& GameplayEffectClass,
   float Level
 ) const
 {
@@ -464,19 +473,15 @@ UCharacterAnimInstance* AAuraCharacterBase::GetAnimInstance()
   return AnimInstance.IsValid() ? AnimInstance.Get() : nullptr;
 }
 
-void AAuraCharacterBase::CheckVelocityNearStop()
+void AAuraCharacterBase::EndKnockback()
 {
-  if (GetVelocity().Length() > 1.f) return;
-
-  const FGameplayEventData EventData = FGameplayEventData();
+  const FGameplayEventData EventData;
   GetAuraASC()->HandleGameplayEvent(
     FAuraGameplayTags::Get().StatusEffects_Incapacitation_Knockback,
     &EventData
   );
 
   GetCharacterMovement()->bUseSeparateBrakingFriction = false;
-
-  GetWorld()->GetTimerManager().ClearTimer(VelocityCheckTimer);
 }
 
 void AAuraCharacterBase::ChangeMovementSpeed(float InMovementSpeed)

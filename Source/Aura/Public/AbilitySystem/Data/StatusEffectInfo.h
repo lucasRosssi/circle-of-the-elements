@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
 #include "Engine/DataAsset.h"
-#include "Enums/StatusEffectPosition.h"
 #include "StatusEffectInfo.generated.h"
 
 class UNiagaraSystem;
@@ -25,11 +24,8 @@ struct FStatusEffectData
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(EditCondition="NiagaraSystem != nullptr", EditConditionHides))
   bool bInWeapon = false;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(EditCondition="!bInWeapon", EditConditionHides))
-	EStatusEffectPosition Position = EStatusEffectPosition::Center;
-
-  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(EditCondition="bInWeapon", EditConditionHides))
-  FName WeaponSocketName = FName();
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+  FName SocketName = FName();
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	FLinearColor MeshTint = FLinearColor::Black;

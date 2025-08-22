@@ -12,7 +12,7 @@
 class ULocationManager;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnCombatStarted);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnCombatFinished);
-
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEnemySpawnedDelegate, AAuraEnemy*, Enemy);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnLastEnemyKilled);
 
 class AEnemySpawner;
@@ -32,19 +32,22 @@ public:
   void SetCurrentBoss(AActor* InBoss) { CurrentBoss = InBoss; }
 
   void SetCurrentCombatData();
+  void IncrementEnemyCount() { EnemyCount++; }
 
   UFUNCTION(BlueprintCallable)
   void StartCombat();
 
   UFUNCTION()
-  void OnEnemySpawned(AActor* Enemy);
+  void OnEnemySpawned(AAuraEnemy* Enemy);
   UFUNCTION()
-  void OnEnemyKilled(AActor* Enemy);
+  void OnEnemyKilled(AAuraEnemy* Enemy);
 
   UPROPERTY(BlueprintAssignable)
   FOnCombatFinished OnCombatStartedDelegate;
   UPROPERTY(BlueprintAssignable)
   FOnCombatFinished OnCombatFinishedDelegate;
+  UPROPERTY(BlueprintAssignable)
+  FOnEnemySpawnedDelegate OnEnemySpawnedDelegate;
   UPROPERTY(BlueprintAssignable)
   FOnLastEnemyKilled OnLastEnemyKilledDelegate;
 
