@@ -41,6 +41,8 @@ public:
   void OnElementalFlowUsed(const FGameplayTag& ElementalFlowTag);
   UFUNCTION(BlueprintCallable)
   void CommitElementalFlow();
+
+  FGameplayTag GetCurrentElementalFlowTag() const { return CurrentElementalFlowTag; }
   
   
 	UFUNCTION(BlueprintCallable)

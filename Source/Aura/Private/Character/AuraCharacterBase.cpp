@@ -10,6 +10,7 @@
 #include "Components/CapsuleComponent.h"
 #include "AuraGameplayTags.h"
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
+#include "AbilitySystem/AuraAttributeSet.h"
 #include "AbilitySystem/Abilities/SummonAbility.h"
 #include "Animation/CharacterAnimInstance.h"
 #include "Components/BoxComponent.h"
@@ -94,7 +95,13 @@ UAnimMontage* AAuraCharacterBase::GetDodgeMontage_Implementation()
 
 void AAuraCharacterBase::Die(const FVector& DeathImpulse)
 {
+  AttributeSet->SetHealth(0.f);
   MulticastHandleDeath(DeathImpulse);
+}
+
+void AAuraCharacterBase::CallDie_Implementation(const FVector& DeathImpulse)
+{
+  Die(DeathImpulse);
 }
 
 void AAuraCharacterBase::SetCombatTarget_Implementation(AActor* InCombatTarget)

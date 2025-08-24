@@ -59,8 +59,8 @@ public:
   virtual USkeletalMeshComponent* GetWeapon_Implementation() override;
   virtual USkeletalMeshComponent* GetAvatarMesh_Implementation() override;
   virtual FVector GetAbilitySocketLocation_Implementation(const FName SocketName, bool bSocketInWeapon = true) override;
-  ;
   virtual void Die(const FVector& DeathImpulse = FVector::ZeroVector) override;
+  virtual void CallDie_Implementation(const FVector& DeathImpulse) override;
   virtual bool IsDead_Implementation() const override;
   virtual AActor* GetAvatar_Implementation() override;
   virtual UNiagaraSystem* GetBloodEffect_Implementation() override;

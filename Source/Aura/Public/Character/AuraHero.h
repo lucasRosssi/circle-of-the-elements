@@ -68,6 +68,9 @@ public:
 	void EndDeath();
 
   void BackToHome();
+
+  UFUNCTION(BlueprintCallable)
+  void TeleportToLastSafeLocation();
   
 	UFUNCTION(BlueprintPure, meta=(DefaultToSelf="Target", HidePin="Target"))
 	AAuraPlayerController* GetAuraPlayerController();
@@ -78,6 +81,7 @@ protected:
 	virtual void BeginPlay() override;
 
   virtual void InitializeAttributes() override;
+  void RegisterSafeGroundEvent();
 
   UFUNCTION(BlueprintImplementableEvent)
   void SetInteractionWidgetText(const FText& Text);
@@ -108,6 +112,8 @@ protected:
 private:
 	virtual void InitAbilityActorInfo() override;
 
+  void SaveSafeGroundLocation();
+
   UFUNCTION()
   void SaveCurrentHealth();
 
@@ -124,5 +130,8 @@ private:
 
   UPROPERTY()
   TObjectPtr<UAuraSaveGame> SaveGame;
+
+  FTimerHandle SafeGroundTimer;
+  FVector LastSafeGroundLocation = FVector();
   
 };

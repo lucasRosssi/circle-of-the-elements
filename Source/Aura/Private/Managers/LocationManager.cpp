@@ -224,19 +224,33 @@ void ULocationManager::InitLocation()
   LoadArea(*AreaData);
 }
 
-void ULocationManager::HandleDirectionalObstacles(const FAreaData& CurrentArea)
+void ULocationManager::HandleDirectionalProps(const FAreaData& CurrentArea, const FName& PropTag)
 {
-  TArray<AActor*> DirectionalObstacleActors;
-  UGameplayStatics::GetAllActorsWithTag(GetOwner(), DIRECTIONAL_OBSTACLE_TAG, DirectionalObstacleActors);
-  for (AActor* Actor : DirectionalObstacleActors)
+  TArray<AActor*> DirectionClosedProps;
+  UGameplayStatics::GetAllActorsWithTag(GetOwner(), PropTag, DirectionClosedProps);
+  for (AActor* Actor : DirectionClosedProps)
   {
     bool bShouldDestroy = false;
     for (const ECardinalDirection Direction : CurrentArea.OpenDirections)
     {
       FString DirectionString = UUtilityLibrary::GetDirectionString(Direction);
-      if (Actor->Tags.Contains(DirectionString))
+      if (PropTag == DIRECTION_CLOSED_PROP_TAG)
+      {
+        bShouldDestroy = false;
+        if (Actor->Tags.Contains(DirectionString))
+        {
+          bShouldDestroy = true;
+          break;
+        }
+      }
+      else if (PropTag == DIRECTION_OPEN_PROP_TAG)
       {
         bShouldDestroy = true;
+        if (Actor->Tags.Contains(DirectionString))
+        {
+          bShouldDestroy = false;
+          break;
+        }
       }
     }
 
@@ -279,7 +293,8 @@ void ULocationManager::InitArea()
   const FAreaData& CurrentArea = GetCurrentAreaRef();
   
   HandleGates(CurrentArea);
-  HandleDirectionalObstacles(CurrentArea);
+  HandleDirectionalProps(CurrentArea, DIRECTION_CLOSED_PROP_TAG);
+  HandleDirectionalProps(CurrentArea, DIRECTION_OPEN_PROP_TAG);
   if (CurrentArea.ElementTag.IsValid())
   {
     HandleElementalProps(CurrentArea);

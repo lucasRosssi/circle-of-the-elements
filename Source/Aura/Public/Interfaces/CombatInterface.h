@@ -53,6 +53,9 @@ public:
 	UAnimMontage* GetStunMontage();
 
 	virtual void Die(const FVector& DeathImpulse) = 0;
+
+  UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+  void CallDie(const FVector& DeathImpulse);
 	
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	void SetCombatTarget(AActor* InCombatTarget);
