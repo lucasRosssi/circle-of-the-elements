@@ -57,6 +57,7 @@ void AAuraHero::PossessedBy(AController* NewController)
   InitializeUpgrades();
   InitializeAbilities();
   RegisterElementalFlowEvents();
+  RegisterSafeGroundEvent();
 
   if (ActiveCamera)
   {
@@ -346,6 +347,11 @@ void AAuraHero::BackToHome()
   UAuraSystemsLibrary::BackToHome(this);
 }
 
+void AAuraHero::TeleportToLastSafeLocation()
+{
+  SetActorLocation(LastSafeGroundLocation, false, nullptr, ETeleportType::ResetPhysics);
+}
+
 AAuraPlayerController* AAuraHero::GetAuraPlayerController()
 {
   if (AuraPlayerController == nullptr)
@@ -452,6 +458,17 @@ void AAuraHero::InitializeAttributes()
   // }
 }
 
+void AAuraHero::RegisterSafeGroundEvent()
+{
+  GetWorldTimerManager().SetTimer(
+    SafeGroundTimer,
+    this,
+    &AAuraHero::SaveSafeGroundLocation,
+    0.25,
+    true
+  );
+}
+
 void AAuraHero::InitAbilityActorInfo()
 {
   AbilitySystemComponent = GetAuraPlayerState()->GetAbilitySystemComponent();
@@ -481,6 +498,14 @@ void AAuraHero::InitAbilityActorInfo()
       AuraPlayerState,
       AbilitySystemComponent,
       AttributeSet);
+  }
+}
+
+void AAuraHero::SaveSafeGroundLocation()
+{
+  if (GetCharacterMovement()->IsMovingOnGround())
+  {
+    LastSafeGroundLocation = GetActorLocation();
   }
 }
 

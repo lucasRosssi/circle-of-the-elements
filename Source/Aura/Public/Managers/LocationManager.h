@@ -140,7 +140,7 @@ protected:
   int32 MaxAreaCountToBacktrack = 17;
 
 private:
-  void HandleDirectionalObstacles(const FAreaData& CurrentArea);
+  void HandleDirectionalProps(const FAreaData& CurrentArea, const FName& PropTag);
   void HandleGates(const FAreaData& CurrentArea);
   void PlacePlayerInArea(const FAreaData& AreaData);
   void ApplyAreaElementalFlowToCharacter(const AAuraCharacterBase* Character);

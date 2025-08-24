@@ -21,7 +21,8 @@
 
 #define MAX_LEVEL 20
 
-#define DIRECTIONAL_OBSTACLE_TAG FName("DirObs")
+#define DIRECTION_CLOSED_PROP_TAG FName("DirClosed")
+#define DIRECTION_OPEN_PROP_TAG FName("DirOpen")
 
 #define ECC_Projectile ECollisionChannel::ECC_GameTraceChannel1
 #define ECC_Target ECollisionChannel::ECC_GameTraceChannel2
