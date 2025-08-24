@@ -84,6 +84,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Projectile|Homing", meta=(EditCondition="bHoming"))
 	EProjectileHomingMode HomingMode = EProjectileHomingMode::OneTarget;
 
+  UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Projectile|Elemental Flow")
+  bool bApplyElementalFlowNiagara = false;
+
 private:
   TArray<FTransform> HandleParallelProjectiles(
     const FVector& SocketLocation,

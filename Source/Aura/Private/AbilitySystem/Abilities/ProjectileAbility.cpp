@@ -4,10 +4,13 @@
 #include "AbilitySystem/Abilities/ProjectileAbility.h"
 
 #include "AbilitySystemComponent.h"
+#include "NiagaraFunctionLibrary.h"
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
+#include "AbilitySystem/Data/StatusEffectInfo.h"
 #include "Actor/AuraProjectile.h"
 #include "Components/SphereComponent.h"
 #include "Interfaces/CombatInterface.h"
+#include "Utils/AuraSystemsLibrary.h"
 
 void UProjectileAbility::EndAbility(
 	const FGameplayAbilitySpecHandle Handle,
@@ -174,6 +177,25 @@ void UProjectileAbility::SpawnProjectile(
     Projectile->TargetTeam = AbilityTargetTeam;
     Projectile->AbilityParams = MakeAbilityParamsFromDefaults();
     Projectile->FinishSpawning(SpawnTransform);
+
+    if (bApplyElementalFlowNiagara)
+    {
+      const UStatusEffectInfo* Info = UAuraSystemsLibrary::GetStatusEffectInfo(GetAvatarActorFromActorInfo());
+      const FStatusEffectData* Data = Info->StatusEffects.Find(GetCurrentElementalFlowTag());
+      
+      if (Data)
+      {
+        UNiagaraFunctionLibrary::SpawnSystemAttached(
+          Data->NiagaraSystem,
+          Projectile->GetRootComponent(),
+          FName(),
+          FVector(0),
+          FRotator(0),
+          EAttachLocation::KeepRelativeOffset,
+          true
+        );
+      }
+    }
   }
 	
 }
