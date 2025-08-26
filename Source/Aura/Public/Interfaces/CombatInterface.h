@@ -81,6 +81,13 @@ public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	USoundBase* GetHitSound();
 
+  UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+  UNiagaraComponent* GetBodyNiagaraComponent();
+  UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+  void ActivateBodyNiagara(UNiagaraSystem* NiagaraSystem);
+  UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+  void DeactivateBodyNiagara();
+
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	ECharacterType GetCharacterType();
 
@@ -92,14 +99,6 @@ public:
 
   UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
   void ApplyAttraction(const FVector& AttractionPoint, float DeltaTime, float InterpSpeed);
-
-
-  UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	USceneComponent* GetTopStatusEffectSceneComponent();
-  UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-  USceneComponent* GetCenterStatusEffectSceneComponent();
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	USceneComponent* GetBottomStatusEffectSceneComponent();
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	UBoxComponent* EnableWeaponCollision(bool bEnable);

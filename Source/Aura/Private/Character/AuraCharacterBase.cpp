@@ -9,6 +9,7 @@
 #include "Aura/Aura.h"
 #include "Components/CapsuleComponent.h"
 #include "AuraGameplayTags.h"
+#include "NiagaraComponent.h"
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "AbilitySystem/AuraAttributeSet.h"
 #include "AbilitySystem/Abilities/SummonAbility.h"
@@ -23,28 +24,6 @@ AAuraCharacterBase::AAuraCharacterBase()
   PrimaryActorTick.bCanEverTick = false;
 
   StatusEffectsManager = CreateDefaultSubobject<UStatusEffectsManager>("StatusEffectsManager");
-  TopStatusEffectSceneComponent = CreateDefaultSubobject<USceneComponent>("TopStatusEffectSceneComponent");
-  TopStatusEffectSceneComponent->SetupAttachment(GetRootComponent());
-  TopStatusEffectSceneComponent->SetRelativeLocation(
-    FVector(
-      0.f,
-      0.f,
-      GetCapsuleComponent()->GetScaledCapsuleHalfHeight()
-    )
-  );
-
-  CenterStatusEffectSceneComponent = CreateDefaultSubobject<USceneComponent>("CenterStatusEffectSceneComponent");
-  CenterStatusEffectSceneComponent->SetupAttachment(GetRootComponent());
-
-  BottomStatusEffectSceneComponent = CreateDefaultSubobject<USceneComponent>("BottomStatusEffectSceneComponent");
-  BottomStatusEffectSceneComponent->SetupAttachment(GetRootComponent());
-  BottomStatusEffectSceneComponent->SetRelativeLocation(
-    FVector(
-      0.f,
-      0.f,
-      -GetCapsuleComponent()->GetScaledCapsuleHalfHeight()
-    )
-  );
 
   Weapon = CreateDefaultSubobject<USkeletalMeshComponent>("Weapon");
   Weapon->SetupAttachment(GetMesh(), FName("WeaponHandSocket"));
@@ -55,6 +34,10 @@ AAuraCharacterBase::AAuraCharacterBase()
   WeaponHitBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
   WeaponHitBox->SetCollisionResponseToAllChannels(ECR_Ignore);
   WeaponHitBox->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
+
+  BodyNiagaraComponent = CreateDefaultSubobject<UNiagaraComponent>("BodyNiagaraComponent");
+  BodyNiagaraComponent->SetupAttachment(GetMesh());
+  BodyNiagaraComponent->bAutoActivate = false;
 
   TeamComponent = CreateDefaultSubobject<UTeamComponent>("TeamComponent");
 
@@ -267,6 +250,11 @@ USoundBase* AAuraCharacterBase::GetHitSound_Implementation()
   return HitSound;
 }
 
+UNiagaraComponent* AAuraCharacterBase::GetBodyNiagaraComponent_Implementation()
+{
+  return BodyNiagaraComponent;
+}
+
 ECharacterType AAuraCharacterBase::GetCharacterType_Implementation()
 {
   return CharacterType;
@@ -331,21 +319,6 @@ void AAuraCharacterBase::ApplyAttraction_Implementation(
   );
 }
 
-USceneComponent* AAuraCharacterBase::GetTopStatusEffectSceneComponent_Implementation()
-{
-  return TopStatusEffectSceneComponent;
-}
-
-USceneComponent* AAuraCharacterBase::GetCenterStatusEffectSceneComponent_Implementation()
-{
-  return CenterStatusEffectSceneComponent;
-}
-
-USceneComponent* AAuraCharacterBase::GetBottomStatusEffectSceneComponent_Implementation()
-{
-  return BottomStatusEffectSceneComponent;
-}
-
 UBoxComponent* AAuraCharacterBase::EnableWeaponCollision_Implementation(bool bEnable)
 {
   if (bEnable)
@@ -405,6 +378,17 @@ void AAuraCharacterBase::ApplyEffectToSelf(
     ContextHandle
   );
   ASC->ApplyGameplayEffectSpecToTarget(*SpecHandle.Data.Get(), ASC);
+}
+
+void AAuraCharacterBase::ActivateBodyNiagara_Implementation(UNiagaraSystem* NiagaraSystem)
+{
+  BodyNiagaraComponent->SetAsset(NiagaraSystem);
+  BodyNiagaraComponent->Activate();
+}
+
+void AAuraCharacterBase::DeactivateBodyNiagara_Implementation()
+{
+  BodyNiagaraComponent->Deactivate();
 }
 
 void AAuraCharacterBase::InitializeAttributes()

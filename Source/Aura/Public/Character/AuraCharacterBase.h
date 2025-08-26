@@ -65,15 +65,15 @@ public:
   virtual AActor* GetAvatar_Implementation() override;
   virtual UNiagaraSystem* GetBloodEffect_Implementation() override;
   virtual USoundBase* GetHitSound_Implementation() override;
+  virtual UNiagaraComponent* GetBodyNiagaraComponent_Implementation() override;
+  virtual void ActivateBodyNiagara_Implementation(UNiagaraSystem* NiagaraSystem) override;
+  virtual void DeactivateBodyNiagara_Implementation() override;
   virtual ECharacterType GetCharacterType_Implementation() override;
   virtual FOnASCRegistered& GetOnASCRegisteredDelegate() override;
   virtual FOnDeath& GetOnDeathDelegate() override;
   virtual void ApplyKnockback_Implementation(const FVector& KnockbackForce) override;
   virtual void ApplyForce_Implementation(const FVector& Force) override;
   virtual void ApplyAttraction_Implementation(const FVector& AttractionPoint, float DeltaTime, float InterpSpeed) override;
-  virtual USceneComponent* GetTopStatusEffectSceneComponent_Implementation() override;
-  virtual USceneComponent* GetCenterStatusEffectSceneComponent_Implementation() override;
-  virtual USceneComponent* GetBottomStatusEffectSceneComponent_Implementation() override;
   virtual UBoxComponent* EnableWeaponCollision_Implementation(bool bEnable) override;
   virtual bool IsFriend_Implementation(AActor* Actor) override;
   virtual bool IsEnemy_Implementation(AActor* Actor) override;
@@ -88,6 +88,8 @@ public:
   void ChangeMovementSpeed(float InMovementSpeed);
 
   void ApplyEffectToSelf(const TSubclassOf<UGameplayEffect>& GameplayEffectClass, float Level) const;
+
+  
 
   UTeamComponent* GetTeamComponent() const { return TeamComponent; }
 
@@ -206,12 +208,9 @@ protected:
 
   UPROPERTY(VisibleAnywhere)
   TObjectPtr<UStatusEffectsManager> StatusEffectsManager;
-  UPROPERTY(VisibleAnywhere)
-  TObjectPtr<USceneComponent> TopStatusEffectSceneComponent;
-  UPROPERTY(VisibleAnywhere)
-  TObjectPtr<USceneComponent> CenterStatusEffectSceneComponent;
-  UPROPERTY(VisibleAnywhere)
-  TObjectPtr<USceneComponent> BottomStatusEffectSceneComponent;
+
+  UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+  TObjectPtr<UNiagaraComponent> BodyNiagaraComponent;
 
 private:
   UCharacterAnimInstance* GetAnimInstance();
