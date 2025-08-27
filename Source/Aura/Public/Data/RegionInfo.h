@@ -79,21 +79,23 @@ struct FAreaData
 
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
   TSoftObjectPtr<UWorld> World;
-
+  UPROPERTY(BlueprintReadOnly)
   FIntPoint Coordinate;
-
+  UPROPERTY(BlueprintReadOnly)
   EAreaType Type;
-
+  UPROPERTY(BlueprintReadOnly)
   TSet<ECardinalDirection> OpenDirections;
-  
+  UPROPERTY(BlueprintReadOnly)
   FGameplayTag ElementTag;
-
+  UPROPERTY(BlueprintReadOnly)
   TSubclassOf<UAuraStatusEffect> ElementalFlowEffect;
 
   UPROPERTY(BlueprintReadOnly)
   bool bCombatFinished = false;
   UPROPERTY(BlueprintReadOnly)
   bool bRewardSpawned = false;
+  UPROPERTY(BlueprintReadOnly)
+  bool bVisited = false;
 
   bool IsValid() const { return World.IsValid(); }
 

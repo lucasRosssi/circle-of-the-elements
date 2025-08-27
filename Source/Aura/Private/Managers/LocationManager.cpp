@@ -17,6 +17,7 @@
 #include "GameFramework/PlayerStart.h"
 #include "Kismet/GameplayStatics.h"
 #include "Data/RegionInfo.h"
+#include "Enums/CardinalDirection.h"
 #include "Managers/CombatManager.h"
 #include "Managers/RewardManager.h"
 #include "Managers/UIManager.h"
@@ -290,7 +291,7 @@ void ULocationManager::HandleGates(const FAreaData& CurrentArea)
 
 void ULocationManager::InitArea()
 {
-  const FAreaData& CurrentArea = GetCurrentAreaRef();
+  FAreaData& CurrentArea = GetCurrentAreaRef();
   
   HandleGates(CurrentArea);
   HandleDirectionalProps(CurrentArea, DIRECTION_CLOSED_PROP_TAG);
@@ -309,6 +310,7 @@ void ULocationManager::InitArea()
     
   }
   PlacePlayerInArea(CurrentArea);
+  CurrentArea.bVisited = true;
   
   OnInitAreaDelegate.Broadcast();
 }
@@ -344,6 +346,49 @@ int32 ULocationManager::GetCurrentRegionRecommendedLevel()
   if (!RegionData) return 1;
 
   return RegionInfo->GetRegionData(Region)->RecommendedLevel;
+}
+
+TArray<FIntPoint> ULocationManager::GetConnectedCoordinates(const FIntPoint& Coordinate) const
+{
+  const FAreaData* Data = LocationLayout.Find(Coordinate);
+
+  if (!Data) return TArray<FIntPoint>();
+
+  TArray<FIntPoint> ConnectedCoordinates;
+  for (const ECardinalDirection Direction : Data->OpenDirections)
+  {
+    const FIntPoint& ConnectedCoordinate = Coordinate + UUtilityLibrary::GetCoordinateOffsetFromDirection(Direction);
+    if (LocationLayout.Contains(ConnectedCoordinate))
+    {
+      ConnectedCoordinates.Add(ConnectedCoordinate);
+    }
+  }
+
+  return ConnectedCoordinates;
+}
+
+void ULocationManager::GetXCoordinateRange(int32& OutMin, int32& OutMax) const
+{
+  TArray<FIntPoint> Coordinates;
+  LocationLayout.GenerateKeyArray(Coordinates);
+
+  for (const FIntPoint& Coordinate : Coordinates)
+  {
+    OutMin = FMath::Min(OutMin, Coordinate.X);
+    OutMax = FMath::Max(OutMax, Coordinate.X);
+  }
+}
+
+void ULocationManager::GetYCoordinateRange(int32& OutMin, int32& OutMax) const
+{
+  TArray<FIntPoint> Coordinates;
+  LocationLayout.GenerateKeyArray(Coordinates);
+  
+  for (const FIntPoint& Coordinate : Coordinates)
+  {
+    OutMin = FMath::Min(OutMin, Coordinate.Y);
+    OutMax = FMath::Max(OutMax, Coordinate.Y);
+  }
 }
 
 void ULocationManager::BeginPlay()
