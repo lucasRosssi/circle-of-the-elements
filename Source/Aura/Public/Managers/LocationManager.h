@@ -52,9 +52,17 @@ public:
 
   UFUNCTION(BlueprintPure)
   TMap<FIntPoint, FAreaData> GetLocationLayout() const { return LocationLayout; }
+  UFUNCTION(BlueprintPure)
   FIntPoint GetPlayerCoordinate() const { return PlayerCoordinate; }
   UFUNCTION(BlueprintPure)
   FAreaData& GetCurrentAreaRef() { return LocationLayout[PlayerCoordinate]; }
+  UFUNCTION(BlueprintCallable)
+  TArray<FIntPoint> GetConnectedCoordinates(const FIntPoint& Coordinate) const;
+  UFUNCTION(BlueprintPure)
+  void GetXCoordinateRange(int32& OutMin, int32& OutMax) const;
+  UFUNCTION(BlueprintPure)
+  void GetYCoordinateRange(int32& OutMin, int32& OutMax) const;
+  
   
   UPROPERTY(BlueprintAssignable)
   FOnInitArea OnInitAreaDelegate;
@@ -106,6 +114,8 @@ protected:
 
   UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Location|PCG", meta=(DisplayName="Active"))
   bool bPCGActive = true;
+  UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Location|PCG")
+  bool bRevealMapLayout = false;
   UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Location|PCG", meta=(ClampMin=3, UIMin=3))
   int32 MinAreas = 10;
   UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Location|PCG", meta=(ClampMin=3, UIMin=3))
