@@ -6,6 +6,7 @@
 #include "ActiveDamageAbility.h"
 #include "Actor/AuraProjectile.h"
 #include "Enums/ProjectileHomingMode.h"
+#include "Enums/ProjectileMotionType.h"
 #include "ProjectileAbility.generated.h"
 
 class AAuraProjectile;
@@ -73,6 +74,19 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Projectile")
 	float PitchOverride = 0.f;
+
+  // Overrides the projectiles own Motion Type if setting to a non-default value
+  UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Projectile|Motion")
+  EProjectileMotionType ProjectileMotionType = EProjectileMotionType::Default;
+  // Whether the Directional Shift should alternate on consecutive projectiles
+  UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Projectile|Motion")
+  bool bMotionDirectionAlternates = false;
+  // Whether the Bezier final point will be the same as the ability Target Location
+  UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Projectile|Motion")
+  bool bUseTargetLocationAsBezierFinalLocation = false;
+  // Whether Yo-Yo motion will make the return towards the avatar actor
+  UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Projectile|Motion")
+  bool bYoYoReturnToAvatar = false;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Projectile|Homing")
 	bool bHoming = false;
@@ -105,4 +119,5 @@ private:
 	bool bScannedForTargets = false;
 
 	int32 ProjectileSpawnCycleCount = 0;
+  float ProjectileDirectionShift = 1.f;
 };
