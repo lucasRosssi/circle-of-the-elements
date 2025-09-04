@@ -10,6 +10,7 @@
 
 #include "AuraProjectile.generated.h"
 
+class UNiagaraComponent;
 class UAuraProjectileMovementComponent;
 enum class EAbilityHitMode : uint8;
 class AProjectileEffect;
@@ -80,53 +81,55 @@ protected:
 	UFUNCTION()
 	void OnHomingTargetDied(AActor* DeadActor);
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Effects|GameplayCue")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Projectile|Effects|GameplayCue")
 	FGameplayTag GameplayCueTag;
+
+  UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Projectile")
+  float ProjectileDuration = 4.f;
+	
+  UPROPERTY(VisibleAnywhere)
+  TObjectPtr<USphereComponent> Sphere;
+
+  UPROPERTY(VisibleAnywhere)
+  TObjectPtr<USphereComponent> HomingRadius;
+
+  UPROPERTY(VisibleAnywhere)
+  TObjectPtr<UNiagaraComponent> ProjectileNiagara;
+
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Projectile|Effects")
+  float ParticlesLifecycleTimeBeforeDestroy = 1.f;
+	
+  UPROPERTY(EditAnywhere, Category="Projectile|Effects|Impact")
+  TObjectPtr<UNiagaraSystem> ImpactEffect;
+	
+  UPROPERTY(EditAnywhere, Category="Projectile|Effects|Impact")
+  TObjectPtr<USoundBase> ImpactSound;
+
+  UPROPERTY(EditAnywhere, Category="Projectile|Effects|Impact")
+  float ImpactSoundVolume = 1.0f;
+
+  UPROPERTY(EditAnywhere, Category="Projectile|Effects|Impact")
+  float ImpactSoundPitch = 1.0f;
+	
+  UPROPERTY(EditAnywhere, Category="Projectile|Effects|Muzzle")
+  TObjectPtr<UNiagaraSystem> MuzzleEffect;
+	
+  UPROPERTY(EditAnywhere, Category="Projectile|Effects|Muzzle")
+  TObjectPtr<USoundBase> MuzzleSound;
+
+  UPROPERTY(EditAnywhere, Category="Projectile|Effects|Muzzle")
+  float MuzzleSoundVolume = 1.0f;
+
+  UPROPERTY(EditAnywhere, Category="Projectile|Effects|Muzzle")
+  float MuzzleSoundPitch = 1.0f;
 
 private:
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastHomingTarget(AActor* Target);
 
 	void ApplyProjectileEffect(bool& bSuccess);
-	
-	UPROPERTY(EditDefaultsOnly)
-	float ProjectileDuration = 4.f;
-	
-	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<USphereComponent> Sphere;
 
-	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<USphereComponent> HomingRadius;
-
-	UPROPERTY(EditAnywhere, Category="Effects")
-	TSubclassOf<AProjectileEffect> ProjectileNiagaraEffect;
-
-	UPROPERTY()
-	AProjectileEffect* ProjectileNiagaraEffectActor;
-	
-	UPROPERTY(EditAnywhere, Category="Effects|Impact")
-	TObjectPtr<UNiagaraSystem> ImpactEffect;
-	
-	UPROPERTY(EditAnywhere, Category="Effects|Impact")
-	TObjectPtr<USoundBase> ImpactSound;
-
-	UPROPERTY(EditAnywhere, Category="Effects|Impact")
-	float ImpactSoundVolume = 1.0f;
-
-	UPROPERTY(EditAnywhere, Category="Effects|Impact")
-	float ImpactSoundPitch = 1.0f;
-	
-	UPROPERTY(EditAnywhere, Category="Effects|Muzzle")
-	TObjectPtr<UNiagaraSystem> MuzzleEffect;
-	
-	UPROPERTY(EditAnywhere, Category="Effects|Muzzle")
-	TObjectPtr<USoundBase> MuzzleSound;
-
-	UPROPERTY(EditAnywhere, Category="Effects|Muzzle")
-	float MuzzleSoundVolume = 1.0f;
-
-	UPROPERTY(EditAnywhere, Category="Effects|Muzzle")
-	float MuzzleSoundPitch = 1.0f;
+  void PrepareDestroy();
 
 	UPROPERTY(VisibleInstanceOnly, Category="Homing")
 	AActor* HomingTarget;
