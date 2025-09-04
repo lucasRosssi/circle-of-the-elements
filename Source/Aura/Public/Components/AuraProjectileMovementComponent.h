@@ -32,6 +32,7 @@ public:
 
 protected:
   virtual void BeginPlay() override;
+  virtual void InitializeComponent() override;
   virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
   /** The currently active motion effect */
@@ -44,7 +45,7 @@ protected:
     Category="Custom Movement",
     meta=(EditCondition="ActiveMotion != EProjectileMotionType::Bezier && ActiveMotion != EProjectileMotionType::Default && ActiveMotion != EProjectileMotionType::Noise && ActiveMotion != EProjectileMotionType::YoYo", EditConditionHides)
   )
-  float Frequency = 10.f;
+  float Frequency = 15.f;
 
   UPROPERTY(
     EditAnywhere,
@@ -52,7 +53,7 @@ protected:
     Category="Custom Movement",
     meta=(EditCondition="ActiveMotion != EProjectileMotionType::Bezier && ActiveMotion != EProjectileMotionType::Default && ActiveMotion != EProjectileMotionType::YoYo", EditConditionHides)
   )
-  float Amplitude = 150.f;
+  float Amplitude = 8.f;
 
   UPROPERTY(
     EditAnywhere,
@@ -77,7 +78,7 @@ protected:
   )
   TSet<EMotionShiftMode> MotionShiftModes;
 
-  /* The max possible speed shift based on a % of Frequency or Bezier Duration */
+  /* The max possible speed shift based on a % of Frequency, Bezier Duration or Velocity */
   UPROPERTY(
     EditAnywhere,
     BlueprintReadWrite,
@@ -90,7 +91,7 @@ protected:
     EditAnywhere,
     BlueprintReadWrite,
     Category="Custom Movement|Motion Shift",
-    meta=(EditCondition="ActiveMotion != EProjectileMotionType::Bezier && ActiveMotion != EProjectileMotionType::Default", EditConditionHides)
+    meta=(EditCondition="ActiveMotion != EProjectileMotionType::Bezier && ActiveMotion != EProjectileMotionType::Default && ActiveMotion != EProjectileMotionType::YoYo", EditConditionHides)
   )
   float GrowthRate = 150.f;
 
@@ -141,14 +142,6 @@ protected:
     )
   )
   float MaxRandomBezierRotation = 60.f;
-
-  UPROPERTY(
-    EditAnywhere,
-    BlueprintReadWrite,
-    Category="Custom Movement",
-    meta=(EditCondition="ActiveMotion == EProjectileMotionType::YoYo", EditConditionHides)
-  )
-  bool bYoYoInstantTurn = false;
   
   UPROPERTY(
     EditAnywhere,
@@ -156,7 +149,7 @@ protected:
     Category="Custom Movement",
     meta=(EditCondition="ActiveMotion == EProjectileMotionType::YoYo", EditConditionHides)
   )
-  float YoYoForwardDuration = 1.0f;
+  float YoYoForwardDuration = 0.5f;
 
   UPROPERTY(
     EditAnywhere,
@@ -164,24 +157,27 @@ protected:
     Category="Custom Movement",
     meta=(EditCondition="ActiveMotion == EProjectileMotionType::YoYo", EditConditionHides)
   )
-  float YoYoReturnDuration = 1.0f;
+  float YoYoIdleDuration = 0.f;
+
   UPROPERTY(
     EditAnywhere,
     BlueprintReadWrite,
     Category="Custom Movement",
     meta=(EditCondition="ActiveMotion == EProjectileMotionType::YoYo", EditConditionHides)
   )
-  float YoYoInterpSpeed = 20.0f;
-
+  float YoYoReturnSpeedFactor = 1.f;
 
 private:
   float ComputeEffectiveAmplitude();
-  FVector ComputeYoYoPosition(float DeltaTime);
   FVector ComputeMotionOffset(float DeltaTime);
   FVector ComputeBezierPosition(float T) const;
+
+  void SetupYoYoMotion();
+  void ReturnYoYo();
   
   float ElapsedTime = 0.f;
   float EffectiveFrequency = 10.f;
+  
   
   FVector StartLocation = FVector();
   FVector StartVelocity = FVector();
@@ -198,10 +194,9 @@ private:
   FVector CurrentNoiseOffset = FVector();
   FVector TargetNoiseOffset = FVector();
   float EffectiveNoiseInterval = 0.1f;
-  
+
   bool bYoYoReturning = false;
-  float YoYoTravelTime = 0.f;
-  float YoYoSpeedFactor = 1.f;
-  float YoYoDelayTimer = 0.f;
-  
+  float EffectiveYoYoForwardDuration = 0.5f;
+  float EffectiveYoYoIdleDuration = 0.f;
+  float EffectiveYoYoReturnSpeedFactor = 1.f;
 };

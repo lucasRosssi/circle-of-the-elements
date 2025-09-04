@@ -48,16 +48,19 @@ void UAuraProjectileMovementComponent::BeginPlay()
         EffectiveNoiseInterval = NoiseInterval / RandomSpeedScale;
         break;
       }
+    case EProjectileMotionType::YoYo:
+      {
+        Velocity *= RandomSpeedScale;
+        StartVelocity = Velocity;
+        EffectiveYoYoForwardDuration = YoYoForwardDuration / RandomSpeedScale;
+        EffectiveYoYoIdleDuration = YoYoIdleDuration / RandomSpeedScale;
+        break;
+      }
     default:
       {
         EffectiveFrequency = Frequency * RandomSpeedScale;
       }
     }
-  }
-  else
-  {
-    EffectiveBezierDuration = BezierDuration;
-    EffectiveFrequency = Frequency;
   }
 
   if (MotionShiftModes.Contains(EMotionShiftMode::ControlPoint))
@@ -65,6 +68,29 @@ void UAuraProjectileMovementComponent::BeginPlay()
     const float Angle = FMath::FRandRange(-MaxRandomBezierRotation / 2, MaxRandomBezierRotation / 2);
     RandomBezierRotation = FRotator(0.f, Angle, 0.f);
   }
+
+  if (MotionShiftModes.Contains(EMotionShiftMode::YoYoReturnSpeed))
+  {
+    EffectiveYoYoReturnSpeedFactor = FMath::FRandRange(1.f - MaxSpeedShiftAmplitude, 1.f + MaxSpeedShiftAmplitude);
+  }
+
+  if (ActiveMotion == EProjectileMotionType::YoYo)
+  {
+    SetupYoYoMotion();
+  }
+
+}
+
+void UAuraProjectileMovementComponent::InitializeComponent()
+{
+  Super::InitializeComponent();
+
+  EffectiveFrequency = Frequency;
+  EffectiveNoiseInterval = NoiseInterval;
+  EffectiveBezierDuration = BezierDuration;
+  EffectiveYoYoForwardDuration = YoYoForwardDuration;
+  EffectiveYoYoIdleDuration = YoYoIdleDuration;
+  EffectiveYoYoReturnSpeedFactor = YoYoReturnSpeedFactor;
 }
 
 void UAuraProjectileMovementComponent::TickComponent(
@@ -77,6 +103,7 @@ void UAuraProjectileMovementComponent::TickComponent(
 
   if (
     ActiveMotion == EProjectileMotionType::Default ||
+    ActiveMotion == EProjectileMotionType::YoYo ||
     bIsHomingProjectile ||
     !UpdatedComponent ||
     ShouldSkipUpdate(DeltaTime)
@@ -108,19 +135,7 @@ void UAuraProjectileMovementComponent::TickComponent(
     Velocity = TotalOffset / DeltaTime;
     return;
   }
-
-  // --- Yo-yo full override ---
-  if (ActiveMotion == EProjectileMotionType::YoYo)
-  {
-    const FVector NewPos = ComputeYoYoPosition(DeltaTime);
-    const FVector PrevPos = UpdatedComponent->GetComponentLocation();
-
-    TotalOffset = NewPos - PrevPos;
-    UpdatedComponent->AddWorldOffset(TotalOffset, false);
-    Velocity = TotalOffset / DeltaTime;
-    return;
-  }
-
+  
   // Base forward move
   const FVector ForwardMove = StartVelocity * DeltaTime;
 
@@ -150,76 +165,39 @@ float UAuraProjectileMovementComponent::ComputeEffectiveAmplitude()
   return EffectiveAmplitude;
 }
 
-FVector UAuraProjectileMovementComponent::ComputeYoYoPosition(float DeltaTime)
+void UAuraProjectileMovementComponent::SetupYoYoMotion()
 {
-  // Save the current position
-  const FVector CurrentPos = UpdatedComponent->GetComponentLocation();
-
-  // Distances / speeds
-  const float ForwardSpeed = StartVelocity.Size(); // projectile’s own speed
-  const float ForwardDistance = ForwardSpeed * YoYoForwardDuration;
-  const float ReturnSpeed = ForwardDistance / YoYoReturnDuration;
-
-  const FVector LocalForward = StartTransform.TransformVectorNoScale(FVector::ForwardVector);
-
-  FVector Step;
-
-  YoYoTravelTime += DeltaTime;
-
-  if (!bYoYoReturning)
-  {
-    // ---- Forward phase ----
-    if (bYoYoInstantTurn)
+  // ---- Forward phase ----
+  FTimerHandle ForwardPhaseTimer;
+  GetOwner()->GetWorldTimerManager().SetTimer(
+    ForwardPhaseTimer,
+    FTimerDelegate::CreateLambda([this]()
     {
-      Step = LocalForward * ForwardSpeed * DeltaTime;
-    }
-    else
-    {
-      YoYoSpeedFactor = FMath::FInterpTo(YoYoSpeedFactor, 0.f, DeltaTime, YoYoInterpSpeed);
-      Step = LocalForward * ForwardSpeed * DeltaTime * YoYoSpeedFactor;
-    }
-
-    if (YoYoTravelTime >= YoYoForwardDuration)
-    {
-      bYoYoReturning = true;
-      YoYoTravelTime = 0.f;
-      YoYoSpeedFactor = bYoYoInstantTurn ? 1.f : 0.f;
-    }
-  }
-  else
-  {
-    // ---- Return phase ----
-    if (bYoYoReturnToAvatar && AvatarActor.IsValid())
-    {
-      // Return directly to avatar's current location
-      const FVector ToTarget = (AvatarActor->GetActorLocation() - CurrentPos).GetSafeNormal();
-
-      if (bYoYoInstantTurn)
+      if (EffectiveYoYoIdleDuration > 0)
       {
-        Step = ToTarget * ReturnSpeed * DeltaTime;
-      }
-      else
-      {
-        YoYoSpeedFactor = FMath::FInterpTo(YoYoSpeedFactor, 1.f, DeltaTime, YoYoInterpSpeed);
-        Step = ToTarget * ReturnSpeed * DeltaTime * YoYoSpeedFactor;
-      }
-    }
-    else
-    {
-      // Return along string (straight back along launch direction)
-      if (bYoYoInstantTurn)
-      {
-        Step = -LocalForward * ReturnSpeed * DeltaTime;
-      }
-      else
-      {
-        YoYoSpeedFactor = FMath::FInterpTo(YoYoSpeedFactor, 1.f, DeltaTime, YoYoInterpSpeed);
-        Step = -LocalForward * ReturnSpeed * DeltaTime * YoYoSpeedFactor;
-      }
-    }
-  }
+        // ---- Idle phase ----
+        Velocity = FVector::ZeroVector;
+        FTimerHandle IdlePhaseTimer;
+        GetOwner()->GetWorldTimerManager().SetTimer(
+          IdlePhaseTimer,
+          FTimerDelegate::CreateLambda([this]()
+          {
+            // ---- Return phase ----
+            ReturnYoYo();
+          }),
+          EffectiveYoYoIdleDuration,
+          false
+        );
 
-  return CurrentPos + Step;
+        return;
+      }
+
+      // ---- Return phase ----
+      ReturnYoYo();
+    }),
+    EffectiveYoYoForwardDuration,
+    false
+  );
 }
 
 FVector UAuraProjectileMovementComponent::ComputeMotionOffset(float DeltaTime)
@@ -231,19 +209,16 @@ FVector UAuraProjectileMovementComponent::ComputeMotionOffset(float DeltaTime)
   case EProjectileMotionType::Helix:
     {
       const float EffectiveAmplitude = ComputeEffectiveAmplitude();
-      // Build a perpendicular basis around the forward direction
       const FVector Forward = StartVelocity.GetSafeNormal();
       FVector Right, Up;
       Forward.FindBestAxisVectors(Right, Up);
 
-      // Compute circular motion in that plane
       const float Angle = ElapsedTime * EffectiveFrequency + RandomPhaseShift;
       const FVector CircleOffset =
         (FMath::Sin(Angle) * Right + FMath::Cos(Angle) * Up) *
         EffectiveAmplitude * DirectionMultiplier;
 
-      // Add to offset (scaled by DeltaTime to match your system)
-      Offset += CircleOffset * DeltaTime;
+      Offset += CircleOffset;
 
       break;
     }
@@ -256,7 +231,7 @@ FVector UAuraProjectileMovementComponent::ComputeMotionOffset(float DeltaTime)
         FMath::Sin(ElapsedTime * EffectiveFrequency + RandomPhaseShift - PI / 2) * EffectiveAmplitude *
         DirectionMultiplier,
         0.f
-      ) * DeltaTime;
+      );
       break;
     }
 
@@ -284,7 +259,7 @@ FVector UAuraProjectileMovementComponent::ComputeMotionOffset(float DeltaTime)
         NoiseInterpSpeed
       );
 
-      Offset += CurrentNoiseOffset * DeltaTime;
+      Offset += CurrentNoiseOffset;
       break;
     }
 
@@ -296,7 +271,7 @@ FVector UAuraProjectileMovementComponent::ComputeMotionOffset(float DeltaTime)
         FMath::Cos(ElapsedTime * EffectiveFrequency + RandomPhaseShift) * EffectiveAmplitude * DirectionMultiplier,
         0.f,
         0.f
-      ) * DeltaTime;
+      );
       break;
     }
 
@@ -309,51 +284,7 @@ FVector UAuraProjectileMovementComponent::ComputeMotionOffset(float DeltaTime)
         0.f,
         FMath::Sign(Phase) * EffectiveAmplitude * DirectionMultiplier,
         0.f
-      ) * DeltaTime;
-      break;
-    }
-  case EProjectileMotionType::YoYo:
-    {
-      FVector OutOffset;
-
-      YoYoTravelTime += DeltaTime;
-
-      const float ForwardSpeed = StartVelocity.Size(); // actually move forward at projectile’s speed
-      const float ForwardDistance = ForwardSpeed * YoYoForwardDuration;
-      const float ReturnSpeed = ForwardDistance / YoYoReturnDuration;
-
-      const FVector LocalForward = FVector::ForwardVector;
-
-      if (!bYoYoReturning)
-      {
-        // ---- Forward phase ----
-        YoYoSpeedFactor = FMath::FInterpTo(YoYoSpeedFactor, 1.f, DeltaTime, YoYoInterpSpeed);
-        OutOffset = LocalForward * ForwardSpeed * DeltaTime * YoYoSpeedFactor;
-
-        if (YoYoTravelTime >= YoYoForwardDuration)
-        {
-          bYoYoReturning = true;
-          YoYoTravelTime = 0.f;
-          YoYoSpeedFactor = 0.f; // reset so return can interp in too
-        }
-      }
-      else
-      {
-        // ---- Return phase ----
-        if (bYoYoReturnToAvatar && AvatarActor.IsValid())
-        {
-          const FVector ToTarget = (AvatarActor->GetActorLocation() - UpdatedComponent->GetComponentLocation()).
-            GetSafeNormal();
-          YoYoSpeedFactor = FMath::FInterpTo(YoYoSpeedFactor, 1.f, DeltaTime, YoYoInterpSpeed);
-          OutOffset = ToTarget * ReturnSpeed * DeltaTime * YoYoSpeedFactor;
-          return OutOffset;
-        }
-
-        YoYoSpeedFactor = FMath::FInterpTo(YoYoSpeedFactor, 1.f, DeltaTime, YoYoInterpSpeed);
-        OutOffset = -LocalForward * ReturnSpeed * DeltaTime * YoYoSpeedFactor;
-      }
-
-      Offset += OutOffset;
+      );
       break;
     }
   default:
@@ -395,4 +326,16 @@ FVector UAuraProjectileMovementComponent::ComputeBezierPosition(float T) const
     3 * UU * T * P1 +
     3 * U * TT * P2 +
     TTT * P3;
+}
+
+void UAuraProjectileMovementComponent::ReturnYoYo()
+{
+  Velocity = -StartVelocity * EffectiveYoYoReturnSpeedFactor;
+  bYoYoReturning = true;
+
+  if (bYoYoReturnToAvatar && AvatarActor.IsValid())
+  {
+    bIsHomingProjectile = true;
+    HomingTargetComponent = AvatarActor->GetRootComponent();
+  }
 }
