@@ -181,7 +181,10 @@ void UProjectileAbility::SpawnProjectile(
 
     if (bUseTargetLocationAsBezierFinalLocation)
     {
-      Projectile->ProjectileMovement->SetBezierEnd(ProjectileTargetLocation);
+      Projectile->ProjectileMovement->bBezierOverride = true;
+      const FTransform& StartTransform = Projectile->ProjectileMovement->UpdatedComponent->GetComponentTransform();
+      const FVector LocalOffset = StartTransform.InverseTransformPosition(ProjectileTargetLocation);
+      Projectile->ProjectileMovement->BezierEndOverride = LocalOffset;
     }
 
     if (bYoYoReturnToAvatar)

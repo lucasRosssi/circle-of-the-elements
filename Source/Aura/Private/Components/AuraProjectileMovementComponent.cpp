@@ -79,6 +79,10 @@ void UAuraProjectileMovementComponent::BeginPlay()
     SetupYoYoMotion();
   }
 
+  if (bBezierOverride)
+  {
+    EffectiveBezierEnd = BezierEndOverride;
+  }
 }
 
 void UAuraProjectileMovementComponent::InitializeComponent()
@@ -88,6 +92,7 @@ void UAuraProjectileMovementComponent::InitializeComponent()
   EffectiveFrequency = Frequency;
   EffectiveNoiseInterval = NoiseInterval;
   EffectiveBezierDuration = BezierDuration;
+  EffectiveBezierEnd = BezierEnd;
   EffectiveYoYoForwardDuration = YoYoForwardDuration;
   EffectiveYoYoIdleDuration = YoYoIdleDuration;
   EffectiveYoYoReturnSpeedFactor = YoYoReturnSpeedFactor;
@@ -301,7 +306,7 @@ FVector UAuraProjectileMovementComponent::ComputeBezierPosition(float T) const
   const FVector P0 = StartLocation;
   FVector P1 = StartLocation + StartTransform.TransformVectorNoScale(BezierP1);
   FVector P2 = StartLocation + StartTransform.TransformVectorNoScale(BezierP2);
-  FVector P3 = StartLocation + StartTransform.TransformVectorNoScale(BezierEnd);
+  FVector P3 = StartLocation + StartTransform.TransformVectorNoScale(EffectiveBezierEnd);
 
   if (MotionShiftModes.Contains(EMotionShiftMode::ControlPoint))
   {
@@ -312,7 +317,7 @@ FVector UAuraProjectileMovementComponent::ComputeBezierPosition(float T) const
       RandomBezierRotation.RotateVector(BezierP2)
     );
     P3 = StartLocation + StartTransform.TransformVectorNoScale(
-      RandomBezierRotation.RotateVector(BezierEnd)
+      RandomBezierRotation.RotateVector(EffectiveBezierEnd)
     );
   }
 

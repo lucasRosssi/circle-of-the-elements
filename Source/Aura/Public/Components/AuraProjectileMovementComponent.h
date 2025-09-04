@@ -22,13 +22,14 @@ public:
   UFUNCTION(BlueprintCallable, Category="Custom Movement")
   void SetActiveMotion(EProjectileMotionType Motion);
   
-  void SetBezierEnd(const FVector& InEnd) { BezierEnd = InEnd; }
-  
   bool bDefinedDirections = false;
   float DirectionMultiplier = 1.f;
 
   bool bYoYoReturnToAvatar = false;
   TWeakObjectPtr<AActor> AvatarActor;
+
+  bool bBezierOverride = false;
+  FVector BezierEndOverride = FVector();
 
 protected:
   virtual void BeginPlay() override;
@@ -93,7 +94,7 @@ protected:
     Category="Custom Movement|Motion Shift",
     meta=(EditCondition="ActiveMotion != EProjectileMotionType::Bezier && ActiveMotion != EProjectileMotionType::Default && ActiveMotion != EProjectileMotionType::YoYo", EditConditionHides)
   )
-  float GrowthRate = 150.f;
+  float GrowthRate = 1.f;
 
   /** Bezier control points */
   UPROPERTY(
@@ -189,6 +190,7 @@ private:
   
   FRotator RandomBezierRotation = FRotator();
   float EffectiveBezierDuration = 1.f;
+  FVector EffectiveBezierEnd = FVector();
   
   float NoiseTimer = 0.f;
   FVector CurrentNoiseOffset = FVector();
