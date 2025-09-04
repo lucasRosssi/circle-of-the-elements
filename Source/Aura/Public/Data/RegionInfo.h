@@ -80,9 +80,9 @@ struct FAreaData
   UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
   TSoftObjectPtr<UWorld> World;
   UPROPERTY(BlueprintReadOnly)
-  FIntPoint Coordinate;
+  FIntPoint Coordinate = FIntPoint();
   UPROPERTY(BlueprintReadOnly)
-  EAreaType Type;
+  EAreaType Type = EAreaType::DefaultArena;
   UPROPERTY(BlueprintReadOnly)
   TSet<ECardinalDirection> OpenDirections;
   UPROPERTY(BlueprintReadOnly)

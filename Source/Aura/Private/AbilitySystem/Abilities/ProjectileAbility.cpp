@@ -8,6 +8,7 @@
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "AbilitySystem/Data/StatusEffectInfo.h"
 #include "Actor/AuraProjectile.h"
+#include "Components/AuraProjectileMovementComponent.h"
 #include "Components/SphereComponent.h"
 #include "Interfaces/CombatInterface.h"
 #include "Utils/AuraSystemsLibrary.h"
@@ -164,6 +165,32 @@ void UProjectileAbility::SpawnProjectile(
       {
         Projectile->ActivateHomingMode();
       }
+    }
+
+    if (ProjectileMotionType != EProjectileMotionType::Default)
+    {
+      Projectile->ProjectileMovement->SetActiveMotion(ProjectileMotionType);
+    }
+
+    if (bMotionDirectionAlternates)
+    {
+      Projectile->ProjectileMovement->bDefinedDirections = true;
+      Projectile->ProjectileMovement->DirectionMultiplier = ProjectileDirectionShift;
+      ProjectileDirectionShift *= -1.f;
+    }
+
+    if (bUseTargetLocationAsBezierFinalLocation)
+    {
+      Projectile->ProjectileMovement->bBezierOverride = true;
+      const FTransform& StartTransform = Projectile->ProjectileMovement->UpdatedComponent->GetComponentTransform();
+      const FVector LocalOffset = StartTransform.InverseTransformPosition(ProjectileTargetLocation);
+      Projectile->ProjectileMovement->BezierEndOverride = LocalOffset;
+    }
+
+    if (bYoYoReturnToAvatar)
+    {
+      Projectile->ProjectileMovement->bYoYoReturnToAvatar = true;
+      Projectile->ProjectileMovement->AvatarActor = AvatarActor;
     }
 
     if (RangedHitMode != EAbilityHitMode::Default)

@@ -10,10 +10,10 @@
 
 #include "AuraProjectile.generated.h"
 
+class UAuraProjectileMovementComponent;
 enum class EAbilityHitMode : uint8;
 class AProjectileEffect;
 class USphereComponent;
-class UProjectileMovementComponent;
 class UNiagaraSystem;
 
 UCLASS()
@@ -25,7 +25,7 @@ public:
 	AAuraProjectile();
 	
 	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<UProjectileMovementComponent> ProjectileMovement;
+	TObjectPtr<UAuraProjectileMovementComponent> ProjectileMovement;
 
 	UPROPERTY(BlueprintReadWrite, meta = (ExposeOnSpawn = true))
 	FAbilityParams AbilityParams;
