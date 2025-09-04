@@ -5,12 +5,12 @@
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
+#include "NiagaraComponent.h"
 
 #include "Components/SphereComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "NiagaraFunctionLibrary.h"
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
-#include "Actor/ProjectileEffect.h"
 #include "Aura/Aura.h"
 #include "Components/AuraProjectileMovementComponent.h"
 #include "Interfaces/CombatInterface.h"
@@ -36,11 +36,15 @@ AAuraProjectile::AAuraProjectile()
 	HomingRadius->SetCollisionResponseToAllChannels(ECR_Ignore);
 	HomingRadius->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
 
+  ProjectileNiagara = CreateDefaultSubobject<UNiagaraComponent>("ProjectileNiagara");
+  ProjectileNiagara->SetupAttachment(GetRootComponent());
 
 	ProjectileMovement = CreateDefaultSubobject<UAuraProjectileMovementComponent>("ProjectileMovement");
 	ProjectileMovement->InitialSpeed = 550.f;
 	ProjectileMovement->MaxSpeed = 550.f;
 	ProjectileMovement->ProjectileGravityScale = 0.f;
+
+  InitialLifeSpan = 0.f;
 }
 
 void AAuraProjectile::ActivateHomingMode()
@@ -58,24 +62,24 @@ void AAuraProjectile::ActivateHomingMode()
 void AAuraProjectile::BeginPlay()
 {
 	Super::BeginPlay();
-	SetLifeSpan(ProjectileDuration);
+
+  if (ProjectileDuration > 0)
+  {
+    FTimerHandle LifeSpanTimer;
+    GetWorldTimerManager().SetTimer(
+      LifeSpanTimer,
+      FTimerDelegate::CreateLambda([this]()
+        {
+          PrepareDestroy();
+        }
+      ),
+      ProjectileDuration,
+      false
+    );
+  }
+  
 	Sphere->OnComponentBeginOverlap.AddDynamic(this, &AAuraProjectile::OnSphereOverlap);
 	HomingRadius->OnComponentBeginOverlap.AddDynamic(this, &AAuraProjectile::OnEnteringHomingRadius);
-
-	if (ProjectileNiagaraEffect)
-	{
-		ProjectileNiagaraEffectActor = GetWorld()->SpawnActor<AProjectileEffect>(
-			ProjectileNiagaraEffect,
-			GetActorLocation(),
-			GetActorRotation()
-		);
-
-		const FAttachmentTransformRules Rules = FAttachmentTransformRules(
-			EAttachmentRule::KeepWorld,
-			false
-		);
-		ProjectileNiagaraEffectActor->AttachToActor(this, Rules);
-	}
 	
 	if (MuzzleEffect)
 	{
@@ -117,22 +121,16 @@ void AAuraProjectile::OnHit(bool bDeactivateEffect)
 		GetActorRotation()
 	);
 
-	if (ProjectileNiagaraEffectActor && bDeactivateEffect)
+	if (bDeactivateEffect)
 	{
-		ProjectileNiagaraEffectActor->DeactivateNiagara();
-		ProjectileNiagaraEffectActor = nullptr;
+		ProjectileNiagara->Deactivate();
 	}
 }
 
 void AAuraProjectile::Destroyed()
 {
-	if (!HasAuthority())	OnHit();
-
-	if (ProjectileNiagaraEffectActor)
-	{
-		ProjectileNiagaraEffectActor->DeactivateNiagara();
-		ProjectileNiagaraEffectActor = nullptr;
-	}
+	if (!HasAuthority()) OnHit();
+  
 	Super::Destroyed();
 }
 
@@ -223,7 +221,7 @@ void AAuraProjectile::HandleRicochetHitMode(AActor* OtherActor)
 	// No actor close
 	else
 	{
-		Destroy();
+		PrepareDestroy();
 	}
 }
 
@@ -249,7 +247,7 @@ void AAuraProjectile::HandlePenetrationHitMode(AActor* OtherActor)
 	// Hit the environment
 	else
 	{
-		Destroy();
+		PrepareDestroy();
 	}
 }
 
@@ -274,7 +272,7 @@ void AAuraProjectile::OnSphereOverlap(
 	{
 		OnHit(true);
 		if (AbilityParams.bIsAreaAbility) HandleAreaAbility(EffectCauser, bSuccess);
-		if (HasAuthority()) Destroy();
+		if (HasAuthority()) PrepareDestroy();
 		return;
 	}
 	if (
@@ -326,7 +324,7 @@ void AAuraProjectile::OnSphereOverlap(
 		 */
 		else
 		{
-			Destroy();
+			PrepareDestroy();
 		}
 	}
 }
@@ -393,6 +391,40 @@ void AAuraProjectile::ApplyProjectileEffect(bool& bSuccess)
 	}
 	
 	UAuraAbilitySystemLibrary::ApplyAbilityEffect(AbilityParams, bSuccess);
+}
+
+void AAuraProjectile::PrepareDestroy()
+{
+  if (ProjectileNiagara)
+  {
+    ProjectileNiagara->Deactivate();
+    Sphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    Sphere->Deactivate();
+    HomingRadius->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    HomingRadius->Deactivate();
+    ProjectileMovement->Velocity = FVector::ZeroVector;
+    UStaticMeshComponent* Mesh = GetComponentByClass<UStaticMeshComponent>();
+    if (Mesh)
+    {
+      Mesh->SetHiddenInGame(true);
+    }
+    
+    FTimerHandle DestroyTimer;
+    GetWorldTimerManager().SetTimer(
+      DestroyTimer,
+      FTimerDelegate::CreateLambda([this]()
+        {
+          Destroy();
+        }
+      ),
+      ParticlesLifecycleTimeBeforeDestroy,
+      false
+    );
+
+    return;
+  }
+
+  Destroy();
 }
 
 void AAuraProjectile::MulticastHomingTarget_Implementation(AActor* Target)
