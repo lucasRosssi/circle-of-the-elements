@@ -65,7 +65,6 @@ void AAuraProjectile::BeginPlay()
 
   if (ProjectileDuration > 0)
   {
-    FTimerHandle LifeSpanTimer;
     GetWorldTimerManager().SetTimer(
       LifeSpanTimer,
       FTimerDelegate::CreateLambda([this]()
@@ -139,6 +138,8 @@ void AAuraProjectile::OnHit(bool bDeactivateEffect)
 void AAuraProjectile::Destroyed()
 {
 	if (!HasAuthority()) OnHit();
+
+  if (LifeSpanTimer.IsValid()) LifeSpanTimer.Invalidate();
   
 	Super::Destroyed();
 }

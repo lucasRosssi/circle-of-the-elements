@@ -138,5 +138,7 @@ private:
 	int32 HitCount = 0;
 	UPROPERTY()
 	TArray<AActor*> ActorsHit;
+
+  FTimerHandle LifeSpanTimer;
 };
 
