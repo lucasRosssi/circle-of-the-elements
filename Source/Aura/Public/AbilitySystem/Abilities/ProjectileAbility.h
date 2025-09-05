@@ -87,6 +87,8 @@ protected:
   // Whether Yo-Yo motion will make the return towards the avatar actor
   UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Projectile|Motion")
   bool bYoYoReturnToAvatar = false;
+  UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Projectile|Motion")
+  bool bYoYoReturnCanRepeatTarget = true;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Projectile|Homing")
 	bool bHoming = false;

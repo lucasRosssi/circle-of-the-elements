@@ -7,6 +7,8 @@
 #include "AuraGameplayTags.h"
 #include "AbilitySystem/Data/AbilityInfo.h"
 #include "AbilitySystem/GameplayEffects/AuraStatusEffect.h"
+#include "Actor/AreaEffectActor.h"
+#include "Actor/AuraProjectile.h"
 #include "Actor/ElementalProp.h"
 #include "Actor/Level/Gate.h"
 #include "Algo/RandomShuffle.h"
@@ -557,6 +559,20 @@ void ULocationManager::OnAreaLoaded()
 void ULocationManager::UnloadArea(const FAreaData& AreaData)
 {
   GUARD(!AreaData.World.IsNull(),, TEXT("World level asset path is invalid!"))
+
+  TArray<AActor*> ProjectileActors;
+  UGameplayStatics::GetAllActorsOfClass(GetOwner(), AAuraProjectile::StaticClass(), ProjectileActors);
+  for (AActor* Actor : ProjectileActors)
+  {
+    Actor->Destroy();
+  }
+
+  TArray<AActor*> AreaEffectActors;
+  UGameplayStatics::GetAllActorsOfClass(GetOwner(), AAreaEffectActor::StaticClass(), AreaEffectActors);
+  for (AActor* Actor : AreaEffectActors)
+  {
+    Actor->Destroy();
+  }
   
   FLatentActionInfo LatentInfo;
   LatentInfo.CallbackTarget = this;

@@ -50,6 +50,7 @@ public:
 	float EffectChangePerHit = 0.f;
 	float RicochetRadius = 500.f;
 	bool bCanRepeatTarget = false;
+  bool bYoYoReturnCanRepeatTarget = true;
 	UPROPERTY()
 	AActor* InitialTarget = nullptr;
 
