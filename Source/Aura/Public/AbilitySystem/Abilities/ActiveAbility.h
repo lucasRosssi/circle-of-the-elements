@@ -209,7 +209,7 @@ protected:
 		EditDefaultsOnly,
 		BlueprintReadOnly,
 		Category="Ability Defaults|Mode",
-		meta=(EditCondition="RangedHitMode == EAbilityHitMode::Ricochet", EditConditionHides)
+		meta=(EditCondition="RangedHitMode != EAbilityHitMode::Default", EditConditionHides)
 		)
 	bool bCanRepeatTarget = false;
 

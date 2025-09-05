@@ -8,6 +8,8 @@
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "AuraProjectileMovementComponent.generated.h"
 
+DECLARE_MULTICAST_DELEGATE(FOnYoYoReturn);
+
 /**
  * 
  */
@@ -30,6 +32,8 @@ public:
 
   bool bBezierOverride = false;
   FVector BezierEndOverride = FVector();
+
+  FOnYoYoReturn OnYoYoReturnDelegate;
 
 protected:
   virtual void BeginPlay() override;

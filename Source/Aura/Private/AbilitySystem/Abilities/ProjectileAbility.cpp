@@ -187,11 +187,13 @@ void UProjectileAbility::SpawnProjectile(
       Projectile->ProjectileMovement->BezierEndOverride = LocalOffset;
     }
 
+    Projectile->ProjectileMovement->bYoYoReturnToAvatar = bYoYoReturnToAvatar;
     if (bYoYoReturnToAvatar)
     {
-      Projectile->ProjectileMovement->bYoYoReturnToAvatar = true;
       Projectile->ProjectileMovement->AvatarActor = AvatarActor;
     }
+    Projectile->bYoYoReturnCanRepeatTarget = bYoYoReturnCanRepeatTarget;
+    
 
     if (RangedHitMode != EAbilityHitMode::Default)
     {

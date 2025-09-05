@@ -65,7 +65,6 @@ void AAuraProjectile::BeginPlay()
 
   if (ProjectileDuration > 0)
   {
-    FTimerHandle LifeSpanTimer;
     GetWorldTimerManager().SetTimer(
       LifeSpanTimer,
       FTimerDelegate::CreateLambda([this]()
@@ -102,6 +101,15 @@ void AAuraProjectile::BeginPlay()
 			MuzzleSoundPitch
 		);
 	}
+
+  if (bYoYoReturnCanRepeatTarget)
+  {
+    ProjectileMovement->OnYoYoReturnDelegate.AddLambda([this]()
+      {
+        ActorsHit.Empty();  
+      }
+    );
+  }
 }
 
 void AAuraProjectile::OnHit(bool bDeactivateEffect)
@@ -130,6 +138,8 @@ void AAuraProjectile::OnHit(bool bDeactivateEffect)
 void AAuraProjectile::Destroyed()
 {
 	if (!HasAuthority()) OnHit();
+
+  if (LifeSpanTimer.IsValid()) LifeSpanTimer.Invalidate();
   
 	Super::Destroyed();
 }
@@ -231,7 +241,10 @@ void AAuraProjectile::HandlePenetrationHitMode(AActor* OtherActor)
 	{
 		OnHit(false);
 		HitCount++;
-		ActorsHit.Add(OtherActor);
+	  if (!bCanRepeatTarget)
+	  {
+		  ActorsHit.Add(OtherActor);
+	  }
 		// If it is also homing, we should set a new target after penetrating
 		if (ProjectileMovement->bIsHomingProjectile)
 		{
@@ -395,14 +408,24 @@ void AAuraProjectile::ApplyProjectileEffect(bool& bSuccess)
 
 void AAuraProjectile::PrepareDestroy()
 {
-  if (ProjectileNiagara)
+  if (IsValid(ProjectileNiagara))
   {
     ProjectileNiagara->Deactivate();
-    Sphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-    Sphere->Deactivate();
-    HomingRadius->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-    HomingRadius->Deactivate();
-    ProjectileMovement->Velocity = FVector::ZeroVector;
+    if (IsValid(Sphere))
+    {
+      Sphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+      Sphere->Deactivate();
+    }
+    if (IsValid(HomingRadius))
+    {
+      HomingRadius->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+      HomingRadius->Deactivate();
+    }
+    if (IsValid(ProjectileMovement))
+    {
+      ProjectileMovement->Velocity = FVector::ZeroVector;
+    }
+    
     UStaticMeshComponent* Mesh = GetComponentByClass<UStaticMeshComponent>();
     if (Mesh)
     {

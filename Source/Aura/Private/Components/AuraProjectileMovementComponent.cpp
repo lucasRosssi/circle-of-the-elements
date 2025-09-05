@@ -337,6 +337,7 @@ void UAuraProjectileMovementComponent::ReturnYoYo()
 {
   Velocity = -StartVelocity * EffectiveYoYoReturnSpeedFactor;
   bYoYoReturning = true;
+  OnYoYoReturnDelegate.Broadcast();
 
   if (bYoYoReturnToAvatar && AvatarActor.IsValid())
   {
