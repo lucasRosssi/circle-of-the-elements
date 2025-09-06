@@ -1729,129 +1729,25 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
     FString("Chaos essence resource")
   );
 
-  /*
-   * MODIFIERS
-   */
-
-  GameplayTags.Modifiers = UGameplayTagsManager::Get().AddNativeGameplayTag(
-    FName("Modifiers"),
-    FString("Modifiers")
-  );
-
-  GameplayTags.Modifiers_Fool = UGameplayTagsManager::Get().AddNativeGameplayTag(
-    FName("Modifiers.Fool"),
-    FString("The Fool modifier. Cost and stats reduced to 50%.")
-  );
-
-  GameplayTags.Modifiers_Magician = UGameplayTagsManager::Get().AddNativeGameplayTag(
-    FName("Modifiers.Magician"),
-    FString("The Magician modifier. Cost and stats increased to 200%.")
-  );
-
-  GameplayTags.Modifiers_HighPriestess = UGameplayTagsManager::Get().AddNativeGameplayTag(
-    FName("Modifiers.HighPriestess"),
-    FString("The High Priestess modifier. Heal each time the skill is used.")
-  );
-  
-  GameplayTags.Modifiers_Empress = UGameplayTagsManager::Get().AddNativeGameplayTag(
-    FName("Modifiers.Empress"),
-    FString("The Empress modifier. Skill have +1 burst. Mana is still consumed.")
-  );
-  
-  GameplayTags.Modifiers_Emperor = UGameplayTagsManager::Get().AddNativeGameplayTag(
-    FName("Modifiers.Emperor"),
-    FString("The Emperor modifier. Double amount of Charges.")
-  );
-
-  GameplayTags.Modifiers_Hierophant = UGameplayTagsManager::Get().AddNativeGameplayTag(
-    FName("Modifiers.Hierophant"),
-    FString("The Hierophant modifier.")
-  );
-
-  GameplayTags.Modifiers_Lovers = UGameplayTagsManager::Get().AddNativeGameplayTag(
-    FName("Modifiers.Lovers"),
-    FString("The Lovers modifier.")
-  );
-
-  GameplayTags.Modifiers_Chariot = UGameplayTagsManager::Get().AddNativeGameplayTag(
-    FName("Modifiers.Chariot"),
-    FString("The Chariot modifier. Added or increased knockback force.")
-  );
-  
-  GameplayTags.Modifiers_Strength = UGameplayTagsManager::Get().AddNativeGameplayTag(
-    FName("Modifiers.Strength"),
-    FString("The Strength modifier. Damage shifts from -25% to +50%.")
-  );
-
-  GameplayTags.Modifiers_Hermit = UGameplayTagsManager::Get().AddNativeGameplayTag(
-    FName("Modifiers.Hermit"),
-    FString("The Hermit modifier. All Charges and Projectiles amount are set to 1. Stats increased accordingly.")
-  );
-
-  GameplayTags.Modifiers_Fortune = UGameplayTagsManager::Get().AddNativeGameplayTag(
-    FName("Modifiers.Fortune"),
-    FString("The Fortune modifier. Increased critical hit chance.")
-  );
-  
-  GameplayTags.Modifiers_Justice = UGameplayTagsManager::Get().AddNativeGameplayTag(
-    FName("Modifiers.Justice"),
-    FString("The Justice modifier. Critical hits heal the caster.")
-  );
-
-  GameplayTags.Modifiers_HangedMan = UGameplayTagsManager::Get().AddNativeGameplayTag(
-    FName("Modifiers.HangedMan"),
-    FString("The HangedMan modifier. Has 5 charges that doesn't recover. Stats increased by 100%.")
-  );
-
-  GameplayTags.Modifiers_Death = UGameplayTagsManager::Get().AddNativeGameplayTag(
-    FName("Modifiers.Death"),
-    FString("The Death modifier. Once dying while holding this ability, it will transform with another one with another modifier.")
-  );
-
-  GameplayTags.Modifiers_Temperance = UGameplayTagsManager::Get().AddNativeGameplayTag(
-    FName("Modifiers.Temperance"),
-    FString("The Temperance modifier. If not used for a certain time, it goes on cooldown on its own. Mana cost is removed.")
-  );
-
-  GameplayTags.Modifiers_Devil = UGameplayTagsManager::Get().AddNativeGameplayTag(
-    FName("Modifiers.Devil"),
-    FString("The Devil modifier. Other skills can only be used when this one is on cooldown. Cooldown and mana cost reduced to 50%")
-  );
-
-  GameplayTags.Modifiers_Tower = UGameplayTagsManager::Get().AddNativeGameplayTag(
-    FName("Modifiers.Tower"),
-    FString("The Tower modifier. Stats reduced by 30%. All other skills stats increased by 15%")
-  );
-
-  GameplayTags.Modifiers_Star = UGameplayTagsManager::Get().AddNativeGameplayTag(
-    FName("Modifiers.Star"),
-    FString("The Star modifier. While on cooldown, mana recovery increased by 100%.")
-  );
-
-  GameplayTags.Modifiers_Moon = UGameplayTagsManager::Get().AddNativeGameplayTag(
-    FName("Modifiers.Moon"),
-    FString("The Moon modifier. Takes extra 20% damage when not on cooldown. Takes -25% damage when on cooldown.")
-  );
-  
-  GameplayTags.Modifiers_Sun = UGameplayTagsManager::Get().AddNativeGameplayTag(
-    FName("Modifiers.Sun"),
-    FString("The Sun modifier. Heal for 10% mana cost when used.")
-  );
-
-  GameplayTags.Modifiers_Judgement = UGameplayTagsManager::Get().AddNativeGameplayTag(
-    FName("Modifiers.Judgement"),
-    FString("The Judgement modifier. Ignores resistances.")
-  );
-
-  GameplayTags.Modifiers_World = UGameplayTagsManager::Get().AddNativeGameplayTag(
-    FName("Modifiers.World"),
-    FString("The World modifier. Stats increased by 25%, mana cost reduced by 50%.")
-  );
-
+  //
 
   GameplayTags.Event_Spirit_Hijacked = UGameplayTagsManager::Get().AddNativeGameplayTag(
     FName("Event.Spirit.Hijacked"),
     FString("Triggered when the spirit actor reaches de hijack socket.")
+  );
+
+  /*
+   * Gameplay Cues
+   */
+
+  GameplayTags.GameplayCue_Global_HeroHit = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("GameplayCue.Global.HeroHit"),
+    FString("Triggered when the Hero is hit.")
+  );
+
+  GameplayTags.GameplayCue_Global_EnemyHit = UGameplayTagsManager::Get().AddNativeGameplayTag(
+    FName("GameplayCue.Global.Enemy Hit"),
+    FString("Triggered when an Enemy is hit.")
   );
 
   /*
@@ -1988,35 +1884,6 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
   );
 
   GameplayTags.ParentsToChildren.Add(GameplayTags.Attributes_Primary, PrimaryAttributeTags);
-
-  const TArray ModifierTags = TArray(
-    {
-      GameplayTags.Modifiers_Fool,
-      GameplayTags.Modifiers_Magician,
-      GameplayTags.Modifiers_HighPriestess,
-      GameplayTags.Modifiers_Empress,
-      GameplayTags.Modifiers_Emperor,
-      GameplayTags.Modifiers_Hierophant,
-      GameplayTags.Modifiers_Lovers,
-      GameplayTags.Modifiers_Chariot,
-      GameplayTags.Modifiers_Strength,
-      GameplayTags.Modifiers_Hermit,
-      GameplayTags.Modifiers_Fortune,
-      GameplayTags.Modifiers_Justice,
-      GameplayTags.Modifiers_HangedMan,
-      GameplayTags.Modifiers_Death,
-      GameplayTags.Modifiers_Temperance,
-      GameplayTags.Modifiers_Devil,
-      GameplayTags.Modifiers_Tower,
-      GameplayTags.Modifiers_Star,
-      GameplayTags.Modifiers_Moon,
-      GameplayTags.Modifiers_Sun,
-      GameplayTags.Modifiers_Judgement,
-      GameplayTags.Modifiers_World
-    }
-  );
-
-  GameplayTags.ParentsToChildren.Add(GameplayTags.Modifiers, ModifierTags);
   
   GameplayTags.bIsValid = true;
 }

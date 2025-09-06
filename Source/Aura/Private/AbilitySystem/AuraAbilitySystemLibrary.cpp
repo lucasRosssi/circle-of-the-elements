@@ -7,6 +7,7 @@
 #include "AuraAbilityTypes.h"
 #include "AuraGameplayTags.h"
 #include "AuraNamedArguments.h"
+#include "GameplayCueFunctionLibrary.h"
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
 #include "AbilitySystem/AuraAttributeSet.h"
 #include "AbilitySystem/Abilities/BaseAbility.h"
@@ -1392,11 +1393,12 @@ FGameplayEffectContextHandle UAuraAbilitySystemLibrary::ApplyAbilityEffect(
   
   const FAuraGameplayTags& AuraTags = FAuraGameplayTags::Get();
 
-  const AActor* SourceAvatarActor = AbilityParams.SourceASC->GetAvatarActor();
+  AActor* SourceActor = AbilityParams.SourceASC->GetAvatarActor();
+  AActor* TargetActor = AbilityParams.TargetASC->GetAvatarActor();
 
   FGameplayEffectContextHandle EffectContextHandle = AbilityParams
                                                      .SourceASC->MakeEffectContext();
-  EffectContextHandle.AddSourceObject(SourceAvatarActor);
+  EffectContextHandle.AddSourceObject(SourceActor);
 
   const FHealParams& HealParams = AbilityParams.HealParams;
   
@@ -1461,7 +1463,16 @@ FGameplayEffectContextHandle UAuraAbilitySystemLibrary::ApplyAbilityEffect(
 
     AbilityParams.SourceASC
       ->ApplyGameplayEffectSpecToTarget(*DamageSpecHandle.Data, AbilityParams.TargetASC);
+    
     bSuccess = true;
+
+    const FGameplayTag& GCHit = TargetActor->Implements<UPlayerInterface>()
+      ? AuraTags.GameplayCue_Global_HeroHit
+      : AuraTags.GameplayCue_Global_EnemyHit;
+    FGameplayCueParameters Params;
+    Params.Instigator = SourceActor;
+    Params.Location = TargetActor->GetActorLocation();
+    UGameplayCueFunctionLibrary::ExecuteGameplayCueOnActor(TargetActor, GCHit, Params);
   }
 
   if (EffectParams.Num() > 0)

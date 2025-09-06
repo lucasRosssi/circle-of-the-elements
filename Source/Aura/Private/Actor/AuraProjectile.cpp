@@ -5,6 +5,8 @@
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
+#include "AuraGameplayTags.h"
+#include "GameplayCueFunctionLibrary.h"
 #include "NiagaraComponent.h"
 
 #include "Components/SphereComponent.h"
@@ -14,6 +16,7 @@
 #include "Aura/Aura.h"
 #include "Components/AuraProjectileMovementComponent.h"
 #include "Interfaces/CombatInterface.h"
+#include "Interfaces/PlayerInterface.h"
 #include "Kismet/KismetMathLibrary.h"
 
 AAuraProjectile::AAuraProjectile()
@@ -67,11 +70,8 @@ void AAuraProjectile::BeginPlay()
   {
     GetWorldTimerManager().SetTimer(
       LifeSpanTimer,
-      FTimerDelegate::CreateLambda([this]()
-        {
-          PrepareDestroy();
-        }
-      ),
+      this,
+      &AAuraProjectile::PrepareDestroy,
       ProjectileDuration,
       false
     );
@@ -139,8 +139,6 @@ void AAuraProjectile::Destroyed()
 {
 	if (!HasAuthority()) OnHit();
 
-  if (LifeSpanTimer.IsValid()) LifeSpanTimer.Invalidate();
-  
 	Super::Destroyed();
 }
 
@@ -435,11 +433,8 @@ void AAuraProjectile::PrepareDestroy()
     FTimerHandle DestroyTimer;
     GetWorldTimerManager().SetTimer(
       DestroyTimer,
-      FTimerDelegate::CreateLambda([this]()
-        {
-          Destroy();
-        }
-      ),
+      this,
+      &AAuraProjectile::CallDestroy,
       ParticlesLifecycleTimeBeforeDestroy,
       false
     );
@@ -447,6 +442,11 @@ void AAuraProjectile::PrepareDestroy()
     return;
   }
 
+  Destroy();
+}
+
+void AAuraProjectile::CallDestroy()
+{
   Destroy();
 }
 

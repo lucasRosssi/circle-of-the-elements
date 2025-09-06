@@ -88,9 +88,7 @@ public:
   void ChangeMovementSpeed(float InMovementSpeed);
 
   void ApplyEffectToSelf(const TSubclassOf<UGameplayEffect>& GameplayEffectClass, float Level) const;
-
   
-
   UTeamComponent* GetTeamComponent() const { return TeamComponent; }
 
   UAuraAbilitySystemComponent* GetAuraASC();

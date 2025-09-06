@@ -30,8 +30,6 @@ struct FSpiritInfo
   UPROPERTY(BlueprintReadWrite)
   FGameplayTag ElementTag;
   UPROPERTY(BlueprintReadWrite)
-  FGameplayTag ModifierTag;
-  UPROPERTY(BlueprintReadWrite)
   int32 MySlot = -1;
   UPROPERTY(BlueprintReadWrite)
   int32 RuneSlots = 1;
@@ -76,8 +74,6 @@ protected:
   FGameplayTag AbilityTag;
   UPROPERTY(BlueprintReadOnly)
   FGameplayTag ElementTag;
-
-  FGameplayTag ModifierTag;
 
   FGameplayTag InputTag;
 

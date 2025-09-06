@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "AuraSystemComponent.h"
-#include "GameplayTagContainer.h"
 #include "Data/RegionInfo.h"
 #include "Enums/Region.h"
 #include "CombatManager.generated.h"

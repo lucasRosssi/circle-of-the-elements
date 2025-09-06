@@ -131,6 +131,7 @@ private:
 	void ApplyProjectileEffect(bool& bSuccess);
 
   void PrepareDestroy();
+  void CallDestroy();
 
 	UPROPERTY(VisibleInstanceOnly, Category="Homing")
 	AActor* HomingTarget;

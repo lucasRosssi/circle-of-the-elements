@@ -3,10 +3,13 @@
 
 #include "AbilitySystem/Abilities/MeleeAttackAbility.h"
 
+#include "AuraGameplayTags.h"
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
+#include "GameplayCueFunctionLibrary.h"
 #include "Components/BoxComponent.h"
 #include "Enums/MeleeHitMode.h"
 #include "Interfaces/CombatInterface.h"
+#include "Interfaces/PlayerInterface.h"
 
 #if WITH_EDITOR
 void UMeleeAttackAbility::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
