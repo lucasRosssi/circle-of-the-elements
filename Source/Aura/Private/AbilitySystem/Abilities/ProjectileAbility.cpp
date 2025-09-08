@@ -11,6 +11,7 @@
 #include "Components/AuraProjectileMovementComponent.h"
 #include "Components/SphereComponent.h"
 #include "Interfaces/CombatInterface.h"
+#include "Kismet/GameplayStatics.h"
 #include "Utils/AuraSystemsLibrary.h"
 
 void UProjectileAbility::EndAbility(
@@ -205,6 +206,15 @@ void UProjectileAbility::SpawnProjectile(
 
     Projectile->TargetTeam = AbilityTargetTeam;
     Projectile->AbilityParams = MakeAbilityParamsFromDefaults();
+
+    // ULocationManager* LocationManager = UAuraSystemsLibrary::GetLocationManager(AvatarActor);
+    // const ULevelStreaming* StreamingLevel = UGameplayStatics::GetStreamingLevel(GetWorld(), LocationManager->GetCurrentAreaRef().World.GetLongPackageFName());
+    //
+    // if (StreamingLevel && StreamingLevel->GetLoadedLevel())
+    // {
+    //   Projectile->Rename(nullptr, StreamingLevel->GetLoadedLevel());
+    // }
+    
     Projectile->FinishSpawning(SpawnTransform);
 
     if (bApplyElementalFlowNiagara)

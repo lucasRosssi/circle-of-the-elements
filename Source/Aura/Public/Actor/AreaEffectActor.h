@@ -82,7 +82,7 @@ public:
 
 protected:
   virtual void BeginPlay() override;
-  virtual void BeginDestroy() override;
+  virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
   virtual void Tick(float DeltaSeconds) override;
   void DeactivateAndDestroy();
 
@@ -133,7 +133,7 @@ protected:
   UPROPERTY(EditDefaultsOnly, Category = "Lifetime")
   float LifeSpan = -1.f;
 
-  UPROPERTY(EditDefaultsOnly, Category = "Lifetime")
+  UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Lifetime")
   float DelayDestroy = 1.f;
 
   UPROPERTY(EditAnywhere, Category="Effects|Sound")
@@ -146,6 +146,9 @@ protected:
   float SpawnSoundPitch = 1.0f;
 
 private:
+  void OnLifeSpanEnded();
+  void CallDestroy();
+  
   UPROPERTY()
   TArray<UAbilitySystemComponent*> ASCsInArea;
   UPROPERTY()
@@ -158,6 +161,7 @@ private:
   TMap<FActiveGameplayEffectHandle, UAbilitySystemComponent*> ActiveEffectHandles;
 
   FTimerHandle PeriodicEffectTimer;
+  FTimerHandle NiagaraDeactivateTimer;
 
   bool bDestroying = false;
 };

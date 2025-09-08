@@ -26,14 +26,9 @@ void USpirit::Spawn(UObject* WorldContextObject)
   const UAbilityInfo* AbilityData = UAuraSystemsLibrary::GetAbilitiesInfo(WorldContextObject);
   const FAuraAbilityInfo& AbilityInfo = AbilityData->FindAbilityInfoByTag(AbilityTag);
   
-  const FAuraGameplayTags& AuraTags = FAuraGameplayTags::Get();
-  const int32 RandomModifierIndex = FMath::RandRange(0, AuraTags.ParentsToChildren[AuraTags.Modifiers].Num() - 1);
-  ModifierTag = AuraTags.ParentsToChildren[AuraTags.Modifiers][RandomModifierIndex];
-  
   EquipmentName = FText::FormatOrdered(
-    FText::FromString("{0} - {1}"),
-    AbilityInfo.Name,
-    FText::FromString(ModifierTag.ToString())
+    FText::FromString("{0}"),
+    AbilityInfo.Name
   );
 }
 
@@ -44,7 +39,6 @@ void USpirit::Load(const FSpiritInfo& SpiritInfo)
   Level = SpiritInfo.Level;
   AbilityTag = SpiritInfo.AbilityTag;
   ElementTag = SpiritInfo.ElementTag;
-  ModifierTag = SpiritInfo.ModifierTag;
   MySlot = SpiritInfo.MySlot;
   RuneSlots = SpiritInfo.RuneSlots;
 
@@ -231,7 +225,6 @@ FSpiritInfo USpirit::MakeSpiritInfo()
   SpiritInfo.Level = Level;
   SpiritInfo.AbilityTag = AbilityTag;
   SpiritInfo.ElementTag = ElementTag;
-  SpiritInfo.ModifierTag = ModifierTag;
   SpiritInfo.MySlot = MySlot;
   SpiritInfo.RuneSlots = RuneSlots;
   for (const auto Rune : Runes)

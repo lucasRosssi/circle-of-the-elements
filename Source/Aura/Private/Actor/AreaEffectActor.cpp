@@ -52,22 +52,15 @@ void AAreaEffectActor::BeginPlay()
   if (LifeSpan > 0.f)
   {
     SetLifeSpan(LifeSpan + DelayDestroy);
-    if (UNiagaraComponent* NiagaraComponent = GetComponentByClass<UNiagaraComponent>())
-    {
-      FTimerHandle NiagaraDeactivateTimer;
-      GetWorld()->GetTimerManager().SetTimer(
-        NiagaraDeactivateTimer,
-        [this, NiagaraComponent]()
-        {
-          bDestroying = true;
-          NiagaraComponent->Deactivate();
-          if (PeriodicEffectTimer.IsValid()) PeriodicEffectTimer.Invalidate();
-        },
-        LifeSpan,
-        false,
-        LifeSpan
-      );
-    }
+    GetWorld()->GetTimerManager().SetTimer(
+      NiagaraDeactivateTimer,
+      this,
+      &AAreaEffectActor::OnLifeSpanEnded,
+      LifeSpan,
+      false,
+      LifeSpan
+    );
+    
   }
 
   if (!bInstant)
@@ -94,7 +87,7 @@ void AAreaEffectActor::BeginPlay()
   }
 }
 
-void AAreaEffectActor::BeginDestroy()
+void AAreaEffectActor::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
   for (auto HandlePair = ActiveEffectHandles.CreateIterator(); HandlePair; ++HandlePair)
   {
@@ -102,8 +95,8 @@ void AAreaEffectActor::BeginDestroy()
     HandlePair.Value()->RemoveActiveGameplayEffect(HandlePair->Key, -1);
     HandlePair.RemoveCurrent();
   }
-
-  Super::BeginDestroy();
+  
+  Super::EndPlay(EndPlayReason);
 }
 
 void AAreaEffectActor::Tick(float DeltaSeconds)
@@ -146,10 +139,8 @@ void AAreaEffectActor::DeactivateAndDestroy()
     FTimerHandle DestroyTimer;
     GetWorld()->GetTimerManager().SetTimer(
       DestroyTimer,
-      [this]()
-      {
-        Destroy();
-      },
+      this,
+      &AAreaEffectActor::CallDestroy,
       DelayDestroy,
       false,
       DelayDestroy
@@ -322,4 +313,18 @@ void AAreaEffectActor::OnRadialForceEndOverlap(
     )
 {
   ActorsPendingRemoveFromForceArea.Add(OtherActor);
+}
+
+void AAreaEffectActor::OnLifeSpanEnded()
+{
+  bDestroying = true;
+  if (UNiagaraComponent* NiagaraComponent = GetComponentByClass<UNiagaraComponent>())
+  {
+    NiagaraComponent->Deactivate();
+  }
+}
+
+void AAreaEffectActor::CallDestroy()
+{
+  Destroy();
 }
